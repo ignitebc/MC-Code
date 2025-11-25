@@ -1,0 +1,24 @@
+pluginManagement {
+    repositories {
+        maven { url "https://maven.fabricmc.net/" }
+        maven { url "https://maven.architectury.dev/" }
+        maven { url "https://maven.minecraftforge.net/" }
+        maven {
+            url "https://cursemaven.com"
+            content {
+                //noinspection GroovyAssignabilityCheck
+                includeGroup "curse.maven"
+            }
+        }
+        gradlePluginPortal()
+    }
+}
+
+//noinspection GroovyAssignabilityCheck
+include("common")
+//noinspection GroovyAssignabilityCheck
+include("fabric")
+//noinspection GroovyAssignabilityCheck
+include("neoforge")
+
+rootProject.name = "JobsPlus 1.21.9"

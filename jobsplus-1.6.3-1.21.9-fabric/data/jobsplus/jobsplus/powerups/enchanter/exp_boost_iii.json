@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:enchanter",
+  "parent": "jobsplus:enchanter/exp_boost_ii",
+  "icon": {
+    "id": "minecraft:enchanting_table",
+    "count": 3
+  },
+  "price": 10,
+  "required_level": 50
+}

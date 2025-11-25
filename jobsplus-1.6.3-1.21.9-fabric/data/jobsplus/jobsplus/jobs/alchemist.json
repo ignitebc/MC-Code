@@ -1,0 +1,10 @@
+{
+  "name": "Alchemist",
+  "price": 10,
+  "color": "#00AEFF",
+  "icon": {
+    "id": "minecraft:brewing_stand"
+  },
+  "background": "minecraft:textures/block/nether_bricks.png",
+  "is_default": true
+}

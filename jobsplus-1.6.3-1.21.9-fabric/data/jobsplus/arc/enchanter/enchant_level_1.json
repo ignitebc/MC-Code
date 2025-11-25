@@ -1,0 +1,20 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:enchanter"
+  },
+  "type": "arc:on_enchant_item",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "min": 30,
+      "max": 50
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:exp_level",
+      "level": 1
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "job": "jobsplus:lumberjack",
+  "icon": {
+    "id": "minecraft:golden_axe"
+  },
+  "price": 5,
+  "required_level": 5
+}

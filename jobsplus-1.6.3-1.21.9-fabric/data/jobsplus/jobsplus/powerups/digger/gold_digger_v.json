@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:digger",
+  "parent": "jobsplus:digger/gold_digger_iv",
+  "icon": {
+    "id": "minecraft:gold_block",
+    "count": 5
+  },
+  "price": 15,
+  "required_level": 80
+}

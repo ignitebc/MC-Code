@@ -1,0 +1,9 @@
+{
+  "job": "jobsplus:lumberjack",
+  "parent": "jobsplus:lumberjack/double_drops_ii",
+  "icon": {
+    "id": "minecraft:dark_oak_log"
+  },
+  "price": 15,
+  "required_level": 50
+}

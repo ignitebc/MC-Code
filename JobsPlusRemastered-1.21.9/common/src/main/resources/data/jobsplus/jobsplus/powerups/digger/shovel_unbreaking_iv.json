@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:digger",
+  "parent": "jobsplus:digger/shovel_unbreaking_iii",
+  "icon": {
+    "id": "minecraft:diamond_shovel",
+    "count": 4
+  },
+  "price": 12,
+  "required_level": 50
+}

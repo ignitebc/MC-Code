@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:miner",
+  "parent": "jobsplus:miner/pickaxe_unbreaking_iv",
+  "icon": {
+    "id": "minecraft:emerald_ore",
+    "count": 3
+  },
+  "price": 15,
+  "required_level": 50
+}

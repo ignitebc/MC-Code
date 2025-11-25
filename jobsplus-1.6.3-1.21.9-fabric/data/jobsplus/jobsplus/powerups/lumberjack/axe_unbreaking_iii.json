@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:lumberjack",
+  "parent": "jobsplus:lumberjack/axe_unbreaking_ii",
+  "icon": {
+    "id": "minecraft:diamond_axe",
+    "count": 3
+  },
+  "price": 10,
+  "required_level": 30
+}

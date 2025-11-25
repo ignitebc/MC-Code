@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:lumberjack",
+  "parent": "jobsplus:lumberjack/axe_efficiency_iv",
+  "icon": {
+    "id": "minecraft:golden_axe",
+    "count": 5
+  },
+  "price": 15,
+  "required_level": 80
+}

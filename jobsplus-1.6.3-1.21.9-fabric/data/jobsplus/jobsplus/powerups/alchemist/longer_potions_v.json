@@ -1,0 +1,15 @@
+{
+  "job": "jobsplus:alchemist",
+  "parent": "jobsplus:alchemist/longer_potions_iv",
+  "icon": {
+    "id": "minecraft:potion",
+    "components": {
+      "minecraft:potion_contents": {
+        "potion": "minecraft:swiftness"
+      }
+    },
+    "count": 5
+  },
+  "price": 10,
+  "required_level": 40
+}

@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:miner",
+  "parent": "jobsplus:miner/pickaxe_unbreaking_iii",
+  "icon": {
+    "id": "minecraft:diamond_pickaxe",
+    "count": 4
+  },
+  "price": 12,
+  "required_level": 50
+}

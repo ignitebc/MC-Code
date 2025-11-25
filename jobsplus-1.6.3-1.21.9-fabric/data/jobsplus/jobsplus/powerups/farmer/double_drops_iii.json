@@ -1,0 +1,9 @@
+{
+  "job": "jobsplus:farmer",
+  "parent": "jobsplus:farmer/double_drops_ii",
+  "icon": {
+    "id": "minecraft:golden_carrot"
+  },
+  "price": 15,
+  "required_level": 50
+}
