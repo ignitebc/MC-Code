@@ -26,6 +26,7 @@
 황금 당근 (golden_carrot)
 거북 껍질 (turtle_helmet)
 
+
 - 해당 엔티티 처치시 직업경험치 1~2증가
 팬텀
 복어
@@ -62,12 +63,12 @@
 - 수영 할때 (10블록이상) 직업경험치 1 ~ 2
 - 낚시, 직업경험치 5~10
 - 해당 특수아이템 낚을시 직업경험치 10~20
-이름표 (name_tag)
-안장 (saddle)
-활 (bow)
-낚시대 (fishing_rod)
-책 (book)
-앵무조개 껍데기 (nautilus_shell)
+* 이름표 (name_tag)
+* 안장 (saddle)
+* 활 (bow)
+* 낚시대 (fishing_rod)
+* 책 (book)
+* 앵무조개 껍데기 (nautilus_shell)
 
 * 사냥꾼 레벨업
 - 아이템을 제련/구울때 직업경험치 2~4 (화로나 용광로가 아닌 훈연기에서 구운경우만 적용)

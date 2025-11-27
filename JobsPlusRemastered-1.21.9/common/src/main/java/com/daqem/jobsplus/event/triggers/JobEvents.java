@@ -48,7 +48,8 @@ public class JobEvents {
             }
 
             triggerLevelUpEffects(serverPlayer);
-
+            
+            // 플레이어 코인 얻는 이벤트
             player.jobsplus$addCoins(JobsPlusConfig.coinsPerLevelUp.get());
             JobInstance jobInstance = job.getJobInstance();
             serverPlayer.level().getServer().getPlayerList()
