@@ -217,21 +217,53 @@ public class JobCommand {
                 job.setLevel(level);
                 source.sendSuccess(() -> JobsPlus.translatable(
                         "command.set.level.success", jobInstance.getName(), level, jobsServerPlayer.jobsplus$getPlayer().getDisplayName()), false);
-            } else {
+        
+        // 원본수정
+        //     } else {
+        //         job = jobsServerPlayer.jobsplus$addNewJob(jobInstance);
+        //         if (job != null) {
+        //             job.setLevel(level);
+        //             source.sendSuccess(() -> JobsPlus.translatable(
+        //                     "command.set.level.success_new_job", jobInstance.getName(), level, jobsServerPlayer.jobsplus$getPlayer().getDisplayName()), false);
+        //         } else {
+        //             source.sendFailure(JobsPlus.translatable(
+        //                     "command.set.level.cannot_add_job"));
+        //         }
+        //     }
+
+            } 
+            
+            // 25.11.30 jjh 직업2개만 선택하도록 예외처리
+            else 
+            {
+                if (jobsServerPlayer.jobsplus$getJobs().size() >= JobsPlusConfig.maxJobs.get()) 
+                {
+                        source.sendFailure(JobsPlus.translatable("error.max_jobs_reached"));
+                        return 0;
+                }
+                
                 job = jobsServerPlayer.jobsplus$addNewJob(jobInstance);
-                if (job != null) {
+
+                if (job != null) 
+                {
                     job.setLevel(level);
-                    source.sendSuccess(() -> JobsPlus.translatable(
-                            "command.set.level.success_new_job", jobInstance.getName(), level, jobsServerPlayer.jobsplus$getPlayer().getDisplayName()), false);
-                } else {
+                    source.sendSuccess(() -> JobsPlus.translatable("command.set.level.success_new_job", jobInstance.getName(), level, jobsServerPlayer.jobsplus$getPlayer().getDisplayName()), false);
+                } 
+
+                else 
+                {
                     source.sendFailure(JobsPlus.translatable(
                             "command.set.level.cannot_add_job"));
                 }
             }
-        } else {
-            source.sendFailure(JobsPlus.translatable(
-                    "command.set.level.invalid_target"));
+            
+        } 
+        
+        else 
+        {
+            source.sendFailure(JobsPlus.translatable("command.set.level.invalid_target"));
         }
+
         return 0;
     }
 }
