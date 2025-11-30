@@ -23,7 +23,10 @@ public class JobsPlusConfig {
         config.push("jobs");
         enableDefaultJobs = config.defineBoolean("enable_default_jobs", true).withComments("if true, the default jobs are enabled. WARNING: setting this to false will erase all the stats for these jobs");
         amountOfFreeJobs = config.defineInteger("amount_of_free_jobs", 2, 0, Integer.MAX_VALUE).withComments("the amount of free jobs a player can have");
-        maxJobs = config.defineInteger("max_jobs", Integer.MAX_VALUE, 0, Integer.MAX_VALUE).withComments("the maximum amount of jobs a player can have");
+        
+        // 직업갯수 2개로 조정 (원본)
+        // maxJobs = config.defineInteger("max_jobs", Integer.MAX_VALUE, 0, Integer.MAX_VALUE).withComments("the maximum amount of jobs a player can have");
+        maxJobs = config.defineInteger("max_jobs", 2, 0, Integer.MAX_VALUE).withComments("the maximum amount of jobs a player can have");
         config.push("coins");
         
         // coinsPerLevelUp = config.defineInteger("coins_per_level_up", 1, 0, Integer.MAX_VALUE).withComments("the amount of coins a player gets when they level up a job");

@@ -36,6 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.daqem.jobsplus.config.JobsPlusConfig;
 
 @Mixin(ServerPlayer.class)
 public abstract class MixinServerPlayer extends Player implements JobsServerPlayer {
@@ -68,9 +69,28 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
                 .toList();
     }
 
+    // @Override
+    // public @Nullable Job jobsplus$addNewJob(@NotNull JobInstance jobInstance) {
+    //     if (jobInstance.getLocation() == null) return null;
+    //     Job job = jobsplus$getJob(jobInstance);
+    //     if (job == null) {
+    //         job = new Job(this, jobInstance, 1, 0);
+    //         jobsplus$jobs.add(job);
+    //         jobsplus$updateJob(job);
+    //         return job;
+    //     }
+    //     return null;
+    // }
+
     @Override
     public @Nullable Job jobsplus$addNewJob(@NotNull JobInstance jobInstance) {
         if (jobInstance.getLocation() == null) return null;
+        
+        // 최대 직업 개수 체크 추가
+        if (jobsplus$jobs.size() >= JobsPlusConfig.maxJobs.get()) {
+            return null;
+        }
+        
         Job job = jobsplus$getJob(jobInstance);
         if (job == null) {
             job = new Job(this, jobInstance, 1, 0);
