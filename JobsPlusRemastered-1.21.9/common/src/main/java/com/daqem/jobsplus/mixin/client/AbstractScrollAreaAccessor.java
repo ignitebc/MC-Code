@@ -5,7 +5,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(AbstractScrollArea.class)
-public interface AbstractScrollAreaAccessor {
+public interface AbstractScrollAreaAccessor
+{
 
     @Accessor("scrolling")
     boolean jobsplus$getScrolling();

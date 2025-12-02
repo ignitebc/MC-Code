@@ -3,7 +3,7 @@
   "price": 10,
   "color": "#A52A2A",
   "icon": {
-    "id": "minecraft:iron_sword"
+    "id": "minecraft:netherite_sword"
   },
   "is_default": true
 }

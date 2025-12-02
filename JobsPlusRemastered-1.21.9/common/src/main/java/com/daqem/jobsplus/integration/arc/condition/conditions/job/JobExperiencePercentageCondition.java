@@ -16,21 +16,27 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
-public class JobExperiencePercentageCondition extends AbstractCondition {
+public class JobExperiencePercentageCondition extends AbstractCondition
+{
 
     private final double percentage;
 
-    public JobExperiencePercentageCondition(boolean inverted, double percentage) {
+    public JobExperiencePercentageCondition(boolean inverted, double percentage)
+    {
         super(inverted);
         this.percentage = percentage;
     }
 
     @Override
-    public boolean isMet(ActionData actionData) {
-        if (actionData.getSourceActionHolder() instanceof JobInstance jobInstance) {
-            if (actionData.getPlayer() instanceof JobsServerPlayer jobsServerPlayer) {
+    public boolean isMet(ActionData actionData)
+    {
+        if (actionData.getSourceActionHolder() instanceof JobInstance jobInstance)
+        {
+            if (actionData.getPlayer() instanceof JobsServerPlayer jobsServerPlayer)
+            {
                 Job job = jobsServerPlayer.jobsplus$getJob(jobInstance);
-                if (job != null) {
+                if (job != null)
+                {
                     return job.getExperiencePercentage() >= percentage;
                 }
             }
@@ -39,33 +45,35 @@ public class JobExperiencePercentageCondition extends AbstractCondition {
     }
 
     @Override
-    public IConditionType<? extends ICondition> getType() {
+    public IConditionType<? extends ICondition> getType()
+    {
         return JobsPlusConditionType.JOB_EXPERIENCE_PERCENTAGE;
     }
 
     @Override
-    public Component getDescription() {
+    public Component getDescription()
+    {
         return getDescription(this.percentage);
     }
 
-    public static class Serializer implements IConditionSerializer<JobExperiencePercentageCondition> {
+    public static class Serializer implements IConditionSerializer<JobExperiencePercentageCondition>
+    {
 
         @Override
-        public JobExperiencePercentageCondition fromJson(ResourceLocation location, JsonObject jsonObject, boolean inverted) {
-            return new JobExperiencePercentageCondition(
-                    inverted,
-                    GsonHelper.getAsDouble(jsonObject, "percentage"));
+        public JobExperiencePercentageCondition fromJson(ResourceLocation location, JsonObject jsonObject, boolean inverted)
+        {
+            return new JobExperiencePercentageCondition(inverted, GsonHelper.getAsDouble(jsonObject, "percentage"));
         }
 
         @Override
-        public JobExperiencePercentageCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
-            return new JobExperiencePercentageCondition(
-                    inverted,
-                    friendlyByteBuf.readDouble());
+        public JobExperiencePercentageCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted)
+        {
+            return new JobExperiencePercentageCondition(inverted, friendlyByteBuf.readDouble());
         }
 
         @Override
-        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobExperiencePercentageCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobExperiencePercentageCondition type)
+        {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeDouble(type.percentage);
         }

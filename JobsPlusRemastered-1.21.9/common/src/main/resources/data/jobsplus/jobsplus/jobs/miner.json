@@ -3,7 +3,7 @@
   "price": 10,
   "color": "#FFA500",
   "icon": {
-    "id": "minecraft:diamond_pickaxe"
+    "id": "minecraft:netherite_pickaxe"
   },
   "is_default": true
 }

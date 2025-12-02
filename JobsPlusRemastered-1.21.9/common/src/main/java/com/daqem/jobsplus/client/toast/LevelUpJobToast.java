@@ -44,12 +44,15 @@ public class LevelUpJobToast implements Toast {
         if (this.jobInstances.isEmpty()) {
             this.wantedVisibility = Toast.Visibility.HIDE;
         } else {
-            this.wantedVisibility = l - this.lastChanged >= DISPLAY_TIME * toastManager.getNotificationDisplayTimeMultiplier() ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
+            this.wantedVisibility = l - this.lastChanged >= DISPLAY_TIME
+                    * toastManager.getNotificationDisplayTimeMultiplier() ? Toast.Visibility.HIDE
+                            : Toast.Visibility.SHOW;
         }
 
-        this.displayedJobInstanceIndex = (int)(
-                l / Math.max(1.0, DISPLAY_TIME * toastManager.getNotificationDisplayTimeMultiplier() / this.jobInstances.size()) % this.jobInstances.size()
-        );
+        this.displayedJobInstanceIndex = (int) (l
+                / Math.max(1.0,
+                        DISPLAY_TIME * toastManager.getNotificationDisplayTimeMultiplier() / this.jobInstances.size())
+                % this.jobInstances.size());
     }
 
     @Override
@@ -57,7 +60,8 @@ public class LevelUpJobToast implements Toast {
         Entry entry = this.jobInstances.get(this.displayedJobInstanceIndex);
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, 0, 0, this.width(), this.height());
         guiGraphics.drawString(font, entry.jobInstance.getName(), 30, 7, -11534256, false);
-        guiGraphics.drawString(font, JobsPlus.translatable("job.level_up.toast", entry.level), 30, 18, -16777216, false);
+        guiGraphics.drawString(font, JobsPlus.translatable("job.level_up.toast", entry.level), 30, 18, -16777216,
+                false);
         guiGraphics.renderFakeItem(entry.jobInstance.getIconItem(), 8, 8);
     }
 

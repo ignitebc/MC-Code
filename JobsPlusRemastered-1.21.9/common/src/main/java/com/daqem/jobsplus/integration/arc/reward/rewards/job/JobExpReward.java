@@ -16,32 +16,40 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.GsonHelper;
 
-public class JobExpReward extends AbstractReward {
+public class JobExpReward extends AbstractReward
+{
 
     private final int min;
     private final int max;
 
-    public JobExpReward(double chance, int priority, int min, int max) {
+    public JobExpReward(double chance, int priority, int min, int max)
+    {
         super(chance, priority);
         this.min = min;
         this.max = max;
 
-        if (min > max) {
+        if (min > max)
+        {
             throw new IllegalArgumentException("min cannot be greater than max for JobExpActionReward.");
         }
     }
 
     @Override
-    public IRewardType<?> getType() {
+    public IRewardType<?> getType()
+    {
         return JobsPlusRewardType.JOB_EXP;
     }
 
     @Override
-    public ActionResult apply(ActionData actionData) {
-        if (actionData.getSourceActionHolder() instanceof JobInstance jobInstance) {
-            if (actionData.getPlayer() instanceof JobsServerPlayer jobsServerPlayer) {
+    public ActionResult apply(ActionData actionData)
+    {
+        if (actionData.getSourceActionHolder() instanceof JobInstance jobInstance)
+        {
+            if (actionData.getPlayer() instanceof JobsServerPlayer jobsServerPlayer)
+            {
                 Job job = jobsServerPlayer.jobsplus$getJob(jobInstance);
-                if (job != null) {
+                if (job != null)
+                {
                     int exp = actionData.getPlayer().arc$getPlayer().getRandom().nextInt(min, max + 1);
                     job.addExperience(exp);
                 }
@@ -51,39 +59,38 @@ public class JobExpReward extends AbstractReward {
     }
 
     @Override
-    public Component getDescription() {
+    public Component getDescription()
+    {
         return this.getDescription(this.min, this.max);
     }
 
-    public int getMin() {
+    public int getMin()
+    {
         return min;
     }
 
-    public int getMax() {
+    public int getMax()
+    {
         return max;
     }
 
-    public static class Serializer implements IRewardSerializer<JobExpReward> {
+    public static class Serializer implements IRewardSerializer<JobExpReward>
+    {
         @Override
-        public JobExpReward fromJson(JsonObject jsonObject, double chance, int priority) {
-            return new JobExpReward(
-                    chance,
-                    priority,
-                    GsonHelper.getAsInt(jsonObject, "min"),
-                    GsonHelper.getAsInt(jsonObject, "max"));
+        public JobExpReward fromJson(JsonObject jsonObject, double chance, int priority)
+        {
+            return new JobExpReward(chance, priority, GsonHelper.getAsInt(jsonObject, "min"), GsonHelper.getAsInt(jsonObject, "max"));
         }
 
         @Override
-        public JobExpReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
-            return new JobExpReward(
-                    chance,
-                    priority,
-                    friendlyByteBuf.readInt(),
-                    friendlyByteBuf.readInt());
+        public JobExpReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority)
+        {
+            return new JobExpReward(chance, priority, friendlyByteBuf.readInt(), friendlyByteBuf.readInt());
         }
 
         @Override
-        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobExpReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobExpReward type)
+        {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeInt(type.min);
             friendlyByteBuf.writeInt(type.max);

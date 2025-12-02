@@ -11,13 +11,13 @@ import org.jetbrains.annotations.Nullable;
 public class ClientboundOpenJobsScreenPacketHandler {
 
     public static void handleClientSide(ClientboundOpenJobsScreenPacket packet, NetworkManager.PacketContext context) {
-        @Nullable Screen previousScreen = null;
+        @Nullable
+        Screen previousScreen = null;
         if (Minecraft.getInstance().screen instanceof JobsScreen jobsScreen) {
             previousScreen = jobsScreen.getPreviousScreen();
         }
         Minecraft.getInstance().setScreen(new JobsScreen(new JobsScreenState(
                 packet.getJobs(),
-                packet.getCoins()
-        ), previousScreen));
+                packet.getCoins()), previousScreen));
     }
 }

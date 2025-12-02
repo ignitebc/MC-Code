@@ -14,31 +14,38 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
-public class JobExpAction extends AbstractAction {
+public class JobExpAction extends AbstractAction
+{
 
-    public JobExpAction(ResourceLocation location, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions) {
+    public JobExpAction(ResourceLocation location, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions)
+    {
         super(location, actionHolderLocation, actionHolderType, performOnClient, rewards, conditions);
     }
 
     @Override
-    public IActionType<?> getType() {
+    public IActionType<?> getType()
+    {
         return JobsPlusActionType.JOB_EXP;
     }
 
-    public static class Serializer implements IActionSerializer<JobExpAction> {
+    public static class Serializer implements IActionSerializer<JobExpAction>
+    {
 
         @Override
-        public JobExpAction fromJson(ResourceLocation location, JsonObject jsonObject, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions) {
+        public JobExpAction fromJson(ResourceLocation location, JsonObject jsonObject, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions)
+        {
             return new JobExpAction(location, actionHolderLocation, actionHolderType, performOnClient, rewards, conditions);
         }
 
         @Override
-        public JobExpAction fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions) {
+        public JobExpAction fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions)
+        {
             return new JobExpAction(location, actionHolderLocation, actionHolderType, performOnClient, rewards, conditions);
         }
 
         @Override
-        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobExpAction type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobExpAction type)
+        {
             IActionSerializer.super.toNetwork(friendlyByteBuf, type);
         }
     }

@@ -8,12 +8,14 @@ import com.daqem.jobsplus.integration.arc.reward.rewards.job.JobCoinReward;
 import com.daqem.jobsplus.integration.arc.reward.rewards.job.JobExpReward;
 import com.daqem.jobsplus.integration.arc.reward.rewards.job.JobExpMultiplierReward;
 
-public interface JobsPlusRewardType<T extends IReward> extends RewardType<T> {
+public interface JobsPlusRewardType<T extends IReward> extends RewardType<T>
+{
 
     IRewardType<JobExpReward> JOB_EXP = RewardType.register(JobsPlus.getId("job_exp"), new JobExpReward.Serializer());
     IRewardType<JobExpMultiplierReward> JOB_EXP_MULTIPLIER = RewardType.register(JobsPlus.getId("job_exp_multiplier"), new JobExpMultiplierReward.Serializer());
     IRewardType<JobCoinReward> JOB_COIN = RewardType.register(JobsPlus.getId("job_coin"), new JobCoinReward.Serializer());
 
-    static void init() {
+    static void init()
+    {
     }
 }
