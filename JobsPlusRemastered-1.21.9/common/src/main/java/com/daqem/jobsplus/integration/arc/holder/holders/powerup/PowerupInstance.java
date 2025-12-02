@@ -106,6 +106,7 @@ public class PowerupInstance extends AbstractActionHolder
             if (job != null)
             {
                 Powerup powerup = job.getPowerupManager().getAllPowerups().stream().filter(powerup1 -> powerup1.getPowerupInstance().getLocation().equals(this.getLocation())).findFirst().orElse(null);
+                
                 if (powerup != null)
                 {
                     return powerup.getState() == PowerupState.ACTIVE;

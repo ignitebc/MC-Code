@@ -5,9 +5,11 @@ import com.daqem.uilib.skilltree.AbstractSkillTree;
 
 import java.util.List;
 
-public class PowerupsSkillTree extends AbstractSkillTree {
+public class PowerupsSkillTree extends AbstractSkillTree
+{
 
-    public PowerupsSkillTree(List<ISkillTreeItem> items) {
+    public PowerupsSkillTree(List<ISkillTreeItem> items)
+    {
         super(items);
         setHorizontalSpacing(4);
         setVerticalSpacing(4);

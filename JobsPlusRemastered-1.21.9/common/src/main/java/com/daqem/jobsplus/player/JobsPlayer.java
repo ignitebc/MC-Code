@@ -9,7 +9,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface JobsPlayer {
+public interface JobsPlayer
+{
 
     List<Job> jobsplus$getJobs();
 

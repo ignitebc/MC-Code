@@ -13,42 +13,46 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
-public class ServerboundOpenPowerupsScreenPacket implements CustomPacketPayload {
+public class ServerboundOpenPowerupsScreenPacket implements CustomPacketPayload
+{
 
     private final ResourceLocation jobLocation;
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundOpenPowerupsScreenPacket> STREAM_CODEC = new StreamCodec<>() {
         @Override
-        public @NotNull ServerboundOpenPowerupsScreenPacket decode(RegistryFriendlyByteBuf buf) {
+        public @NotNull ServerboundOpenPowerupsScreenPacket decode(RegistryFriendlyByteBuf buf)
+        {
             return new ServerboundOpenPowerupsScreenPacket(buf);
         }
 
         @Override
-        public void encode(RegistryFriendlyByteBuf buf, ServerboundOpenPowerupsScreenPacket packet) {
+        public void encode(RegistryFriendlyByteBuf buf, ServerboundOpenPowerupsScreenPacket packet)
+        {
             buf.writeResourceLocation(packet.jobLocation);
         }
     };
 
-    public ServerboundOpenPowerupsScreenPacket(ResourceLocation jobLocation) {
+    public ServerboundOpenPowerupsScreenPacket(ResourceLocation jobLocation)
+    {
         this.jobLocation = jobLocation;
     }
 
-    public ServerboundOpenPowerupsScreenPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
+    public ServerboundOpenPowerupsScreenPacket(RegistryFriendlyByteBuf friendlyByteBuf)
+    {
         this.jobLocation = friendlyByteBuf.readResourceLocation();
     }
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
+    public @NotNull Type<? extends CustomPacketPayload> type()
+    {
         return JobsPlusNetworking.SERVERBOUND_OPEN_POWERUPS_SCREEN;
     }
 
-    public static void handleServerSide(ServerboundOpenPowerupsScreenPacket packet, NetworkManager.PacketContext context) {
-        if (context.getPlayer() instanceof JobsServerPlayer jobsServerPlayer) {
-            NetworkManager.sendToPlayer(jobsServerPlayer.jobsplus$getServerPlayer(), new ClientboundOpenPowerupsScreenPacket(
-                    Stream.concat(jobsServerPlayer.jobsplus$getJobs().stream(), jobsServerPlayer.jobsplus$getInactiveJobs().stream()).toList(),
-                    jobsServerPlayer.jobsplus$getCoins(),
-                    packet.jobLocation
-            ));
+    public static void handleServerSide(ServerboundOpenPowerupsScreenPacket packet, NetworkManager.PacketContext context)
+    {
+        if (context.getPlayer() instanceof JobsServerPlayer jobsServerPlayer)
+        {
+            NetworkManager.sendToPlayer(jobsServerPlayer.jobsplus$getServerPlayer(), new ClientboundOpenPowerupsScreenPacket(Stream.concat(jobsServerPlayer.jobsplus$getJobs().stream(), jobsServerPlayer.jobsplus$getInactiveJobs().stream()).toList(), jobsServerPlayer.jobsplus$getCoins(), packet.jobLocation));
         }
     }
 }

@@ -6,9 +6,11 @@ import com.daqem.jobsplus.client.gui.jobs.widgets.JobSelectionWidget;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import com.daqem.uilib.gui.component.text.TextComponent;
 
-public class JobSelectionComponent extends EmptyComponent {
+public class JobSelectionComponent extends EmptyComponent
+{
 
-    public JobSelectionComponent(JobsScreenState state) {
+    public JobSelectionComponent(JobsScreenState state)
+    {
         super(21, 66, 117, 120);
 
         JobSelectionWidget jobSelectionWidget = new JobSelectionWidget(getWidth(), getHeight(), state);

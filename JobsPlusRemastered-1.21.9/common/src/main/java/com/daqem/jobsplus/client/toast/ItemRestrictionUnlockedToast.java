@@ -21,7 +21,8 @@ import java.util.List;
 import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
-public class ItemRestrictionUnlockedToast implements Toast {
+public class ItemRestrictionUnlockedToast implements Toast
+{
     private static final ResourceLocation BACKGROUND_SPRITE = ResourceLocation.withDefaultNamespace("toast/recipe");
     private static final long DISPLAY_TIME = 5000L;
     private final List<ItemRestriction> itemRestrictions = new ArrayList<>();
@@ -31,31 +32,35 @@ public class ItemRestrictionUnlockedToast implements Toast {
     private int displayedItemRestrictionIndex;
 
     @Override
-    public @NotNull Visibility getWantedVisibility() {
+    public @NotNull Visibility getWantedVisibility()
+    {
         return this.wantedVisibility;
     }
 
     @Override
-    public void update(ToastManager toastManager, long l) {
-        if (this.changed) {
+    public void update(ToastManager toastManager, long l)
+    {
+        if (this.changed)
+        {
             this.lastChanged = l;
             this.changed = false;
         }
 
-        if (this.itemRestrictions.isEmpty()) {
+        if (this.itemRestrictions.isEmpty())
+        {
             this.wantedVisibility = Visibility.HIDE;
-        } else {
-            this.wantedVisibility = (double) (l - this.lastChanged) >= DISPLAY_TIME
-                    * toastManager.getNotificationDisplayTimeMultiplier() ? Visibility.HIDE : Visibility.SHOW;
+        } 
+        else
+        {
+            this.wantedVisibility = (double) (l - this.lastChanged) >= DISPLAY_TIME * toastManager.getNotificationDisplayTimeMultiplier() ? Visibility.HIDE : Visibility.SHOW;
         }
 
-        this.displayedItemRestrictionIndex = (int) (l / Math.max(1.0,
-                DISPLAY_TIME * toastManager.getNotificationDisplayTimeMultiplier() / this.itemRestrictions.size())
-                % this.itemRestrictions.size());
+        this.displayedItemRestrictionIndex = (int) (l / Math.max(1.0, DISPLAY_TIME * toastManager.getNotificationDisplayTimeMultiplier() / this.itemRestrictions.size()) % this.itemRestrictions.size());
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, Font font, long l) {
+    public void render(GuiGraphics guiGraphics, Font font, long l)
+    {
         ItemRestriction entry = this.itemRestrictions.get(this.displayedItemRestrictionIndex);
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, 0, 0, this.width(), this.height());
         guiGraphics.drawString(font, entry.getIcon().getHoverName(), 30, 7, -11534256, false);
@@ -63,15 +68,17 @@ public class ItemRestrictionUnlockedToast implements Toast {
         guiGraphics.renderFakeItem(entry.getIcon(), 8, 8);
     }
 
-    private void addItem(ItemRestriction itemRestriction) {
+    private void addItem(ItemRestriction itemRestriction)
+    {
         this.itemRestrictions.add(itemRestriction);
         this.changed = true;
     }
 
-    public static void addOrUpdate(ToastManager toastManager, ItemRestriction itemRestriction) {
-        ItemRestrictionUnlockedToast itemRestrictionUnlockedToast = toastManager
-                .getToast(ItemRestrictionUnlockedToast.class, NO_TOKEN);
-        if (itemRestrictionUnlockedToast == null) {
+    public static void addOrUpdate(ToastManager toastManager, ItemRestriction itemRestriction)
+    {
+        ItemRestrictionUnlockedToast itemRestrictionUnlockedToast = toastManager.getToast(ItemRestrictionUnlockedToast.class, NO_TOKEN);
+        if (itemRestrictionUnlockedToast == null)
+        {
             itemRestrictionUnlockedToast = new ItemRestrictionUnlockedToast();
             toastManager.addToast(itemRestrictionUnlockedToast);
         }

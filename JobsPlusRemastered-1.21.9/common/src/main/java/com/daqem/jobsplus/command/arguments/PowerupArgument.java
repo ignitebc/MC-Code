@@ -16,29 +16,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class PowerupArgument implements ArgumentType<PowerupInstance> {
+public class PowerupArgument implements ArgumentType<PowerupInstance>
+{
 
-    public static PowerupArgument powerup() {
+    public static PowerupArgument powerup()
+    {
         return new PowerupArgument();
     }
 
     @Override
-    public PowerupInstance parse(StringReader reader) throws CommandSyntaxException {
+    public PowerupInstance parse(StringReader reader) throws CommandSyntaxException
+    {
         return PowerupManager.getInstance().getAllPowerups().get(ResourceLocation.read(reader));
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder)
+    {
         List<ResourceLocation> powerups = new ArrayList<>();
-        try {
-            powerups = context.getArgument("job", JobInstance.class).getPowerups().stream()
-                    .map(PowerupInstance::getLocation).toList();
-        } catch (NullPointerException ignored) {
+        try
+        {
+            powerups = context.getArgument("job", JobInstance.class).getPowerups().stream().map(PowerupInstance::getLocation).toList();
+        } 
+        catch (NullPointerException ignored)
+        {
         }
         return SharedSuggestionProvider.suggest(powerups.stream().map(ResourceLocation::toString), builder);
     }
 
-    public static PowerupInstance getPowerup(CommandContext<?> context, String name) {
+    public static PowerupInstance getPowerup(CommandContext<?> context, String name)
+    {
         return context.getArgument(name, PowerupInstance.class);
     }
 }

@@ -15,54 +15,58 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.GsonHelper;
 
-public class JobCoinReward extends AbstractReward {
+public class JobCoinReward extends AbstractReward
+{
 
     private final int amount;
 
-    public JobCoinReward(double chance, int priority, int amount) {
+    public JobCoinReward(double chance, int priority, int amount)
+    {
         super(chance, priority);
         this.amount = amount;
     }
 
     @Override
-    public IRewardType<?> getType() {
+    public IRewardType<?> getType()
+    {
         return JobsPlusRewardType.JOB_COIN;
     }
 
     @Override
-    public ActionResult apply(ActionData actionData) {
+    public ActionResult apply(ActionData actionData)
+    {
         ArcPlayer player = actionData.getPlayer();
-        if (player instanceof JobsServerPlayer jobsServerPlayer) {
+        if (player instanceof JobsServerPlayer jobsServerPlayer)
+        {
             jobsServerPlayer.jobsplus$addCoins(this.amount);
         }
         return new ActionResult();
     }
 
     @Override
-    public Component getDescription() {
+    public Component getDescription()
+    {
         return this.getDescription(this.amount);
     }
 
-    public static class Serializer implements IRewardSerializer<JobCoinReward> {
+    public static class Serializer implements IRewardSerializer<JobCoinReward>
+    {
 
         @Override
-        public JobCoinReward fromJson(JsonObject jsonObject, double chance, int priority) {
-            return new JobCoinReward(
-                    chance,
-                    priority,
-                    GsonHelper.getAsInt(jsonObject, "amount"));
+        public JobCoinReward fromJson(JsonObject jsonObject, double chance, int priority)
+        {
+            return new JobCoinReward(chance, priority, GsonHelper.getAsInt(jsonObject, "amount"));
         }
 
         @Override
-        public JobCoinReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
-            return new JobCoinReward(
-                    chance,
-                    priority,
-                    friendlyByteBuf.readInt());
+        public JobCoinReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority)
+        {
+            return new JobCoinReward(chance, priority, friendlyByteBuf.readInt());
         }
 
         @Override
-        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobCoinReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobCoinReward type)
+        {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeInt(type.amount);
         }

@@ -8,9 +8,11 @@ import com.daqem.uilib.gui.component.text.TextComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.MutableComponent;
 
-public class CoinsComponent extends SpriteComponent {
+public class CoinsComponent extends SpriteComponent
+{
 
-    public CoinsComponent(JobsScreenState state) {
+    public CoinsComponent(JobsScreenState state)
+    {
         super(0, 27, 0, 16, JobsPlus.getId("jobs/tab_coins"));
 
         MutableComponent coinsText = JobsPlus.literal(state.getCoins() + "");

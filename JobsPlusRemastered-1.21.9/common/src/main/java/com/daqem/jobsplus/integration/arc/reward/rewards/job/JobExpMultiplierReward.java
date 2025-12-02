@@ -21,42 +21,61 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
-public class JobExpMultiplierReward extends AbstractReward {
+public class JobExpMultiplierReward extends AbstractReward
+{
 
     private final ResourceLocation jobLocation;
     private final double multiplier;
 
-    public JobExpMultiplierReward(double chance, int priority, ResourceLocation jobLocation, double multiplier) {
+    public JobExpMultiplierReward(double chance, int priority, ResourceLocation jobLocation, double multiplier)
+    {
         super(chance, priority);
         this.jobLocation = jobLocation;
         this.multiplier = multiplier;
     }
 
     @Override
-    public IRewardType<?> getType() {
+    public IRewardType<?> getType()
+    {
         return JobsPlusRewardType.JOB_EXP_MULTIPLIER;
     }
 
     @Override
-    public ActionResult apply(ActionData actionData) {
+    public ActionResult apply(ActionData actionData)
+    {
         IActionHolder sourceActionHolder = actionData.getSourceActionHolder();
         ArcPlayer player = actionData.getPlayer();
-        if (player instanceof JobsServerPlayer jobsServerPlayer) {
+        if (player instanceof JobsServerPlayer jobsServerPlayer)
+        {
             Job job = actionData.getData(JobsPlusActionDataType.ONLY_FOR_JOB);
-            if (job == null) {
-                if (sourceActionHolder instanceof JobInstance jobInstance) {
-                    if (!jobInstance.getLocation().equals(jobLocation)) return new ActionResult();
+            if (job == null)
+            {
+                if (sourceActionHolder instanceof JobInstance jobInstance)
+                {
+                    if (!jobInstance.getLocation().equals(jobLocation))
+                        return new ActionResult();
                     job = jobsServerPlayer.jobsplus$getJob(jobInstance);
-                } else if (sourceActionHolder instanceof PowerupInstance powerupInstance) {
-                    if (!powerupInstance.getJobLocation().equals(jobLocation)) return new ActionResult();
+                } 
+                
+                else if (sourceActionHolder instanceof PowerupInstance powerupInstance)
+                {
+                    if (!powerupInstance.getJobLocation().equals(jobLocation))
+                        return new ActionResult();
                     job = jobsServerPlayer.jobsplus$getJob(JobInstance.of(powerupInstance.getJobLocation()));
                 }
-            } else {
-                if (!job.getJobInstance().getLocation().equals(jobLocation)) return new ActionResult();
+            } 
+            
+            else
+            {
+                if (!job.getJobInstance().getLocation().equals(jobLocation))
+                    return new ActionResult();
             }
-            if (job != null) {
+            
+            if (job != null)
+            {
                 Integer exp = actionData.getData(JobsPlusActionDataType.JOB_EXP);
-                if (exp != null) {
+                if (exp != null)
+                {
                     int experience = (int) (exp * this.multiplier) - exp;
                     job.addExperienceWithoutEvent(experience);
                 }
@@ -66,36 +85,34 @@ public class JobExpMultiplierReward extends AbstractReward {
     }
 
     @Override
-    public Component getDescription() {
+    public Component getDescription()
+    {
         JobInstance jobInstance = JobInstance.of(this.jobLocation);
-        if (jobInstance == null) {
+        if (jobInstance == null)
+        {
             return JobsPlus.literal("ERROR: Job not found: '" + this.jobLocation.toString() + "'");
         }
         return this.getDescription(jobInstance.getName(), this.multiplier);
     }
 
-    public static class Serializer implements IRewardSerializer<JobExpMultiplierReward> {
+    public static class Serializer implements IRewardSerializer<JobExpMultiplierReward>
+    {
 
         @Override
-        public JobExpMultiplierReward fromJson(JsonObject jsonObject, double chance, int priority) {
-            return new JobExpMultiplierReward(
-                    chance,
-                    priority,
-                    getResourceLocation(jsonObject, "job"),
-                    GsonHelper.getAsDouble(jsonObject, "multiplier"));
+        public JobExpMultiplierReward fromJson(JsonObject jsonObject, double chance, int priority)
+        {
+            return new JobExpMultiplierReward(chance, priority, getResourceLocation(jsonObject, "job"), GsonHelper.getAsDouble(jsonObject, "multiplier"));
         }
 
         @Override
-        public JobExpMultiplierReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
-            return new JobExpMultiplierReward(
-                    chance,
-                    priority,
-                    friendlyByteBuf.readResourceLocation(),
-                    friendlyByteBuf.readDouble());
+        public JobExpMultiplierReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority)
+        {
+            return new JobExpMultiplierReward(chance, priority, friendlyByteBuf.readResourceLocation(), friendlyByteBuf.readDouble());
         }
 
         @Override
-        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobExpMultiplierReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobExpMultiplierReward type)
+        {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeResourceLocation(type.jobLocation);
             friendlyByteBuf.writeDouble(type.multiplier);

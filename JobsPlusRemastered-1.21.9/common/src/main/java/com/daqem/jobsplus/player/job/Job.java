@@ -25,14 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Job {
+public class Job
+{
 
-    public static final Codec<Job> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ResourceLocation.CODEC.fieldOf("job_instance").forGetter(job -> job.getJobInstance().getLocation()),
-            Codec.INT.fieldOf("level").forGetter(Job::getLevel),
-            Codec.INT.fieldOf("experience").forGetter(Job::getExperience),
-            Codec.list(Powerup.CODEC).fieldOf("powerups").forGetter(job -> job.getPowerupManager().getAllPowerups())
-    ).apply(instance, (jobInstanceLocation, level, experience, powerups) -> new Job(null, jobInstanceLocation, level, experience, new ArrayList<>(powerups))));
+    public static final Codec<Job> CODEC = RecordCodecBuilder.create(instance -> instance.group(ResourceLocation.CODEC.fieldOf("job_instance").forGetter(job -> job.getJobInstance().getLocation()), Codec.INT.fieldOf("level").forGetter(Job::getLevel), Codec.INT.fieldOf("experience").forGetter(Job::getExperience), Codec.list(Powerup.CODEC).fieldOf("powerups").forGetter(job -> job.getPowerupManager().getAllPowerups())).apply(instance, (jobInstanceLocation, level, experience, powerups) -> new Job(null, jobInstanceLocation, level, experience, new ArrayList<>(powerups))));
 
     private final JobInstance jobInstance;
     private final JobPowerupManager powerupManager;
@@ -41,19 +37,23 @@ public class Job {
     private int experience;
     private final ExpCollector expCollector = new ExpCollector();
 
-    public Job(JobsPlayer player, JobInstance jobInstance) {
+    public Job(JobsPlayer player, JobInstance jobInstance)
+    {
         this(player, jobInstance, 0, 0, new ArrayList<>());
     }
 
-    public Job(JobsPlayer player, JobInstance jobInstance, int level, int experience) {
+    public Job(JobsPlayer player, JobInstance jobInstance, int level, int experience)
+    {
         this(player, jobInstance, level, experience, new ArrayList<>());
     }
 
-    public Job(JobsPlayer player, ResourceLocation jobInstanceLocation, int level, int experience, @NotNull List<Powerup> powerups) {
+    public Job(JobsPlayer player, ResourceLocation jobInstanceLocation, int level, int experience, @NotNull List<Powerup> powerups)
+    {
         this(player, JobManager.getInstance().getJobs().get(jobInstanceLocation), level, experience, powerups);
     }
 
-    public Job(JobsPlayer player, JobInstance jobInstance, int level, int experience, @NotNull List<Powerup> powerups) {
+    public Job(JobsPlayer player, JobInstance jobInstance, int level, int experience, @NotNull List<Powerup> powerups)
+    {
         this.player = player;
         this.jobInstance = jobInstance;
         this.powerupManager = new JobPowerupManager(powerups);
@@ -61,65 +61,80 @@ public class Job {
         this.experience = experience;
     }
 
-    public JobInstance getJobInstance() {
+    public JobInstance getJobInstance()
+    {
         return jobInstance;
     }
 
-    public JobPowerupManager getPowerupManager() {
+    public JobPowerupManager getPowerupManager()
+    {
         return powerupManager;
     }
 
-    public int getLevel() {
+    public int getLevel()
+    {
         return level;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(int level)
+    {
         this.level = level;
     }
 
-    public int getExperience() {
+    public int getExperience()
+    {
         return experience;
     }
 
-    public void setExperience(int experience, boolean triggerEvent) {
+    public void setExperience(int experience, boolean triggerEvent)
+    {
         int change = experience - this.experience;
         expCollector.addExp(change);
         this.experience = experience;
         checkForLevelUp();
-        if (triggerEvent) {
+        if (triggerEvent)
+        {
             JobEvents.onJobExperience(player, this, change);
         }
     }
 
-    public void addExperience(int experience) {
+    public void addExperience(int experience)
+    {
         JobsPlus.debug("Adding {} experience to {}'s {} job.", experience, player.jobsplus$getName(), jobInstance.getName().getString());
         setExperience(getExperience() + experience, true);
     }
 
-    public void addExperienceWithoutEvent(int experience) {
+    public void addExperienceWithoutEvent(int experience)
+    {
         JobsPlus.debug("Adding {} experience to {}'s {} job without event.", experience, player.jobsplus$getName(), jobInstance.getName().getString());
         setExperience(getExperience() + experience, false);
     }
 
-    private void checkForLevelUp() {
+    private void checkForLevelUp()
+    {
         int experienceToLevelUp = getExperienceToLevelUp(level);
-        if (experience >= experienceToLevelUp) {
+        if (experience >= experienceToLevelUp)
+        {
             setLevel(level + 1);
             setExperience(experience - experienceToLevelUp, false);
             JobEvents.onJobLevelUp(player, this);
         }
     }
 
-    public static int getExperienceToLevelUp(int level) {
-        if (level == 0) return 0;
+    public static int getExperienceToLevelUp(int level)
+    {
+        if (level == 0)
+            return 0;
         return (int) (100 + level * level * 0.5791);
     }
 
-    public void setPlayer(JobsPlayer player) {
+    public void setPlayer(JobsPlayer player)
+    {
         this.player = player;
     }
 
-    public CompoundTag toNBT() {
+    public CompoundTag toNBT()
+    {
         CompoundTag jobTag = new CompoundTag();
 
         jobTag.putString(Constants.JOB_INSTANCE_LOCATION, getJobInstance().getLocation().toString());
@@ -128,7 +143,8 @@ public class Job {
 
         ListTag powerupsTag = new ListTag();
 
-        for (Powerup powerup : powerupManager.getAllPowerups()) {
+        for (Powerup powerup : powerupManager.getAllPowerups())
+        {
             CompoundTag powerupTag = new CompoundTag();
 
             powerupTag.putString(Constants.POWERUP_LOCATION, powerup.getPowerupInstance().getLocation().toString());
@@ -142,18 +158,22 @@ public class Job {
         return jobTag;
     }
 
-    public static Job fromNBT(JobsPlayer player, CompoundTag tag) {
+    public static Job fromNBT(JobsPlayer player, CompoundTag tag)
+    {
         AtomicReference<Job> job = new AtomicReference<>();
-        tag.getString(Constants.JOB_INSTANCE_LOCATION).ifPresent(jobLocation -> {
-            tag.getInt(Constants.LEVEL).ifPresent(level -> {
-                tag.getInt(Constants.EXPERIENCE).ifPresent(exp -> {
+        tag.getString(Constants.JOB_INSTANCE_LOCATION).ifPresent(jobLocation ->
+        {
+            tag.getInt(Constants.LEVEL).ifPresent(level ->
+            {
+                tag.getInt(Constants.EXPERIENCE).ifPresent(exp ->
+                {
                     List<Powerup> powerups = new ArrayList<>();
-                    tag.getList(Constants.POWERUPS).ifPresent(powerupsTag -> {
-                        for (Tag powerupTag : powerupsTag) {
+                    tag.getList(Constants.POWERUPS).ifPresent(powerupsTag ->
+                    {
+                        for (Tag powerupTag : powerupsTag)
+                        {
                             CompoundTag powerupNBT = (CompoundTag) powerupTag;
-                            powerupNBT.getString(Constants.POWERUP_LOCATION).ifPresent(powerupLocation ->
-                                    powerupNBT.getString(Constants.POWERUP_STATE).ifPresent(powerupState ->
-                                            powerups.add(new Powerup(PowerupInstance.of(ResourceLocation.parse(powerupLocation)), PowerupState.valueOf(powerupState)))));
+                            powerupNBT.getString(Constants.POWERUP_LOCATION).ifPresent(powerupLocation -> powerupNBT.getString(Constants.POWERUP_STATE).ifPresent(powerupState -> powerups.add(new Powerup(PowerupInstance.of(ResourceLocation.parse(powerupLocation)), PowerupState.valueOf(powerupState)))));
                         }
                     });
                     job.set(new Job(player, ResourceLocation.parse(jobLocation), level, exp, powerups));
@@ -163,27 +183,33 @@ public class Job {
         return job.get();
     }
 
-    public double getExperiencePercentage() {
+    public double getExperiencePercentage()
+    {
         return (double) experience / (double) getExperienceToLevelUp(level) * 100;
     }
 
-    public ExpCollector getExpCollector() {
+    public ExpCollector getExpCollector()
+    {
         return expCollector;
     }
 
-    public int getExperienceForNextLevel() {
+    public int getExperienceForNextLevel()
+    {
         return getExperienceToLevelUp(level);
     }
 
-    public static class Serializer {
+    public static class Serializer
+    {
 
-        public static Job fromNetwork(FriendlyByteBuf friendlyByteBuf, JobsPlayer player) {
+        public static Job fromNetwork(FriendlyByteBuf friendlyByteBuf, JobsPlayer player)
+        {
             ResourceLocation jobInstanceLocation = friendlyByteBuf.readResourceLocation();
             int level = friendlyByteBuf.readInt();
             int experience = friendlyByteBuf.readInt();
             int powerupCount = friendlyByteBuf.readVarInt();
             List<Powerup> powerups = new ArrayList<>();
-            for (int i = 0; i < powerupCount; i++) {
+            for (int i = 0; i < powerupCount; i++)
+            {
                 ResourceLocation powerupLocation = friendlyByteBuf.readResourceLocation();
                 PowerupState state = friendlyByteBuf.readEnum(PowerupState.class);
                 powerups.add(new Powerup(PowerupInstance.of(powerupLocation), state));
@@ -191,25 +217,31 @@ public class Job {
             return new Job(player, jobInstanceLocation, level, experience, powerups);
         }
 
-        public static void toNetwork(FriendlyByteBuf friendlyByteBuf, Job job) {
+        public static void toNetwork(FriendlyByteBuf friendlyByteBuf, Job job)
+        {
             friendlyByteBuf.writeResourceLocation(job.getJobInstance().getLocation());
             friendlyByteBuf.writeInt(job.getLevel());
             friendlyByteBuf.writeInt(job.getExperience());
             friendlyByteBuf.writeVarInt(job.getPowerupManager().getAllPowerups().size());
-            for (Powerup powerup : job.getPowerupManager().getAllPowerups()) {
+            for (Powerup powerup : job.getPowerupManager().getAllPowerups())
+            {
                 friendlyByteBuf.writeResourceLocation(powerup.getPowerupInstance().getLocation());
                 friendlyByteBuf.writeEnum(powerup.getState());
             }
         }
 
-        public static List<Job> fromNBT(JobsServerPlayer player, CompoundTag compoundTag) {
+        public static List<Job> fromNBT(JobsServerPlayer player, CompoundTag compoundTag)
+        {
             List<Job> jobs = new ArrayList<>();
 
-            compoundTag.getList(Constants.JOBS).ifPresent(list -> {
-                for (Tag jobTag : list) {
+            compoundTag.getList(Constants.JOBS).ifPresent(list ->
+            {
+                for (Tag jobTag : list)
+                {
                     CompoundTag jobNBT = (CompoundTag) jobTag;
                     Job job = Job.fromNBT(player, jobNBT);
-                    if (job != null) {
+                    if (job != null)
+                    {
                         jobs.add(job);
                     }
                 }
@@ -218,10 +250,12 @@ public class Job {
             return jobs;
         }
 
-        public static ListTag toNBT(List<Job> jobs) {
+        public static ListTag toNBT(List<Job> jobs)
+        {
 
             ListTag jobsListTag = new ListTag();
-            for (Job job : jobs) {
+            for (Job job : jobs)
+            {
                 CompoundTag jobNBT = job.toNBT();
                 jobsListTag.add(jobNBT);
             }

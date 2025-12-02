@@ -46,7 +46,8 @@ public class PowerupManager extends SimplePreparableReloadListener<List<IActionH
             {
                 JsonObject jsonElement = GsonHelper.parse(entry.getValue().openAsReader());
                 map.put(location, jsonElement);
-            } catch (Exception runtimeException)
+            } 
+            catch (Exception runtimeException)
             {
                 JobsPlus.LOGGER.error("Parsing error loading powerup {}", location, runtimeException);
             }
@@ -67,7 +68,8 @@ public class PowerupManager extends SimplePreparableReloadListener<List<IActionH
             {
                 PowerupInstance powerup = GSON.fromJson(entry.getValue(), PowerupInstance.class);
                 powerups.add(powerup);
-            } catch (JsonParseException | IllegalArgumentException runtimeException)
+            } 
+            catch (JsonParseException | IllegalArgumentException runtimeException)
             {
                 JobsPlus.LOGGER.error("Parsing error loading powerup {}", location, runtimeException);
             }

@@ -24,18 +24,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class RecipeItemComponent extends SpriteComponent {
+public class RecipeItemComponent extends SpriteComponent
+{
 
-    private static final int[] SPRITE_IDS = new int[] {4, 1, 2, 3, 3, 1, 4, 3, 2, 4, 2, 4, 3, 1, 2, 1};
+    private static final int[] SPRITE_IDS = new int[] { 4, 1, 2, 3, 3, 1, 4, 3, 2, 4, 2, 4, 3, 1, 2, 1 };
 
     private final List<Component> tooltip;
 
-    public RecipeItemComponent(int x, int y, int index, List<RestrictionType> restrictionTypes, int requiredLevel, ItemStack itemStack) {
+    public RecipeItemComponent(int x, int y, int index, List<RestrictionType> restrictionTypes, int requiredLevel, ItemStack itemStack)
+    {
         super(x, y, 24, 24, JobsPlus.getId("jobs/item_slot_" + SPRITE_IDS[index % SPRITE_IDS.length]));
-        this.tooltip = restrictionTypes.stream()
-                .map(restrictionType -> (Component) ItemRestrictions.translatable(restrictionType.getTranslationKey()))
-                .sorted((c1, c2) -> String.CASE_INSENSITIVE_ORDER.compare(c1.getString(), c2.getString()))
-                .collect(Collectors.toList());
+        this.tooltip = restrictionTypes.stream().map(restrictionType -> (Component) ItemRestrictions.translatable(restrictionType.getTranslationKey())).sorted((c1, c2) -> String.CASE_INSENSITIVE_ORDER.compare(c1.getString(), c2.getString())).collect(Collectors.toList());
         MutableComponent title = JobsPlus.translatable("gui.jobs.restriction_types", requiredLevel);
         List<Component> titleLines = getTitleLines(title).reversed();
         titleLines.forEach(this.tooltip::addFirst);
@@ -43,7 +42,7 @@ public class RecipeItemComponent extends SpriteComponent {
         this.tooltip.add(Component.empty());
         this.tooltip.add(JobsPlus.translatable("gui.jobs.item_info").withStyle(ChatFormatting.GOLD));
 
-        //add item tooltip info to the end of the tooltip
+        // add item tooltip info to the end of the tooltip
         Minecraft minecraft = Minecraft.getInstance();
         List<Component> itemTooltips = itemStack.getTooltipLines(Item.TooltipContext.of(minecraft.level), minecraft.player, TooltipFlag.NORMAL);
         this.tooltip.addAll(itemTooltips);
@@ -53,26 +52,33 @@ public class RecipeItemComponent extends SpriteComponent {
         this.addComponent(iconComponent);
     }
 
-    private List<Component> getTitleLines(MutableComponent title) {
+    private List<Component> getTitleLines(MutableComponent title)
+    {
         List<Component> lines = new ArrayList<>();
         String titleString = title.getString();
         int width = Minecraft.getInstance().font.width(titleString);
         int maxWidth = 140;
-        if (width <= maxWidth) {
+        if (width <= maxWidth)
+        {
             lines.add(title.withStyle(ChatFormatting.GOLD));
-        } else {
+        } else
+        {
             String[] words = titleString.split(" ");
             StringBuilder currentLine = new StringBuilder();
-            for (String word : words) {
+            for (String word : words)
+            {
                 int wordWidth = Minecraft.getInstance().font.width(word + " ");
-                if (Minecraft.getInstance().font.width(currentLine.toString()) + wordWidth <= maxWidth) {
+                if (Minecraft.getInstance().font.width(currentLine.toString()) + wordWidth <= maxWidth)
+                {
                     currentLine.append(word).append(" ");
-                } else {
+                } else
+                {
                     lines.add(Component.literal(currentLine.toString().trim()).withStyle(ChatFormatting.GOLD));
                     currentLine = new StringBuilder(word).append(" ");
                 }
             }
-            if (!currentLine.isEmpty()) {
+            if (!currentLine.isEmpty())
+            {
                 lines.add(Component.literal(currentLine.toString().trim()).withStyle(ChatFormatting.GOLD));
             }
         }
@@ -80,21 +86,18 @@ public class RecipeItemComponent extends SpriteComponent {
     }
 
     @Override
-    public @NotNull ScreenRectangle getRectangle() {
+    public @NotNull ScreenRectangle getRectangle()
+    {
         return new ScreenRectangle(this.getTotalX(), this.getTotalY(), this.getWidth(), this.getHeight());
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth, int parentHeight) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth, int parentHeight)
+    {
         super.render(guiGraphics, mouseX, mouseY, partialTick, parentWidth, parentHeight);
-        if (this.getRectangle().containsPoint(mouseX, mouseY)) {
-            guiGraphics.setTooltipForNextFrame(
-                    Minecraft.getInstance().font,
-                    this.tooltip,
-                    Optional.empty(),
-                    mouseX,
-                    mouseY
-            );
+        if (this.getRectangle().containsPoint(mouseX, mouseY))
+        {
+            guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font, this.tooltip, Optional.empty(), mouseX, mouseY);
 
         }
     }
