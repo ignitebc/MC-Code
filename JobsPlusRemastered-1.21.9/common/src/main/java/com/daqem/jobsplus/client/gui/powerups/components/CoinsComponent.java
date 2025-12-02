@@ -8,12 +8,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.MutableComponent;
 
-public class CoinsComponent extends SpriteComponent {
+public class CoinsComponent extends SpriteComponent
+{
 
     private final PowerupsScreenState state;
     private int cachedCoins;
 
-    public CoinsComponent(PowerupsScreenState state) {
+    public CoinsComponent(PowerupsScreenState state)
+    {
         super(0, 24, 0, 15, JobsPlus.getId("powerups/coins_background"));
         this.state = state;
         this.cachedCoins = state.getCoins();
@@ -29,8 +31,10 @@ public class CoinsComponent extends SpriteComponent {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth, int parentHeight) {
-        if (this.state.getCoins() != this.cachedCoins) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth, int parentHeight)
+    {
+        if (this.state.getCoins() != this.cachedCoins)
+        {
 
         }
         super.render(guiGraphics, mouseX, mouseY, partialTick, parentWidth, parentHeight);

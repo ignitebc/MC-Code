@@ -6,7 +6,8 @@ import com.daqem.jobsplus.player.job.powerup.Powerup;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
-public interface JobsServerPlayer extends JobsPlayer {
+public interface JobsServerPlayer extends JobsPlayer
+{
 
     ServerPlayer jobsplus$getServerPlayer();
 
@@ -14,5 +15,6 @@ public interface JobsServerPlayer extends JobsPlayer {
 
     void jobsplus$updateActionHolders(Job job);
 
-    @Nullable Powerup jobsplus$getPowerup(PowerupInstance powerupInstance);
+    @Nullable
+    Powerup jobsplus$getPowerup(PowerupInstance powerupInstance);
 }

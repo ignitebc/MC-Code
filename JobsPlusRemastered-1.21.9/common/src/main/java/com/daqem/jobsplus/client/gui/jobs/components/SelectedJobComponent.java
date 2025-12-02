@@ -17,14 +17,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 
-public class SelectedJobComponent extends EmptyComponent {
+public class SelectedJobComponent extends EmptyComponent
+{
 
     private final JobsScreenState state;
     private final TruncatedTextComponent jobTitleComponent;
     private final ItemComponent jobIconComponent;
     private final StartJobButtonWidget startJobButtonWidget;
 
-    public SelectedJobComponent(JobsScreenState state) {
+    public SelectedJobComponent(JobsScreenState state)
+    {
         super(21, 20, 117, 34);
         this.state = state;
         this.jobTitleComponent = new TruncatedTextComponent(26, 0, 90, Component.empty(), 0);
@@ -38,13 +40,15 @@ public class SelectedJobComponent extends EmptyComponent {
         this.addComponent(jobIconSlotComponent);
         this.addComponent(separatorComponent);
         this.addComponent(this.jobIconComponent);
-        if (this.state.getSelectedJob().getLevel() == 0 && canStartNewJob()) {
+        if (this.state.getSelectedJob().getLevel() == 0 && canStartNewJob())
+        {
             this.addWidget(this.startJobButtonWidget);
         }
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth, int parentHeight) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth, int parentHeight)
+    {
         Job selectedJob = this.state.getSelectedJob();
         JobInstance jobInstance = selectedJob.getJobInstance();
 
@@ -52,7 +56,8 @@ public class SelectedJobComponent extends EmptyComponent {
         this.jobTitleComponent.setColor(jobInstance.getColorDecimal() | 0xFF000000);
         this.jobIconComponent.setItemStack(jobInstance.getIconItem());
 
-        if (selectedJob.getLevel() > 0) {
+        if (selectedJob.getLevel() > 0)
+        {
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(getTotalX() + 26, getTotalY() + Minecraft.getInstance().font.lineHeight);
             guiGraphics.pose().scale(0.75f, 0.75f);
@@ -61,20 +66,26 @@ public class SelectedJobComponent extends EmptyComponent {
             guiGraphics.pose().popMatrix();
 
             this.removeWidget(this.startJobButtonWidget);
-        } else {
+        } else
+        {
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(getTotalX() + 26, getTotalY() + Minecraft.getInstance().font.lineHeight);
             guiGraphics.pose().scale(0.75f, 0.75f);
-            if (canStartNewJob()) {
+            if (canStartNewJob())
+            {
                 guiGraphics.drawString(Minecraft.getInstance().font, JobsPlus.translatable("gui.jobs.price", jobInstance.getPrice()), 0, 0, 0xFF1E1410, false);
-            } else {
+            } else
+            {
                 guiGraphics.drawString(Minecraft.getInstance().font, JobsPlus.translatable("gui.jobs.max_jobs", JobsPlusConfig.maxJobs.get()), 0, 0, 0xFFFF5555, false);
             }
             guiGraphics.pose().popMatrix();
-            if (jobInstance.getPrice() > this.state.getCoins() && !canStartFreeJob()) {
+            if (jobInstance.getPrice() > this.state.getCoins() && !canStartFreeJob())
+            {
                 this.removeWidget(this.startJobButtonWidget);
-            } else {
-                if (!this.getWidgets().contains(this.startJobButtonWidget) && canStartNewJob()) {
+            } else
+            {
+                if (!this.getWidgets().contains(this.startJobButtonWidget) && canStartNewJob())
+                {
                     this.addWidget(this.startJobButtonWidget);
                     this.updateParentPosition(getParentX(), getParentY(), parentWidth, parentHeight);
                 }
@@ -84,11 +95,13 @@ public class SelectedJobComponent extends EmptyComponent {
         super.render(guiGraphics, mouseX, mouseY, partialTick, parentWidth, parentHeight);
     }
 
-    private boolean canStartNewJob() {
+    private boolean canStartNewJob()
+    {
         return this.state.getActiveJobCount() < JobsPlusConfig.maxJobs.get();
     }
 
-    private boolean canStartFreeJob() {
+    private boolean canStartFreeJob()
+    {
         return this.state.getActiveJobCount() < JobsPlusConfig.amountOfFreeJobs.get();
     }
 }

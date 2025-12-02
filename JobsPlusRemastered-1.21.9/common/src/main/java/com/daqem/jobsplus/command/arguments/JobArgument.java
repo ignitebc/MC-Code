@@ -14,23 +14,28 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
-public class JobArgument implements ArgumentType<JobInstance> {
-    public static JobArgument job() {
+public class JobArgument implements ArgumentType<JobInstance>
+{
+    public static JobArgument job()
+    {
         return new JobArgument();
     }
 
     @Override
-    public JobInstance parse(StringReader reader) throws CommandSyntaxException {
+    public JobInstance parse(StringReader reader) throws CommandSyntaxException
+    {
         return JobManager.getInstance().getJobs().get(ResourceLocation.read(reader));
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder)
+    {
         Collection<ResourceLocation> jobs = JobManager.getInstance().getJobs().keySet();
         return SharedSuggestionProvider.suggest(jobs.stream().map(ResourceLocation::toString), builder);
     }
 
-    public static JobInstance getJob(CommandContext<?> context, String name) {
+    public static JobInstance getJob(CommandContext<?> context, String name)
+    {
         return context.getArgument(name, JobInstance.class);
     }
 }

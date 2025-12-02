@@ -5,19 +5,22 @@ import com.daqem.jobsplus.client.gui.jobs.components.JobsComponent;
 import com.daqem.uilib.gui.AbstractScreen;
 import net.minecraft.client.gui.screens.Screen;
 
-public class JobsScreen extends AbstractScreen {
+public class JobsScreen extends AbstractScreen
+{
 
     private final JobsScreenState state;
     private final Screen previousScreen;
 
-    public JobsScreen(JobsScreenState state, Screen previousScreen) {
+    public JobsScreen(JobsScreenState state, Screen previousScreen)
+    {
         super(JobsPlus.translatable("gui.title.jobs"));
         this.state = state;
         this.previousScreen = previousScreen;
     }
 
     @Override
-    protected void init() {
+    protected void init()
+    {
         JobsComponent jobsComponent = new JobsComponent(this.state);
         jobsComponent.center();
 
@@ -27,17 +30,20 @@ public class JobsScreen extends AbstractScreen {
     }
 
     @Override
-    public void onClose() {
+    public void onClose()
+    {
         assert this.minecraft != null;
         this.minecraft.setScreen(previousScreen);
     }
 
-    public Screen getPreviousScreen() {
+    public Screen getPreviousScreen()
+    {
         return this.previousScreen;
     }
 
     @Override
-    public boolean isPauseScreen() {
+    public boolean isPauseScreen()
+    {
         return false;
     }
 }

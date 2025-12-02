@@ -17,44 +17,52 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ClientboundOpenJobsScreenPacket implements CustomPacketPayload {
+public class ClientboundOpenJobsScreenPacket implements CustomPacketPayload
+{
 
     private final List<Job> jobs;
     private final int coins;
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundOpenJobsScreenPacket> STREAM_CODEC = new StreamCodec<>() {
         @Override
-        public @NotNull ClientboundOpenJobsScreenPacket decode(RegistryFriendlyByteBuf buf) {
+        public @NotNull ClientboundOpenJobsScreenPacket decode(RegistryFriendlyByteBuf buf)
+        {
             return new ClientboundOpenJobsScreenPacket(buf);
         }
 
         @Override
-        public void encode(RegistryFriendlyByteBuf buf, ClientboundOpenJobsScreenPacket packet) {
+        public void encode(RegistryFriendlyByteBuf buf, ClientboundOpenJobsScreenPacket packet)
+        {
             buf.writeCollection(packet.jobs, Job.Serializer::toNetwork);
             buf.writeInt(packet.coins);
         }
     };
 
-    public ClientboundOpenJobsScreenPacket(List<Job> jobs, int coins) {
+    public ClientboundOpenJobsScreenPacket(List<Job> jobs, int coins)
+    {
         this.jobs = jobs;
         this.coins = coins;
     }
 
-    public ClientboundOpenJobsScreenPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
+    public ClientboundOpenJobsScreenPacket(RegistryFriendlyByteBuf friendlyByteBuf)
+    {
         this.jobs = friendlyByteBuf.readList(friendlyByteBuf1 -> Job.Serializer.fromNetwork(friendlyByteBuf1, null));
         this.coins = friendlyByteBuf.readInt();
     }
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
+    public @NotNull Type<? extends CustomPacketPayload> type()
+    {
         return JobsPlusNetworking.CLIENTBOUND_OPEN_JOBS_SCREEN;
     }
 
-    public List<Job> getJobs() {
+    public List<Job> getJobs()
+    {
         return jobs;
     }
 
-    public int getCoins() {
+    public int getCoins()
+    {
         return coins;
     }
 }

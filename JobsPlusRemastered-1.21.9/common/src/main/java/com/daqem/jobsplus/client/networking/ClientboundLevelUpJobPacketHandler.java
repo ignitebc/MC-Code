@@ -6,9 +6,10 @@ import com.daqem.jobsplus.networking.s2c.ClientboundLevelUpJobPacket;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
 
-public class ClientboundLevelUpJobPacketHandler {
+public class ClientboundLevelUpJobPacketHandler
+{
 
-    public static void handleClientSide(ClientboundLevelUpJobPacket packet, NetworkManager.PacketContext context) 
+    public static void handleClientSide(ClientboundLevelUpJobPacket packet, NetworkManager.PacketContext context)
     {
         LevelUpJobToast.addOrUpdate(Minecraft.getInstance().getToastManager(), JobInstance.of(packet.getJobLocation()), packet.getLevel());
     }

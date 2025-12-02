@@ -10,24 +10,24 @@ import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.Mth;
 
-public class JobSelectionItemWidget extends CustomButtonWidget {
+public class JobSelectionItemWidget extends CustomButtonWidget
+{
 
-    private static final WidgetSprites SPRITES = new WidgetSprites(
-            JobsPlus.getId("jobs/job_button"),
-            JobsPlus.getId("jobs/job_button_hovered")
-    );
+    private static final WidgetSprites SPRITES = new WidgetSprites(JobsPlus.getId("jobs/job_button"), JobsPlus.getId("jobs/job_button_hovered"));
 
     private final Job job;
     private final JobsScreenState state;
 
-    public JobSelectionItemWidget(Job job, JobsScreenState state) {
+    public JobSelectionItemWidget(Job job, JobsScreenState state)
+    {
         super(0, 0, 99, 19, job.getJobInstance().getName(), SPRITES, button -> state.setSelectedJob(job));
         this.job = job;
         this.state = state;
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
+    {
         Minecraft minecraft = Minecraft.getInstance();
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITES.get(this.active, this.isHovered() || this.job == this.state.getSelectedJob()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
         guiGraphics.pose().pushMatrix();
@@ -36,7 +36,8 @@ public class JobSelectionItemWidget extends CustomButtonWidget {
         guiGraphics.renderFakeItem(this.job.getJobInstance().getIconItem(), 0, 0);
         guiGraphics.pose().popMatrix();
         guiGraphics.drawString(minecraft.font, this.getMessage().copy().withColor(this.job.getJobInstance().getColorDecimal()), this.getX() + 20, this.getY() + (this.job.getLevel() > 0 ? 4 : 5), 0xFF1E1410, false);
-        if (this.job.getLevel() > 0) {
+        if (this.job.getLevel() > 0)
+        {
             guiGraphics.drawString(minecraft.font, JobsPlus.literal(this.job.getLevel() + ""), this.getX() + this.getWidth() - 2 - minecraft.font.width(this.job.getLevel() + ""), this.getY() + 4, 0xFFD8BF96, false);
             guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/exp_bar"), getX() + 20, getY() + 13, 76, 3);
             double expPercentage = this.job.getExperiencePercentage();

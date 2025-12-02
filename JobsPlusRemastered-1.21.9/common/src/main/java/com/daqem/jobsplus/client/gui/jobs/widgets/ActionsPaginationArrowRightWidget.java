@@ -10,22 +10,21 @@ import net.minecraft.client.gui.components.WidgetSprites;
 
 import java.util.List;
 
-public class ActionsPaginationArrowRightWidget extends CustomButtonWidget {
+public class ActionsPaginationArrowRightWidget extends CustomButtonWidget
+{
 
-    public ActionsPaginationArrowRightWidget(int x, int y, List<IAction> actions, JobsScreenState state) {
-        super(x, y, 10, 10,
-                JobsPlus.translatable("gui.jobs.experience.next"),
-                new WidgetSprites(
-                        JobsPlus.getId("jobs/pagination_arrow_right"),
-                        JobsPlus.getId("jobs/pagination_arrow_right_hovered")
-                ), button -> {
-                    int currentIndex = actions.indexOf(state.getActiveAction());
-                    int newIndex = (currentIndex + 1 + actions.size()) % actions.size();
-                    state.setActiveAction(actions.get(newIndex));
-                });
+    public ActionsPaginationArrowRightWidget(int x, int y, List<IAction> actions, JobsScreenState state)
+    {
+        super(x, y, 10, 10, JobsPlus.translatable("gui.jobs.experience.next"), new WidgetSprites(JobsPlus.getId("jobs/pagination_arrow_right"), JobsPlus.getId("jobs/pagination_arrow_right_hovered")), button ->
+        {
+            int currentIndex = actions.indexOf(state.getActiveAction());
+            int newIndex = (currentIndex + 1 + actions.size()) % actions.size();
+            state.setActiveAction(actions.get(newIndex));
+        });
     }
 
     @Override
-    public void renderString(GuiGraphics guiGraphics, Font font, int i) {
+    public void renderString(GuiGraphics guiGraphics, Font font, int i)
+    {
     }
 }

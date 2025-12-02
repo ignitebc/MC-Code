@@ -16,9 +16,11 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class PowerupsComponent extends SpriteComponent {
+public class PowerupsComponent extends SpriteComponent
+{
 
-    public PowerupsComponent(PowerupsScreenState state) {
+    public PowerupsComponent(PowerupsScreenState state)
+    {
         super(0, 0, 286, 212, JobsPlus.getId("powerups/background"));
 
         TextComponent title = new TextComponent(11, 5, state.getJob().getJobInstance().getName().withStyle(Style.EMPTY.withBold(true)).append(JobsPlus.literal(" • " + state.getJob().getLevel()).withStyle(Style.EMPTY.withBold(false))), 0xFFEAF0FF);
@@ -31,26 +33,35 @@ public class PowerupsComponent extends SpriteComponent {
         List<PowerupInstance> powerupInstances = state.getJob().getJobInstance().getPowerups();
         PowerupsSkillTreeItem rootItem = new PowerupsSkillTreeItem(state, null, true, new ArrayList<>());
         Map<ResourceLocation, PowerupsSkillTreeItem> powerupItems = new HashMap<>();
-        for (PowerupInstance powerupInstance : powerupInstances) {
+        for (PowerupInstance powerupInstance : powerupInstances)
+        {
             Powerup powerup = allPowerups.get(powerupInstance.getLocation());
-            if (powerup == null) {
+            if (powerup == null)
+            {
                 powerupItems.put(powerupInstance.getLocation(), new PowerupsSkillTreeItem(state, new Powerup(powerupInstance, PowerupState.LOCKED)));
-            } else {
+            } else
+            {
                 powerupItems.put(powerupInstance.getLocation(), new PowerupsSkillTreeItem(state, powerup));
             }
         }
-        for (PowerupsSkillTreeItem powerupItem : powerupItems.values()) {
+        for (PowerupsSkillTreeItem powerupItem : powerupItems.values())
+        {
             ResourceLocation parentLocation = powerupItem.getPowerup().getPowerupInstance().getParentLocation();
-            if (parentLocation == null) {
+            if (parentLocation == null)
+            {
                 rootItem.addChild(powerupItem);
-                if (powerupItem.getPowerup().getState() == PowerupState.LOCKED) {
+                if (powerupItem.getPowerup().getState() == PowerupState.LOCKED)
+                {
                     powerupItem.getPowerup().setState(PowerupState.NOT_OWNED);
                 }
-            } else {
+            } else
+            {
                 PowerupsSkillTreeItem parentItem = powerupItems.get(parentLocation);
-                if (parentItem != null) {
+                if (parentItem != null)
+                {
                     parentItem.addChild(powerupItem);
-                    if (parentItem.getPowerup().getState() != PowerupState.LOCKED && parentItem.getPowerup().getState() != PowerupState.NOT_OWNED && powerupItem.getPowerup().getState() == PowerupState.LOCKED) {
+                    if (parentItem.getPowerup().getState() != PowerupState.LOCKED && parentItem.getPowerup().getState() != PowerupState.NOT_OWNED && powerupItem.getPowerup().getState() == PowerupState.LOCKED)
+                    {
                         powerupItem.getPowerup().setState(PowerupState.NOT_OWNED);
                     }
                 }

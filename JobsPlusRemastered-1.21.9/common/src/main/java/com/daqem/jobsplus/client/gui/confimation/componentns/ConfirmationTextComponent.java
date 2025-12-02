@@ -6,9 +6,11 @@ import com.daqem.uilib.gui.component.sprite.SpriteComponent;
 import com.daqem.uilib.gui.component.text.multiline.MultiLineTextComponent;
 import net.minecraft.client.Minecraft;
 
-public class ConfirmationTextComponent extends SpriteComponent {
+public class ConfirmationTextComponent extends SpriteComponent
+{
 
-    public ConfirmationTextComponent(ConfirmationScreenState state) {
+    public ConfirmationTextComponent(ConfirmationScreenState state)
+    {
         super(0, 0, 0, 0, JobsPlus.getId("confirmation/background"));
 
         int borderHorizontal = 14;

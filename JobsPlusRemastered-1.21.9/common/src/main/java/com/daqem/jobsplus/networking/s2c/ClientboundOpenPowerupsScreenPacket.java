@@ -21,7 +21,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ClientboundOpenPowerupsScreenPacket implements CustomPacketPayload {
+public class ClientboundOpenPowerupsScreenPacket implements CustomPacketPayload
+{
 
     private final List<Job> jobs;
     private final int coins;
@@ -29,44 +30,52 @@ public class ClientboundOpenPowerupsScreenPacket implements CustomPacketPayload 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundOpenPowerupsScreenPacket> STREAM_CODEC = new StreamCodec<>() {
         @Override
-        public @NotNull ClientboundOpenPowerupsScreenPacket decode(RegistryFriendlyByteBuf buf) {
+        public @NotNull ClientboundOpenPowerupsScreenPacket decode(RegistryFriendlyByteBuf buf)
+        {
             return new ClientboundOpenPowerupsScreenPacket(buf);
         }
 
         @Override
-        public void encode(RegistryFriendlyByteBuf buf, ClientboundOpenPowerupsScreenPacket packet) {
+        public void encode(RegistryFriendlyByteBuf buf, ClientboundOpenPowerupsScreenPacket packet)
+        {
             buf.writeCollection(packet.jobs, Job.Serializer::toNetwork);
             buf.writeInt(packet.coins);
             buf.writeResourceLocation(packet.jobLocation);
         }
     };
 
-    public ClientboundOpenPowerupsScreenPacket(List<Job> jobs, int coins, ResourceLocation jobLocation) {
+    public ClientboundOpenPowerupsScreenPacket(List<Job> jobs, int coins, ResourceLocation jobLocation)
+    {
         this.jobs = jobs;
         this.coins = coins;
         this.jobLocation = jobLocation;
     }
 
-    public ClientboundOpenPowerupsScreenPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
+    public ClientboundOpenPowerupsScreenPacket(RegistryFriendlyByteBuf friendlyByteBuf)
+    {
         this.jobs = friendlyByteBuf.readList(friendlyByteBuf1 -> Job.Serializer.fromNetwork(friendlyByteBuf1, null));
         this.coins = friendlyByteBuf.readInt();
         this.jobLocation = friendlyByteBuf.readResourceLocation();
     }
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
+    public @NotNull Type<? extends CustomPacketPayload> type()
+    {
         return JobsPlusNetworking.CLIENTBOUND_OPEN_POWERUPS_SCREEN;
     }
 
-    public List<Job> getJobs() {
+    public List<Job> getJobs()
+    {
         return jobs;
     }
 
-    public int getCoins() {
+    public int getCoins()
+    {
         return coins;
     }
 
-    public ResourceLocation getJobLocation() {
+    public ResourceLocation getJobLocation()
+    {
         return jobLocation;
     }
 }

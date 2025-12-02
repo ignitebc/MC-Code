@@ -11,36 +11,41 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
-public class ServerboundOpenJobsScreenPacket implements CustomPacketPayload {
+public class ServerboundOpenJobsScreenPacket implements CustomPacketPayload
+{
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundOpenJobsScreenPacket> STREAM_CODEC = new StreamCodec<>() {
         @Override
-        public @NotNull ServerboundOpenJobsScreenPacket decode(RegistryFriendlyByteBuf buf) {
+        public @NotNull ServerboundOpenJobsScreenPacket decode(RegistryFriendlyByteBuf buf)
+        {
             return new ServerboundOpenJobsScreenPacket(buf);
         }
 
         @Override
-        public void encode(RegistryFriendlyByteBuf buf, ServerboundOpenJobsScreenPacket packet) {
+        public void encode(RegistryFriendlyByteBuf buf, ServerboundOpenJobsScreenPacket packet)
+        {
         }
     };
 
-    public ServerboundOpenJobsScreenPacket() {
+    public ServerboundOpenJobsScreenPacket()
+    {
     }
 
-    public ServerboundOpenJobsScreenPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
+    public ServerboundOpenJobsScreenPacket(RegistryFriendlyByteBuf friendlyByteBuf)
+    {
     }
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
+    public @NotNull Type<? extends CustomPacketPayload> type()
+    {
         return JobsPlusNetworking.SERVERBOUND_OPEN_JOBS_SCREEN;
     }
 
-    public static void handleServerSide(ServerboundOpenJobsScreenPacket packet, NetworkManager.PacketContext context) {
-        if (context.getPlayer() instanceof JobsServerPlayer jobsServerPlayer) {
-            NetworkManager.sendToPlayer(jobsServerPlayer.jobsplus$getServerPlayer(), new ClientboundOpenJobsScreenPacket(
-                    Stream.concat(jobsServerPlayer.jobsplus$getJobs().stream(), jobsServerPlayer.jobsplus$getInactiveJobs().stream()).toList(),
-                    jobsServerPlayer.jobsplus$getCoins()
-            ));
+    public static void handleServerSide(ServerboundOpenJobsScreenPacket packet, NetworkManager.PacketContext context)
+    {
+        if (context.getPlayer() instanceof JobsServerPlayer jobsServerPlayer)
+        {
+            NetworkManager.sendToPlayer(jobsServerPlayer.jobsplus$getServerPlayer(), new ClientboundOpenJobsScreenPacket(Stream.concat(jobsServerPlayer.jobsplus$getJobs().stream(), jobsServerPlayer.jobsplus$getInactiveJobs().stream()).toList(), jobsServerPlayer.jobsplus$getCoins()));
         }
     }
 }

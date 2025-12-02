@@ -7,9 +7,11 @@ import com.daqem.uilib.gui.component.AbstractComponent;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 
-public class JobsComponent extends AbstractComponent {
+public class JobsComponent extends AbstractComponent
+{
 
-    public JobsComponent(JobsScreenState state) {
+    public JobsComponent(JobsScreenState state)
+    {
         super(0, 0, 302, 204 + 2);
 
         JobSelectionComponent jobSelectionComponent = new JobSelectionComponent(state);
@@ -25,16 +27,9 @@ public class JobsComponent extends AbstractComponent {
         this.addWidget(powerupsButtonWidget);
     }
 
-
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth, int parentHeight) {
-        guiGraphics.blitSprite(
-                RenderPipelines.GUI_TEXTURED,
-                JobsPlus.getId("jobs/background"),
-                this.getTotalX(),
-                this.getTotalY(),
-                this.getWidth(),
-                this.getHeight() - 2
-        );
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth, int parentHeight)
+    {
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/background"), this.getTotalX(), this.getTotalY(), this.getWidth(), this.getHeight() - 2);
     }
 }

@@ -48,7 +48,8 @@ public class JobManager extends SimplePreparableReloadListener<List<IActionHolde
             {
                 JsonObject jsonElement = GsonHelper.parse(entry.getValue().openAsReader());
                 map.put(location, jsonElement);
-            } catch (Exception runtimeException)
+            } 
+            catch (Exception runtimeException)
             {
                 JobsPlus.LOGGER.error("Parsing error loading job {}", location, runtimeException);
             }
@@ -69,7 +70,8 @@ public class JobManager extends SimplePreparableReloadListener<List<IActionHolde
             {
                 JobInstance job = GSON.fromJson(entry.getValue(), JobInstance.class);
                 jobs.add(job);
-            } catch (JsonParseException | IllegalArgumentException runtimeException)
+            } 
+            catch (JsonParseException | IllegalArgumentException runtimeException)
             {
                 JobsPlus.LOGGER.error("Parsing error loading job {}", location, runtimeException);
             }

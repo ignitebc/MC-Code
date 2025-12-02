@@ -1,6 +1,7 @@
 package com.daqem.jobsplus;
 
-public class Constants {
+public class Constants
+{
 
     public static final String JOBS = "Jobs";
     public static final String JOBS_DATA = "JobsData";
