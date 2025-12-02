@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 public class JobArgument implements ArgumentType<JobInstance> {
-
     public static JobArgument job() {
         return new JobArgument();
     }

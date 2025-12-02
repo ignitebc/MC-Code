@@ -45,12 +45,13 @@ public class ItemRestrictionUnlockedToast implements Toast {
         if (this.itemRestrictions.isEmpty()) {
             this.wantedVisibility = Visibility.HIDE;
         } else {
-            this.wantedVisibility = (double)(l - this.lastChanged) >= DISPLAY_TIME * toastManager.getNotificationDisplayTimeMultiplier() ? Visibility.HIDE : Visibility.SHOW;
+            this.wantedVisibility = (double) (l - this.lastChanged) >= DISPLAY_TIME
+                    * toastManager.getNotificationDisplayTimeMultiplier() ? Visibility.HIDE : Visibility.SHOW;
         }
 
-        this.displayedItemRestrictionIndex = (int)(
-                l / Math.max(1.0, DISPLAY_TIME * toastManager.getNotificationDisplayTimeMultiplier() / this.itemRestrictions.size()) % this.itemRestrictions.size()
-        );
+        this.displayedItemRestrictionIndex = (int) (l / Math.max(1.0,
+                DISPLAY_TIME * toastManager.getNotificationDisplayTimeMultiplier() / this.itemRestrictions.size())
+                % this.itemRestrictions.size());
     }
 
     @Override
@@ -68,7 +69,8 @@ public class ItemRestrictionUnlockedToast implements Toast {
     }
 
     public static void addOrUpdate(ToastManager toastManager, ItemRestriction itemRestriction) {
-        ItemRestrictionUnlockedToast itemRestrictionUnlockedToast = toastManager.getToast(ItemRestrictionUnlockedToast.class, NO_TOKEN);
+        ItemRestrictionUnlockedToast itemRestrictionUnlockedToast = toastManager
+                .getToast(ItemRestrictionUnlockedToast.class, NO_TOKEN);
         if (itemRestrictionUnlockedToast == null) {
             itemRestrictionUnlockedToast = new ItemRestrictionUnlockedToast();
             toastManager.addToast(itemRestrictionUnlockedToast);

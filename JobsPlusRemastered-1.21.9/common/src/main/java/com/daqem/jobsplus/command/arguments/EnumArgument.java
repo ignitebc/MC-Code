@@ -40,12 +40,14 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
         try {
             return Enum.valueOf(enumClass, name);
         } catch (IllegalArgumentException e) {
-            throw INVALID_ENUM.createWithContext(reader, name, Arrays.toString(Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).toArray()));
+            throw INVALID_ENUM.createWithContext(reader, name,
+                    Arrays.toString(Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).toArray()));
         }
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
+    public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context,
+            final SuggestionsBuilder builder) {
         return SharedSuggestionProvider.suggest(Stream.of(enumClass.getEnumConstants()).map(Enum::name), builder);
     }
 
@@ -67,7 +69,7 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
                 String name = buffer.readUtf();
                 return new Template((Class<T>) Class.forName(name));
             } catch (ClassNotFoundException e) {
-                //noinspection DataFlowIssue
+                // noinspection DataFlowIssue
                 return null;
             }
         }

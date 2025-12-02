@@ -14,31 +14,38 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
-public class JobLevelUpAction extends AbstractAction {
+public class JobLevelUpAction extends AbstractAction
+{
 
-    public JobLevelUpAction(ResourceLocation location, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions) {
+    public JobLevelUpAction(ResourceLocation location, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions)
+    {
         super(location, actionHolderLocation, actionHolderType, performOnClient, rewards, conditions);
     }
 
     @Override
-    public IActionType<?> getType() {
+    public IActionType<?> getType()
+    {
         return JobsPlusActionType.JOB_LEVEL_UP;
     }
 
-    public static class Serializer implements IActionSerializer<JobLevelUpAction> {
+    public static class Serializer implements IActionSerializer<JobLevelUpAction>
+    {
 
         @Override
-        public JobLevelUpAction fromJson(ResourceLocation location, JsonObject jsonObject, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions) {
+        public JobLevelUpAction fromJson(ResourceLocation location, JsonObject jsonObject, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions)
+        {
             return new JobLevelUpAction(location, actionHolderLocation, actionHolderType, performOnClient, rewards, conditions);
         }
 
         @Override
-        public JobLevelUpAction fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions) {
+        public JobLevelUpAction fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions)
+        {
             return new JobLevelUpAction(location, actionHolderLocation, actionHolderType, performOnClient, rewards, conditions);
         }
 
         @Override
-        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobLevelUpAction type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobLevelUpAction type)
+        {
             IActionSerializer.super.toNetwork(friendlyByteBuf, type);
         }
     }

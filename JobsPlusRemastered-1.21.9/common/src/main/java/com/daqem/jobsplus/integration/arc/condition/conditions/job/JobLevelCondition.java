@@ -17,34 +17,47 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
-public class JobLevelCondition extends AbstractCondition implements IJobCondition {
+public class JobLevelCondition extends AbstractCondition implements IJobCondition
+{
 
     private static final String EMPTY_JOB_LOCATION = "jobsplus:empty";
 
     private final ResourceLocation jobLocation;
     private final int level;
 
-    public JobLevelCondition(boolean inverted, ResourceLocation jobLocation, int level) {
+    public JobLevelCondition(boolean inverted, ResourceLocation jobLocation, int level)
+    {
         super(inverted);
         this.jobLocation = jobLocation;
         this.level = level;
     }
 
     @Override
-    public boolean isMet(ActionData actionData) {
+    public boolean isMet(ActionData actionData)
+    {
         JobInstance jobInstance;
-        if (!jobLocation.equals(ResourceLocation.parse(EMPTY_JOB_LOCATION))) {
+        
+        if (!jobLocation.equals(ResourceLocation.parse(EMPTY_JOB_LOCATION)))
+        {
             jobInstance = JobInstance.of(jobLocation);
-        } else if (actionData.getSourceActionHolder() instanceof JobInstance jobInstance2) {
+        } 
+        
+        else if (actionData.getSourceActionHolder() instanceof JobInstance jobInstance2)
+        {
             jobInstance = jobInstance2;
-        } else {
+        }
+
+        else
+        {
             return false;
         }
 
         int playerJobLevel = 0;
-        if (actionData.getPlayer() instanceof JobsServerPlayer jobsServerPlayer) {
+        if (actionData.getPlayer() instanceof JobsServerPlayer jobsServerPlayer)
+        {
             Job playerJob = jobsServerPlayer.jobsplus$getJob(jobInstance);
-            if (playerJob != null) {
+            if (playerJob != null)
+            {
                 playerJobLevel = playerJob.getLevel();
             }
         }
@@ -53,48 +66,51 @@ public class JobLevelCondition extends AbstractCondition implements IJobConditio
     }
 
     @Override
-    public IConditionType<? extends ICondition> getType() {
+    public IConditionType<? extends ICondition> getType()
+    {
         return JobsPlusConditionType.JOB_LEVEL;
     }
-    
-    public ResourceLocation getJobLocation() {
+
+    public ResourceLocation getJobLocation()
+    {
         return jobLocation;
     }
 
     @Override
-    public int getRequiredLevel() {
+    public int getRequiredLevel()
+    {
         return level;
     }
 
     @Override
-    public Component getDescription() {
+    public Component getDescription()
+    {
         JobInstance jobInstance = JobInstance.of(this.jobLocation);
-        if (jobInstance == null) {
+        if (jobInstance == null)
+        {
             return JobsPlus.literal("ERROR: Job not found: '" + this.jobLocation.toString() + "'");
         }
         return this.getDescription(jobInstance.getName(), this.level);
     }
 
-    public static class Serializer implements IConditionSerializer<JobLevelCondition> {
+    public static class Serializer implements IConditionSerializer<JobLevelCondition>
+    {
 
         @Override
-        public JobLevelCondition fromJson(ResourceLocation location, JsonObject jsonObject, boolean inverted) {
-            return new JobLevelCondition(
-                    inverted,
-                    ResourceLocation.parse(GsonHelper.getAsString(jsonObject, "job", EMPTY_JOB_LOCATION)),
-                    GsonHelper.getAsInt(jsonObject, "level"));
+        public JobLevelCondition fromJson(ResourceLocation location, JsonObject jsonObject, boolean inverted)
+        {
+            return new JobLevelCondition(inverted, ResourceLocation.parse(GsonHelper.getAsString(jsonObject, "job", EMPTY_JOB_LOCATION)), GsonHelper.getAsInt(jsonObject, "level"));
         }
 
         @Override
-        public JobLevelCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
-            return new JobLevelCondition(
-                    inverted,
-                    friendlyByteBuf.readResourceLocation(),
-                    friendlyByteBuf.readInt());
+        public JobLevelCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted)
+        {
+            return new JobLevelCondition(inverted, friendlyByteBuf.readResourceLocation(), friendlyByteBuf.readInt());
         }
 
         @Override
-        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobLevelCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobLevelCondition type)
+        {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeResourceLocation(type.jobLocation);
             friendlyByteBuf.writeInt(type.level);

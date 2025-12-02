@@ -6,9 +6,11 @@ import com.daqem.jobsplus.networking.s2c.ClientboundUnlockItemRestrictionPacket;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
 
-public class ClientboundUnlockItemRestrictionPacketHandler {
+public class ClientboundUnlockItemRestrictionPacketHandler
+{
 
-    public static void handleClientSide(ClientboundUnlockItemRestrictionPacket packet, NetworkManager.PacketContext context) {
+    public static void handleClientSide(ClientboundUnlockItemRestrictionPacket packet, NetworkManager.PacketContext context)
+    {
         ItemRestrictionUnlockedToast.addOrUpdate(Minecraft.getInstance().getToastManager(), ItemRestrictionManager.getInstance().getItemRestriction(packet.getItemRestrictionLocation()));
     }
 }
