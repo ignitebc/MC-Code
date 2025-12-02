@@ -1,0 +1,21 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:digger"
+  },
+  "type": "arc:on_place_block",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "min": 0,
+      "max": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:block_hardness",
+      "min": 0.2,
+      "max": 2.9
+    }
+  ]
+}
