@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:hunter",
+  "icon": {
+    "id": "minecraft:experience_bottle"
+  },
+  "price": 10,
+  "required_level": 5
+}
+
+

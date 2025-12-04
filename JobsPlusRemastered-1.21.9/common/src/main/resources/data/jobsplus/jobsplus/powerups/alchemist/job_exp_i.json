@@ -1,9 +1,10 @@
 {
   "job": "jobsplus:alchemist",
-  "parent": "jobsplus:alchemist/harmful_potion_immunity_i",
   "icon": {
     "id": "minecraft:experience_bottle"
   },
-  "price": 5,
-  "required_level": 15
+  "price": 10,
+  "required_level": 5
 }
+
+

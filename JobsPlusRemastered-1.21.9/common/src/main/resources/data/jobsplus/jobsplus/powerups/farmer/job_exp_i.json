@@ -3,6 +3,8 @@
   "icon": {
     "id": "minecraft:experience_bottle"
   },
-  "price": 5,
-  "required_level": 15
+  "price": 10,
+  "required_level": 5
 }
+
+

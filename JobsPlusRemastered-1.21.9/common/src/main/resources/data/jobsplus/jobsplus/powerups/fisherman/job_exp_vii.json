@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:fisherman",
+  "parent": "jobsplus:fisherman/job_exp_vi",
+  "icon": {
+    "id": "minecraft:experience_bottle",
+    "count": 7
+  },
+  "price": 70,
+  "required_level": 65
+}
