@@ -121,6 +121,7 @@ public class Job
         }
     }
 
+    // 다음 레벨업 총 추가 경험치
     public static int getExperienceToLevelUp(int level)
     {
         if (level == 0)

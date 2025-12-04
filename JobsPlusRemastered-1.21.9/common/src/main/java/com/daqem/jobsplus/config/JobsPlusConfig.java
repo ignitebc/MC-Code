@@ -20,6 +20,7 @@ public class JobsPlusConfig
 
     static
     {
+        // config 파일 수정을 기본적으로 여기서 하는듯 (코드로 수정하고도 config 파일을 열어서 또 수정해야됨)
         IConfigBuilder config = new ConfigBuilder(JobsPlus.MOD_ID, "jobsplus-common", ConfigExtension.YAML, ConfigType.COMMON);
 
         config.push("jobs");
