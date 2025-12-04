@@ -1,0 +1,24 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:farmer/job_exp_viii"
+  },
+  "type": "jobsplus:on_job_exp",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp_multiplier",
+      "job": "jobsplus:farmer",
+      "multiplier": 2.6
+    }
+  ],
+  "conditions": [
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/job_exp_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/job_exp_x"
+    }
+  ]
+}

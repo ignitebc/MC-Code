@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:miner",
+  "parent": "jobsplus:miner/job_exp_ii",
+  "icon": {
+    "id": "minecraft:experience_bottle",
+    "count": 3
+  },
+  "price": 30,
+  "required_level": 25
+}

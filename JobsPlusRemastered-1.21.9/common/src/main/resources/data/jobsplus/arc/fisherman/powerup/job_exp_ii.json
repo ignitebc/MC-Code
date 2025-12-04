@@ -8,13 +8,41 @@
     {
       "type": "jobsplus:job_exp_multiplier",
       "job": "jobsplus:fisherman",
-      "multiplier": 2
+      "multiplier": 1.4
     }
   ],
   "conditions": [
     {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:fisherman/job_exp_iii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:fisherman/job_exp_iv"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:fisherman/job_exp_v"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:fisherman/job_exp_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:fisherman/job_exp_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:fisherman/job_exp_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:fisherman/job_exp_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:fisherman/job_exp_x"
     }
   ]
 }

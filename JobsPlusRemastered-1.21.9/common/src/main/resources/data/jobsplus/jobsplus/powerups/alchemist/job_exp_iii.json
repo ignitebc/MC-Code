@@ -1,10 +1,10 @@
 {
   "job": "jobsplus:alchemist",
-  "parent": "jobsplus:alchemist/longer_potions_iv",
+  "parent": "jobsplus:alchemist/job_exp_ii",
   "icon": {
     "id": "minecraft:experience_bottle",
     "count": 3
   },
-  "price": 12,
-  "required_level": 40
+  "price": 30,
+  "required_level": 25
 }
