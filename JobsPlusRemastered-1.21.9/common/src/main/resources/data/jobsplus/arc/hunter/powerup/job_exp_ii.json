@@ -1,44 +1,48 @@
 {
   "holder": {
     "type": "jobsplus:powerup",
-    "id": "jobsplus:smith/job_exp_iii"
+    "id": "jobsplus:hunter/job_exp_ii"
   },
   "type": "jobsplus:on_job_exp",
   "rewards": [
     {
       "type": "jobsplus:job_exp_multiplier",
-      "job": "jobsplus:smith",
-      "multiplier": 1.6
+      "job": "jobsplus:hunter",
+      "multiplier": 1.4
     }
   ],
   "conditions": [
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:smith/job_exp_iv"
+      "powerup": "jobsplus:hunter/job_exp_iii"
     },
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:smith/job_exp_v"
+      "powerup": "jobsplus:hunter/job_exp_iv"
     },
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:smith/job_exp_vi"
+      "powerup": "jobsplus:hunter/job_exp_v"
     },
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:smith/job_exp_vii"
+      "powerup": "jobsplus:hunter/job_exp_vi"
     },
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:smith/job_exp_viii"
+      "powerup": "jobsplus:hunter/job_exp_vii"
     },
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:smith/job_exp_viiii"
+      "powerup": "jobsplus:hunter/job_exp_viii"
     },
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:smith/job_exp_x"
+      "powerup": "jobsplus:hunter/job_exp_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/job_exp_x"
     }
   ]
 }
