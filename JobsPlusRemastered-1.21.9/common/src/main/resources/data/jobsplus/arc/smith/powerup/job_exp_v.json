@@ -1,25 +1,17 @@
 {
   "holder": {
     "type": "jobsplus:powerup",
-    "id": "jobsplus:smith/job_exp_iii"
+    "id": "jobsplus:smith/job_exp_v"
   },
   "type": "jobsplus:on_job_exp",
   "rewards": [
     {
       "type": "jobsplus:job_exp_multiplier",
       "job": "jobsplus:smith",
-      "multiplier": 1.6
+      "multiplier": 2.0
     }
   ],
   "conditions": [
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:smith/job_exp_iv"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:smith/job_exp_v"
-    },
     {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:smith/job_exp_vi"
