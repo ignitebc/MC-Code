@@ -121,7 +121,7 @@ public class Job
         }
     }
 
-    // ´ÙÀ½ ·¹º§¾÷ ÃÑ Ãß°¡ °æÇèÄ¡
+    // ë‹¤ìŒ ë ˆë²¨ì—… ì´ ì¶”ê°€ ê²½í—˜ì¹˜
     public static int getExperienceToLevelUp(int level)
     {
         if (level == 0)
