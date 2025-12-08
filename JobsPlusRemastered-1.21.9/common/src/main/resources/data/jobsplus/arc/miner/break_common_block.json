@@ -12,7 +12,7 @@
     },
     {
       "type": "arc:item",
-      "chance": 100.0,
+      "chance": 0.03,
       "item": {
         "id": "advancednetherite:bitcoin"
       },

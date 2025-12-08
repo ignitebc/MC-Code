@@ -19,6 +19,6 @@ include("common")
 //noinspection GroovyAssignabilityCheck
 include("fabric")
 //noinspection GroovyAssignabilityCheck
-include("neoforge")
+// include("neoforge")
 
 rootProject.name = "JobsPlus 1.21.9"
