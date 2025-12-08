@@ -1,0 +1,36 @@
+modLoader="javafml"
+loaderVersion="[55,)"
+license="GNU General Public License v3.0"
+issueTrackerURL="https://github.com/Autovw/AdvancedNetherite/issues"
+
+[[mods]]
+modId="advancednetherite"
+version="${mod_version}"
+displayName="Advanced Netherite"
+updateJSONURL="https://raw.githubusercontent.com/Autovw/ModUpdates/master/advancednetherite/update.json"
+displayURL="https://github.com/Autovw/AdvancedNetherite/wiki"
+logoFile="advancednetherite_banner.png"
+credits="LizterZapZap for new textures!"
+authors="Autovw"
+description='''
+A vanilla and add-on friendly, open-source mod that adds in more tiers of Netherite! The goal of the mod is to extend the vanilla Minecraft experience by adding more goals to achieve.
+Visit the GitHub Wiki for more information on everything this mod adds.
+'''
+
+[[dependencies.advancednetherite]]
+modId="forge"
+mandatory=true
+versionRange="[55.0.11,)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.advancednetherite]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.21.5]"
+ordering="NONE"
+side="BOTH"
+
+[modproperties.advancednetherite]
+#Catalogue also supports items. Use "catalogueItemIcon" instead.
+catalogueImageIcon="advancednetherite_logo.png" #Optional support for Cataloque mod.
+configuredBackground="minecraft:textures/block/netherite_block.png" #Optional support for Configured mod.

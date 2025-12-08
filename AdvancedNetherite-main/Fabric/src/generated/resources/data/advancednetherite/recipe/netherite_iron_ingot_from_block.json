@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "advancednetherite:netherite_iron_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "advancednetherite:netherite_iron_ingot"
+  }
+}

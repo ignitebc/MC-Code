@@ -1,0 +1,138 @@
+{
+  "block.advancednetherite.netherite_iron_block": "Bloc de Netherite-Fer",
+  "block.advancednetherite.netherite_gold_block": "Bloc de Netherite-Or",
+  "block.advancednetherite.netherite_emerald_block": "Bloc de Netherite-Émeraude",
+  "block.advancednetherite.netherite_diamond_block": "Bloc de Netherite-Diamant",
+
+  "item.advancednetherite.netherite_iron_ingot": "Lingot de Netherite-Fer",
+  "item.advancednetherite.netherite_gold_ingot": "Lingot de Netherite-Or",
+  "item.advancednetherite.netherite_emerald_ingot": "Lingot de Netherite-Émeraude",
+  "item.advancednetherite.netherite_diamond_ingot": "Lingot de Netherite-Diamant",
+
+  "item.advancednetherite.netherite_iron_helmet": "Casque en Netherite-Fer",
+  "item.advancednetherite.netherite_gold_helmet": "Casque en Netherite-Or",
+  "item.advancednetherite.netherite_emerald_helmet": "Casque en Netherite-Émeraude",
+  "item.advancednetherite.netherite_diamond_helmet": "Casque en Netherite-Diamant",
+
+  "item.advancednetherite.netherite_iron_chestplate": "Plastron en Netherite-Fer",
+  "item.advancednetherite.netherite_gold_chestplate": "Plastron en Netherite-Or",
+  "item.advancednetherite.netherite_emerald_chestplate": "Plastron en Netherite-Émeraude",
+  "item.advancednetherite.netherite_diamond_chestplate": "Plastron en Netherite-Diamant",
+
+  "item.advancednetherite.netherite_iron_leggings": "Jambières en Netherite-Fer",
+  "item.advancednetherite.netherite_gold_leggings": "Jambières en Netherite-Or",
+  "item.advancednetherite.netherite_emerald_leggings": "Jambières en Netherite-Émeraude",
+  "item.advancednetherite.netherite_diamond_leggings": "Jambières en Netherite-Diamant",
+
+  "item.advancednetherite.netherite_iron_boots": "Bottes en Netherite-Fer",
+  "item.advancednetherite.netherite_gold_boots": "Bottes en Netherite-Or",
+  "item.advancednetherite.netherite_emerald_boots": "Bottes en Netherite-Émeraude",
+  "item.advancednetherite.netherite_diamond_boots": "Bottes en Netherite-Diamant",
+
+  "item.advancednetherite.netherite_iron_axe": "Hache en Netherite-Fer",
+  "item.advancednetherite.netherite_gold_axe": "Hache en Netherite-Or",
+  "item.advancednetherite.netherite_emerald_axe": "Hache en Netherite-Émeraude",
+  "item.advancednetherite.netherite_diamond_axe": "Hache en Netherite-Diamant",
+
+  "item.advancednetherite.netherite_iron_hoe": "Houe en Netherite-Fer",
+  "item.advancednetherite.netherite_gold_hoe": "Houe en Netherite-Or",
+  "item.advancednetherite.netherite_emerald_hoe": "Houe en Netherite-Émeraude",
+  "item.advancednetherite.netherite_diamond_hoe": "Houe en Netherite-Diamant",
+
+  "item.advancednetherite.netherite_iron_pickaxe": "Pioche en Netherite-Fer",
+  "item.advancednetherite.netherite_gold_pickaxe": "Pioche en Netherite-Or",
+  "item.advancednetherite.netherite_emerald_pickaxe": "Pioche en Netherite-Émeraude",
+  "item.advancednetherite.netherite_diamond_pickaxe": "Pioche en Netherite-Diamant",
+
+  "item.advancednetherite.netherite_iron_shovel": "Pelle en Netherite-Fer",
+  "item.advancednetherite.netherite_gold_shovel": "Pelle en Netherite-Or",
+  "item.advancednetherite.netherite_emerald_shovel": "Pelle en Netherite-Émeraude",
+  "item.advancednetherite.netherite_diamond_shovel": "Pelle en Netherite-Diamant",
+
+  "item.advancednetherite.netherite_iron_sword": "Épée en Netherite-Fer",
+  "item.advancednetherite.netherite_gold_sword": "Épée en Netherite-Or",
+  "item.advancednetherite.netherite_emerald_sword": "Épée en Netherite-Émeraude",
+  "item.advancednetherite.netherite_diamond_sword": "Épée en Netherite-Diamant",
+
+  "itemGroup.advancednetherite.tab": "Advanced Netherite",
+  
+  "tooltip.advancednetherite.armor.enderman_passive": "%s Enderman pacifique",
+  "tooltip.advancednetherite.armor.piglin_passive": "%s Piglins pacifique",
+  "tooltip.advancednetherite.armor.phantom_passive": "%s Phantom pacifique",
+
+  "tooltip.advancednetherite.hoe.additional_crop_drops": "%s Chance d'obtenir des récoltes supplémentaires lors de la récolte de cultures",
+
+  "tooltip.advancednetherite.pickaxe.additional_diamond_drop": "%s Chance d'obtenir un Diamant supplémentaire lors du minage d'un minerais de diamant",
+  "tooltip.advancednetherite.pickaxe.additional_emerald_drop": "%s Chance d'obtenir une Émeraude supplémentaire lors du minage d'un minerais d'émeraude",
+  "tooltip.advancednetherite.pickaxe.additional_gold_drop": "%s Chance d'obtenir de l'Or Brut supplémentaire lors du minage d'un minerais d'or",
+  "tooltip.advancednetherite.pickaxe.additional_iron_drop": "%s Chance d'obtenir du Fer Brut supplémentaire lors du minage d'un minerais de fer",
+
+  "tooltip.advancednetherite.sword.additional_enderman_mob_drop": "%s Chance d'obtenir une Perle de l'Ender supplémentaire en tuant un Enderman",
+  "tooltip.advancednetherite.sword.additional_piglin_mob_drop": "%s Chance d'obtenir un Lingot d'or supplémentaire en tuant un Piglin",
+  "tooltip.advancednetherite.sword.additional_zombified_piglin_mob_drop": "%s Chance d'obtenir des Pépites d'or supplémentaires en tuant un Piglin zombifié",
+  "tooltip.advancednetherite.sword.additional_phantom_mob_drop": "%s Chance d'obtenir des Membranes de Phantom supplémentaires en tuant un Phantom",
+
+  "tooltip.advancednetherite.misc.press_shift_key": "Appuyez sur %s pour voir tous les avantages",
+  "tooltip.advancednetherite.misc.shift": "[MAJ. Gauche]",
+  "tooltip.advancednetherite.misc.plus": "+",
+
+  "advancements.advancednetherite.husbandry.netherite_diamond_hoe.title": "Pourquoi faire ?",
+  "advancements.advancednetherite.husbandry.netherite_diamond_hoe.description": "Fabriquez une Houe en Netherite-Diamant et consultez un psychologue après",
+  "advancements.advancednetherite.nether.netherite_iron_armor.title": "Plus de Phantom",
+  "advancements.advancednetherite.nether.netherite_iron_armor.description": "Obtenez un ensemble complet d'armure en Netherite-Fer",
+  "advancements.advancednetherite.nether.netherite_gold_armor.title": "Le costume de distraction ultime pour Piglin",
+  "advancements.advancednetherite.nether.netherite_gold_armor.description": "Obtenez un ensemble complet d'armure en Netherite-Or",
+  "advancements.advancednetherite.nether.netherite_emerald_armor.title": "Affronte mon regard",
+  "advancements.advancednetherite.nether.netherite_emerald_armor.description": "Obtenez un ensemble complet d'armure en Netherite-Émeraude",
+  "advancements.advancednetherite.nether.netherite_diamond_armor.title": "Couvrez-moi de Netherite-Diamant",
+  "advancements.advancednetherite.nether.netherite_diamond_armor.description": "Obtenez un ensemble complet d'armure en Netherite-Diamant",
+  "advancements.advancednetherite.nether.obtain_netherite_iron_ingot.title": "Améliorations !",
+  "advancements.advancednetherite.nether.obtain_netherite_iron_ingot.description": "Obtenez un Lingot de Netherite-Fer",
+  "advancements.advancednetherite.nether.obtain_netherite_diamond_block.title": "Un bloc très cher",
+  "advancements.advancednetherite.nether.obtain_netherite_diamond_block.description": "Obtenez un Bloc de Netherite-Diamant",
+
+  "config.advancednetherite.client": "Configuration client",
+  "config.advancednetherite.client.show_tooltips": "Afficher les info-bulles ajoutées par le mod",
+  "config.advancednetherite.client.matching_durability_bars": "Afficher une barre de durabilité assortie sous l'objet",
+  "config.advancednetherite.client.enable_search_bar": "Activer la barre de recherche dans l'onglet créatif d'Advanced Netherite",
+  "config.advancednetherite.client.force_disable_dab_support": "Désactiver de force la compatibilité avec le mod Detail Armor Bar",
+
+  "config.advancednetherite.common": "Configuration commune",
+  "config.advancednetherite.common.additional_drops": "Drops supplémentaires",
+  "config.advancednetherite.common.additional_drops.enable_additional_crop_drops": "Activer les drops supplémentaires des cultures",
+  "config.advancednetherite.common.additional_drops.enable_additional_ore_drops": "Activer les drops supplémentaires des minerais",
+  "config.advancednetherite.common.additional_drops.enable_additional_mob_drops": "Activer les drops supplémentaires des monstres",
+
+  "config.advancednetherite.server": "Configuration serveur",
+  "config.advancednetherite.server.tool_properties": "Propriétés des outils",
+  "config.advancednetherite.server.tool_properties.breaking_speed_multipliers": "Multiplicateurs de vitesse de minage",
+  "config.advancednetherite.server.tool_properties.breaking_speed_multipliers.netherite_iron": "Multiplicateur de vitesse de minage pour les outils Netherite-Fer",
+  "config.advancednetherite.server.tool_properties.breaking_speed_multipliers.netherite_gold": "Multiplicateur de vitesse de minage pour les outils Netherite-Or",
+  "config.advancednetherite.server.tool_properties.breaking_speed_multipliers.netherite_emerald": "Multiplicateur de vitesse de minage pour les outils Netherite-Émeraude",
+  "config.advancednetherite.server.tool_properties.breaking_speed_multipliers.netherite_diamond": "Multiplicateur de vitesse de minage pour les outils Netherite-Diamant",
+
+  "config.advancednetherite.server.additional_drops": "Drops supplémentaires",
+  "config.advancednetherite.server.additional_drops.crops": "Récoltes supplémentaires pour les cultures",
+  "config.advancednetherite.server.additional_drops.crops.wheat_drop_chance": "Chance d'obtenir du blé supplémentaire",
+  "config.advancednetherite.server.additional_drops.crops.carrots_drop_chance": "Chance d'obtenir des carottes supplémentaire",
+  "config.advancednetherite.server.additional_drops.crops.potatoes_drop_chance": "Chance d'obtenir des pommes de terre supplémentaire",
+  "config.advancednetherite.server.additional_drops.crops.beetroots_drop_chance": "Chance d'obtenir des betteraves supplémentaire",
+
+  "config.advancednetherite.server.additional_drops.mobs": "Drops supplémentaires pour les monstres",
+  "config.advancednetherite.server.additional_drops.mobs.phantom_drop_chance": "Chance d'obtenir des membrane de phantoms supplémentaire",
+  "config.advancednetherite.server.additional_drops.mobs.zombified_piglin_drop_chance": "Chance d'obtenir du loots supplémentaires en plus sur les piglins zombifié",
+  "config.advancednetherite.server.additional_drops.mobs.piglin_drop_chance": "Chance d'obtenir du loots supplémentaires en plus sur les piglins",
+  "config.advancednetherite.server.additional_drops.mobs.enderman_drop_chance": "Chance d'obtenir des perles de l'ender supplémentaire",
+
+  "config.advancednetherite.server.additional_drops.ores": "Drops supplémentaires pour les minerais",
+  "config.advancednetherite.server.additional_drops.ores.raw_iron_drop_chance": "Chance d'obtenir du fer brut supplémentaire",
+  "config.advancednetherite.server.additional_drops.ores.raw_gold_drop_chance": "Chance d'obtenir de l'or brut supplémentaire",
+  "config.advancednetherite.server.additional_drops.ores.emerald_drop_chance": "Chance d'obtenir de l'émeraude supplémentaire",
+  "config.advancednetherite.server.additional_drops.ores.diamond_drop_chance": "Chance d'obtenir du diamant supplémentaire",
+  "config.advancednetherite.server.additional_drops.ores.gold_nugget_drop_chance": "Chance d'obtenir des pépites d'or supplémentaire",
+
+  "config.advancednetherite.screen.description.top": "Installez le mod %s pour modifier la configuration ajoutée par %s depuis le jeu.",
+  "config.advancednetherite.screen.description.bottom": "Consultez la page wiki pour les instructions.",
+  "config.advancednetherite.screen.button.install_configured": "Installez %s",
+  "config.advancednetherite.screen.button.instructions": "Instructions"
+}
