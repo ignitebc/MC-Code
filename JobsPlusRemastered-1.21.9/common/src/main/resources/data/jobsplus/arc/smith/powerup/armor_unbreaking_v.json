@@ -7,7 +7,7 @@
   "rewards": [
     {
       "type": "arc:cancel_action",
-      "chance": 50
+      "chance": 25
     }
   ],
   "conditions": [
@@ -16,6 +16,26 @@
       "items": [
         "#c:armor"
       ]
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/armor_unbreaking_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/armor_unbreaking_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/armor_unbreaking_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/armor_unbreaking_ix"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/armor_unbreaking_x"
     }
   ]
 }

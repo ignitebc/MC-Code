@@ -90,6 +90,9 @@ public final class AdvancedNetheriteTab
                     entries.accept(ModItems.NETHERITE_GOLD_BLOCK);
                     entries.accept(ModItems.NETHERITE_EMERALD_BLOCK);
                     entries.accept(ModItems.NETHERITE_DIAMOND_BLOCK);
+
+                    // BitCoins 추가 -> 크리에이티브 모드 탭쪽
+                    entries.accept(ModItems.BITCOIN);
                 })
                 .build()
         );

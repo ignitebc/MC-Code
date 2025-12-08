@@ -10,6 +10,14 @@
       "chance": 100,
       "min": 5,
       "max": 10
+    },
+    {
+      "type": "arc:item",
+      "chance": 0.1,
+      "item": {
+        "id": "advancednetherite:bitcoin"
+      },
+      "amount": 1
     }
   ]
 }

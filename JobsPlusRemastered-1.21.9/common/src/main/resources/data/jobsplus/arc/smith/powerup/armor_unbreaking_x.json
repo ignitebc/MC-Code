@@ -1,7 +1,7 @@
 {
   "holder": {
     "type": "jobsplus:powerup",
-    "id": "jobsplus:smith/armor_unbreaking_v"
+    "id": "jobsplus:smith/armor_unbreaking_x"
   },
   "type": "arc:on_hurt_item",
   "rewards": [
