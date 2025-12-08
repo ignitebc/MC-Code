@@ -51,7 +51,10 @@ public class ModModelProvider extends FabricModelProvider
         itemModel(generator, ModItems.NETHERITE_GOLD_INGOT);
         itemModel(generator, ModItems.NETHERITE_EMERALD_INGOT);
         itemModel(generator, ModItems.NETHERITE_DIAMOND_INGOT);
-
+        
+        // bitcoin 추가
+        itemModel(generator, ModItems.BITCOIN);
+        
         armorModel(generator, ModItems.NETHERITE_IRON_HELMET, ModEquipmentAssets.NETHERITE_IRON);
         armorModel(generator, ModItems.NETHERITE_IRON_CHESTPLATE, ModEquipmentAssets.NETHERITE_IRON);
         armorModel(generator, ModItems.NETHERITE_IRON_LEGGINGS, ModEquipmentAssets.NETHERITE_IRON);
