@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "#advancednetherite:upgrade_to_netherite_emerald",
+  "base": "#advancednetherite:chestplate/upgrade_to_netherite_emerald",
+  "result": {
+    "id": "advancednetherite:netherite_emerald_chestplate"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

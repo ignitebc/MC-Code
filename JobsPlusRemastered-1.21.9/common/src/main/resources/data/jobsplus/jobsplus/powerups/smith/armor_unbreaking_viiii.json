@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:smith",
+  "parent": "jobsplus:smith/armor_unbreaking_viii",
+  "icon": {
+    "id": "minecraft:diamond_chestplate",
+    "count": 9
+  },
+  "price": 15,
+  "required_level": 80
+}
