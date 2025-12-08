@@ -1,0 +1,19 @@
+{
+  "holder": {
+    "type": "arc:player",
+    "id": "arc:player"
+  },
+  "type": "arc:on_effect_added",
+  "rewards": [
+    {
+      "type": "arc:command",
+      "command": "give %player% minecraft:diamond"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:effect",
+      "effect": "minecraft:strength"
+    }
+  ]
+}

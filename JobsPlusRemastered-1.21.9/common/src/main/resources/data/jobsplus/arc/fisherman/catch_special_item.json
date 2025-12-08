@@ -1,0 +1,26 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:fisherman"
+  },
+  "type": "arc:on_fished_up_item",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "min": 100,
+      "max": 100
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:items",
+      "items": [
+        "minecraft:ancient_debris",
+        "minecraft:diamond_ore",
+        "minecraft:enchanted_golden_apple",
+        "minecraft:golden_apple",
+        "minecraft:sponge"
+      ]
+    }
+  ]
+}
