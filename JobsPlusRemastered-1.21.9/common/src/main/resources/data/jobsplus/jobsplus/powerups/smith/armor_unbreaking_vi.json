@@ -5,6 +5,6 @@
     "id": "minecraft:diamond_chestplate",
     "count": 6
   },
-  "price": 15,
-  "required_level": 80
+  "price": 20,
+  "required_level": 25
 }

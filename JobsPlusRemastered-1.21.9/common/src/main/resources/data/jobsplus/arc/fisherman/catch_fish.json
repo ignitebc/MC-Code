@@ -9,6 +9,14 @@
       "type": "jobsplus:job_exp",
       "min": 4,
       "max": 6
+    },
+    {
+      "type": "arc:item",
+      "chance": 0.5,
+      "item": {
+        "id": "advancednetherite:bitcoin"
+      },
+      "amount": 1
     }
   ],
   "conditions": [

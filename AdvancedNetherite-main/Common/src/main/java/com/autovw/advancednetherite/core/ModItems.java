@@ -20,6 +20,9 @@ public final class ModItems
     public static final AdvancedItem NETHERITE_GOLD_INGOT = new AdvancedItem(new Item.Properties().setId(key("netherite_gold_ingot")));
     public static final AdvancedItem NETHERITE_EMERALD_INGOT = new AdvancedItem(new Item.Properties().setId(key("netherite_emerald_ingot")));
     public static final AdvancedItem NETHERITE_DIAMOND_INGOT = new AdvancedItem(new Item.Properties().setId(key("netherite_diamond_ingot")));
+    
+    //bitCoin 등록 (ModItem)
+    public static final AdvancedItem BITCOIN = new AdvancedItem(new Item.Properties().setId(key("bitcoin")));
 
     // ARMOR SETS
     // Netherite-Iron

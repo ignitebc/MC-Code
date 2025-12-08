@@ -3,6 +3,6 @@
   "icon": {
     "id": "minecraft:diamond_chestplate"
   },
-  "price": 5,
-  "required_level": 5
+  "price": 10,
+  "required_level": 0
 }

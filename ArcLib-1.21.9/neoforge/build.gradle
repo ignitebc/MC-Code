@@ -87,50 +87,52 @@ remapSourcesJar {
     archiveClassifier = "neoforge-sources"
 }
 
-curseforge {
-    apiKey = System.getenv("CURSEFORGE_API_KEY")
-    project {
-        id = project.curse_forge_project_id
-        releaseType = project.release_type
-        changelogType = "markdown"
-        changelog = rootProject.file('changelog.md')
 
-        project.supported_minecraft_versions.split(',').each { version ->
-            addGameVersion version
-        }
+// 자동업로드 주석
+// curseforge {
+//     apiKey = System.getenv("CURSEFORGE_API_KEY")
+//     project {
+//         id = project.curse_forge_project_id
+//         releaseType = project.release_type
+//         changelogType = "markdown"
+//         changelog = rootProject.file('changelog.md')
 
-        addGameVersion "Java 21"
-        addGameVersion "NeoForge"
+//         project.supported_minecraft_versions.split(',').each { version ->
+//             addGameVersion version
+//         }
 
-        relations {
-            project.curseforge_dependencies.split(',').each { dep ->
-                requiredDependency dep.trim()
-            }
-        }
+//         addGameVersion "Java 21"
+//         addGameVersion "NeoForge"
 
-        mainArtifact(remapJar) {
-            displayName = "$project.mod_name NeoForge $project.minecraft_version - $project.mod_version"
-        }
+//         relations {
+//             project.curseforge_dependencies.split(',').each { dep ->
+//                 requiredDependency dep.trim()
+//             }
+//         }
 
-        addArtifact(remapSourcesJar) {
-        }
-    }
-}
+//         mainArtifact(remapJar) {
+//             displayName = "$project.mod_name NeoForge $project.minecraft_version - $project.mod_version"
+//         }
 
-modrinth {
-    token = System.getenv("MODRINTH_API_KEY")
-    projectId = project.modrinth_project_id
-    versionName = "$project.mod_name NeoForge $project.minecraft_version - $project.mod_version"
-    versionNumber = "$project.mod_version"
-    versionType = "$project.release_type"
-    uploadFile = remapJar
-    additionalFiles = [remapSourcesJar]
-    gameVersions = project.supported_minecraft_versions.split(',').toList()
-    loaders = ["neoforge"]
-    changelog = rootProject.file('changelog.md').text
-    dependencies {
-        project.modrinth_dependencies.split(',').each { dep ->
-            required.project dep
-        }
-    }
-}
+//         addArtifact(remapSourcesJar) {
+//         }
+//     }
+// }
+
+// modrinth {
+//     token = System.getenv("MODRINTH_API_KEY")
+//     projectId = project.modrinth_project_id
+//     versionName = "$project.mod_name NeoForge $project.minecraft_version - $project.mod_version"
+//     versionNumber = "$project.mod_version"
+//     versionType = "$project.release_type"
+//     uploadFile = remapJar
+//     additionalFiles = [remapSourcesJar]
+//     gameVersions = project.supported_minecraft_versions.split(',').toList()
+//     loaders = ["neoforge"]
+//     changelog = rootProject.file('changelog.md').text
+//     dependencies {
+//         project.modrinth_dependencies.split(',').each { dep ->
+//             required.project dep
+//         }
+//     }
+// }

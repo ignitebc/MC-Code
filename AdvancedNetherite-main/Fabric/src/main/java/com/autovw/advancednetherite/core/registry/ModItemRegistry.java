@@ -66,6 +66,9 @@ public final class ModItemRegistry
         Registry.register(BuiltInRegistries.ITEM, id("netherite_gold_block"), ModItems.NETHERITE_GOLD_BLOCK);
         Registry.register(BuiltInRegistries.ITEM, id("netherite_emerald_block"), ModItems.NETHERITE_EMERALD_BLOCK);
         Registry.register(BuiltInRegistries.ITEM, id("netherite_diamond_block"), ModItems.NETHERITE_DIAMOND_BLOCK);
+
+        // 레지스트리 bitCoins 등록
+        Registry.register(BuiltInRegistries.ITEM, id("bitcoin"), ModItems.BITCOIN);
     }
     
     private static ResourceLocation id(String name)
