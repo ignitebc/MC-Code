@@ -1,0 +1,22 @@
+{
+  "holder": {
+    "type": "arc:player",
+    "id": "arc:player"
+  },
+  "type": "arc:on_break_block",
+  "rewards": [
+    {
+      "type": "arc:command",
+      "command": "give %player% minecraft:stone 1"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:block",
+      "block": "minecraft:grass_block"
+    },
+    {
+      "type": "arc:not_in_block_pos_cache"
+    }
+  ]
+}

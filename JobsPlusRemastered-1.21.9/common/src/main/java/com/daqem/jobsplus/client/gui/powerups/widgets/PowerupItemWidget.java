@@ -225,7 +225,7 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
         return this.powerup != null && (this.powerup.getState() == PowerupState.ACTIVE || this.powerup.getState() == PowerupState.INACTIVE);
     }
 
-    // 25.12.06 jjh 신규 매서드 추가 (toolTip 항상 표시, UILib 수정 불가해서 추가
+    // 25.12.06 jjh 신규 매서드 추가 (toolTip 항상 표시, UILib 수정 불가해서 추가)
     @Override
     public boolean isMouseOver(double mouseX, double mouseY)
     {

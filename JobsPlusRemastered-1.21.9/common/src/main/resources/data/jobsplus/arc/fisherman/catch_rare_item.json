@@ -1,0 +1,26 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:fisherman"
+  },
+  "type": "arc:on_fished_up_item",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "min": 30,
+      "max": 30
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:items",
+      "items": [
+        "minecraft:copper_block",
+        "minecraft:iron_block",
+        "minecraft:gold_block",
+        "minecraft:emerald_block",
+        "minecraft:sea_lantern"
+      ]
+    }
+  ]
+}
