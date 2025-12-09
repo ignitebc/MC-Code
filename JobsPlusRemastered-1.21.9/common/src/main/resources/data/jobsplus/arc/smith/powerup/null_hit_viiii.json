@@ -1,0 +1,19 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:smith/null_hit_viiii"
+  },
+  "type": "arc:on_get_hurt",
+  "rewards": [
+    {
+      "type": "arc:cancel_action",
+      "chance": 45
+    }
+  ],
+  "conditions": [
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/null_hit_x"
+    }
+  ]
+}

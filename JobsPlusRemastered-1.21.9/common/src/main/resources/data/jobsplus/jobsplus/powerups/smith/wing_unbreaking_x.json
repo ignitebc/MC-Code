@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:smith",
+  "parent": "jobsplus:smith/wing_unbreaking_viiii",
+  "icon": {
+    "id": "minecraft:elytra",
+    "count": 10
+  },
+  "price": 28,
+  "required_level": 50
+}
