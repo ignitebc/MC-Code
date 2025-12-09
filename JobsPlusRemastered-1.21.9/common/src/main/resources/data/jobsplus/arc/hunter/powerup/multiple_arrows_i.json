@@ -7,8 +7,8 @@
   "rewards": [
     {
       "type": "arc:multiple_arrows",
-      "chance": 10,
-      "amount": 2
+      "chance": 5,
+      "amount": 4
     }
   ],
   "conditions": [
@@ -27,6 +27,31 @@
     {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:hunter/multiple_arrows_iv"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_v"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_x"
     }
+
   ]
 }

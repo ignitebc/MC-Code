@@ -12,11 +12,8 @@
       "max": 4
     },
     {
-      "type": "arc:item",
-      "chance": 0.3,
-      "item": {
-        "id": "advancednetherite:bitcoin"
-      },
+      "type": "jobsplus:bitcoin_reward",
+      "chance": 0.3,      
       "amount": 1
     }
   ],
