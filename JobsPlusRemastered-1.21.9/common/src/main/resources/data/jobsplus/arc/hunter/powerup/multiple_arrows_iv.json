@@ -7,7 +7,7 @@
   "rewards": [
     {
       "type": "arc:multiple_arrows",
-      "chance": 50,
+      "chance": 20,
       "amount": 4
     }
   ],
@@ -15,6 +15,31 @@
     {
       "type": "arc:entity_type",
       "entity_type": "minecraft:arrow"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_v"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_x"
     }
+
   ]
 }

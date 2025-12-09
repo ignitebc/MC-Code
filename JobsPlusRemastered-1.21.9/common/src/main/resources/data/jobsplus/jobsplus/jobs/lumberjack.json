@@ -3,7 +3,7 @@
   "price": 10,
   "color": "#228B22",
   "icon": {
-    "id": "minecraft:golden_axe"
+    "id": "minecraft:netherite_boots"
   },
   "is_default": true
 }

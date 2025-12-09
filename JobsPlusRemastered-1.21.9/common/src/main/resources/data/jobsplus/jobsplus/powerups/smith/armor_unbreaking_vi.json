@@ -2,7 +2,7 @@
   "job": "jobsplus:smith",
   "parent": "jobsplus:smith/armor_unbreaking_v",
   "icon": {
-    "id": "minecraft:diamond_chestplate",
+    "id": "minecraft:enchanted_book",
     "count": 6
   },
   "price": 20,

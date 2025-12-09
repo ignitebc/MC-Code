@@ -1,7 +1,7 @@
 {
   "job": "jobsplus:smith",
   "icon": {
-    "id": "minecraft:diamond_chestplate"
+    "id": "minecraft:enchanted_book"
   },
   "price": 10,
   "required_level": 0
