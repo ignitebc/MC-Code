@@ -1,0 +1,47 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:smith/null_hit_ii"
+  },
+  "type": "arc:on_get_hurt",
+  "rewards": [
+    {
+      "type": "arc:cancel_action",
+      "chance": 10
+    }
+  ],
+  "conditions": [
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/null_hit_iii"
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/null_hit_iv"
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/null_hit_v"
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/null_hit_vi"
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/null_hit_vii"
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/null_hit_viii"
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/null_hit_viiii"
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/null_hit_x"
+    }
+  ]
+}

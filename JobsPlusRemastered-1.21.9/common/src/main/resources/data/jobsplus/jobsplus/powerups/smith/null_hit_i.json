@@ -1,0 +1,8 @@
+{
+  "job": "jobsplus:smith",
+  "icon": {
+    "id": "minecraft:diamond_chestplate"
+  },
+  "price": 10,
+  "required_level": 5
+}

@@ -1,0 +1,45 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:smith/less_damage_melee_iv"
+  },
+  "type": "arc:on_get_hurt",
+  "rewards": [
+    {
+      "type": "arc:damage_multiplier",
+      "multiplier": 0.92
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:damage_source",
+      "sources": [
+                "melee"
+                ]
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/less_damage_melee_v"
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/less_damage_melee_vi"
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/less_damage_melee_vii"
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/less_damage_melee_viii"
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/less_damage_melee_viiii"
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/less_damage_melee_x"
+    }
+  ]
+}
