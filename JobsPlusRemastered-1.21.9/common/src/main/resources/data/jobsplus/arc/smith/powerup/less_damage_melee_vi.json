@@ -13,9 +13,7 @@
   "conditions": [
     {
       "type": "arc:damage_source",
-      "sources": [
-                "melee"
-                ]
+      "source": "melee"
     },
     {
         "type": "jobsplus:powerup_not_active",
