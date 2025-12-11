@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:miner",
+  "parent": "jobsplus:miner/double_drops_v",
+  "icon": {
+    "id": "minecraft:emerald_ore",
+    "count": 6
+  },
+  "price": 20,
+  "required_level": 25
+}

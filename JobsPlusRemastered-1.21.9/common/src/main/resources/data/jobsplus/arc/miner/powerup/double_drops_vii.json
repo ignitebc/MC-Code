@@ -1,13 +1,13 @@
 {
   "holder": {
     "type": "jobsplus:powerup",
-    "id": "jobsplus:miner/double_drops_iii"
+    "id": "jobsplus:miner/double_drops_vii"
   },
   "type": "arc:on_break_block",
   "rewards": [
     {
       "type": "arc:block_drop_multiplier",
-      "chance": 15,
+      "chance": 35,
       "multiplier": 2
     }
   ],
@@ -31,22 +31,6 @@
           ]
         }
       ]
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:miner/double_drops_iv"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:miner/double_drops_v"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:miner/double_drops_vi"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:miner/double_drops_vii"
     },
     {
       "type": "jobsplus:powerup_not_active",

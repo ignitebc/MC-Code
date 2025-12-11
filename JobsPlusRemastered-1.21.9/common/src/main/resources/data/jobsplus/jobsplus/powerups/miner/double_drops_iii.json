@@ -1,10 +1,10 @@
 {
   "job": "jobsplus:miner",
-  "parent": "jobsplus:miner/pickaxe_unbreaking_iv",
+  "parent": "jobsplus:miner/double_drops_ii",
   "icon": {
     "id": "minecraft:emerald_ore",
     "count": 3
   },
-  "price": 15,
-  "required_level": 50
+  "price": 14,
+  "required_level": 10
 }
