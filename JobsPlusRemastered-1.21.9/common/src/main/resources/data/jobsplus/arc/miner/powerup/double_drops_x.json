@@ -15,22 +15,33 @@
     {
       "type": "arc:blocks",
       "blocks": [
-        "#minecraft:mineable/pickaxe"
+        "minecraft:iron_ore",
+        "minecraft:deepslate_iron_ore",
+        "minecraft:gold_ore",
+        "minecraft:deepslate_gold_ore",
+        "minecraft:emerald_ore",
+        "minecraft:deepslate_emerald_ore",
+        "minecraft:diamond_ore",
+        "minecraft:deepslate_diamond_ore"
       ]
     },
+
     {
-      "type": "arc:not_in_block_pos_cache"
-    },
-    {
-      "type": "arc:not",
-      "conditions": [
-        {
-          "type": "arc:blocks",
-          "blocks": [
-            "#minecraft:beacon_base_blocks"
-          ]
-        }
-      ]
+      "type": "arc:tool",
+      "tool": {
+        "type": "arc:not",
+        "conditions": [
+          {
+            "type": "arc:enchantments",
+            "enchantments": {
+              "minecraft:silk_touch": {
+                "min": 1
+              }
+            }
+          }
+        ]
+      }
     }
+
   ]
 }

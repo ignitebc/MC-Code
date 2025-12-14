@@ -7,7 +7,7 @@
   "rewards": [
     {
       "type": "arc:cancel_action",
-      "chance": 5
+      "chance" : 5
     }
   ],
   "conditions": [
