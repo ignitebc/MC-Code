@@ -1,8 +1,0 @@
-{
-  "job": "jobsplus:smith",
-  "icon": {
-    "id": "minecraft:elytra"
-  },
-  "price": 10,
-  "required_level": 5
-}
