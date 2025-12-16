@@ -1,8 +1,0 @@
-{
-  "job": "jobsplus:lumberjack",
-  "icon": {
-    "id": "minecraft:oak_log"
-  },
-  "price": 5,
-  "required_level": 10
-}

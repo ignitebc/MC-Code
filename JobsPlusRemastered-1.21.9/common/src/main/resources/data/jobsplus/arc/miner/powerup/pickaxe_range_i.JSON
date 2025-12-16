@@ -4,7 +4,7 @@
     "id": "jobsplus:miner/pickaxe_range_i"
   },
   "type": "arc:attribute",
-  "attribute": "minecraft:generic.block_interaction_range",
+  "attribute": "minecraft:block_interaction_range",
   "operation": "addition",
   "value": 0.5,
   "conditions": [

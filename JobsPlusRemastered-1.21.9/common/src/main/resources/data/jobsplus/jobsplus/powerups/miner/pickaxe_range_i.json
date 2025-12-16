@@ -1,0 +1,8 @@
+{
+  "job": "jobsplus:miner",
+  "icon": {
+    "id": "minecraft:spyglass"
+  },
+  "price": 10,
+  "required_level": 0
+}

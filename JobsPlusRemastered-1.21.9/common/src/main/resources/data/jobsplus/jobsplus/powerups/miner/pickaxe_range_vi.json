@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:miner",
+  "parent": "jobsplus:miner/pickaxe_range_v",
+  "icon": {
+    "id": "minecraft:spyglass",
+    "count": 6
+  },
+  "price": 20,
+  "required_level": 25
+}
