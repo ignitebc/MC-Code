@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:hunter",
+  "parent": "jobsplus:hunter/attack_speed_v",
+  "icon": {
+    "id": "minecraft:feather",
+    "count": 6
+  },
+  "price": 20,
+  "required_level": 25
+}

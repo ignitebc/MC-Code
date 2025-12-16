@@ -1,8 +1,8 @@
 {
   "job": "jobsplus:hunter",
-  "parent": "jobsplus:hunter/fire_arrows_i",
+  "parent": "jobsplus:hunter/exp_boost_mob_i",
   "icon": {
-    "id": "minecraft:fire_charge",
+    "id": "minecraft:amethyst_shard",
     "count": 2
   },
   "price": 12,

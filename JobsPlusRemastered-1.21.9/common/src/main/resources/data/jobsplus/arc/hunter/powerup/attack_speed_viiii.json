@@ -1,0 +1,19 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:hunter/attack_speed_viiii"
+  },
+  "type": "arc:on_get_attack_speed",
+  "rewards": [
+    {
+      "type": "arc:attack_speed_multiplier",
+      "multiplier": 0.55
+    }
+  ],
+  "conditions": [
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/attack_speed_x"
+    }
+  ]
+}

@@ -1,48 +1,48 @@
 {
   "holder": {
     "type": "jobsplus:powerup",
-    "id": "jobsplus:hunter/attack_speed_ii"
+    "id": "jobsplus:hunter/exp_boost_mob_ii"
   },
-  "type": "arc:on_get_attack_speed",
+  "type": "arc:on_kill_entity",
   "rewards": [
     {
-      "type": "arc:attack_speed_multiplier",
-      "multiplier": 0.9
+      "type": "arc:exp_multiplier",
+      "multiplier": 1.1
     }
   ],
   "conditions": [
-    
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/attack_speed_iii"
+      "powerup": "jobsplus:hunter/exp_boost_mob_iii"
     },
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/attack_speed_iv"
+      "powerup": "jobsplus:hunter/exp_boost_mob_iv"
     },
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/attack_speed_v"
+      "powerup": "jobsplus:hunter/exp_boost_mob_v"
     },
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/attack_speed_vi"
+      "powerup": "jobsplus:hunter/exp_boost_mob_vi"
     },
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/attack_speed_vii"
+      "powerup": "jobsplus:hunter/exp_boost_mob_vii"
     },
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/attack_speed_viii"
+      "powerup": "jobsplus:hunter/exp_boost_mob_viii"
     },
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/attack_speed_viiii"
+      "powerup": "jobsplus:hunter/exp_boost_mob_viiii"
     },
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/attack_speed_x"
+      "powerup": "jobsplus:hunter/exp_boost_mob_x"
     }
+
   ]
 }

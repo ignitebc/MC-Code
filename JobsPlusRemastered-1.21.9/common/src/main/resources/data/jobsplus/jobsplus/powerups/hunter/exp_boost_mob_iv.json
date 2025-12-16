@@ -1,8 +1,8 @@
 {
   "job": "jobsplus:hunter",
-  "parent": "jobsplus:hunter/attack_speed_iii",
+  "parent": "jobsplus:hunter/exp_boost_mob_iv",
   "icon": {
-    "id": "minecraft:feather",
+    "id": "minecraft:amethyst_shard",
     "count": 4
   },
   "price": 16,
