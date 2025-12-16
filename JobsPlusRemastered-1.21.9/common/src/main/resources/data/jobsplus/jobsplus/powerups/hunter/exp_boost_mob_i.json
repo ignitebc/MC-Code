@@ -1,7 +1,7 @@
 {
   "job": "jobsplus:hunter",
   "icon": {
-    "id": "minecraft:fire_charge"
+    "id": "minecraft:amethyst_shard"
   },
   "price": 10,
   "required_level": 0

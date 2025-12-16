@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:hunter",
+  "parent": "jobsplus:hunter/fire_arrows_viii",
+  "icon": {
+    "id": "minecraft:fire_charge",
+    "count": 9
+  },
+  "price": 26,
+  "required_level": 40
+}

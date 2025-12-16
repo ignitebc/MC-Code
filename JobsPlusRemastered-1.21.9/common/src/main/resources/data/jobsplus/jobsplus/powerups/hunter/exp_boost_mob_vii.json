@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:hunter",
+  "parent": "jobsplus:hunter/exp_boost_mob_vii",
+  "icon": {
+    "id": "minecraft:amethyst_shard",
+    "count": 7
+  },
+  "price": 22,
+  "required_level": 30
+}

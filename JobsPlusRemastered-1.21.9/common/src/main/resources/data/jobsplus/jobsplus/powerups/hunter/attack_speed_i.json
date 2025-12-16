@@ -1,8 +1,8 @@
 {
   "job": "jobsplus:hunter",
   "icon": {
-    "id": "minecraft:golden_sword"
+    "id": "minecraft:feather"
   },
-  "price": 5,
-  "required_level": 5
+  "price": 10,
+  "required_level": 0
 }

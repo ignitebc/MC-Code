@@ -1,13 +1,13 @@
 {
   "holder": {
     "type": "jobsplus:powerup",
-    "id": "jobsplus:hunter/fire_arrows_ii"
+    "id": "jobsplus:hunter/fire_arrows_vii"
   },
   "type": "arc:on_shoot_projectile",
   "rewards": [
     {
       "type": "arc:entity_on_fire",
-      "chance": 10,
+      "chance": 35,
       "priority": 2,
       "ticks": 2000
     }
@@ -18,26 +18,6 @@
       "entity_type": "minecraft:arrow"
     },
     
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/fire_arrows_iii"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/fire_arrows_iv"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/fire_arrows_v"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/fire_arrows_vi"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/fire_arrows_vii"
-    },
     {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:hunter/fire_arrows_viii"

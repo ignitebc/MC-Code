@@ -5,6 +5,6 @@
     "id": "minecraft:fire_charge",
     "count": 3
   },
-  "price": 10,
-  "required_level": 25
+  "price": 14,
+  "required_level": 10
 }
