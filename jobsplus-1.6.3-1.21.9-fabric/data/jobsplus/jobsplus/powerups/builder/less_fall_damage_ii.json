@@ -1,9 +1,0 @@
-{
-  "job": "jobsplus:builder",
-  "parent": "jobsplus:builder/less_fall_damage_i",
-  "icon": {
-    "id": "minecraft:iron_boots"
-  },
-  "price": 8,
-  "required_level": 30
-}

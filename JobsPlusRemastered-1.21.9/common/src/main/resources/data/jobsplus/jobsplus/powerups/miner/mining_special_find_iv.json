@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:miner",
+  "parent": "jobsplus:miner/mining_special_find_iii",
+  "icon": {
+    "id": "minecraft:ender_chest",
+    "count": 4
+  },
+  "price": 16,
+  "required_level": 15
+}

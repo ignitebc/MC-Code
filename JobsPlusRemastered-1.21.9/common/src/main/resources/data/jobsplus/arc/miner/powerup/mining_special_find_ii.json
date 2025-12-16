@@ -1,0 +1,71 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:miner/mining_special_find_ii"
+  },
+  "type": "arc:on_break_block",
+  "rewards": [
+    {
+      "type": "arc:drop_item",
+      "chance": 0.1,
+      "item": {
+        "id": "minecraft:netherite_ingot"
+      },
+      "amount": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:is_ore"
+    },
+    {
+      "type": "arc:not",
+      "conditions": [
+        {
+          "type": "arc:blocks",
+          "blocks": [
+            "minecraft:ancient_debris"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "arc:not_in_block_pos_cache"
+    },
+    
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/mining_special_find_iii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/mining_special_find_iv"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/mining_special_find_v"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/mining_special_find_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/mining_special_find_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/mining_special_find_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/mining_special_find_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/mining_special_find_x"
+    }
+  ]
+}
+
+

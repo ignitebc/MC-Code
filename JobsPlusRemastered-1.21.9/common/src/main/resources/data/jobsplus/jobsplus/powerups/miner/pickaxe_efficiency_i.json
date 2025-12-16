@@ -1,8 +1,8 @@
 {
   "job": "jobsplus:miner",
   "icon": {
-    "id": "minecraft:golden_pickaxe"
+    "id": "minecraft:diamond_pickaxe"
   },
-  "price": 5,
-  "required_level": 5
+  "price": 10,
+  "required_level": 0
 }

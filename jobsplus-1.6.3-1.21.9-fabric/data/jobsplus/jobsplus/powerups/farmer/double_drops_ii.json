@@ -1,9 +1,0 @@
-{
-  "job": "jobsplus:farmer",
-  "parent": "jobsplus:farmer/double_drops_i",
-  "icon": {
-    "id": "minecraft:potato"
-  },
-  "price": 10,
-  "required_level": 25
-}

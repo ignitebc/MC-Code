@@ -1,8 +1,0 @@
-{
-  "job": "jobsplus:enchanter",
-  "icon": {
-    "id": "minecraft:enchanting_table"
-  },
-  "price": 5,
-  "required_level": 15
-}

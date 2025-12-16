@@ -1,0 +1,18 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:miner/pickaxe_range_x"
+  },
+  "type": "arc:attribute",
+  "attribute": "minecraft:block_interaction_range",
+  "operation": "addition",
+  "value": 0.5,
+  "conditions": [
+    {
+      "type": "arc:items",
+      "items": [
+        "#minecraft:pickaxes"
+      ]
+    }
+  ]
+}
