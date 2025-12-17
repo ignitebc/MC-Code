@@ -41,6 +41,12 @@ public class JobsScreen extends AbstractScreen
         return this.previousScreen;
     }
 
+    /** 기존 상태 보존(Shop 탭 유지)용 Getter */
+    public JobsScreenState getState()
+    {
+        return this.state;
+    }
+
     @Override
     public boolean isPauseScreen()
     {

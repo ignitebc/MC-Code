@@ -2,35 +2,69 @@ package com.daqem.jobsplus.client.gui.jobs.components;
 
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
-import com.daqem.jobsplus.client.gui.jobs.widgets.SellItemButtonWidget;
+import com.daqem.jobsplus.client.gui.jobs.widgets.ShopOfferEntryWidget;
+import com.daqem.jobsplus.shop.ShopOffer;
 import com.daqem.uilib.gui.component.EmptyComponent;
-import com.daqem.uilib.gui.component.item.ItemComponent;
 import com.daqem.uilib.gui.component.sprite.SpriteComponent;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.resources.ResourceLocation;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 직업 GUI - SHOP 탭
+ *
+ * - 상품은 아래로 계속 추가될 예정이므로, ShopOffer 목록 기반으로 유지보수 가능하게 구성
+ * - 힌트 텍스트 관련 로직은 전부 제거됨
+ */
 public class ShopComponent extends EmptyComponent
 {
-
-    private static final int REQUIRED_AMOUNT = 10; // 판매에 필요한 익힌 닭고기 개수
-    private static final int REWARD_COINS = 100; // 지급될 코인 개수
+    // 상품 목록(여기에 계속 추가하면 됨)
+    private static final List<ShopOffer> OFFERS = createDefaultOffers();
 
     public ShopComponent(JobsScreenState state)
     {
         super(0, 0, 117, 167);
 
-        // 배너 추가
+        // 배너
         SpriteComponent bannerComponent = new SpriteComponent(9, 0, 98, 33, JobsPlus.getId("jobs/shop_banner"));
         this.addComponent(bannerComponent);
 
-        // 익힌 닭고기 아이템 표시
-        ItemStack cookedChickenStack = new ItemStack(Items.COOKED_CHICKEN, REQUIRED_AMOUNT);
-        ItemComponent itemComponent = new ItemComponent(9, 40, cookedChickenStack, true);
-        this.addComponent(itemComponent);
+        // 선택값이 없으면 첫 상품을 기본 선택
+        if (state.getSelectedShopOffer() == null && !OFFERS.isEmpty())
+        {
+            state.setSelectedShopOffer(OFFERS.getFirst());
+        }
 
-        // 판매 버튼 추가
-        SellItemButtonWidget sellButton = new SellItemButtonWidget(9, 70, state, Items.COOKED_CHICKEN, REQUIRED_AMOUNT, REWARD_COINS);
-        this.addWidget(sellButton);
+        // 상품 리스트(아래로 계속 추가되는 구조)
+        int startY = 46;   // 기존 힌트가 있던 영역을 비우고 그대로 시작
+        int rowH = 24;
+        int maxRows = (this.getHeight() - startY) / rowH;
+
+        for (int i = 0; i < Math.min(OFFERS.size(), maxRows); i++)
+        {
+            ShopOffer offer = OFFERS.get(i);
+            ShopOfferEntryWidget row = new ShopOfferEntryWidget(9, startY + (i * rowH), state, offer);
+            this.addWidget(row);
+        }
+    }
+
+    private static List<ShopOffer> createDefaultOffers()
+    {
+        List<ShopOffer> offers = new ArrayList<>();
+
+        // 예시 1) 익힌 닭고기 10개 -> 비트코인 1개
+        offers.add(new ShopOffer(
+                ResourceLocation.parse("minecraft:cooked_chicken"), 10,
+                ResourceLocation.parse("advancednetherite:bitcoin"), 1
+        ));
+
+        // 예시 2) 익힌 닭고기 20개 -> 비트코인 2개 (원하시면 이런 식으로 계속 추가)
+        offers.add(new ShopOffer(
+                ResourceLocation.parse("minecraft:cooked_chicken"), 20,
+                ResourceLocation.parse("advancednetherite:bitcoin"), 2
+        ));
+
+        return offers;
     }
 }
-
