@@ -13,10 +13,12 @@ public class TabSwitcherComponent extends EmptyComponent
 
         RightTabComponent experienceTab = new RightTabComponent(getWidth() - 30, 9, state, RightTab.EXPERIENCE);
         RightTabComponent recipesTab = new RightTabComponent(getWidth() - 30, 32, state, RightTab.RECIPES);
+        RightTabComponent shopTab = new RightTabComponent(getWidth() - 30, 55, state, RightTab.SHOP);
         RightPageContentComponent rightPageContentComponent = new RightPageContentComponent(state);
 
         this.addComponent(experienceTab);
         this.addComponent(recipesTab);
+        this.addComponent(shopTab);
         this.addComponent(rightPageContentComponent);
     }
 }
