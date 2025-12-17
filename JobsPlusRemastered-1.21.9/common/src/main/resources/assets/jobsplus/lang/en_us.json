@@ -640,5 +640,7 @@
   "yamlconfig.jobsplus.jobsplus-common.jobs.coins": "코인",
   "yamlconfig.jobsplus.jobsplus-common.jobs.coins.coins_per_level_up": "레벨 업당 코인",
 
-  "jobsplus.bitcoin.obtained": "%s님이 비트코인을 획득 했습니다 !!!!!!!!"
+  "jobsplus.bitcoin.obtained": "%s님이 비트코인을 획득 했습니다 !!!!!!!!",
+
+  "jobsplus.gui.jobs.tab.shop": "상점"
 }
