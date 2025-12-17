@@ -27,6 +27,7 @@ public class RightPageContentComponent extends EmptyComponent
         switch (this.cachedTab) {
         case EXPERIENCE -> this.addComponent(new ExperienceComponent(state));
         case RECIPES -> this.addComponent(new RecipesComponent(state));
+        case SHOP -> this.addComponent(new ShopComponent(state));
         }
     }
 
