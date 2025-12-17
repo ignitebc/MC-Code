@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:hunter",
-  "parent": "jobsplus:hunter/exp_boost_mob_viiii",
+  "parent": "jobsplus:hunter/exp_boost_mob_viii",
   "icon": {
     "id": "minecraft:amethyst_shard",
     "count": 9

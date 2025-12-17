@@ -2,6 +2,7 @@ package com.daqem.jobsplus.client.gui.jobs;
 
 import com.daqem.arc.api.action.IAction;
 import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
+import com.daqem.jobsplus.shop.ShopOffer;
 import com.daqem.jobsplus.player.job.Job;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,6 +20,9 @@ public class JobsScreenState
     private RightTab selectedRightTab;
     private @Nullable IAction activeAction;
 
+    // SHOP 탭: 선택된 상품(유지보수 핵심)
+    private @Nullable ShopOffer selectedShopOffer;
+
     public JobsScreenState(List<Job> jobs, int coins)
     {
         this(jobs, coins, null, RightTab.EXPERIENCE);
@@ -26,13 +30,19 @@ public class JobsScreenState
 
     public JobsScreenState(List<Job> jobs, int coins, Job selectedJob, RightTab selectedRightTab)
     {
-        this.jobs = jobs.stream().sorted(Comparator.comparing(Job::getLevel).reversed().thenComparingInt(job -> -job.getExperience()).thenComparing(job -> job.getJobInstance().getName().getString())).toList();
+        this.jobs = jobs.stream()
+                .sorted(Comparator.comparing(Job::getLevel).reversed()
+                        .thenComparingInt(job -> -job.getExperience())
+                        .thenComparing(job -> job.getJobInstance().getName().getString()))
+                .toList();
         this.preformingJobs = this.jobs.stream().filter(job -> job.getLevel() > 0).toList();
         this.notPreformingJobs = this.jobs.stream().filter(job -> job.getLevel() <= 0).toList();
         this.coins = coins;
-        this.selectedJob = selectedJob != null ? selectedJob : this.jobs.getFirst();
+        //안전성 개선
+        this.selectedJob = selectedJob != null? selectedJob : (this.jobs.isEmpty() ? null : this.jobs.getFirst());
         this.selectedRightTab = selectedRightTab;
         this.activeAction = null;
+        this.selectedShopOffer = null;
     }
 
     public List<Job> getJobs()
@@ -88,6 +98,16 @@ public class JobsScreenState
     public void setActiveAction(@Nullable IAction activeAction)
     {
         this.activeAction = activeAction;
+    }
+
+    public @Nullable ShopOffer getSelectedShopOffer()
+    {
+        return selectedShopOffer;
+    }
+
+    public void setSelectedShopOffer(@Nullable ShopOffer selectedShopOffer)
+    {
+        this.selectedShopOffer = selectedShopOffer;
     }
 
     public int getActiveJobCount()

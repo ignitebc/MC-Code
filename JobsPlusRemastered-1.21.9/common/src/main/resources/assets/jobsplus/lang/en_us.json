@@ -642,5 +642,12 @@
 
   "jobsplus.bitcoin.obtained": "%s님이 비트코인을 획득 했습니다 !!!!!!!!",
 
-  "jobsplus.gui.jobs.tab.shop": "상점"
+  "jobsplus.gui.jobs.tab.shop": "상점",
+  "jobsplus.gui.jobs.shop.sell_button": "판매",
+  "jobsplus.gui.jobs.shop.trade": "%s x%d → %s x%d",
+  "jobsplus.gui.jobs.shop.sold": "%s x%d 판매 완료 → %s 지급",
+  "jobsplus.error.not_enough_items": "%s가 부족합니다. (필요: %d)",
+  "jobsplus.error.bitcoin_item_not_found": "비트코인 아이템을 찾을 수 없습니다: %s (Advanced Netherite 로드/아이템 ID 확인)",
+  "jobsplus.error.shop_output_item_not_found": "상점 출력 아이템을 찾을 수 없습니다: %s"
+
 }

@@ -25,9 +25,7 @@
         "minecraft:granite",
         "minecraft:andesite",
         "minecraft:diorite",
-        "minecraft:deepslate",
-        "minecraft:netherrack",
-        "minecraft:end_stone"
+        "minecraft:deepslate"
       ]
     },
     {
