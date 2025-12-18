@@ -48,12 +48,9 @@ public class ShopOfferEntryWidget extends CustomButtonWidget
         }
 
         // 슬롯 2개 + 화살표
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/item_slot_1"),
-                this.getX(), this.getY() + 3, 18, 18, ARGB.white(this.alpha));
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/pagination_arrow_right"),
-                this.getX() + 40, this.getY() + 7, 10, 10, ARGB.white(this.alpha));
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/item_slot_1"),
-                this.getX() + 62, this.getY() + 3, 18, 18, ARGB.white(this.alpha));
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/item_slot_1"),this.getX(), this.getY() + 3, 18, 18, ARGB.white(this.alpha));
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/pagination_arrow_right"), this.getX() + 30, this.getY() + 7, 10, 10, ARGB.white(this.alpha));
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/item_slot_1"),this.getX() + 62, this.getY() + 3, 18, 18, ARGB.white(this.alpha));
 
         ItemStack inStack = new ItemStack(resolveItem(this.offer.inputItemId()).orElse(Items.AIR), this.offer.inputAmount());
         ItemStack outStack = new ItemStack(resolveItem(this.offer.outputItemId()).orElse(Items.AIR), this.offer.outputAmount());
