@@ -52,18 +52,10 @@ public class ShopComponent extends EmptyComponent
     private static List<ShopOffer> createDefaultOffers()
     {
         List<ShopOffer> offers = new ArrayList<>();
-
-        // 예시 1) 익힌 닭고기 10개 -> 비트코인 1개
-        offers.add(new ShopOffer(
-                ResourceLocation.parse("minecraft:cooked_chicken"), 10,
-                ResourceLocation.parse("advancednetherite:bitcoin"), 1
-        ));
-
-        // 예시 2) 익힌 닭고기 20개 -> 비트코인 2개 (원하시면 이런 식으로 계속 추가)
-        offers.add(new ShopOffer(
-                ResourceLocation.parse("minecraft:cooked_chicken"), 20,
-                ResourceLocation.parse("advancednetherite:bitcoin"), 2
-        ));
+        
+        offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 2, ResourceLocation.parse("minecraft:diamond_ore"), 1));
+        offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 3, ResourceLocation.parse("minecraft:ancient_debris"), 1));
+        offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 25, ResourceLocation.parse("minecraft:elytra"), 1));
 
         return offers;
     }
