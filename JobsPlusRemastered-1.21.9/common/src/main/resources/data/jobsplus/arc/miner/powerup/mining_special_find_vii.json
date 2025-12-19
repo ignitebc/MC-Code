@@ -1,33 +1,44 @@
 {
   "holder": {
     "type": "jobsplus:job",
-    "id": "jobsplus:miner/mining_special_find_vii"
+    "id": "jobsplus:miner/mining_special_find_i"
   },
   "type": "arc:on_break_block",
   "rewards": [
     {
       "type": "arc:drop_item",
-      "chance": 0.35,
-      "item": {
-        "id": "minecraft:netherite_ingot"
-      },
+      "chance": 0.05,
+      "item": { "id": "minecraft:netherite_ingot" },
       "amount": 1
     }
   ],
   "conditions": [
     {
-      "type": "arc:is_ore"
+      "type": "arc:blocks",
+      "blocks": [
+        "minecraft:gold_ore",
+        "minecraft:deepslate_gold_ore",
+        "minecraft:diamond_ore",
+        "minecraft:deepslate_diamond_ore",
+        "minecraft:emerald_ore",
+        "minecraft:deepslate_emerald_ore"
+      ]
     },
     {
-      "type": "arc:not",
-      "conditions": [
-        {
-          "type": "arc:blocks",
-          "blocks": [
-            "minecraft:ancient_debris"
-          ]
-        }
-      ]
+      "type": "arc:tool",
+      "tool": {
+        "type": "arc:not",
+        "conditions": [
+          {
+            "type": "arc:enchantments",
+            "enchantments": {
+              "minecraft:silk_touch": {
+                "min": 1
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "type": "arc:not_in_block_pos_cache"

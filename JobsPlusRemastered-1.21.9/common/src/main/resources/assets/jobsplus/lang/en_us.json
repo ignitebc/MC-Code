@@ -400,7 +400,7 @@
   "jobsplus.powerup.jobsplus.lumberjack.axe_efficiency_iv.description": "도끼 벌목 속도 40% 증가",
   "jobsplus.powerup.jobsplus.lumberjack.axe_efficiency_v.name": "도끼 효율 V",
   "jobsplus.powerup.jobsplus.lumberjack.axe_efficiency_v.description": "도끼 벌목 속도 50% 증가",
-  
+
   "jobsplus.powerup.jobsplus.lumberjack.double_drops_i.name": "더블 드롭 I",
   "jobsplus.powerup.jobsplus.lumberjack.double_drops_i.description": "나무 벌목 시 드롭이 2배 (발동확률 5%)",
   "jobsplus.powerup.jobsplus.lumberjack.double_drops_ii.name": "더블 드롭 II",
@@ -474,25 +474,25 @@
   "jobsplus.powerup.jobsplus.miner.pickaxe_range_x.description": "곡괭이 사거리 5칸 증가",
 
   "jobsplus.powerup.jobsplus.miner.mining_special_find_i.name": "스페셜 광부 I",
-  "jobsplus.powerup.jobsplus.miner.mining_special_find_i.description": "광물채굴 시 네더라이트 주괴 드롭 (발동확률 0.05%)",
+  "jobsplus.powerup.jobsplus.miner.mining_special_find_i.description": "광물(고대잔해 제외)채굴 시 네더라이트 주괴 드롭 (발동확률 0.05%)",
   "jobsplus.powerup.jobsplus.miner.mining_special_find_ii.name": "스페셜 광부 II",
-  "jobsplus.powerup.jobsplus.miner.mining_special_find_ii.description": "광물채굴 시 네더라이트 주괴 드롭 (발동확률 0.1%)",
+  "jobsplus.powerup.jobsplus.miner.mining_special_find_ii.description": "광물(고대잔해 제외)채굴 시 네더라이트 주괴 드롭 (발동확률 0.1%)",
   "jobsplus.powerup.jobsplus.miner.mining_special_find_iii.name": "스페셜 광부 III",
-  "jobsplus.powerup.jobsplus.miner.mining_special_find_iii.description": "광물채굴 시 네더라이트 주괴 드롭 (발동확률 0.15%)",
+  "jobsplus.powerup.jobsplus.miner.mining_special_find_iii.description": "광물(고대잔해 제외)채굴 시 네더라이트 주괴 드롭 (발동확률 0.15%)",
   "jobsplus.powerup.jobsplus.miner.mining_special_find_iv.name": "스페셜 광부 IV",
-  "jobsplus.powerup.jobsplus.miner.mining_special_find_iv.description": "광물채굴 시 네더라이트 주괴 드롭 (발동확률 0.2%)",
+  "jobsplus.powerup.jobsplus.miner.mining_special_find_iv.description": "광물(고대잔해 제외)채굴 시 네더라이트 주괴 드롭 (발동확률 0.2%)",
   "jobsplus.powerup.jobsplus.miner.mining_special_find_v.name": "스페셜 광부 V",
-  "jobsplus.powerup.jobsplus.miner.mining_special_find_v.description": "광물채굴 시 네더라이트 주괴 드롭 (발동확률 0.25%)",
+  "jobsplus.powerup.jobsplus.miner.mining_special_find_v.description": "광물(고대잔해 제외)채굴 시 네더라이트 주괴 드롭 (발동확률 0.25%)",
   "jobsplus.powerup.jobsplus.miner.mining_special_find_vi.name": "스페셜 광부 VI",
-  "jobsplus.powerup.jobsplus.miner.mining_special_find_vi.description": "광물채굴 시 네더라이트 주괴 드롭 (발동확률 0.3%)",
+  "jobsplus.powerup.jobsplus.miner.mining_special_find_vi.description": "광물(고대잔해 제외)채굴 시 네더라이트 주괴 드롭 (발동확률 0.3%)",
   "jobsplus.powerup.jobsplus.miner.mining_special_find_vii.name": "스페셜 광부 VII",
-  "jobsplus.powerup.jobsplus.miner.mining_special_find_vii.description": "광물채굴 시 네더라이트 주괴 드롭 (발동확률 0.35%)",
+  "jobsplus.powerup.jobsplus.miner.mining_special_find_vii.description": "광물(고대잔해 제외)채굴 시 네더라이트 주괴 드롭 (발동확률 0.35%)",
   "jobsplus.powerup.jobsplus.miner.mining_special_find_viii.name": "스페셜 광부 VIII",
-  "jobsplus.powerup.jobsplus.miner.mining_special_find_viii.description": "광물채굴 시 네더라이트 주괴 드롭 (발동확률 0.4%)",
+  "jobsplus.powerup.jobsplus.miner.mining_special_find_viii.description": "광물(고대잔해 제외)채굴 시 네더라이트 주괴 드롭 (발동확률 0.4%)",
   "jobsplus.powerup.jobsplus.miner.mining_special_find_viiii.name": "스페셜 광부 IX",
-  "jobsplus.powerup.jobsplus.miner.mining_special_find_viiii.description": "광물채굴 시 네더라이트 주괴 드롭 (발동확률 0.45%)",
+  "jobsplus.powerup.jobsplus.miner.mining_special_find_viiii.description": "광물(고대잔해 제외)채굴 시 네더라이트 주괴 드롭 (발동확률 0.45%)",
   "jobsplus.powerup.jobsplus.miner.mining_special_find_x.name": "스페셜 광부 X",
-  "jobsplus.powerup.jobsplus.miner.mining_special_find_x.description": "광물채굴 시 네더라이트 주괴 드롭 (발동확률 0.5%)",
+  "jobsplus.powerup.jobsplus.miner.mining_special_find_x.description": "광물(고대잔해 제외)채굴 시 네더라이트 주괴 드롭 (발동확률 0.5%)",
 
   "jobsplus.powerup.jobsplus.miner.exp_boost_block_i.name": "EXP 부스팅 I",
   "jobsplus.powerup.jobsplus.miner.exp_boost_block_i.description": "광물 채굴 시 얻는 인챈트 경험치 5% 증가",
@@ -538,7 +538,7 @@
 
   "jobsplus.powerup.jobsplus.smith.root.name": "대장장이",
   "jobsplus.powerup.jobsplus.smith.root.description": "-도구/방어구 제작시 비트코인 0.1% 확률로 획득\n-광석 제련시 비트코인 0.05% 확률로 획득\n- 모루 사용시 비트코인 0.1% 확률로 획득\n- 숯돌 사용시 비트코인 0.1% 확률로 획득\n- 인챈터 작업대(세번째만) 적용시  비트코인 1% 확률로 획득",
-  
+
   "jobsplus.powerup.jobsplus.smith.null_hit_i.name": "피격 무효화 I",
   "jobsplus.powerup.jobsplus.smith.null_hit_i.description": "피격 시 일정 확률로 피격 무효화 (발동확률 2%)",
   "jobsplus.powerup.jobsplus.smith.null_hit_ii.name": "피격 무효화 II",
