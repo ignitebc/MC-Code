@@ -53,7 +53,7 @@ public class ShopComponent extends EmptyComponent
     {
         List<ShopOffer> offers = new ArrayList<>();
         
-        offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 2, ResourceLocation.parse("minecraft:diamond_ore"), 1));
+        offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 2, ResourceLocation.parse("minecraft:diamond"), 8));
         offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 3, ResourceLocation.parse("minecraft:ancient_debris"), 1));
         offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 25, ResourceLocation.parse("minecraft:elytra"), 1));
 
