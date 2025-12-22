@@ -25,10 +25,10 @@ public final class ModItems
     public static final AdvancedItem BITCOIN = new AdvancedItem(new Item.Properties().setId(key("bitcoin")));
     
     //randomBox 등록
-    public static final AdvancedItem RANDOM_BOX_I = new AdvancedItem(new Item.Properties().setId(key("random_box_i")));
-    public static final AdvancedItem RANDOM_BOX_II = new AdvancedItem(new Item.Properties().setId(key("random_box_ii")));
-    public static final AdvancedItem RANDOM_BOX_III = new AdvancedItem(new Item.Properties().setId(key("random_box_iii")));
-    public static final AdvancedItem RANDOM_BOX_IV = new AdvancedItem(new Item.Properties().setId(key("random_box_iv")));
+    public static final RandomBoxItem RANDOM_BOX_I = new RandomBoxItem(new Item.Properties().setId(key("random_box_i")),ResourceLocation.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "randombox_i"));
+    public static final RandomBoxItem RANDOM_BOX_II = new RandomBoxItem(new Item.Properties().setId(key("random_box_ii")),ResourceLocation.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "randombox_ii"));
+    public static final RandomBoxItem RANDOM_BOX_III = new RandomBoxItem(new Item.Properties().setId(key("random_box_iii")),ResourceLocation.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "randombox_iii"));
+    public static final RandomBoxItem RANDOM_BOX_IV = new RandomBoxItem(new Item.Properties().setId(key("random_box_iv")),ResourceLocation.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "randombox_iv"));
     
     //rewardKey 등록
     public static final AdvancedItem REWARD_KEY_I = new AdvancedItem(new Item.Properties().setId(key("reward_key_i")));
