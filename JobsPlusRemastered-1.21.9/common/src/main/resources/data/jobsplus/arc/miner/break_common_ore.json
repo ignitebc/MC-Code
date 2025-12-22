@@ -37,6 +37,22 @@
     },
     {
       "type": "arc:not_in_block_pos_cache"
+    },
+    {
+      "type": "arc:tool",
+      "tool": {
+        "type": "arc:not",
+        "conditions": [
+          {
+            "type": "arc:enchantments",
+            "enchantments": {
+              "minecraft:silk_touch": {
+                "min": 1
+              }
+            }
+          }
+        ]
+      }
     }
   ]
 }

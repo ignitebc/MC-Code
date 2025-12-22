@@ -1,21 +1,9 @@
 {
-  "item": "advancednetherite:random_box_iv",
-  "required_key": "advancednetherite:reward_key_iv",
-  "consume": {
-    "box": 1,
-    "key": 1
-  },
+  "required_key": "advancednetherite:key_iv",
+  "consume": { "box": 1, "key": 1 },
   "roll_mode": "SINGLE",
   "rewards": [
-    {
-      "item": "minecraft:diamond",
-      "count": 1,
-      "chance": 0.9
-    },
-    {
-      "item": "minecraft:diamond",
-      "count": 10,
-      "chance": 0.1
-    }
+    { "item": "minecraft:diamond", "count": 3, "chance": 70 },
+    { "item": "minecraft:netherite_ingot", "count": 1, "chance": 30 }
   ]
 }
