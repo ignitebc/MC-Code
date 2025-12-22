@@ -133,7 +133,15 @@
   "config.advancednetherite.screen.button.install_configured": "%s 설치",
   "config.advancednetherite.screen.button.instructions": "설명서",
 
-
-  "item.advancednetherite.bitcoin": "비트코인"
-
+  "item.advancednetherite.bitcoin": "비트코인",
+  "item.advancednetherite.random_box_i": "랜덤 상자 I",
+  "item.advancednetherite.random_box_ii": "랜덤 상자 II",
+  "item.advancednetherite.random_box_iii": "랜덤 상자 III",
+  "item.advancednetherite.random_box_iv": "랜덤 상자 IV",
+  "item.advancednetherite.reward_key_i": "보상 열쇠 I",
+  "item.advancednetherite.reward_key_ii": "보상 열쇠 II",
+  "item.advancednetherite.reward_key_iii": "보상 열쇠 III",
+  "item.advancednetherite.reward_key_iv": "보상 열쇠 IV",
+  "item.advancednetherite.enhancement_shard": "강화 조각",
+  "item.advancednetherite.enhancement_gem": "강화 원석"
 }

@@ -55,6 +55,24 @@ public class ModModelProvider extends FabricModelProvider
         // bitcoin 추가
         itemModel(generator, ModItems.BITCOIN);
         
+        // randomBox 1~4
+        itemModel(generator, ModItems.RANDOM_BOX_I);
+        itemModel(generator, ModItems.RANDOM_BOX_II);
+        itemModel(generator, ModItems.RANDOM_BOX_III);
+        itemModel(generator, ModItems.RANDOM_BOX_IV);
+        
+        // rewardKey 1~4
+        itemModel(generator, ModItems.REWARD_KEY_I);
+        itemModel(generator, ModItems.REWARD_KEY_II);
+        itemModel(generator, ModItems.REWARD_KEY_III);
+        itemModel(generator, ModItems.REWARD_KEY_IV);
+        
+        // 강화조각 / 강화보석
+        itemModel(generator, ModItems.ENHANCEMENT_SHARD);
+        itemModel(generator, ModItems.ENHANCEMENT_GEM);
+
+
+
         armorModel(generator, ModItems.NETHERITE_IRON_HELMET, ModEquipmentAssets.NETHERITE_IRON);
         armorModel(generator, ModItems.NETHERITE_IRON_CHESTPLATE, ModEquipmentAssets.NETHERITE_IRON);
         armorModel(generator, ModItems.NETHERITE_IRON_LEGGINGS, ModEquipmentAssets.NETHERITE_IRON);
