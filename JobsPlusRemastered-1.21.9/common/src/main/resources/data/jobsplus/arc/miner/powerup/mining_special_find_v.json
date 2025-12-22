@@ -8,7 +8,7 @@
     {
       "type": "arc:drop_item",
       "chance": 0.05,
-      "item": { "id": "minecraft:netherite_ingot" },
+      "item": { "id": "minecraft:diamond" },
       "amount": 1
     }
   ],

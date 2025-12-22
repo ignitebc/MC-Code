@@ -1,7 +1,7 @@
 {
   "job": "jobsplus:miner",
   "icon": {
-    "id": "minecraft:ender_chest"
+    "id": "minecraft:diamond"
   },
   "price": 10,
   "required_level": 0

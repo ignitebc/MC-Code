@@ -2,7 +2,7 @@
   "job": "jobsplus:miner",
   "parent": "jobsplus:miner/mining_special_find_viiii",
   "icon": {
-    "id": "minecraft:ender_chest",
+    "id": "minecraft:diamond",
     "count": 10
   },
   "price": 28,

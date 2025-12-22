@@ -7,9 +7,9 @@
   "rewards": [
     {
       "type": "arc:entity_on_fire",
-      "chance": 15,
+      "chance": 100,
       "priority": 2,
-      "ticks": 2000
+      "ticks": 160
     }
   ],
   "conditions": [
