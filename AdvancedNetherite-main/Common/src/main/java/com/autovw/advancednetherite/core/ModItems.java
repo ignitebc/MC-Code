@@ -21,8 +21,25 @@ public final class ModItems
     public static final AdvancedItem NETHERITE_EMERALD_INGOT = new AdvancedItem(new Item.Properties().setId(key("netherite_emerald_ingot")));
     public static final AdvancedItem NETHERITE_DIAMOND_INGOT = new AdvancedItem(new Item.Properties().setId(key("netherite_diamond_ingot")));
     
-    //bitCoin 등록 (ModItem)
+    //bitCoin 등록
     public static final AdvancedItem BITCOIN = new AdvancedItem(new Item.Properties().setId(key("bitcoin")));
+    
+    //randomBox 등록
+    public static final AdvancedItem RANDOM_BOX_I = new AdvancedItem(new Item.Properties().setId(key("random_box_i")));
+    public static final AdvancedItem RANDOM_BOX_II = new AdvancedItem(new Item.Properties().setId(key("random_box_ii")));
+    public static final AdvancedItem RANDOM_BOX_III = new AdvancedItem(new Item.Properties().setId(key("random_box_iii")));
+    public static final AdvancedItem RANDOM_BOX_IV = new AdvancedItem(new Item.Properties().setId(key("random_box_iv")));
+    
+    //rewardKey 등록
+    public static final AdvancedItem REWARD_KEY_I = new AdvancedItem(new Item.Properties().setId(key("reward_key_i")));
+    public static final AdvancedItem REWARD_KEY_II = new AdvancedItem(new Item.Properties().setId(key("reward_key_ii")));
+    public static final AdvancedItem REWARD_KEY_III = new AdvancedItem(new Item.Properties().setId(key("reward_key_iii")));
+    public static final AdvancedItem REWARD_KEY_IV = new AdvancedItem(new Item.Properties().setId(key("reward_key_iv")));
+
+    // 강화조각
+    public static final AdvancedItem ENHANCEMENT_SHARD = new AdvancedItem(new Item.Properties().setId(key("enhancement_shard")));
+    public static final AdvancedItem ENHANCEMENT_GEM = new AdvancedItem(new Item.Properties().setId(key("enhancement_gem")));
+
 
     // ARMOR SETS
     // Netherite-Iron

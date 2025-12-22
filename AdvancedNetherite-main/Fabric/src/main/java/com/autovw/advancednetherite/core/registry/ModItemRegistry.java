@@ -69,6 +69,22 @@ public final class ModItemRegistry
 
         // 레지스트리 bitCoins 등록
         Registry.register(BuiltInRegistries.ITEM, id("bitcoin"), ModItems.BITCOIN);
+         
+        // randomBox 1~4
+        Registry.register(BuiltInRegistries.ITEM, id("random_box_i"), ModItems.RANDOM_BOX_I);
+        Registry.register(BuiltInRegistries.ITEM, id("random_box_ii"), ModItems.RANDOM_BOX_II);
+        Registry.register(BuiltInRegistries.ITEM, id("random_box_iii"), ModItems.RANDOM_BOX_III);
+        Registry.register(BuiltInRegistries.ITEM, id("random_box_iv"), ModItems.RANDOM_BOX_IV);
+
+        // rewardKey 1~4
+        Registry.register(BuiltInRegistries.ITEM, id("reward_key_i"), ModItems.REWARD_KEY_I);
+        Registry.register(BuiltInRegistries.ITEM, id("reward_key_ii"), ModItems.REWARD_KEY_II);
+        Registry.register(BuiltInRegistries.ITEM, id("reward_key_iii"), ModItems.REWARD_KEY_III);
+        Registry.register(BuiltInRegistries.ITEM, id("reward_key_iv"), ModItems.REWARD_KEY_IV);
+
+        // 강화조각 / 강화보석
+        Registry.register(BuiltInRegistries.ITEM, id("enhancement_shard"), ModItems.ENHANCEMENT_SHARD);
+        Registry.register(BuiltInRegistries.ITEM, id("enhancement_gem"), ModItems.ENHANCEMENT_GEM);
     }
     
     private static ResourceLocation id(String name)

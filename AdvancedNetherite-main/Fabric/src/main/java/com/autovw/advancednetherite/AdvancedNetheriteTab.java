@@ -91,8 +91,24 @@ public final class AdvancedNetheriteTab
                     entries.accept(ModItems.NETHERITE_EMERALD_BLOCK);
                     entries.accept(ModItems.NETHERITE_DIAMOND_BLOCK);
 
-                    // BitCoins 추가 -> 크리에이티브 모드 탭쪽
+                    // BitCoin
                     entries.accept(ModItems.BITCOIN);
+
+                    // randomBox 1~4
+                    entries.accept(ModItems.RANDOM_BOX_I);
+                    entries.accept(ModItems.RANDOM_BOX_II);
+                    entries.accept(ModItems.RANDOM_BOX_III);
+                    entries.accept(ModItems.RANDOM_BOX_IV);
+
+                    // rewardKey 1~4
+                    entries.accept(ModItems.REWARD_KEY_I);
+                    entries.accept(ModItems.REWARD_KEY_II);
+                    entries.accept(ModItems.REWARD_KEY_III);
+                    entries.accept(ModItems.REWARD_KEY_IV);
+
+                    // 강화조각 / 강화보석
+                    entries.accept(ModItems.ENHANCEMENT_SHARD);
+                    entries.accept(ModItems.ENHANCEMENT_GEM);
                 })
                 .build()
         );
