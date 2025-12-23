@@ -90,10 +90,16 @@ public class RandomBoxItem extends AdvancedItem {
 
         RandomSource rnd = player.getRandom();
 
+        // 실제 지급된 보상을 수집 (전체 방송 메시지에 사용)
+        List<ItemStack> givenRewards = new ArrayList<>();
+
         if (config.roll_mode == RandomBoxConfig.RollMode.SINGLE) {
             RandomBoxConfig.Reward chosen = pickOneRewardWeighted(rewards, rnd);
             if (chosen != null) {
-                giveReward(player, chosen);
+                ItemStack given = giveReward(player, chosen);
+                if (given != null && !given.isEmpty()) {
+                    givenRewards.add(given);
+                }
             }
         } else {
             for (RandomBoxConfig.Reward r : rewards) {
@@ -102,12 +108,25 @@ public class RandomBoxItem extends AdvancedItem {
 
                 double chance = clamp01(r.chance);
                 if (rnd.nextDouble() <= chance) {
-                    giveReward(player, r);
+                    ItemStack given = giveReward(player, r);
+                    if (given != null && !given.isEmpty()) {
+                        givenRewards.add(given);
+                    }
                 }
             }
         }
 
-        player.displayClientMessage(Component.literal("상자를 열었습니다."), true);
+        // 전체 방송 메시지
+        String openerName = player.getName().getString();
+        String boxName = boxStack.getHoverName().getString(); // 로컬라이징된 아이템명 사용
+
+        String rewardText = buildRewardText(givenRewards);
+
+        Component broadcast = Component.literal(openerName + "님이 " + boxName + " 오픈!!! 축하합니다! 보상은 " + rewardText + " 입니다");
+
+        // 서버 전체 채팅으로 방송
+        server.getPlayerList().broadcastSystemMessage(broadcast, false);
+
         return InteractionResult.CONSUME;
     }
 
@@ -159,18 +178,55 @@ public class RandomBoxItem extends AdvancedItem {
         return candidates.get(candidates.size() - 1);
     }
 
-    private static void giveReward(Player player, RandomBoxConfig.Reward r) {
+    /**
+     * 보상을 지급하고, 실제 지급된 ItemStack(표시용)을 반환
+     */
+    private static ItemStack giveReward(Player player, RandomBoxConfig.Reward r) {
         int count = Math.max(r.count, 1);
 
         Item rewardItem = getItemOrNull(r.item);
         if (rewardItem == null)
-            return;
+            return ItemStack.EMPTY;
 
         ItemStack rewardStack = new ItemStack(rewardItem, count);
 
         if (!player.getInventory().add(rewardStack)) {
             player.drop(rewardStack, false);
         }
+
+        // 표시용으로 복제해서 반환
+        return rewardStack.copy();
+    }
+
+    private static String buildRewardText(List<ItemStack> givenRewards) {
+        if (givenRewards == null || givenRewards.isEmpty()) {
+            return "없음";
+        }
+
+        // 같은 아이템이 여러 번 들어올 수 있어 합산
+        List<ItemStack> merged = new ArrayList<>();
+        outer: for (ItemStack s : givenRewards) {
+            if (s == null || s.isEmpty())
+                continue;
+
+            for (ItemStack m : merged) {
+                if (ItemStack.isSameItemSameComponents(m, s)) {
+                    m.grow(s.getCount());
+                    continue outer;
+                }
+            }
+            merged.add(s.copy());
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < merged.size(); i++) {
+            ItemStack s = merged.get(i);
+            String name = s.getHoverName().getString();
+            sb.append(name).append(" x").append(s.getCount());
+            if (i < merged.size() - 1)
+                sb.append(", ");
+        }
+        return sb.toString();
     }
 
     private static double clamp01(double v) {
