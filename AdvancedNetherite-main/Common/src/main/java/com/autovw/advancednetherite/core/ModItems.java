@@ -39,7 +39,15 @@ public final class ModItems
     // 강화조각
     public static final AdvancedItem ENHANCEMENT_SHARD = new AdvancedItem(new Item.Properties().setId(key("enhancement_shard")));
     public static final AdvancedItem ENHANCEMENT_GEM = new AdvancedItem(new Item.Properties().setId(key("enhancement_gem")));
-
+    
+    // 직업선택권 외 주문서
+    public static final AdvancedItem JOB_SELECT_TICKET = new AdvancedItem(new Item.Properties().setId(key("job_select_ticket")));
+    public static final AdvancedItem DEATH_ITEM_PROTECTION_SCROLL = new AdvancedItem(new Item.Properties().setId(key("death_item_protection_scroll")));
+    public static final AdvancedItem ENHANCE_PROTECTION_SCROLL = new AdvancedItem(new Item.Properties().setId(key("enhance_protection_scroll")));
+    public static final AdvancedItem ENHANCE_SUCCESS_SCROLL_3 = new AdvancedItem(new Item.Properties().setId(key("enhance_success_scroll_3")));
+    public static final AdvancedItem ENHANCE_SUCCESS_SCROLL_5 = new AdvancedItem(new Item.Properties().setId(key("enhance_success_scroll_5")));
+    public static final AdvancedItem ENHANCE_SUCCESS_SCROLL_7 = new AdvancedItem(new Item.Properties().setId(key("enhance_success_scroll_7")));
+    public static final AdvancedItem ENHANCE_SUCCESS_SCROLL_10 = new AdvancedItem(new Item.Properties().setId(key("enhance_success_scroll_10")));
 
     // ARMOR SETS
     // Netherite-Iron

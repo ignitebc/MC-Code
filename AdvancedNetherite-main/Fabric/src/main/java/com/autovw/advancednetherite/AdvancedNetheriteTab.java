@@ -1,6 +1,7 @@
 package com.autovw.advancednetherite;
 
 import com.autovw.advancednetherite.api.annotation.Internal;
+import com.autovw.advancednetherite.common.item.AdvancedItem;
 import com.autovw.advancednetherite.core.ModItems;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;
@@ -10,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 
 /**
  * @author Autovw
@@ -109,6 +111,15 @@ public final class AdvancedNetheriteTab
                     // 강화조각 / 강화보석
                     entries.accept(ModItems.ENHANCEMENT_SHARD);
                     entries.accept(ModItems.ENHANCEMENT_GEM);
+
+                    // 직업선택권 외 주문서
+                    entries.accept(ModItems.JOB_SELECT_TICKET);
+                    entries.accept(ModItems.DEATH_ITEM_PROTECTION_SCROLL);
+                    entries.accept(ModItems.ENHANCE_PROTECTION_SCROLL);
+                    entries.accept(ModItems.ENHANCE_SUCCESS_SCROLL_3);
+                    entries.accept(ModItems.ENHANCE_SUCCESS_SCROLL_5);
+                    entries.accept(ModItems.ENHANCE_SUCCESS_SCROLL_7);
+                    entries.accept(ModItems.ENHANCE_SUCCESS_SCROLL_10);
                 })
                 .build()
         );

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "advancednetherite:item/enhance_success_scroll_5"
+  }
+}
