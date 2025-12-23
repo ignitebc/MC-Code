@@ -2,10 +2,12 @@ package com.autovw.advancednetherite.core.registry;
 
 import com.autovw.advancednetherite.AdvancedNetherite;
 import com.autovw.advancednetherite.api.annotation.Internal;
+import com.autovw.advancednetherite.common.item.AdvancedItem;
 import com.autovw.advancednetherite.core.ModItems;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 
 /**
  * @author Autovw
@@ -85,6 +87,15 @@ public final class ModItemRegistry
         // 강화조각 / 강화보석
         Registry.register(BuiltInRegistries.ITEM, id("enhancement_shard"), ModItems.ENHANCEMENT_SHARD);
         Registry.register(BuiltInRegistries.ITEM, id("enhancement_gem"), ModItems.ENHANCEMENT_GEM);
+        
+        // 직업선택권 외 주문서
+        Registry.register(BuiltInRegistries.ITEM, id("job_select_ticket"), ModItems.JOB_SELECT_TICKET);
+        Registry.register(BuiltInRegistries.ITEM, id("death_item_protection_scroll"), ModItems.DEATH_ITEM_PROTECTION_SCROLL);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_protection_scroll"), ModItems.ENHANCE_PROTECTION_SCROLL);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_3"), ModItems.ENHANCE_SUCCESS_SCROLL_3);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_5"), ModItems.ENHANCE_SUCCESS_SCROLL_5);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_7"), ModItems.ENHANCE_SUCCESS_SCROLL_7);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_10"), ModItems.ENHANCE_SUCCESS_SCROLL_10);
     }
     
     private static ResourceLocation id(String name)

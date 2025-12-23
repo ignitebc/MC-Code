@@ -143,5 +143,14 @@
   "item.advancednetherite.reward_key_iii": "보상 열쇠 III",
   "item.advancednetherite.reward_key_iv": "보상 열쇠 IV",
   "item.advancednetherite.enhancement_shard": "강화 조각",
-  "item.advancednetherite.enhancement_gem": "강화 원석"
+  "item.advancednetherite.enhancement_gem": "강화 원석",
+
+  "item.advancednetherite.job_select_ticket": "직업 선택권",
+  "item.advancednetherite.death_item_protection_scroll": "아이템 보호권",
+  "item.advancednetherite.enhance_protection_scroll": "강화 파괴 방지권",
+  "item.advancednetherite.enhance_success_scroll_3": "강화 성공률 증가 주문서 +3%",
+  "item.advancednetherite.enhance_success_scroll_5": "강화 성공률 증가 주문서 +5%",
+  "item.advancednetherite.enhance_success_scroll_7": "강화 성공률 증가 주문서 +7%",
+  "item.advancednetherite.enhance_success_scroll_10": "강화 성공률 증가 주문서 +10%"
+
 }

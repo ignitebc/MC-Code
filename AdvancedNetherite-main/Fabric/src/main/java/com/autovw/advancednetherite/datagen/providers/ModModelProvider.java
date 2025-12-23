@@ -71,7 +71,14 @@ public class ModModelProvider extends FabricModelProvider
         itemModel(generator, ModItems.ENHANCEMENT_SHARD);
         itemModel(generator, ModItems.ENHANCEMENT_GEM);
 
-
+        // 직업선택권 외 주문서
+        itemModel(generator, ModItems.JOB_SELECT_TICKET);
+        itemModel(generator, ModItems.DEATH_ITEM_PROTECTION_SCROLL);
+        itemModel(generator, ModItems.ENHANCE_PROTECTION_SCROLL);
+        itemModel(generator, ModItems.ENHANCE_SUCCESS_SCROLL_3);
+        itemModel(generator, ModItems.ENHANCE_SUCCESS_SCROLL_5);
+        itemModel(generator, ModItems.ENHANCE_SUCCESS_SCROLL_7);
+        itemModel(generator, ModItems.ENHANCE_SUCCESS_SCROLL_10);
 
         armorModel(generator, ModItems.NETHERITE_IRON_HELMET, ModEquipmentAssets.NETHERITE_IRON);
         armorModel(generator, ModItems.NETHERITE_IRON_CHESTPLATE, ModEquipmentAssets.NETHERITE_IRON);
