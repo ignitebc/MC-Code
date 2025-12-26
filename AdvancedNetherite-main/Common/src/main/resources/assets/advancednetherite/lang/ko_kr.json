@@ -151,6 +151,9 @@
   "item.advancednetherite.enhance_success_scroll_3": "강화 성공률 증가 주문서 +3%",
   "item.advancednetherite.enhance_success_scroll_5": "강화 성공률 증가 주문서 +5%",
   "item.advancednetherite.enhance_success_scroll_7": "강화 성공률 증가 주문서 +7%",
-  "item.advancednetherite.enhance_success_scroll_10": "강화 성공률 증가 주문서 +10%"
-
+  "item.advancednetherite.enhance_success_scroll_10": "강화 성공률 증가 주문서 +10%",
+  
+  "item.advancednetherite.nomal_petbox": "일반 펫 상자",
+  "item.advancednetherite.rare_petbox": "희귀 펫 상자",
+  "item.advancednetherite.legend_petbox": "전설 펫 상자"
 }

@@ -80,6 +80,11 @@ public class ModModelProvider extends FabricModelProvider
         itemModel(generator, ModItems.ENHANCE_SUCCESS_SCROLL_7);
         itemModel(generator, ModItems.ENHANCE_SUCCESS_SCROLL_10);
 
+        // petbox
+        itemModel(generator, ModItems.NOMAL_PETBOX);
+        itemModel(generator, ModItems.RARE_PETBOX);
+        itemModel(generator, ModItems.LEGEND_PETBOX);
+
         armorModel(generator, ModItems.NETHERITE_IRON_HELMET, ModEquipmentAssets.NETHERITE_IRON);
         armorModel(generator, ModItems.NETHERITE_IRON_CHESTPLATE, ModEquipmentAssets.NETHERITE_IRON);
         armorModel(generator, ModItems.NETHERITE_IRON_LEGGINGS, ModEquipmentAssets.NETHERITE_IRON);

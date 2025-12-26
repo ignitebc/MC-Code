@@ -96,6 +96,11 @@ public final class ModItemRegistry
         Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_5"), ModItems.ENHANCE_SUCCESS_SCROLL_5);
         Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_7"), ModItems.ENHANCE_SUCCESS_SCROLL_7);
         Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_10"), ModItems.ENHANCE_SUCCESS_SCROLL_10);
+
+        // petbox
+        Registry.register(BuiltInRegistries.ITEM, id("nomal_petbox"), ModItems.NOMAL_PETBOX);
+        Registry.register(BuiltInRegistries.ITEM, id("rare_petbox"), ModItems.RARE_PETBOX);
+        Registry.register(BuiltInRegistries.ITEM, id("legend_petbox"), ModItems.LEGEND_PETBOX);
     }
     
     private static ResourceLocation id(String name)

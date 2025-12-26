@@ -94,6 +94,8 @@ public class RandomBoxItem extends AdvancedItem {
         List<ItemStack> givenRewards = new ArrayList<>();
 
         if (config.roll_mode == RandomBoxConfig.RollMode.SINGLE) {
+            // SINGLE은 "확률"이 아니라 "가중치" 개념으로 1개를 뽑는 방식이므로
+            // chance 값을 그대로 weight로 사용합니다. (예: 70/30)
             RandomBoxConfig.Reward chosen = pickOneRewardWeighted(rewards, rnd);
             if (chosen != null) {
                 ItemStack given = giveReward(player, chosen);
@@ -102,12 +104,15 @@ public class RandomBoxItem extends AdvancedItem {
                 }
             }
         } else {
+            // MULTI는 각 보상별 확률 판정이므로
+            // chance를 항상 "퍼센트"로 해석: 0.03 -> 0.03%, 80 -> 80%
             for (RandomBoxConfig.Reward r : rewards) {
-                if (r == null || r.item == null)
+                if (r == null || r.item == null) {
                     continue;
+                }
 
-                double chance = clamp01(r.chance);
-                if (rnd.nextDouble() <= chance) {
+                double prob = normalizeChancePercent(r.chance); // 0~1 확률값으로 변환
+                if (rnd.nextDouble() <= prob) {
                     ItemStack given = giveReward(player, r);
                     if (given != null && !given.isEmpty()) {
                         givenRewards.add(given);
@@ -119,10 +124,10 @@ public class RandomBoxItem extends AdvancedItem {
         // 전체 방송 메시지
         String openerName = player.getName().getString();
         String boxName = boxStack.getHoverName().getString(); // 로컬라이징된 아이템명 사용
-
         String rewardText = buildRewardText(givenRewards);
 
-        Component broadcast = Component.literal(openerName + "님이 " + boxName + " 오픈!!! 축하합니다! 보상은 " + rewardText + " 입니다");
+        Component broadcast = Component.literal(
+                openerName + "님이 " + boxName + " 오픈!!! 축하합니다! 보상은 " + rewardText + " 입니다");
 
         // 서버 전체 채팅으로 방송
         server.getPlayerList().broadcastSystemMessage(broadcast, false);
@@ -131,18 +136,23 @@ public class RandomBoxItem extends AdvancedItem {
     }
 
     /**
-     * 당신 환경: BuiltInRegistries.ITEM.get(key) -> Optional<Holder.Reference<Item>>
-     * 따라서 Optional/Holder에서 Item을 꺼내는 방식으로 구현.
+     * 당신 환경: BuiltInRegistries.ITEM.get(ResourceKey) ->
+     * Optional<Holder.Reference<Item>>
+     * 따라서 Optional/Holder.Reference에서 Item을 꺼내는 방식으로 구현.
+     *
+     * 주의: BuiltInRegistries.ITEM.get(id) 형태는 사용하지 않습니다.
      */
     private static Item getItemOrNull(ResourceLocation id) {
+        if (id == null) {
+            return null;
+        }
+
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, id);
 
-        Optional<? extends Holder<Item>> opt = BuiltInRegistries.ITEM.get(key);
+        // 여기서 반환 타입이 Optional<Holder.Reference<Item>> 로 잡혀야 타입 불일치가 발생하지 않습니다.
+        Optional<Holder.Reference<Item>> opt = BuiltInRegistries.ITEM.get(key);
 
-        Item item = opt
-                .map(h -> (Item) h.value())
-                .orElse(Items.AIR);
-
+        Item item = opt.map(Holder.Reference::value).orElse(Items.AIR);
         return (item == Items.AIR) ? null : item;
     }
 
@@ -152,27 +162,31 @@ public class RandomBoxItem extends AdvancedItem {
         double total = 0.0;
 
         for (RandomBoxConfig.Reward r : rewards) {
-            if (r == null || r.item == null)
+            if (r == null || r.item == null) {
                 continue;
+            }
 
             double w = r.chance;
-            if (Double.isNaN(w) || Double.isInfinite(w) || w <= 0.0)
+            if (Double.isNaN(w) || Double.isInfinite(w) || w <= 0.0) {
                 continue;
+            }
 
             candidates.add(r);
             total += w;
         }
 
-        if (candidates.isEmpty() || total <= 0.0)
+        if (candidates.isEmpty() || total <= 0.0) {
             return null;
+        }
 
         double roll = rnd.nextDouble() * total;
         double acc = 0.0;
 
         for (RandomBoxConfig.Reward r : candidates) {
             acc += r.chance;
-            if (roll < acc)
+            if (roll < acc) {
                 return r;
+            }
         }
 
         return candidates.get(candidates.size() - 1);
@@ -185,8 +199,9 @@ public class RandomBoxItem extends AdvancedItem {
         int count = Math.max(r.count, 1);
 
         Item rewardItem = getItemOrNull(r.item);
-        if (rewardItem == null)
+        if (rewardItem == null) {
             return ItemStack.EMPTY;
+        }
 
         ItemStack rewardStack = new ItemStack(rewardItem, count);
 
@@ -206,8 +221,9 @@ public class RandomBoxItem extends AdvancedItem {
         // 같은 아이템이 여러 번 들어올 수 있어 합산
         List<ItemStack> merged = new ArrayList<>();
         outer: for (ItemStack s : givenRewards) {
-            if (s == null || s.isEmpty())
+            if (s == null || s.isEmpty()) {
                 continue;
+            }
 
             for (ItemStack m : merged) {
                 if (ItemStack.isSameItemSameComponents(m, s)) {
@@ -223,20 +239,38 @@ public class RandomBoxItem extends AdvancedItem {
             ItemStack s = merged.get(i);
             String name = s.getHoverName().getString();
             sb.append(name).append(" x").append(s.getCount());
-            if (i < merged.size() - 1)
+            if (i < merged.size() - 1) {
                 sb.append(", ");
+            }
         }
         return sb.toString();
     }
 
-    private static double clamp01(double v) {
-        if (Double.isNaN(v) || Double.isInfinite(v))
+    /**
+     * 요구사항 반영:
+     * chance는 항상 "퍼센트"로 입력됨.
+     *
+     * 예:
+     * - 0.03 -> 0.03% -> 0.0003
+     * - 80 -> 80% -> 0.8
+     */
+    private static double normalizeChancePercent(double percent) {
+        if (Double.isNaN(percent) || Double.isInfinite(percent)) {
             return 0.0;
-        if (v < 0.0)
+        }
+        if (percent <= 0.0) {
             return 0.0;
-        if (v > 1.0)
+        }
+
+        double prob = percent / 100.0;
+
+        if (prob < 0.0) {
+            return 0.0;
+        }
+        if (prob > 1.0) {
             return 1.0;
-        return v;
+        }
+        return prob;
     }
 
     private static int countItem(Inventory inv, Item item) {
@@ -258,15 +292,17 @@ public class RandomBoxItem extends AdvancedItem {
 
         for (int i = 0; i < size; i++) {
             ItemStack s = inv.getItem(i);
-            if (s.isEmpty() || !s.is(item))
+            if (s.isEmpty() || !s.is(item)) {
                 continue;
+            }
 
             int dec = Math.min(s.getCount(), remain);
             s.shrink(dec);
             remain -= dec;
 
-            if (remain <= 0)
+            if (remain <= 0) {
                 return;
+            }
         }
     }
 }
