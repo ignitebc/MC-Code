@@ -1,7 +1,6 @@
 package com.daqem.jobsplus;
 
 import com.daqem.arc.registry.ArcRegistry;
-import com.daqem.itemrestrictions.data.ItemRestrictionManager;
 import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.event.command.EventRegisterCommands;
 import com.daqem.jobsplus.event.item.EventJobSelectTicketUse;
@@ -30,6 +29,7 @@ public class JobsPlus {
 
         registerEvents();
         initRegistry();
+
         ReloadListenerRegistry.register(PackType.SERVER_DATA, new JobManager(), getId("jobs"));
         ReloadListenerRegistry.register(PackType.SERVER_DATA, new PowerupManager(), getId("powerups"));
     }
@@ -42,12 +42,10 @@ public class JobsPlus {
         JobsPlusConditionType.init();
         JobsPlusActionHolderType.init();
     }
-    
-    // EventJobSelectTicketUse 추가
-    private static void registerEvents() 
-    {
+
+    private static void registerEvents() {
         EventRegisterCommands.registerEvent();
-        EventJobSelectTicketUse.registerEvent();
+        EventJobSelectTicketUse.registerEvent(); // 추가
     }
 
     public static ResourceLocation getId(String id) {

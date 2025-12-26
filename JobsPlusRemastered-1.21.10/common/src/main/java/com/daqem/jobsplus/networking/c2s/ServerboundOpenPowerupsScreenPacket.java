@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.stream.Stream;
 
 public class ServerboundOpenPowerupsScreenPacket implements CustomPacketPayload {
-
     private final ResourceLocation jobLocation;
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundOpenPowerupsScreenPacket> STREAM_CODEC = new StreamCodec<>() {

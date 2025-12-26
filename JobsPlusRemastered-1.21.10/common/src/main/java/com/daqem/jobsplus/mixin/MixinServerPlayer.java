@@ -1,6 +1,3 @@
-/* 파일 경로:
- * common/src/main/java/com/daqem/jobsplus/mixin/MixinServerPlayer.java
- */
 package com.daqem.jobsplus.mixin;
 
 import com.daqem.arc.api.action.holder.IActionHolder;
@@ -42,15 +39,13 @@ import java.util.stream.Collectors;
 
 @Mixin(ServerPlayer.class)
 public abstract class MixinServerPlayer extends Player implements JobsServerPlayer {
-
     @Unique
     private List<Job> jobsplus$jobs = new ArrayList<>();
     @Unique
     private int jobsplus$coins = 0;
 
     /**
-     * 전역 설정(maxJobs) 외에, 플레이어별로 추가되는 직업 슬롯.
-     * - 예) 직업선택권 사용 시 +1
+     * 직업추가권 등으로 얻는 추가 슬롯 (상한 없음)
      */
     @Unique
     private int jobsplus$extraJobSlots = 0;
@@ -82,8 +77,8 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
         if (jobInstance.getLocation() == null)
             return null;
 
-        // 최대 직업 개수 체크(전역 maxJobs + 플레이어별 추가 슬롯)
-        if (jobsplus$jobs.size() >= this.jobsplus$getEffectiveMaxJobs()) {
+        // 핵심: 전역 maxJobs가 아니라 "유효 최대 직업 수"로 비교
+        if (jobsplus$jobs.size() >= jobsplus$getEffectiveMaxJobs()) {
             return null;
         }
 
@@ -121,14 +116,16 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
             return null;
         return this.jobsplus$jobs.stream()
                 .filter(job -> job.getJobInstance().getLocation().equals(jobLocation.getLocation()))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public Job jobsplus$getJob(ResourceLocation jobLocation) {
         return this.jobsplus$jobs.stream()
                 .filter(job -> job.getJobInstance().getLocation().equals(jobLocation))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -137,23 +134,13 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
                 .map(Job::getPowerupManager)
                 .flatMap(powerupManager -> powerupManager.getAllPowerups().stream())
                 .filter(powerup -> powerup.getPowerupInstance().getLocation().equals(powerupInstance.getLocation()))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public int jobsplus$getCoins() {
         return jobsplus$coins;
-    }
-
-    @Override
-    public int jobsplus$getExtraJobSlots() {
-        return jobsplus$extraJobSlots;
-    }
-
-    @Override
-    public void jobsplus$addExtraJobSlots(int delta) {
-        // 음수로 내려가는 것을 방지(안전)
-        this.jobsplus$extraJobSlots = Math.max(0, this.jobsplus$extraJobSlots + delta);
     }
 
     @Override
@@ -167,18 +154,36 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     }
 
     @Override
+    public int jobsplus$getExtraJobSlots() {
+        return jobsplus$extraJobSlots;
+    }
+
+    @Override
+    public void jobsplus$addExtraJobSlots(int delta) {
+        long next = (long) jobsplus$extraJobSlots + (long) delta;
+        if (next < 0)
+            next = 0;
+        if (next > Integer.MAX_VALUE)
+            next = Integer.MAX_VALUE;
+        jobsplus$extraJobSlots = (int) next;
+    }
+
+    @Override
     public List<IActionHolder> jobsplus$getActionHolders() {
         List<IActionHolder> actionHolders = new ArrayList<>(jobsplus$getJobInstances());
-        actionHolders.addAll(jobsplus$getJobs().stream()
-                .map(Job::getPowerupManager)
-                .flatMap(powerupManager -> powerupManager.getAllPowerups().stream()
-                        .filter(powerup -> powerup.getState() == PowerupState.ACTIVE))
-                .map(Powerup::getPowerupInstance).toList());
+        actionHolders.addAll(
+                jobsplus$getJobs().stream()
+                        .map(Job::getPowerupManager)
+                        .flatMap(powerupManager -> powerupManager.getAllPowerups().stream()
+                                .filter(powerup -> powerup.getState() == PowerupState.ACTIVE))
+                        .map(Powerup::getPowerupInstance)
+                        .toList());
         return actionHolders;
     }
 
     @Override
     public ServerPlayer jobsplus$getServerPlayer() {
+        // noinspection DataFlowIssue
         return (ServerPlayer) (Object) this;
     }
 
@@ -234,6 +239,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
                     .filter(job -> job.getJobInstance() != null)
                     .peek(job -> job.setPlayer(this))
                     .collect(Collectors.toCollection(ArrayList::new));
+
             this.jobsplus$coins = serverPlayerData.coins();
             this.jobsplus$extraJobSlots = Math.max(0, serverPlayerData.extraJobSlots());
 
@@ -246,6 +252,18 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
 
     @Inject(at = @At("TAIL"), method = "tick()V")
     public void tickTail(CallbackInfo ci) {
-        // (기존 로직 그대로)
+        jobsplus$jobs.forEach((job) -> {
+            ExpCollector expCollector = job.getExpCollector();
+            int exp = expCollector.getExp();
+            if (exp > 0) {
+                JobInstance jobInstance = job.getJobInstance();
+                MutableComponent component = JobsPlus
+                        .translatable("job.exp.gain", exp, jobInstance.getName().getString())
+                        .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(jobInstance.getColorDecimal())))
+                        .withStyle(ChatFormatting.BOLD);
+                jobsplus$getServerPlayer().sendSystemMessage(component, true);
+            }
+            expCollector.clear();
+        });
     }
 }

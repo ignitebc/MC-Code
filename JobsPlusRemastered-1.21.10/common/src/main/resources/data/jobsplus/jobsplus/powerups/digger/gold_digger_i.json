@@ -1,8 +1,0 @@
-{
-  "job": "jobsplus:digger",
-  "icon": {
-    "id": "minecraft:gold_ingot"
-  },
-  "price": 5,
-  "required_level": 5
-}

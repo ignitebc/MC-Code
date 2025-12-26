@@ -13,7 +13,6 @@ import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
 public class ClientboundOpenPowerupsScreenPacketHandler {
-
     public static void handleClientSide(ClientboundOpenPowerupsScreenPacket packet,
             NetworkManager.PacketContext context) {
         @Nullable

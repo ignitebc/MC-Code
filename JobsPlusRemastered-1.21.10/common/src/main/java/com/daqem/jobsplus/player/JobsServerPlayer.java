@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 public interface JobsServerPlayer extends JobsPlayer {
-
     ServerPlayer jobsplus$getServerPlayer();
 
     void jobsplus$updateJob(Job job);
@@ -19,18 +18,18 @@ public interface JobsServerPlayer extends JobsPlayer {
     Powerup jobsplus$getPowerup(PowerupInstance powerupInstance);
 
     /**
-     * 플레이어별로 추가된 직업 슬롯(전역 maxJobs 외).
+     * 플레이어가 직업추가권 등으로 얻은 추가 슬롯 (상한 없음)
      */
     int jobsplus$getExtraJobSlots();
 
     /**
-     * 플레이어별 추가 직업 슬롯 증감.
+     * extra_job_slots 누적 증가(또는 감소)
      */
     void jobsplus$addExtraJobSlots(int delta);
 
     /**
-     * 플레이어에게 적용되는 실제 최대 직업 수.
-     * - 전역 설정(maxJobs) + 개인 추가 슬롯
+     * 실제 적용되는 최대 직업 수
+     * = 전역 기본 슬롯 + 플레이어 추가 슬롯
      */
     default int jobsplus$getEffectiveMaxJobs() {
         return JobsPlusConfig.maxJobs.get() + Math.max(0, jobsplus$getExtraJobSlots());

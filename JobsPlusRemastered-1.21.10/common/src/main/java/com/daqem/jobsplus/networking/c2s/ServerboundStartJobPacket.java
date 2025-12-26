@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.stream.Stream;
 
 public class ServerboundStartJobPacket implements CustomPacketPayload {
-
     private final ResourceLocation jobLocation;
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundStartJobPacket> STREAM_CODEC = new StreamCodec<>() {
@@ -54,8 +53,7 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
                 return;
             }
 
-            // 기존: JobsPlusConfig.maxJobs.get()
-            // 변경: 전역 + 플레이어 추가 슬롯 반영
+            // 핵심: 전역 maxJobs가 아니라 "유효 최대 직업 수"로 비교
             if (serverPlayer.jobsplus$getJobs().size() >= serverPlayer.jobsplus$getEffectiveMaxJobs()) {
                 serverPlayer.jobsplus$getServerPlayer()
                         .sendSystemMessage(JobsPlus.translatable("error.max_jobs_reached"));
@@ -73,6 +71,7 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
 
             serverPlayer.jobsplus$addNewJob(jobInstance);
 
+            // maxJobs(유효값) 포함해서 UI 갱신
             NetworkManager.sendToPlayer(
                     serverPlayer.jobsplus$getServerPlayer(),
                     new ClientboundOpenJobsScreenPacket(

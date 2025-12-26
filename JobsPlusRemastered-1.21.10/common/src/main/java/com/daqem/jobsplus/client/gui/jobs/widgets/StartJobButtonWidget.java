@@ -17,111 +17,96 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 
-public class StartJobButtonWidget extends CustomButtonWidget
-{
-    private static final Component MESSAGE = JobsPlus.translatable("gui.jobs.start_job");
+public class StartJobButtonWidget extends CustomButtonWidget {
+        private static final Component MESSAGE = JobsPlus.translatable("gui.jobs.start_job");
 
-    private final JobsScreenState state;
+        private final JobsScreenState state;
 
-    public StartJobButtonWidget(JobsScreenState state)
-    {
-        super(26,168,Minecraft.getInstance().font.width(MESSAGE) + 20,18,MESSAGE,null,
-                button ->
-                {
-                    Job selectedJob = state.getSelectedJob();
-                    if (selectedJob == null)
-                    {
-                        return;
-                    }
+        public StartJobButtonWidget(JobsScreenState state) {
+                super(26, 168, Minecraft.getInstance().font.width(MESSAGE) + 20, 18, MESSAGE, null,
+                                button -> {
+                                        Job selectedJob = state.getSelectedJob();
+                                        if (selectedJob == null) {
+                                                return;
+                                        }
 
-                    // 현재 활성화된 직업 개수
-                    int activeJobCount = state.getActiveJobCount();
+                                        // 현재 활성화된 직업 개수
+                                        int activeJobCount = state.getActiveJobCount();
 
-                    // 이미 최대 직업 수에 도달한 경우: 직업 시작 불가 안내만 띄우고 종료
-                    if (activeJobCount >= JobsPlusConfig.maxJobs.get())
-                    {
-                        Minecraft.getInstance().setScreen(
-                                new ConfirmationScreen(
-                                        Minecraft.getInstance().screen,
-                                        new ConfirmationScreenState(
-                                                // lang: gui.jobs.max_jobs
-                                                JobsPlus.translatable("gui.jobs.max_jobs", JobsPlusConfig.maxJobs.get()),
-                                                // 확인 눌러도 아무 동작 안 함
-                                                () -> { }
-                                        )
-                                )
-                        );
-                        return;
-                    }
+                                        // 변경: 전역 maxJobs 대신 state.getMaxJobs() 사용
+                                        if (activeJobCount >= state.getMaxJobs()) {
+                                                Minecraft.getInstance().setScreen(
+                                                                new ConfirmationScreen(
+                                                                                Minecraft.getInstance().screen,
+                                                                                new ConfirmationScreenState(
+                                                                                                JobsPlus.translatable(
+                                                                                                                "gui.jobs.max_jobs",
+                                                                                                                state.getMaxJobs()),
+                                                                                                () -> {
+                                                                                                })));
+                                                return;
+                                        }
 
-                    JobInstance jobInstance = selectedJob.getJobInstance();
+                                        JobInstance jobInstance = selectedJob.getJobInstance();
 
-                    // 이미 보유 중인 직업 수 (무료/유료 판단용)
-                    int jobAmount = activeJobCount;
+                                        // 이미 보유 중인 직업 수 (무료/유료 판단용)
+                                        int jobAmount = activeJobCount;
 
-                    Component freeJobMessage = JobsPlus.translatable(
-                            "gui.confirmation.purchase_job.free",
-                            jobInstance.getName()
-                    );
+                                        Component freeJobMessage = JobsPlus.translatable(
+                                                        "gui.confirmation.purchase_job.free",
+                                                        jobInstance.getName());
 
-                    Component paidJobMessage = JobsPlus.translatable("gui.confirmation.purchase_job.paid",jobInstance.getName(),jobInstance.getPrice());
+                                        Component paidJobMessage = JobsPlus.translatable(
+                                                        "gui.confirmation.purchase_job.paid",
+                                                        jobInstance.getName(),
+                                                        jobInstance.getPrice());
 
-                    // 아직 이 직업을 시작하지 않은 경우에만 확인창을 띄움
-                    if (selectedJob.getLevel() == 0)
-                    {
-                        Minecraft.getInstance().setScreen(
-                                new ConfirmationScreen(
-                                        Minecraft.getInstance().screen,
-                                        new ConfirmationScreenState(
-                                                jobAmount >= JobsPlusConfig.amountOfFreeJobs.get()
-                                                        ? paidJobMessage
-                                                        : freeJobMessage,
-                                                () ->
-                                                {
-                                                    NetworkManager.sendToServer(
-                                                            new ServerboundStartJobPacket(
-                                                                    selectedJob.getJobInstance().getLocation()
-                                                            )
-                                                    );
-                                                    NetworkManager.sendToServer(
-                                                            new ServerboundOpenJobsScreenPacket()
-                                                    );
-                                                }
-                                        )
-                                )
-                        );
-                    }
-                }
-        );
+                                        // 아직 이 직업을 시작하지 않은 경우에만 확인창을 띄움
+                                        if (selectedJob.getLevel() == 0) {
+                                                Minecraft.getInstance().setScreen(
+                                                                new ConfirmationScreen(
+                                                                                Minecraft.getInstance().screen,
+                                                                                new ConfirmationScreenState(
+                                                                                                jobAmount >= JobsPlusConfig.amountOfFreeJobs
+                                                                                                                .get()
+                                                                                                                                ? paidJobMessage
+                                                                                                                                : freeJobMessage,
+                                                                                                () -> {
+                                                                                                        NetworkManager.sendToServer(
+                                                                                                                        new ServerboundStartJobPacket(
+                                                                                                                                        selectedJob.getJobInstance()
+                                                                                                                                                        .getLocation()));
+                                                                                                        NetworkManager.sendToServer(
+                                                                                                                        new ServerboundOpenJobsScreenPacket());
+                                                                                                })));
+                                        }
+                                });
 
-        this.state = state;
-    }
+                this.state = state;
+        }
 
-    @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
-    {
-        guiGraphics.blitSprite(
-                RenderPipelines.GUI_TEXTURED,
-                JobsPlus.getId("jobs/tab_bottom"),
-                this.getX(),
-                this.getY(),
-                this.getWidth(),
-                this.getHeight(),
-                ARGB.white(this.alpha)
-        );
+        @Override
+        protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                guiGraphics.blitSprite(
+                                RenderPipelines.GUI_TEXTURED,
+                                JobsPlus.getId("jobs/tab_bottom"),
+                                this.getX(),
+                                this.getY(),
+                                this.getWidth(),
+                                this.getHeight(),
+                                ARGB.white(this.alpha));
 
-        guiGraphics.drawString(
-                Minecraft.getInstance().font,
-                this.getMessage(),
-                this.getX() + 10,
-                this.getY() + 6,
-                ARGB.color(
-                        this.alpha,
-                        isHoveredOrFocused()
-                                ? this.state.getSelectedJob().getJobInstance().getColorDecimal()
-                                : 0x1E1410
-                ),
-                false
-        );
-    }
+                guiGraphics.drawString(
+                                Minecraft.getInstance().font,
+                                this.getMessage(),
+                                this.getX() + 10,
+                                this.getY() + 6,
+                                ARGB.color(
+                                                this.alpha,
+                                                isHoveredOrFocused()
+                                                                ? this.state.getSelectedJob().getJobInstance()
+                                                                                .getColorDecimal()
+                                                                : 0x1E1410),
+                                false);
+        }
 }

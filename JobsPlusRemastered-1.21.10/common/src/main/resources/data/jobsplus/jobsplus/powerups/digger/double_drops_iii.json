@@ -1,9 +1,0 @@
-{
-  "job": "jobsplus:digger",
-  "parent": "jobsplus:digger/double_drops_ii",
-  "icon": {
-    "id": "minecraft:podzol"
-  },
-  "price": 15,
-  "required_level": 50
-}
