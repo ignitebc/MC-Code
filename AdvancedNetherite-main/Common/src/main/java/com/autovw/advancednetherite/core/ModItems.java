@@ -49,6 +49,11 @@ public final class ModItems
     public static final AdvancedItem ENHANCE_SUCCESS_SCROLL_7 = new AdvancedItem(new Item.Properties().setId(key("enhance_success_scroll_7")));
     public static final AdvancedItem ENHANCE_SUCCESS_SCROLL_10 = new AdvancedItem(new Item.Properties().setId(key("enhance_success_scroll_10")));
 
+    // petbox
+    public static final AdvancedItem NOMAL_PETBOX = new AdvancedItem(new Item.Properties().setId(key("nomal_petbox")));
+    public static final AdvancedItem RARE_PETBOX = new AdvancedItem(new Item.Properties().setId(key("rare_petbox")));
+    public static final AdvancedItem LEGEND_PETBOX = new AdvancedItem(new Item.Properties().setId(key("legend_petbox")));
+
     // ARMOR SETS
     // Netherite-Iron
     public static final AdvancedArmorItem NETHERITE_IRON_HELMET = new AdvancedArmorItem(ModArmorMaterials.NETHERITE_IRON, ArmorType.HELMET, new Item.Properties().setId(key("netherite_iron_helmet")));

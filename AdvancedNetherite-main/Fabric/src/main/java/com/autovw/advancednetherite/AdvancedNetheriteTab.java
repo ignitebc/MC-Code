@@ -120,6 +120,12 @@ public final class AdvancedNetheriteTab
                     entries.accept(ModItems.ENHANCE_SUCCESS_SCROLL_5);
                     entries.accept(ModItems.ENHANCE_SUCCESS_SCROLL_7);
                     entries.accept(ModItems.ENHANCE_SUCCESS_SCROLL_10);
+                    
+                    // pet box
+                    entries.accept(ModItems.NOMAL_PETBOX);
+                    entries.accept(ModItems.RARE_PETBOX);
+                    entries.accept(ModItems.LEGEND_PETBOX);
+
                 })
                 .build()
         );
