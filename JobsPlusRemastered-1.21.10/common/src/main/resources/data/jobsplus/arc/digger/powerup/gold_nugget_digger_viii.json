@@ -1,15 +1,15 @@
 {
   "holder": {
     "type": "jobsplus:powerup",
-    "id": "jobsplus:digger/gold_digger_ii"
+    "id": "jobsplus:digger/gold_nugget_digger_viii"
   },
   "type": "arc:on_break_block",
   "rewards": [
     {
       "type": "arc:drop_item",
-      "chance": 3,
+      "chance": 8,
       "item": {
-        "id": "minecraft:gold_ingot"
+        "id": "minecraft:gold_nugget"
       }
     }
   ],
@@ -20,9 +20,15 @@
         "#minecraft:mineable/shovel"
       ]
     },
+
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:digger/gold_digger_iii"
+      "powerup": "jobsplus:digger/gold_nugget_digger_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/gold_nugget_digger_x"
     }
+
   ]
 }

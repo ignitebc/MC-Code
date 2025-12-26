@@ -6,55 +6,55 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * AdvancedNetherite의 "직업선택권(advancednetherite:job_select_ticket)" 사용 처리.
- *
- * 요구사항:
- * - 플레이어가 티켓을 든 채로 우클릭하면, 플레이어별 최대 직업 수를 +1 한다.
- * - 전역 설정(JobsPlusConfig.maxJobs)은 건드리지 않고, 플레이어 NBT에 저장되는 추가 슬롯으로 확장한다.
- *
- * 의존성 주의:
- * - AdvancedNetherite 모드에 대한 컴파일 의존을 추가하지 않기 위해, 아이템은 레지스트리 ID 문자열로만 판별한다.
+ * AdvancedNetherite의 job_select_ticket 사용 시
+ * - 플레이어별 extra_job_slots를 +1 (상한 없음)
+ * - 아이템 1개 소모(크리에이티브 제외)
  */
 public final class EventJobSelectTicketUse {
-
     private static final ResourceLocation JOB_SELECT_TICKET_ID = ResourceLocation
             .fromNamespaceAndPath("advancednetherite", "job_select_ticket");
 
-    private EventJobSelectTicketUse() {
+    private EventJobSelectTicketUse() 
+    {
     }
 
     public static void registerEvent() {
         InteractionEvent.RIGHT_CLICK_ITEM.register((player, hand) -> {
-            // Level#isClientSide 접근 이슈를 피하기 위해, 서버 플레이어로만 한정한다.
-            if (!(player instanceof ServerPlayer serverPlayer)) {
+            // 클라/레벨 필드 접근 이슈 피하려고 ServerPlayer로만 처리
+            if (!(player instanceof ServerPlayer serverPlayer)) 
+            {
                 return InteractionResult.PASS;
             }
 
             ItemStack stack = serverPlayer.getItemInHand(hand);
-            if (stack.isEmpty()) {
+            if (stack.isEmpty()) 
+            {
                 return InteractionResult.PASS;
             }
 
             ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
-            if (!JOB_SELECT_TICKET_ID.equals(id)) {
+            if (!JOB_SELECT_TICKET_ID.equals(id)) 
+            {
                 return InteractionResult.PASS;
             }
 
-            if (serverPlayer instanceof JobsServerPlayer jobsServerPlayer) {
+            if (serverPlayer instanceof JobsServerPlayer jobsServerPlayer) 
+            {
                 jobsServerPlayer.jobsplus$addExtraJobSlots(1);
 
-                if (!serverPlayer.getAbilities().instabuild) {
+                if (!serverPlayer.getAbilities().instabuild) 
+                {
                     stack.shrink(1);
                 }
 
-                serverPlayer.displayClientMessage(
-                        Component.literal("직업선택권을 사용했습니다. 최대 직업 수가 1 증가했습니다. (현재 최대: "
-                                + jobsServerPlayer.jobsplus$getEffectiveMaxJobs() + ")"),
-                        false);
+                // 안내 메시지 (원하면 번역키로 바꿔도 됨)
+                serverPlayer.sendSystemMessage(
+                        Component.literal("직업추가권 사용: 최대 직업 수 +1 (현재 최대: " + jobsServerPlayer.jobsplus$getEffectiveMaxJobs() + ")"), false);
             }
 
             return InteractionResult.SUCCESS;

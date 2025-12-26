@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class ClientboundOpenJobsScreenPacket implements CustomPacketPayload {
-
     private final List<Job> jobs;
     private final int coins;
     private final int maxJobs;
@@ -29,17 +28,11 @@ public class ClientboundOpenJobsScreenPacket implements CustomPacketPayload {
         }
     };
 
-    /**
-     * 호환용 생성자(기존 코드 유지)
-     * - maxJobs를 별도 전송하지 않는 경우를 위해 기본값을 넣는다.
-     */
+    // 호환용(기존 호출부용)
     public ClientboundOpenJobsScreenPacket(List<Job> jobs, int coins) {
         this(jobs, coins, 0);
     }
 
-    /**
-     * 신규 생성자: 서버에서 계산된 maxJobs(전역 maxJobs + 플레이어별 추가 슬롯)를 전달한다.
-     */
     public ClientboundOpenJobsScreenPacket(List<Job> jobs, int coins, int maxJobs) {
         this.jobs = jobs;
         this.coins = coins;
@@ -47,9 +40,9 @@ public class ClientboundOpenJobsScreenPacket implements CustomPacketPayload {
     }
 
     public ClientboundOpenJobsScreenPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
-        this.jobs = friendlyByteBuf.readList(friendlyByteBuf1 -> Job.Serializer.fromNetwork(friendlyByteBuf1, null));
+        this.jobs = friendlyByteBuf.readList(b -> Job.Serializer.fromNetwork(b, null));
         this.coins = friendlyByteBuf.readInt();
-        // 구버전 패킷 호환: 남은 데이터가 없으면 0 처리
+        // 구버전 호환: 남은 데이터가 없으면 0
         this.maxJobs = friendlyByteBuf.readableBytes() > 0 ? Math.max(0, friendlyByteBuf.readInt()) : 0;
     }
 

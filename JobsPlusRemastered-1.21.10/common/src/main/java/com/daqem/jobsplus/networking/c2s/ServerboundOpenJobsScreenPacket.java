@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.stream.Stream;
 
 public class ServerboundOpenJobsScreenPacket implements CustomPacketPayload {
-
     public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundOpenJobsScreenPacket> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public @NotNull ServerboundOpenJobsScreenPacket decode(RegistryFriendlyByteBuf buf) {
@@ -21,7 +20,6 @@ public class ServerboundOpenJobsScreenPacket implements CustomPacketPayload {
 
         @Override
         public void encode(RegistryFriendlyByteBuf buf, ServerboundOpenJobsScreenPacket packet) {
-            // no payload
         }
     };
 
@@ -29,7 +27,6 @@ public class ServerboundOpenJobsScreenPacket implements CustomPacketPayload {
     }
 
     public ServerboundOpenJobsScreenPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
-        // no payload
     }
 
     @Override
