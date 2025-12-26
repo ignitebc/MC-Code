@@ -12,25 +12,29 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
-public class ClientboundOpenPowerupsScreenPacketHandler
-{
+public class ClientboundOpenPowerupsScreenPacketHandler {
 
-    public static void handleClientSide(ClientboundOpenPowerupsScreenPacket packet, NetworkManager.PacketContext context)
-    {
+    public static void handleClientSide(ClientboundOpenPowerupsScreenPacket packet,
+            NetworkManager.PacketContext context) {
         @Nullable
         Screen previousScreen = null;
-        
-        if (Minecraft.getInstance().screen instanceof JobsScreen jobsScreen)
-        {
+
+        if (Minecraft.getInstance().screen instanceof JobsScreen jobsScreen) {
             previousScreen = jobsScreen.getPreviousScreen();
         }
 
-        Job job = packet.getJobs().stream().filter(j -> j.getJobInstance().getLocation().equals(packet.getJobLocation())).findFirst().orElse(null);
-        JobsScreen jobsScreen = new JobsScreen(new JobsScreenState(packet.getJobs(), packet.getCoins(), job, RightTab.EXPERIENCE), previousScreen);
+        Job job = packet.getJobs().stream()
+                .filter(j -> j.getJobInstance().getLocation().equals(packet.getJobLocation()))
+                .findFirst()
+                .orElse(null);
 
-        if (job != null)
-        {
-            Minecraft.getInstance().setScreen(new PowerupsScreen(new PowerupsScreenState(job, packet.getCoins()), jobsScreen));
+        JobsScreen jobsScreen = new JobsScreen(
+                new JobsScreenState(packet.getJobs(), packet.getCoins(), packet.getMaxJobs(), job, RightTab.EXPERIENCE),
+                previousScreen);
+
+        if (job != null) {
+            Minecraft.getInstance()
+                    .setScreen(new PowerupsScreen(new PowerupsScreenState(job, packet.getCoins()), jobsScreen));
         }
     }
 }
