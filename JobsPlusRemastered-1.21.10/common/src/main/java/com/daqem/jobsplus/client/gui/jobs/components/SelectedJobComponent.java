@@ -3,7 +3,6 @@ package com.daqem.jobsplus.client.gui.jobs.components;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.jobs.widgets.StartJobButtonWidget;
-import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.player.job.Job;
 import com.daqem.uilib.gui.component.EmptyComponent;
@@ -45,7 +44,7 @@ public class SelectedJobComponent extends EmptyComponent {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth,
-            int parentHeight) {
+                       int parentHeight) {
         Job selectedJob = this.state.getSelectedJob();
         JobInstance jobInstance = selectedJob.getJobInstance();
 
@@ -72,16 +71,19 @@ public class SelectedJobComponent extends EmptyComponent {
             guiGraphics.pose().scale(0.75f, 0.75f);
 
             if (canStartNewJob()) {
+                // 기존 UI는 가격만 표시하지만, 버튼 노출/무료판단은 아래 canStartFreeJob()로 결정됨
                 guiGraphics.drawString(Minecraft.getInstance().font,
                         JobsPlus.translatable("gui.jobs.price", jobInstance.getPrice()), 0, 0, 0xFF1E1410, false);
             } else {
-                // 변경: 전역 maxJobs 대신 state.getMaxJobs() 사용
                 guiGraphics.drawString(Minecraft.getInstance().font,
                         JobsPlus.translatable("gui.jobs.max_jobs", this.state.getMaxJobs()), 0, 0, 0xFFFF5555, false);
             }
 
             guiGraphics.pose().popMatrix();
 
+            // 핵심 수정:
+            // 티켓으로 늘린 슬롯도 "무료 선택 가능"으로 취급해야 하므로,
+            // amount_of_free_jobs(=1)로 막지 말고 state.getMaxJobs() 기준으로 무료판단
             if (jobInstance.getPrice() > this.state.getCoins() && !canStartFreeJob()) {
                 this.removeWidget(this.startJobButtonWidget);
             } else {
@@ -96,11 +98,12 @@ public class SelectedJobComponent extends EmptyComponent {
     }
 
     private boolean canStartNewJob() {
-        // 변경: 전역 maxJobs 대신 state.getMaxJobs() 사용
         return this.state.getActiveJobCount() < this.state.getMaxJobs();
     }
 
     private boolean canStartFreeJob() {
-        return this.state.getActiveJobCount() < JobsPlusConfig.amountOfFreeJobs.get();
+        // 기존: active < amount_of_free_jobs(=1)  -> 티켓으로 늘린 슬롯이 "유료"가 되어 버튼이 사라짐
+        // 수정: 티켓으로 늘어난 슬롯까지 무료로 취급 => active < state.getMaxJobs()
+        return this.state.getActiveJobCount() < this.state.getMaxJobs();
     }
 }

@@ -154,18 +154,29 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     }
 
     @Override
-    public int jobsplus$getExtraJobSlots() {
+    public int jobsplus$getExtraJobSlots() 
+    {
         return jobsplus$extraJobSlots;
     }
 
     @Override
-    public void jobsplus$addExtraJobSlots(int delta) {
+    public void jobsplus$addExtraJobSlots(int delta) 
+    {
         long next = (long) jobsplus$extraJobSlots + (long) delta;
-        if (next < 0)
+        if (next < 0) 
+        {
             next = 0;
-        if (next > Integer.MAX_VALUE)
-            next = Integer.MAX_VALUE;
-        jobsplus$extraJobSlots = (int) next;
+        }
+
+        int base = Math.max(0, com.daqem.jobsplus.config.JobsPlusConfig.amountOfFreeJobs.get());
+        int cap = Math.max(0, com.daqem.jobsplus.config.JobsPlusConfig.maxJobs.get());
+        int extraCap = Math.max(0, cap - base);
+
+        if (next > (long) extraCap) {
+            next = extraCap;
+        }
+
+        jobsplus$extraJobSlots = (int) Math.min(next, (long) Integer.MAX_VALUE);
     }
 
     @Override
