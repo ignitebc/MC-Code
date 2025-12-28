@@ -177,8 +177,7 @@ public class JobCommand
                         // 25.11.30 jjh 직업2개만 선택하도록 예외처리 (기존 주석 유지)
                         // 변경: 전역 maxJobs가 아니라 "유효 최대 직업 수"로 비교
                         else {
-                                if (jobsServerPlayer.jobsplus$getJobs().size() >= jobsServerPlayer
-                                                .jobsplus$getEffectiveMaxJobs()) 
+                                if (jobsServerPlayer.jobsplus$getJobs().size() >= jobsServerPlayer.jobsplus$getEffectiveMaxJobs()) 
                                 {
                                         source.sendFailure(JobsPlus.translatable("error.max_jobs_reached"));
                                         return 0;
@@ -195,6 +194,7 @@ public class JobCommand
                                                         level,
                                                         jobsServerPlayer.jobsplus$getPlayer().getDisplayName()), false);
                                 } 
+                                
                                 else 
                                 {
                                         source.sendFailure(JobsPlus.translatable("command.set.level.cannot_add_job"));

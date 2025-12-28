@@ -8,10 +8,10 @@ pluginManagement {
             url = 'https://maven.minecraftforge.net/'
         }
          */
-        maven {
-            name = 'NeoForge'
-            url = 'https://maven.neoforged.net/releases'
-        }
+        // maven {
+        //     name = 'NeoForge'
+        //     url = 'https://maven.neoforged.net/releases'
+        // }
         maven {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
@@ -31,6 +31,6 @@ plugins {
 rootProject.name = 'AdvancedNetherite'
 include("Common")
 //include("Forge")
-include("NeoForge")
+//include("NeoForge")
 include("Fabric")
 

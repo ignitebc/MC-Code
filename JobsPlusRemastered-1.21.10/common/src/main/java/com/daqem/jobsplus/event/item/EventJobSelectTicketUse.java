@@ -1,63 +1,97 @@
 package com.daqem.jobsplus.event.item;
 
+import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.config.JobsPlusConfig;
+import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import dev.architectury.event.events.common.InteractionEvent;
+import dev.architectury.networking.NetworkManager;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 
-/**
- * AdvancedNetherite의 job_select_ticket 사용 시
- * - 플레이어별 extra_job_slots를 +1 (상한 없음)
- * - 아이템 1개 소모(크리에이티브 제외)
- */
-public final class EventJobSelectTicketUse {
-    private static final ResourceLocation JOB_SELECT_TICKET_ID = ResourceLocation
-            .fromNamespaceAndPath("advancednetherite", "job_select_ticket");
+import java.util.stream.Stream;
 
-    private EventJobSelectTicketUse() 
-    {
+public final class EventJobSelectTicketUse {
+
+    private static final ResourceLocation JOB_SELECT_TICKET_ID =
+            ResourceLocation.fromNamespaceAndPath("advancednetherite", "job_select_ticket");
+
+    private EventJobSelectTicketUse() {
     }
 
     public static void registerEvent() {
         InteractionEvent.RIGHT_CLICK_ITEM.register((player, hand) -> {
-            // 클라/레벨 필드 접근 이슈 피하려고 ServerPlayer로만 처리
-            if (!(player instanceof ServerPlayer serverPlayer)) 
-            {
+            if (!(player instanceof ServerPlayer serverPlayer)) {
                 return InteractionResult.PASS;
             }
 
             ItemStack stack = serverPlayer.getItemInHand(hand);
-            if (stack.isEmpty()) 
-            {
+            if (stack.isEmpty()) {
                 return InteractionResult.PASS;
             }
 
             ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
-            if (!JOB_SELECT_TICKET_ID.equals(id)) 
-            {
+            if (!JOB_SELECT_TICKET_ID.equals(id)) {
                 return InteractionResult.PASS;
             }
 
-            if (serverPlayer instanceof JobsServerPlayer jobsServerPlayer) 
-            {
-                jobsServerPlayer.jobsplus$addExtraJobSlots(1);
-
-                if (!serverPlayer.getAbilities().instabuild) 
-                {
-                    stack.shrink(1);
-                }
-
-                // 안내 메시지 (원하면 번역키로 바꿔도 됨)
-                serverPlayer.sendSystemMessage(
-                        Component.literal("직업추가권 사용: 최대 직업 수 +1 (현재 최대: " + jobsServerPlayer.jobsplus$getEffectiveMaxJobs() + ")"), false);
+            if (!(serverPlayer instanceof JobsServerPlayer jobsServerPlayer)) {
+                return InteractionResult.PASS;
             }
 
-            return InteractionResult.SUCCESS;
+            // 우클릭 홀드로 연속 발동 방지(1초)
+            if (serverPlayer.getCooldowns().isOnCooldown(stack)) {
+                return InteractionResult.CONSUME;
+            }
+            serverPlayer.getCooldowns().addCooldown(stack, 20);
+
+            // 상한 도달 시 추가 불가(소모도 안 함)
+            int base = Math.max(0, JobsPlusConfig.amountOfFreeJobs.get());
+            int cap = Math.max(0, JobsPlusConfig.maxJobs.get());
+            int extra = Math.max(0, jobsServerPlayer.jobsplus$getExtraJobSlots());
+            int currentMax = (int) Math.min((long) cap, (long) base + (long) extra);
+            if (currentMax >= cap) {
+                serverPlayer.sendSystemMessage(JobsPlus.translatable("error.max_jobs_reached"), false);
+                return InteractionResult.CONSUME;
+            }
+
+            // 슬롯 +1
+            jobsServerPlayer.jobsplus$addExtraJobSlots(1);
+
+            // 요구사항: 크리에이티브여도 "무조건 1개 소모"
+            stack.shrink(1);
+            if (stack.isEmpty()) {
+                serverPlayer.setItemInHand(hand, ItemStack.EMPTY);
+            } else {
+                serverPlayer.setItemInHand(hand, stack);
+            }
+            serverPlayer.getInventory().setChanged();
+            serverPlayer.containerMenu.broadcastChanges();
+
+            // UI 즉시 갱신
+            NetworkManager.sendToPlayer(
+                    serverPlayer,
+                    new ClientboundOpenJobsScreenPacket(
+                            Stream.concat(
+                                    jobsServerPlayer.jobsplus$getJobs().stream(),
+                                    jobsServerPlayer.jobsplus$getInactiveJobs().stream()
+                            ).toList(),
+                            jobsServerPlayer.jobsplus$getCoins(),
+                            jobsServerPlayer.jobsplus$getEffectiveMaxJobs()
+                    )
+            );
+
+            serverPlayer.sendSystemMessage(
+                    Component.literal("직업선택권 사용: 최대 직업 수 +1 (현재 최대: "
+                            + jobsServerPlayer.jobsplus$getEffectiveMaxJobs() + ")"),
+                    false
+            );
+
+            return InteractionResult.CONSUME;
         });
     }
 }

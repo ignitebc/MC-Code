@@ -18,19 +18,14 @@
   ],
   "conditions": [
     {
-      "type": "arc:not",
-      "conditions": [
-        {
-          "type": "arc:blocks",
-          "blocks": [
-            "minecraft:stone",
-            "minecraft:cobblestone",
-            "minecraft:granite",
-            "minecraft:andesite",
-            "minecraft:diorite",
-            "minecraft:deepslate"
-          ]
-        }
+      "type": "arc:blocks",
+      "blocks": [
+        "minecraft:stone",
+        "minecraft:cobblestone",
+        "minecraft:granite",
+        "minecraft:andesite",
+        "minecraft:diorite",
+        "minecraft:deepslate"
       ]
     },
     {
@@ -52,5 +47,6 @@
         ]
       }
     }
+    
   ]
 }

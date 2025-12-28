@@ -16,6 +16,6 @@ pluginManagement {
 include("common")
 include("fabric")
 //include("forge")
-include("neoforge")
+//include("neoforge")
 
 rootProject.name = "Item Restrictions 1.21.9"

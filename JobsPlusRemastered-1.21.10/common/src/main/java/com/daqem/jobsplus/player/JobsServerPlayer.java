@@ -18,7 +18,7 @@ public interface JobsServerPlayer extends JobsPlayer {
     Powerup jobsplus$getPowerup(PowerupInstance powerupInstance);
 
     /**
-     * 플레이어가 직업추가권 등으로 얻은 추가 슬롯 (상한 없음)
+     * 플레이어가 직업선택권 등으로 얻은 추가 슬롯
      */
     int jobsplus$getExtraJobSlots();
 
@@ -29,9 +29,27 @@ public interface JobsServerPlayer extends JobsPlayer {
 
     /**
      * 실제 적용되는 최대 직업 수
-     * = 전역 기본 슬롯 + 플레이어 추가 슬롯
+     * 정책:
+     * - 기본 무료 직업 수(amount_of_free_jobs)만큼은 누구나 즉시 선택 가능
+     * - 직업선택권 사용 시 extra_job_slots가 증가하며, 그만큼 추가로 직업 선택 가능
+     * - 단, 최종 최대치는 config.max_jobs(예: 7)로 제한
      */
     default int jobsplus$getEffectiveMaxJobs() {
-        return JobsPlusConfig.maxJobs.get() + Math.max(0, jobsplus$getExtraJobSlots());
+        int base = Math.max(0, JobsPlusConfig.amountOfFreeJobs.get()); // 기본 1
+        int extra = Math.max(0, jobsplus$getExtraJobSlots());          // 티켓 누적
+        int cap = Math.max(0, JobsPlusConfig.maxJobs.get());           // 최종 상한 7
+
+        long desired = (long) base + (long) extra;
+        if (desired > Integer.MAX_VALUE) desired = Integer.MAX_VALUE;
+
+        return (int) Math.min((long) cap, desired);
+    }
+
+    /**
+     * 무료로 선택 가능한 직업 수(= 코인/가격과 무관하게 선택 가능)
+     * 정책: 티켓으로 늘린 슬롯도 무료 선택으로 취급
+     */
+    default int jobsplus$getEffectiveFreeJobs() {
+        return jobsplus$getEffectiveMaxJobs();
     }
 }
