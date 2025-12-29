@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:alchemist",
-  "parent": "jobsplus:alchemist/stronger_potions_iii",
+  "parent": "jobsplus:alchemist/stronger_potions_ii",
   "icon": {
     "id": "minecraft:book",
     "count": 3
