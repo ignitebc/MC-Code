@@ -1,5 +1,4 @@
 package com.daqem.arc.api.reward.type;
-
 import com.daqem.arc.Arc;
 import com.daqem.arc.api.action.IAction;
 import com.daqem.arc.api.action.type.ActionType;
@@ -26,6 +25,7 @@ import com.daqem.arc.event.events.RegistryEvent;
 import com.daqem.arc.registry.ArcRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import com.daqem.arc.data.reward.entity.EntityDropMultiplierReward;
 
 public interface RewardType<T extends IReward> extends IRewardType<T> {
 
@@ -46,6 +46,8 @@ public interface RewardType<T extends IReward> extends IRewardType<T> {
     IRewardType<ExpMultiplierReward> EXP_MULTIPLIER = register(Arc.getId("exp_multiplier"), new ExpMultiplierReward.Serializer());
     IRewardType<DamageMultiplierReward> DAMAGE_MULTIPLIER = register(Arc.getId("damage_multiplier"), new DamageMultiplierReward.Serializer());
     IRewardType<CommandReward> COMMAND = register(Arc.getId("command"), new CommandReward.Serializer());
+
+    IRewardType<EntityDropMultiplierReward> ENTITY_DROP_MULTIPLIER = register(ResourceLocation.fromNamespaceAndPath("jobsplus", "entity_drop_multiplier"), new EntityDropMultiplierReward.Serializer());
 
     static <T extends IReward> IRewardType<T> register(final ResourceLocation location, final IRewardSerializer<T> serializer) {
         return Registry.register(ArcRegistry.REWARD, location, new RewardType<T>(){

@@ -51,7 +51,7 @@ public class ShopComponent extends EmptyComponent
     private static List<ShopOffer> createDefaultOffers()
     {
         List<ShopOffer> offers = new ArrayList<>();
-        // SHOP 물품 추가
+        // 상점 물품 추가
         offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 2, ResourceLocation.parse("minecraft:diamond"), 8));
         offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 5, ResourceLocation.parse("minecraft:ancient_debris"), 1));
         offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 30, ResourceLocation.parse("minecraft:elytra"), 1));
@@ -64,6 +64,10 @@ public class ShopComponent extends EmptyComponent
         offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 50, ResourceLocation.parse("advancednetherite:reward_key_iii"), 1));
         offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 100, ResourceLocation.parse("advancednetherite:reward_key_iv"), 1));
         offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:enhancement_shard"), 3, ResourceLocation.parse("advancednetherite:enhancement_gem"), 1));
+        offers.add(new ShopOffer(ResourceLocation.parse("minecraft:cooked_chicken"), 10, ResourceLocation.parse("minecraft:emerald"), 1));
+
+
+
         return offers;
     }
 }

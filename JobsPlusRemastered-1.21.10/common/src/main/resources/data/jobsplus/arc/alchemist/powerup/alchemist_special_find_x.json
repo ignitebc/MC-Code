@@ -1,0 +1,21 @@
+{
+  "holder":
+  {
+    "type": "jobsplus:job",
+    "id": "jobsplus:alchemist/alchemist_special_find_x"
+  },
+  "type": "arc:on_brew",
+  "rewards":
+  [
+    {
+      "type": "arc:item",
+      "chance": 5,
+      "item":
+      {
+        "id": "minecraft:diamond"
+      },
+      "amount": 1,
+      "overflow": "drop"
+    }
+  ]
+}
