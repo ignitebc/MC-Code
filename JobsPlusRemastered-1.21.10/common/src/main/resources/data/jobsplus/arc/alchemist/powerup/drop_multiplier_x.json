@@ -1,0 +1,30 @@
+{
+  "holder": { 
+    "type": "jobsplus:powerup", 
+    "id": "jobsplus:alchemist/drop_multiplier_x"
+ },
+  "type": "arc:on_kill_entity",
+  "rewards": [
+    { 
+        "type": "jobsplus:entity_drop_multiplier", 
+        "multiplier": 3, 
+        "chance": 50 
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:entity_types",
+      "entity_types": [
+        "minecraft:phantom",
+        "minecraft:pufferfish",
+        "minecraft:magma_cube",
+        "minecraft:ghast",
+        "minecraft:rabbit",
+        "minecraft:spider",
+        "minecraft:cave_spider",
+        "minecraft:blaze",
+        "minecraft:witch"
+      ]
+    }
+  ]
+}

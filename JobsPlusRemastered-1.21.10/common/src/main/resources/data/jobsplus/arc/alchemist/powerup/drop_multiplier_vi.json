@@ -1,0 +1,47 @@
+{
+  "holder": { 
+    "type": "jobsplus:powerup", 
+    "id": "jobsplus:alchemist/drop_multiplier_vi"
+ },
+  "type": "arc:on_kill_entity",
+  "rewards": [
+    { 
+        "type": "jobsplus:entity_drop_multiplier", 
+        "multiplier": 3, 
+        "chance": 30 
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:entity_types",
+      "entity_types": [
+        "minecraft:phantom",
+        "minecraft:pufferfish",
+        "minecraft:magma_cube",
+        "minecraft:ghast",
+        "minecraft:rabbit",
+        "minecraft:spider",
+        "minecraft:cave_spider",
+        "minecraft:blaze",
+        "minecraft:witch"
+      ]
+    },
+    
+    { 
+        "type": "jobsplus:powerup_not_active", 
+        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_vii" 
+    },
+    { 
+        "type": "jobsplus:powerup_not_active", 
+        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_viii" 
+    },
+    { 
+        "type": "jobsplus:powerup_not_active", 
+        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_viiii" 
+    },
+    { 
+        "type": "jobsplus:powerup_not_active", 
+        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_x" 
+    }
+  ]
+}

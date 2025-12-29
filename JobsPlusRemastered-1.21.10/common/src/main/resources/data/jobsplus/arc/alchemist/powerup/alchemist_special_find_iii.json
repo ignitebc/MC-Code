@@ -1,0 +1,53 @@
+{
+  "holder":
+  {
+    "type": "jobsplus:job",
+    "id": "jobsplus:alchemist/alchemist_special_find_iii"
+  },
+  "type": "arc:on_brew",
+  "rewards":
+  [
+    {
+      "type": "arc:item",
+      "chance": 1.5,
+      "item":
+      {
+        "id": "minecraft:diamond"
+      },
+      "amount": 1,
+      "overflow": "drop"
+    }
+  ],
+  "conditions":
+  [
+   
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/alchemist_special_find_iv"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/alchemist_special_find_v"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/alchemist_special_find_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/alchemist_special_find_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/alchemist_special_find_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/alchemist_special_find_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/alchemist_special_find_x"
+    }
+  ]
+}

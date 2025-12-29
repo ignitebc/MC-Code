@@ -4,14 +4,14 @@
   "roll_mode": "SINGLE",
   "rewards": [
     { "item": "minecraft:totem_of_undying", "count": 2, "chance": 24 },
-    { "item": "minecraft:netherite_ingot", "count": 5, "chance": 23 },
+    { "item": "minecraft:netherite_ingot", "count": 5, "chance": 20 },
 
-    { "item": "advancednetherite:enhance_success_scroll_3", "count": 1, "chance": 25.0 },
-    { "item": "advancednetherite:enhance_success_scroll_5", "count": 1, "chance": 15.0 },
-    { "item": "advancednetherite:enhance_success_scroll_7", "count": 1, "chance": 7.0 },
-    { "item": "advancednetherite:enhance_success_scroll_10", "count": 1, "chance": 2.0 },
-
+    { "item": "advancednetherite:enhance_success_scroll_3", "count": 1, "chance": 20 },
+    { "item": "advancednetherite:enhance_success_scroll_5", "count": 1, "chance": 15 },
+    { "item": "advancednetherite:enhance_success_scroll_7", "count": 1, "chance": 10 },
+    { "item": "advancednetherite:enhance_success_scroll_10", "count": 1, "chance": 5 },
+    { "item": "advancednetherite:bitcoin", "count": 20, "chance": 3 },
     { "item": "advancednetherite:bitcoin", "count": 30, "chance": 2 },
-    { "item": "advancednetherite:bitcoin", "count": 50, "chance": 2 }
+    { "item": "advancednetherite:bitcoin", "count": 50, "chance": 1 }
   ]
 }
