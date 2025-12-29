@@ -1,15 +1,10 @@
 {
   "job": "jobsplus:alchemist",
-  "parent": "jobsplus:alchemist/stronger_potions_iv",
+  "parent": "jobsplus:alchemist/stronger_potions_v",
   "icon": {
-    "id": "minecraft:potion",
-    "components": {
-      "minecraft:potion_contents": {
-        "potion": "minecraft:strength"
-      }
-    },
+    "id": "minecraft:book",
     "count": 5
   },
   "price": 18,
-  "required_level": 50
+  "required_level": 20
 }

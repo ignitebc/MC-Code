@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:alchemist",
+  "parent": "jobsplus:alchemist/stronger_potions_vi",
+  "icon": {
+    "id": "minecraft:book",
+    "count": 6
+  },
+  "price": 20,
+  "required_level": 25
+}

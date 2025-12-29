@@ -1,0 +1,28 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:alchemist/harmful_potion_immunity_x"
+  },
+  "type": "arc:on_effect_added",
+  "rewards": [
+    {
+      "type": "arc:remove_effect",
+      "chance": 50
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:or",
+      "conditions": [
+        {
+          "type": "arc:effect_category",
+          "category": "HARMFUL"
+        },
+        {
+          "type": "arc:effect",
+          "effect": "minecraft:glowing"
+        }
+      ]
+    }
+  ]
+}

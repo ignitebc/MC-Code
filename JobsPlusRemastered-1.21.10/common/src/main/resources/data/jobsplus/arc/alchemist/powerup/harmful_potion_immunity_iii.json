@@ -7,7 +7,7 @@
   "rewards": [
     {
       "type": "arc:remove_effect",
-      "chance": 60
+      "chance": 15
     }
   ],
   "conditions": [
@@ -20,14 +20,11 @@
         },
         {
           "type": "arc:effect",
-          "effect": "minecraft:bad_omen"
-        },
-        {
-          "type": "arc:effect",
           "effect": "minecraft:glowing"
         }
       ]
     },
+    
     {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:alchemist/harmful_potion_immunity_iv"
@@ -35,6 +32,26 @@
     {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:alchemist/harmful_potion_immunity_v"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/harmful_potion_immunity_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/harmful_potion_immunity_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/harmful_potion_immunity_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/harmful_potion_immunity_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/harmful_potion_immunity_x"
     }
   ]
 }

@@ -7,7 +7,30 @@
   "rewards": [
     {
       "type": "arc:effect_duration_multiplier",
-      "multiplier": 2.0
+      "multiplier": 1.5
+    }
+  ],
+  "conditions": [
+   
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/longer_potions_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/longer_potions_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/longer_potions_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/longer_potions_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/longer_potions_x"
     }
   ]
 }
