@@ -4,7 +4,7 @@
     "type": "jobsplus:job",
     "id": "jobsplus:alchemist/alchemist_special_find_vi"
   },
-  "type": "arc:on_brew",
+  "type": "arc:on_brew_potion",
   "rewards":
   [
     {
