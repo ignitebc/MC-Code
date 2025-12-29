@@ -2,14 +2,9 @@
   "job": "jobsplus:alchemist",
   "parent": "jobsplus:alchemist/harmful_potion_immunity_iii",
   "icon": {
-    "id": "minecraft:potion",
-    "components": {
-      "minecraft:potion_contents": {
-        "potion": "minecraft:poison"
-      }
-    },
+    "id": "minecraft:milk_bucket",
     "count": 4
   },
   "price": 16,
-  "required_level": 35
+  "required_level": 15
 }

@@ -7,11 +7,12 @@
   "rewards": [
     {
       "type": "arc:effect_amplifier_addition",
-      "addition": 1,
-      "chance": 60
+      "addition": 2,
+      "chance": 15
     }
   ],
   "conditions": [
+   
     {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:alchemist/stronger_potions_iv"
@@ -19,6 +20,26 @@
     {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:alchemist/stronger_potions_v"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/stronger_potions_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/stronger_potions_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/stronger_potions_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/stronger_potions_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/stronger_potions_x"
     }
   ]
 }

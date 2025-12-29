@@ -17,34 +17,40 @@ import java.util.stream.Stream;
 
 public final class EventJobSelectTicketUse {
 
-    private static final ResourceLocation JOB_SELECT_TICKET_ID =
-            ResourceLocation.fromNamespaceAndPath("advancednetherite", "job_select_ticket");
+    private static final ResourceLocation JOB_SELECT_TICKET_ID = ResourceLocation.fromNamespaceAndPath("advancednetherite", "job_select_ticket");
 
-    private EventJobSelectTicketUse() {
+    private EventJobSelectTicketUse() 
+    {
     }
 
-    public static void registerEvent() {
+    public static void registerEvent() 
+    {
         InteractionEvent.RIGHT_CLICK_ITEM.register((player, hand) -> {
-            if (!(player instanceof ServerPlayer serverPlayer)) {
+            if (!(player instanceof ServerPlayer serverPlayer)) 
+            {
                 return InteractionResult.PASS;
             }
 
             ItemStack stack = serverPlayer.getItemInHand(hand);
-            if (stack.isEmpty()) {
+            if (stack.isEmpty()) 
+            {
                 return InteractionResult.PASS;
             }
 
             ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
-            if (!JOB_SELECT_TICKET_ID.equals(id)) {
+            if (!JOB_SELECT_TICKET_ID.equals(id)) 
+            {
                 return InteractionResult.PASS;
             }
 
-            if (!(serverPlayer instanceof JobsServerPlayer jobsServerPlayer)) {
+            if (!(serverPlayer instanceof JobsServerPlayer jobsServerPlayer)) 
+            {
                 return InteractionResult.PASS;
             }
 
             // 우클릭 홀드로 연속 발동 방지(1초)
-            if (serverPlayer.getCooldowns().isOnCooldown(stack)) {
+            if (serverPlayer.getCooldowns().isOnCooldown(stack)) 
+            {
                 return InteractionResult.CONSUME;
             }
             serverPlayer.getCooldowns().addCooldown(stack, 20);
@@ -54,7 +60,8 @@ public final class EventJobSelectTicketUse {
             int cap = Math.max(0, JobsPlusConfig.maxJobs.get());
             int extra = Math.max(0, jobsServerPlayer.jobsplus$getExtraJobSlots());
             int currentMax = (int) Math.min((long) cap, (long) base + (long) extra);
-            if (currentMax >= cap) {
+            if (currentMax >= cap) 
+            {
                 serverPlayer.sendSystemMessage(JobsPlus.translatable("error.max_jobs_reached"), false);
                 return InteractionResult.CONSUME;
             }
@@ -62,11 +69,14 @@ public final class EventJobSelectTicketUse {
             // 슬롯 +1
             jobsServerPlayer.jobsplus$addExtraJobSlots(1);
 
-            // 요구사항: 크리에이티브여도 "무조건 1개 소모"
+            // 무조건 1개 소모
             stack.shrink(1);
-            if (stack.isEmpty()) {
+            if (stack.isEmpty()) 
+            {
                 serverPlayer.setItemInHand(hand, ItemStack.EMPTY);
-            } else {
+            } 
+            else 
+            {
                 serverPlayer.setItemInHand(hand, stack);
             }
             serverPlayer.getInventory().setChanged();
@@ -76,21 +86,13 @@ public final class EventJobSelectTicketUse {
             NetworkManager.sendToPlayer(
                     serverPlayer,
                     new ClientboundOpenJobsScreenPacket(
-                            Stream.concat(
-                                    jobsServerPlayer.jobsplus$getJobs().stream(),
-                                    jobsServerPlayer.jobsplus$getInactiveJobs().stream()
-                            ).toList(),
+                            Stream.concat(jobsServerPlayer.jobsplus$getJobs().stream(),jobsServerPlayer.jobsplus$getInactiveJobs().stream()).toList(),
                             jobsServerPlayer.jobsplus$getCoins(),
                             jobsServerPlayer.jobsplus$getEffectiveMaxJobs()
                     )
             );
 
-            serverPlayer.sendSystemMessage(
-                    Component.literal("직업선택권 사용: 최대 직업 수 +1 (현재 최대: "
-                            + jobsServerPlayer.jobsplus$getEffectiveMaxJobs() + ")"),
-                    false
-            );
-
+            serverPlayer.sendSystemMessage(Component.literal("직업선택권 사용: 최대 직업 수 +1 (현재 최대: " + jobsServerPlayer.jobsplus$getEffectiveMaxJobs() + ")"),false);
             return InteractionResult.CONSUME;
         });
     }
