@@ -20,6 +20,6 @@
     { "item": "advancednetherite:bitcoin", "count": 200, "chance": 1.5 },
     { "item": "advancednetherite:bitcoin", "count": 300, "chance": 1 },
     { "item": "advancednetherite:bitcoin", "count": 400, "chance": 0.5 },
-    { "item": "minecraft:enchanted_golden_apple", "count": 50, "chance": 6.0 }
+    { "item": "minecraft:enchanted_golden_apple", "count": 50, "chance": 6 }
   ]
 }

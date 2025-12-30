@@ -1,14 +1,14 @@
 {
-  "holder": { 
-    "type": "jobsplus:powerup", 
+  "holder": {
+    "type": "jobsplus:powerup",
     "id": "jobsplus:alchemist/drop_multiplier_i"
- },
+  },
   "type": "arc:on_kill_entity",
   "rewards": [
-    { 
-        "type": "jobsplus:entity_drop_multiplier", 
-        "multiplier": 3, 
-        "chance": 5
+    {
+      "type": "jobsplus:entity_drop_multiplier",
+      "multiplier": 3,
+      "chance": 5
     }
   ],
   "conditions": [
@@ -26,41 +26,41 @@
         "minecraft:witch"
       ]
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_ii" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_ii"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_iii" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_iii"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_iv" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_iv"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_v" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_v"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_vi" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_vi"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_vii" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_vii"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_viii" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_viii"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_viiii" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_viiii"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_x" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_x"
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "holder":
   {
-    "type": "jobsplus:job",
+    "type": "jobsplus:powerup",
     "id": "jobsplus:alchemist/alchemist_special_find_v"
   },
   "type": "arc:on_brew_potion",

@@ -27,33 +27,33 @@
       ]
     },
    
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_iv" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_iv"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_v" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_v"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_vi" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_vi"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_vii" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_vii"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_viii" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_viii"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_viiii" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_viiii"
     },
-    { 
-        "type": "jobsplus:powerup_not_active", 
-        "powerup": "jobsplus:alchemist/enchant_material_drop_multiplier_x" 
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/drop_multiplier_x"
     }
   ]
 }

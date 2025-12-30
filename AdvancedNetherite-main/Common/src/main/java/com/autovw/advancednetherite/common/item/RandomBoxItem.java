@@ -2,6 +2,7 @@ package com.autovw.advancednetherite.common.item;
 
 import com.autovw.advancednetherite.common.randombox.RandomBoxConfig;
 import com.autovw.advancednetherite.common.randombox.RandomBoxConfigManager;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -77,11 +78,11 @@ public class RandomBoxItem extends AdvancedItem {
             return InteractionResult.FAIL;
         }
 
-        // 소모
+        // 소모 처리
         removeItem(inv, keyItem, consumeKey);
         boxStack.shrink(consumeBox);
 
-        // 보상 지급
+        // 보상 목록
         List<RandomBoxConfig.Reward> rewards = config.rewards;
         if (rewards == null || rewards.isEmpty()) {
             player.displayClientMessage(Component.literal("보상 항목이 없습니다."), true);
@@ -89,29 +90,38 @@ public class RandomBoxItem extends AdvancedItem {
         }
 
         RandomSource rnd = player.getRandom();
-
-        // 실제 지급된 보상을 수집 (전체 방송 메시지에 사용)
         List<ItemStack> givenRewards = new ArrayList<>();
 
         if (config.roll_mode == RandomBoxConfig.RollMode.SINGLE) {
-            // SINGLE은 "확률"이 아니라 "가중치" 개념으로 1개를 뽑는 방식이므로
-            // chance 값을 그대로 weight로 사용합니다. (예: 70/30)
-            RandomBoxConfig.Reward chosen = pickOneRewardWeighted(rewards, rnd);
-            if (chosen != null) {
+            // SINGLE: chance를 "가중치(weight)"로 사용하여 반드시 1개를 뽑는다.
+            // 단, 레지스트리에서 아이템을 못 찾는(EMPTY) 케이스가 있으면 후보에서 제거하고 재시도해서
+            // 결과적으로 "없음" 방송이 뜨는 것을 방지한다.
+            List<RandomBoxConfig.Reward> pool = new ArrayList<>(rewards);
+
+            while (!pool.isEmpty()) {
+                RandomBoxConfig.Reward chosen = pickOneRewardWeighted(pool, rnd);
+                if (chosen == null) {
+                    break;
+                }
+
                 ItemStack given = giveReward(player, chosen);
                 if (given != null && !given.isEmpty()) {
                     givenRewards.add(given);
+                    break; // SINGLE이므로 1개 지급 후 종료
                 }
+
+                // 지급 실패(대부분 아이템 레지스트리 누락/오타)면 후보에서 제외 후 재시도
+                pool.remove(chosen);
             }
+
         } else {
-            // MULTI는 각 보상별 확률 판정이므로
-            // chance를 항상 "퍼센트"로 해석: 0.03 -> 0.03%, 80 -> 80%
+            // INDEPENDENT: 각 보상을 독립 확률로 판정
             for (RandomBoxConfig.Reward r : rewards) {
                 if (r == null || r.item == null) {
                     continue;
                 }
 
-                double prob = normalizeChancePercent(r.chance); // 0~1 확률값으로 변환
+                double prob = normalizeChanceToProbability(r.chance);
                 if (rnd.nextDouble() <= prob) {
                     ItemStack given = giveReward(player, r);
                     if (given != null && !given.isEmpty()) {
@@ -121,26 +131,20 @@ public class RandomBoxItem extends AdvancedItem {
             }
         }
 
-        // 전체 방송 메시지
+        // 전체 방송 메시지 (빨간색)
         String openerName = player.getName().getString();
-        String boxName = boxStack.getHoverName().getString(); // 로컬라이징된 아이템명 사용
+        String boxName = boxStack.getHoverName().getString();
         String rewardText = buildRewardText(givenRewards);
 
-        Component broadcast = Component.literal(
-                openerName + "님이 " + boxName + " 오픈!!! 축하합니다! 보상은 " + rewardText + " 입니다");
+        Component broadcast = Component.literal(openerName + "님이 " + boxName + " 오픈!!! 보상은 ★" + rewardText + "★ 입니다").withStyle(ChatFormatting.RED);
 
-        // 서버 전체 채팅으로 방송
         server.getPlayerList().broadcastSystemMessage(broadcast, false);
 
         return InteractionResult.CONSUME;
     }
 
     /**
-     * 당신 환경: BuiltInRegistries.ITEM.get(ResourceKey) ->
-     * Optional<Holder.Reference<Item>>
-     * 따라서 Optional/Holder.Reference에서 Item을 꺼내는 방식으로 구현.
-     *
-     * 주의: BuiltInRegistries.ITEM.get(id) 형태는 사용하지 않습니다.
+     * BuiltInRegistries.ITEM.get(ResourceKey) -> Optional<Holder.Reference<Item>>
      */
     private static Item getItemOrNull(ResourceLocation id) {
         if (id == null) {
@@ -148,16 +152,17 @@ public class RandomBoxItem extends AdvancedItem {
         }
 
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, id);
-
-        // 여기서 반환 타입이 Optional<Holder.Reference<Item>> 로 잡혀야 타입 불일치가 발생하지 않습니다.
         Optional<Holder.Reference<Item>> opt = BuiltInRegistries.ITEM.get(key);
 
         Item item = opt.map(Holder.Reference::value).orElse(Items.AIR);
         return (item == Items.AIR) ? null : item;
     }
 
-    private static RandomBoxConfig.Reward pickOneRewardWeighted(List<RandomBoxConfig.Reward> rewards,
-            RandomSource rnd) {
+    /**
+     * SINGLE 전용: 가중치 기반 1개 선택
+     * - chance(가중치)는 정수/실수 모두 허용 (예: 1.5, 0.5)
+     */
+    private static RandomBoxConfig.Reward pickOneRewardWeighted(List<RandomBoxConfig.Reward> rewards, RandomSource rnd) {
         List<RandomBoxConfig.Reward> candidates = new ArrayList<>();
         double total = 0.0;
 
@@ -184,11 +189,12 @@ public class RandomBoxItem extends AdvancedItem {
 
         for (RandomBoxConfig.Reward r : candidates) {
             acc += r.chance;
-            if (roll < acc) {
+            if (roll <= acc) {
                 return r;
             }
         }
 
+        // 부동소수 오차 대비: 마지막 반환
         return candidates.get(candidates.size() - 1);
     }
 
@@ -205,11 +211,10 @@ public class RandomBoxItem extends AdvancedItem {
 
         ItemStack rewardStack = new ItemStack(rewardItem, count);
 
-        if (!player.getInventory().add(rewardStack)) {
-            player.drop(rewardStack, false);
+        if (!player.getInventory().add(rewardStack.copy())) {
+            player.drop(rewardStack.copy(), false);
         }
 
-        // 표시용으로 복제해서 반환
         return rewardStack.copy();
     }
 
@@ -220,7 +225,8 @@ public class RandomBoxItem extends AdvancedItem {
 
         // 같은 아이템이 여러 번 들어올 수 있어 합산
         List<ItemStack> merged = new ArrayList<>();
-        outer: for (ItemStack s : givenRewards) {
+        outer:
+        for (ItemStack s : givenRewards) {
             if (s == null || s.isEmpty()) {
                 continue;
             }
@@ -237,8 +243,7 @@ public class RandomBoxItem extends AdvancedItem {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < merged.size(); i++) {
             ItemStack s = merged.get(i);
-            String name = s.getHoverName().getString();
-            sb.append(name).append(" x").append(s.getCount());
+            sb.append(s.getHoverName().getString()).append(" x").append(s.getCount());
             if (i < merged.size() - 1) {
                 sb.append(", ");
             }
@@ -247,29 +252,19 @@ public class RandomBoxItem extends AdvancedItem {
     }
 
     /**
-     * 요구사항 반영:
-     * chance는 항상 "퍼센트"로 입력됨.
-     *
-     * 예:
-     * - 0.03 -> 0.03% -> 0.0003
-     * - 80 -> 80% -> 0.8
+     * INDEPENDENT 확률 정규화:
+     * - 0~1: 확률로 간주 (1.0 = 100%)
+     * - 1 초과: 퍼센트로 간주 (80 = 80%)
      */
-    private static double normalizeChancePercent(double percent) {
-        if (Double.isNaN(percent) || Double.isInfinite(percent)) {
-            return 0.0;
-        }
-        if (percent <= 0.0) {
+    private static double normalizeChanceToProbability(double chance) {
+        if (Double.isNaN(chance) || Double.isInfinite(chance) || chance <= 0.0) {
             return 0.0;
         }
 
-        double prob = percent / 100.0;
+        double prob = (chance <= 1.0) ? chance : (chance / 100.0);
 
-        if (prob < 0.0) {
-            return 0.0;
-        }
-        if (prob > 1.0) {
-            return 1.0;
-        }
+        if (prob < 0.0) return 0.0;
+        if (prob > 1.0) return 1.0;
         return prob;
     }
 
