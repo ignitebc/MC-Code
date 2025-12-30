@@ -12,47 +12,46 @@ import java.lang.reflect.Method;
 public class RecipesScrollComponent extends EmptyComponent
 {
     // 업데이트 내역(표시 텍스트)
-    // Java 21 기준 텍스트 블록 사용 가능
     private static final String PATCH_NOTES = """
-            ★★★ 추후 업데이트 ★★★
-            * illager invasion 모드 도입 예정 (추가몬스터)
-            * 레이드 추가레벨 도입 예정 (현재 5단계 최대)
-            * 사냥꾼 스킬 추가 예정 (힘의물약+1증가, 약탈량증가)
-            * 광부 스킬 추가 예정 (사거리, 화염저항)
-            * 낚시꾼, 갈고리 낚시대 사용시 내구도 감소 예정
-            * 워든 잡을 시 강화조각, 강화원석 드롭 예정
-            * 위더 잡을 시 강화조각 드롭 예정
-            * 위더, 워든:공격력, 체력, 범위 버프 예정
-            * 신규세트 방어구 도입 예정
-            * 연금술사 스킬추가예정 (낙뢰물약, 피흡)
-            * 굴착공 스킬 개편중
-            * 모험가 스킬 개편중
+            ★ 추후 업데이트 ★
+            - illager invasion 모드 도입 예정 (추가몬스터)
+            - 레이드 추가레벨 도입 예정 (현재 5단계 최대)
+            - 사냥꾼 스킬 추가 예정 (힘의물약+1증가, 약탈량증가)
+            - 광부 스킬 추가 예정 (사거리, 화염저항)
+            - 낚시꾼, 갈고리 낚시대 사용시 내구도 감소 예정
+            - 워든 잡을 시 강화조각, 강화원석 드롭 예정
+            - 위더 잡을 시 강화조각 드롭 예정
+            - 위더, 워든:공격력, 체력, 범위 버프 예정
+            - 신규세트 방어구 도입 예정
+            - 연금술사 스킬추가예정 (낙뢰물약, 피흡)
+            - 굴착공 스킬 개편중
+            - 모험가 스킬 개편중
 
-            ★★★ 업데이트 완료 ★★★
-            * 연금술사 스킬 전면 개편
-            * 레이드 시작후, 겉날개 사용시 즉사 (80블록,5청크 제한)
-            * 위더(보스몹) 시작후, 겉날개 사용시 즉사 (80블록,5청크 제한)
+            ★ 업데이트 완료 ★
+            - 연금술사 스킬 전면 개편
+            - 레이드 시작후, 겉날개 사용시 즉사 (80블록,5청크 제한)
+            - 위더(보스몹) 시작후, 겉날개 사용시 즉사 (80블록,5청크 제한)
             
-            //황금사과, 마법이부여된황금사과, 토템, 방패의 활용도와
-            //아이템강화에 대한 중요성을 높이기 위해 겉날개사용금지.
-            //겉날개는 이동의 수단이지, 도주의 수단이 되는걸 방지.
+            황금사과, 마법이부여된황금사과, 토템, 방패의 활용도와
+            아이템강화에 대한 중요성을 높이기 위해 겉날개사용금지.
+            겉날개는 이동의 수단이지, 도주의 수단이 되는걸 방지.
             
-            * 익힌 닭고기 10개 -> 에메랄드 1개 (상점추가)
-            * 흙 192개(3세트) -> 에메랄드 1개 (상점추가)
-            * 네더랙 320개(5세트) -> 에메랄드 1개 (상점추가)
+            - 익힌 닭고기 10개 -> 에메랄드 1개 (상점추가)
+            - 흙 192개(3세트) -> 에메랄드 1개 (상점추가)
+            - 네더랙 320개(5세트) -> 에메랄드 1개 (상점추가)
 
-            *사냥꾼 (스킬 추가)
+            - 사냥꾼 (스킬 추가)
             - 이동속도증가 (걷기, 달리기, 수영, 점프 포함)
 
-            *사냥꾼 (너프)
+            - 사냥꾼 (너프)
             - 몹 처치시 비트코인 0.04% -> 0.02%
 
-            *사냥꾼 (추가)
+            - 사냥꾼 (추가)
             - 크리퍼 처치시 비트코인 0.04% 확률로 획득 (독립시행)
             - 워든,위더 처치시 비트코인 7% 확률로 3개 획득 (독립시행)
             - 위더스켈레톤 처치시 비트코인 0.4%확률로 획득 (독립시행)
 
-            * 광부 (버프)
+            - 광부 (버프)
             - 스페셜 광부1단계 0.05% -> 0.5%
             - 스페셜 광부2단계  0.1% -> 1%
             - 스페셜 광부3단계  0.15% -> 1.5%
@@ -64,10 +63,10 @@ public class RecipesScrollComponent extends EmptyComponent
             - 스페셜 광부9단계  0.45% -> 4.5%
             - 스페셜 광부10단계  0.5% -> 5%
 
-            ★★★ 랜덤 상자 대폭 상향 ★★★
-            // 추후 보상이 업데이트 되더라도
-            // 뽑은거에 대한 추가 보상을 지급
-            // ex) 토템2개 -> 4개로 상자보상상향시 추가 2개 지급
+            ★ 랜덤 상자 대폭 상향 ★
+            추후 보상이 업데이트 되더라도
+            뽑은거에 대한 추가 보상을 지급
+            ex) 토템2개 -> 4개로 상자보상상향시 추가 2개 지급
 
             - 1단계 랜덤상자 보상 목록
             불사의 토템 2개 (24%)
@@ -132,39 +131,59 @@ public class RecipesScrollComponent extends EmptyComponent
 
         RecipesScrollWidget recipesScrollWidget = new RecipesScrollWidget(getWidth(), getHeight(), state);
 
+        // ScrollWidget의 실제 컨텐츠(첫 컴포넌트)
         IComponent scrollContentComponent = recipesScrollWidget.getComponents().getFirst();
-        if (scrollContentComponent.getHeight() <= getHeight())
-        {
-            this.setWidth(scrollContentComponent.getWidth());
-            this.centerHorizontally();
-        }
 
-        // 레시피가 없을 때 "No recipe" 대신 업데이트 내역 출력
+        // 레시피가 없을 때: "스크롤 위젯 내부 컨텐츠"를 패치노트로 교체해야 스크롤이 동작함
         if (scrollContentComponent.getComponents().isEmpty())
         {
-            // 기존 색상 유지 (원 코드: 0xFFD8BF96)
-            MultiLineTextComponent patchNotesText = new MultiLineTextComponent(0, 0, getWidth(), Component.literal(PATCH_NOTES), 0xFFD8BF96);
+            // 스크롤바 영역(우측)을 피하려고 폭을 살짝 줄임
+            int textWidth = Math.max(1, getWidth() - 16);
 
-            // 글자 크기: 기본보다 살짝 줄이기 (UIlib에 scale API가 있을 때만 적용)
-            tryApplyTextScale(patchNotesText, 0.6f);
+            // 검은색 글자
+            MultiLineTextComponent patchNotesText = new MultiLineTextComponent(0, 0, textWidth, Component.literal(PATCH_NOTES), 0xFF000000);
 
-            this.addComponent(patchNotesText);
+            // 기존 0.6f는 너무 작아서 가독성이 떨어짐 -> 상향
+            tryApplyTextScale(patchNotesText, 0.3f);
+
+            // ScrollWidget 컨텐츠를 패치노트 컨테이너로 교체
+            EmptyComponent patchContainer = new EmptyComponent(0, 0, textWidth, 0);
+            patchContainer.addComponent(patchNotesText);
+            patchContainer.setHeight(patchNotesText.getHeight());
+
+            recipesScrollWidget.getComponents().clear();
+            recipesScrollWidget.addComponent(patchContainer);
+
+            // 컨텐츠 폭이 위젯보다 좁으면 가운데 정렬
+            if (patchContainer.getWidth() <= getWidth())
+            {
+                this.setWidth(patchContainer.getWidth());
+                this.centerHorizontally();
+            }
+        }
+        else
+        {
+            // 기존 로직 유지: 컨텐츠가 위젯보다 작으면 가운데 정렬
+            if (scrollContentComponent.getHeight() <= getHeight())
+            {
+                this.setWidth(scrollContentComponent.getWidth());
+                this.centerHorizontally();
+            }
         }
 
         this.addWidget(recipesScrollWidget);
     }
 
     /**
-     * UIlib 버전에 따라 스케일 함수명이 다를 수 있어 리플렉션으로 안전하게 적용합니다. - setScale(float) -
-     * setTextScale(float)
+     * UIlib 버전에 따라 스케일 함수명이 다를 수 있어 리플렉션으로 안전하게 적용합니다.
+     * - setScale(float)
+     * - setTextScale(float)
      */
     private static void tryApplyTextScale(Object component, float scale)
     {
-        if (component == null)
-            return;
+        if (component == null) return;
 
-        if (invokeIfExists(component, "setScale", scale))
-            return;
+        if (invokeIfExists(component, "setScale", scale)) return;
         invokeIfExists(component, "setTextScale", scale);
     }
 
@@ -175,7 +194,8 @@ public class RecipesScrollComponent extends EmptyComponent
             Method m = target.getClass().getMethod(methodName, float.class);
             m.invoke(target, arg);
             return true;
-        } catch (Throwable ignored)
+        }
+        catch (Throwable ignored)
         {
             return false;
         }

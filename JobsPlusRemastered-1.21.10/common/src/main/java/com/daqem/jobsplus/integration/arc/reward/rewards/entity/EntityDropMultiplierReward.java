@@ -8,7 +8,7 @@ import com.daqem.arc.api.reward.IReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
-import com.daqem.jobsplus.mixin.accessor.DropMultiplierAccessor;
+import com.daqem.jobsplus.accessor.DropMultiplierAccessor;
 import com.google.gson.JsonObject;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.Entity;

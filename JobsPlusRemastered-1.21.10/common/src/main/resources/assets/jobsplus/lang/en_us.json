@@ -63,7 +63,7 @@
   "jobsplus.job.jobsplus.fisherman.name": "낚시꾼",
   "jobsplus.job.jobsplus.fisherman.description": "-낚시로 물건건질시(물고기) 비트코인 0.05% 확률로 획득\n-낚시로 물건건질시(보물) 비트코인 0.5% 확률로 획득\n-낚시로 물건건질시(희귀) 비트코인 1% 확률로 획득\n-낚시로 물건건질시(스페셜) 비트코인 10% 확률로 획득",
   "jobsplus.job.jobsplus.hunter.name": "사냥꾼",
-  "jobsplus.job.jobsplus.hunter.description": "-화로에 구워서 물건 꺼낼시 비트코인 0.03% 확률로 획득\n-모든 엔티티 처치시 비트코인 0.04%확률로 획득",
+  "jobsplus.job.jobsplus.hunter.description": "-화로에 구워서 물건 꺼낼시 비트코인 0.03% 확률로 획득\n-모든 엔티티 처치시 비트코인 0.02%확률로 획득\n-크리퍼 처치시 비트코인 0.04% 확률로 획득\n-워든,위더 처치시 비트코인 7% 확률로 획득\n-위더스켈레톤 처치시 비트코인 0.5%확률로 획득",
   "jobsplus.job.jobsplus.lumberjack.name": "모험가(예정)",
   "jobsplus.job.jobsplus.lumberjack.description": "-5블록 걸을 시 비트코인 0.5% 확률로 획득",
   "jobsplus.job.jobsplus.miner.name": "광부",

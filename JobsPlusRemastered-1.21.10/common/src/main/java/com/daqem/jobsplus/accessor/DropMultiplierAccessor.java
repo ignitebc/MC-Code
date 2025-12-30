@@ -1,7 +1,6 @@
-package com.daqem.jobsplus.mixin.accessor;
+package com.daqem.jobsplus.accessor;
 
-public interface DropMultiplierAccessor
-{
+public interface DropMultiplierAccessor {
 
     int jobsplus$getDropMultiplier();
 
