@@ -7,7 +7,8 @@
     "client.AbstractScrollAreaAccessor"
   ],
   "mixins": [
-    "MixinServerPlayer"
+    "MixinServerPlayer",
+    "MixinLivingEntityDropMultiplier"
   ],
   "injectors": {
     "defaultRequire": 1

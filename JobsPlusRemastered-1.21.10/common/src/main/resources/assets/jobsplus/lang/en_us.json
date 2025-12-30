@@ -16,7 +16,10 @@
   "jobsplus.gui.jobs.restriction_types": "%d 레벨에서, 이 아이템은 이러한 작업을 허용합니다:",
   "jobsplus.gui.jobs.item_info": "아이템 정보:",
   "jobsplus.gui.jobs.error.not_enough_coins_start": "코인이 부족합니다. (%s) 이 직업을 시작할 수 없습니다.",
+  
   "jobsplus.gui.jobs.no_recipes": "이 직업에는 제작 레시피가 없습니다. Jobs+ Tools 같은 모드를 확인하거나 사용자 정의 데이터팩을 만들어 직업에 제작 레시피를 추가하세요.",
+
+
   "jobsplus.gui.powerups.title": "스킬",
   "jobsplus.gui.powerups.price": "가격: %d",
   "jobsplus.gui.powerups.required_level": "필요 레벨: %d",
