@@ -1,0 +1,23 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:hunter"
+  },
+  "type": "arc:on_kill_entity",
+  "rewards": [
+    {
+      "type": "jobsplus:bitcoin_reward",
+      "chance": 7,
+      "amount": 3
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:entity_types",
+      "entity_types": [
+        "minecraft:wither",
+        "minecraft:warden"
+      ]
+    }
+  ]
+}

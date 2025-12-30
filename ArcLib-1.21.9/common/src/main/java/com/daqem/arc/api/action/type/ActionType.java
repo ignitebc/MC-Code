@@ -68,6 +68,8 @@ public interface ActionType<T extends IAction> extends IActionType<T> {
     ActionType<GetDestroySpeedAction> GET_DESTROY_SPEED = register(Arc.getId("on_get_destroy_speed"), new GetDestroySpeedAction.Serializer());
     ActionType<GetAttackSpeedAction> GET_ATTACK_SPEED = register(Arc.getId("on_get_attack_speed"), new GetAttackSpeedAction.Serializer());
     ActionType<RodReelInAction> ROD_REEL_IN = register(Arc.getId("on_rod_reel_in"), new RodReelInAction.Serializer());
+    
+    ActionType<GetWalkSpeedAction> GET_WALK_SPEED = register(Arc.getId("on_get_walk_speed"), new GetWalkSpeedAction.Serializer());
 
     static <T extends IAction> ActionType<T> register(final ResourceLocation location, final IActionSerializer<T> serializer) {
         return Registry.register(ArcRegistry.ACTION, location, new ActionType<T>(){

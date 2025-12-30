@@ -6,14 +6,18 @@
   "type": "arc:on_kill_entity",
   "rewards": [
     {
-      "type": "jobsplus:job_exp",
-      "min": 2,
-      "max": 4
-    },
-    {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 0.02,      
+      "chance": 0.04,
       "amount": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:entity_types",
+      "entity_types": 
+      [
+        "minecraft:creeper"
+      ]
     }
   ]
 }

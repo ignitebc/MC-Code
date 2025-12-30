@@ -1,0 +1,13 @@
+{
+  "holder": { 
+    "type": "jobsplus:powerup", 
+    "id": "jobsplus:hunter/run_speed_X" 
+  },
+  "type": "arc:on_get_walk_speed",
+  "rewards": [
+    { 
+      "type": "arc:walk_speed", 
+      "multiplier": 5
+    }
+  ]
+}
