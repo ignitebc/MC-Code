@@ -4,6 +4,7 @@ import com.daqem.arc.registry.ArcRegistry;
 import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.event.command.EventRegisterCommands;
 import com.daqem.jobsplus.event.item.EventJobSelectTicketUse;
+import com.daqem.jobsplus.event.player.EventKillElytraDuringRaidOrWither;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobManager;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupManager;
 import com.daqem.jobsplus.integration.arc.holder.type.JobsPlusActionHolderType;
@@ -19,11 +20,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import org.slf4j.Logger;
 
-public class JobsPlus {
+public class JobsPlus
+{
+
     public static final String MOD_ID = "jobsplus";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static void init() {
+    public static void init()
+    {
         JobsPlusConfig.init();
         JobsPlusNetworking.init();
 
@@ -34,7 +38,15 @@ public class JobsPlus {
         ReloadListenerRegistry.register(PackType.SERVER_DATA, new PowerupManager(), getId("powerups"));
     }
 
-    private static void initRegistry() {
+    private static void registerEvents()
+    {
+        EventRegisterCommands.registerEvent();
+        EventJobSelectTicketUse.registerEvent(); // 추가
+        EventKillElytraDuringRaidOrWither.registerEvent(); // 레이드/위더 활성 시 겉날개 즉사
+    }
+
+    private static void initRegistry()
+    {
         ArcRegistry.init();
 
         JobsPlusActionType.init();
@@ -43,38 +55,41 @@ public class JobsPlus {
         JobsPlusActionHolderType.init();
     }
 
-    private static void registerEvents() {
-        EventRegisterCommands.registerEvent();
-        EventJobSelectTicketUse.registerEvent(); // 추가
-    }
-
-    public static ResourceLocation getId(String id) {
+    public static ResourceLocation getId(String id)
+    {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, id);
     }
 
-    public static MutableComponent translatable(String str) {
+    public static MutableComponent translatable(String str)
+    {
         return Component.translatable(MOD_ID + "." + str);
     }
 
-    public static MutableComponent translatable(String str, Object... objects) {
+    public static MutableComponent translatable(String str, Object... objects)
+    {
         return Component.translatable(MOD_ID + "." + str, objects);
     }
 
-    public static MutableComponent literal(String str) {
+    public static MutableComponent literal(String str)
+    {
         return Component.literal(str);
     }
 
-    public static void debug(String s) {
+    public static void debug(String s)
+    {
         debug(s, new Object[0]);
     }
 
-    public static void debug(String message, Object... objects) {
-        if (JobsPlusConfig.isDebug.get()) {
+    public static void debug(String message, Object... objects)
+    {
+        if (JobsPlusConfig.isDebug.get())
+        {
             LOGGER.warn("DEBUG MESSAGE: " + message, objects);
         }
     }
 
-    public static boolean isDebugEnvironment() {
+    public static boolean isDebugEnvironment()
+    {
         return JobsPlusConfig.isDebug.get();
     }
 }
