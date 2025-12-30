@@ -25,6 +25,7 @@ import com.daqem.arc.event.events.RegistryEvent;
 import com.daqem.arc.registry.ArcRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import com.daqem.arc.data.reward.player.WalkSpeedMultiplierReward;
 
 public interface RewardType<T extends IReward> extends IRewardType<T> {
 
@@ -45,6 +46,8 @@ public interface RewardType<T extends IReward> extends IRewardType<T> {
     IRewardType<ExpMultiplierReward> EXP_MULTIPLIER = register(Arc.getId("exp_multiplier"), new ExpMultiplierReward.Serializer());
     IRewardType<DamageMultiplierReward> DAMAGE_MULTIPLIER = register(Arc.getId("damage_multiplier"), new DamageMultiplierReward.Serializer());
     IRewardType<CommandReward> COMMAND = register(Arc.getId("command"), new CommandReward.Serializer());
+
+    IRewardType<WalkSpeedMultiplierReward> WALK_SPEED_MULTIPLIER = register(Arc.getId("walk_speed"), new WalkSpeedMultiplierReward.Serializer());
 
     static <T extends IReward> IRewardType<T> register(final ResourceLocation location, final IRewardSerializer<T> serializer) {
         return Registry.register(ArcRegistry.REWARD, location, new RewardType<T>(){

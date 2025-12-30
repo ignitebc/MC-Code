@@ -211,6 +211,7 @@ public class RandomBoxItem extends AdvancedItem {
 
         ItemStack rewardStack = new ItemStack(rewardItem, count);
 
+        // 인벤토리가 가득찼을경우, 바닥에 드롭
         if (!player.getInventory().add(rewardStack.copy())) {
             player.drop(rewardStack.copy(), false);
         }

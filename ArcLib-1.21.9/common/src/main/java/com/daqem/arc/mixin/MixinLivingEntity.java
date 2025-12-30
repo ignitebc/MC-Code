@@ -1,6 +1,9 @@
 package com.daqem.arc.mixin;
 
+import com.daqem.arc.api.action.data.ActionDataBuilder;
 import com.daqem.arc.api.action.result.ActionResult;
+import com.daqem.arc.api.action.type.ActionType;
+import com.daqem.arc.api.player.ArcPlayer;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.event.triggers.PlayerEvents;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,27 +18,50 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
-public abstract class MixinLivingEntity extends Entity {
+public abstract class MixinLivingEntity extends Entity
+{
 
-    public MixinLivingEntity(EntityType<?> entityType, Level level) {
+    public MixinLivingEntity(EntityType<?> entityType, Level level)
+    {
         super(entityType, level);
     }
 
     @Inject(at = @At("RETURN"), method = "addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z")
-    private void addEffect(MobEffectInstance effect, Entity entity, CallbackInfoReturnable<Boolean> cir) {
+    private void addEffect(MobEffectInstance effect, Entity entity, CallbackInfoReturnable<Boolean> cir)
+    {
         final LivingEntity self = (LivingEntity) (Object) this;
-        if (self instanceof ArcServerPlayer serverPlayer) {
-            if (self.getActiveEffectsMap().containsKey(effect.getEffect())) {
-                if (entity instanceof ServerPlayer source) {
-                    if (source.getName().getString().equals("a")) {
+
+        if (self instanceof ArcServerPlayer serverPlayer)
+        {
+            if (self.getActiveEffectsMap().containsKey(effect.getEffect()))
+            {
+                if (entity instanceof ServerPlayer source)
+                {
+                    if (source.getName().getString().equals("a"))
+                    {
                         return;
                     }
                 }
             }
+
             ActionResult actionResult = PlayerEvents.onEffectAdded(serverPlayer, effect, entity);
-            if (actionResult.shouldCancelAction()) {
+            if (actionResult.shouldCancelAction())
+            {
                 self.removeEffect(effect.getEffect());
             }
+        }
+    }
+
+    @Inject(at = @At("RETURN"), method = "getSpeed()F", cancellable = true)
+    private void arc$getSpeed(CallbackInfoReturnable<Float> cir)
+    {
+        final LivingEntity self = (LivingEntity) (Object) this;
+
+        if (self instanceof ArcPlayer arcPlayer)
+        {
+            float walkSpeedModifier = new ActionDataBuilder(arcPlayer, ActionType.GET_WALK_SPEED).build().sendToAction().getWalkSpeedModifier();
+
+            cir.setReturnValue(cir.getReturnValue() * walkSpeedModifier);
         }
     }
 }
