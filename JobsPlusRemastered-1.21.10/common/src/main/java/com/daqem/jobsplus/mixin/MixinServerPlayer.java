@@ -209,18 +209,29 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     }
 
     @Override
-    public void jobsplus$updateActionHolders(Job job) {
-        if (jobsplus$getServerPlayer() instanceof ArcPlayer arcPlayer) {
+    public void jobsplus$updateActionHolders(Job job)
+    {
+        if (jobsplus$getServerPlayer() instanceof ArcPlayer arcPlayer)
+        {
             arcPlayer.arc$removeActionHolder(job.getJobInstance());
-            job.getPowerupManager().getAllPowerups()
-                    .forEach(powerup -> arcPlayer.arc$removeActionHolder(powerup.getPowerupInstance()));
+            job.getPowerupManager().getAllPowerups().forEach(powerup -> arcPlayer.arc$removeActionHolder(powerup.getPowerupInstance()));
             arcPlayer.arc$addActionHolder(job.getJobInstance());
-            job.getPowerupManager().getAllPowerups().stream()
-                    .filter(powerup -> powerup.getState() == PowerupState.ACTIVE)
-                    .forEach(powerup -> arcPlayer.arc$addActionHolder(powerup.getPowerupInstance()));
+            job.getPowerupManager().getAllPowerups().stream().filter(powerup -> powerup.getState() == PowerupState.ACTIVE).forEach(powerup -> arcPlayer.arc$addActionHolder(powerup.getPowerupInstance()));
         }
-    }
 
+        // ---- 추가: 클라이언트에도 활성 홀더 목록 동기화 ----
+        syncActionHoldersToClient();
+    }
+    
+    private void syncActionHoldersToClient()
+    {
+        ServerPlayer self = jobsplus$getServerPlayer();
+        // 활성 홀더들의 location만 전달
+        java.util.List<net.minecraft.resources.ResourceLocation> ids = jobsplus$getActionHolders().stream().map(com.daqem.arc.api.action.holder.IActionHolder::getLocation).toList();
+
+        dev.architectury.networking.NetworkManager.sendToPlayer(self, new com.daqem.jobsplus.networking.s2c.ClientboundSyncActionHoldersPacket(ids));
+    }
+    
     @Override
     public Player jobsplus$getPlayer() {
         return jobsplus$getServerPlayer();

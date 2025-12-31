@@ -7,7 +7,7 @@
   "rewards": [
     { 
       "type": "arc:walk_speed", 
-      "multiplier": 3.5
+      "multiplier": 7
     }
   ],
   "conditions": [
