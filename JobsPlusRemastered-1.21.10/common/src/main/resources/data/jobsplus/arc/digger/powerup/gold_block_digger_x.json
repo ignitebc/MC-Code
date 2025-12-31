@@ -1,0 +1,25 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:digger/gold_block_digger_x"
+  },
+  "type": "arc:on_break_block",
+  "rewards": [
+    {
+      "type": "arc:drop_item",
+      "chance": 0.1,
+      "item": {
+        "id": "minecraft:gold_block"
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:blocks",
+      "blocks": [
+        "#minecraft:mineable/shovel"
+      ]
+    }
+
+  ]
+}

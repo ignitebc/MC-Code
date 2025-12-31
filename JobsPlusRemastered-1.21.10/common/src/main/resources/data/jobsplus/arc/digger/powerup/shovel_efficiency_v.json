@@ -7,7 +7,7 @@
   "rewards": [
     {
       "type": "arc:destroy_speed_multiplier",
-      "multiplier": 1.5
+      "multiplier": 1.25
     }
   ],
   "conditions": [
@@ -22,6 +22,27 @@
       "blocks": [
         "#minecraft:mineable/shovel"
       ]
+    },
+    
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/shovel_efficiency_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/shovel_efficiency_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/shovel_efficiency_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/shovel_efficiency_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/shovel_efficiency_x"
     }
   ]
 }

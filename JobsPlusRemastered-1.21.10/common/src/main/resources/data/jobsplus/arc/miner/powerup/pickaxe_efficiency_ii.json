@@ -7,7 +7,7 @@
   "rewards": [
     {
       "type": "arc:destroy_speed_multiplier",
-      "multiplier": 1.2
+      "multiplier": 1.1
     }
   ],
   "conditions": [

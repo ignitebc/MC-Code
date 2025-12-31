@@ -1,8 +1,8 @@
 {
   "job": "jobsplus:digger",
   "icon": {
-    "id": "minecraft:golden_shovel"
+    "id": "minecraft:diamond_shovel"
   },
-  "price": 5,
-  "required_level": 5
+  "price": 10,
+  "required_level": 0
 }
