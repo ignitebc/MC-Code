@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:digger",
+  "parent": "jobsplus:digger/gold_ingot_digger_viiii",
+  "icon": {
+    "id": "minecraft:gold_ingot",
+    "count": 10
+  },
+  "price": 28,
+  "required_level": 50
+}
