@@ -1,7 +1,8 @@
 {
   "holder": {
-    "type": "jobsplus:job",
+    "type": "jobsplus:powerup",
     "id": "jobsplus:miner/mining_special_find_i"
+    
   },
   "type": "arc:on_break_block",
   "rewards": [
