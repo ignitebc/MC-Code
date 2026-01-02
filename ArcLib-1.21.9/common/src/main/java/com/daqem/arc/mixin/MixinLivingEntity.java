@@ -1,9 +1,6 @@
 package com.daqem.arc.mixin;
 
-import com.daqem.arc.api.action.data.ActionDataBuilder;
 import com.daqem.arc.api.action.result.ActionResult;
-import com.daqem.arc.api.action.type.ActionType;
-import com.daqem.arc.api.player.ArcPlayer;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.event.triggers.PlayerEvents;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,19 +46,6 @@ public abstract class MixinLivingEntity extends Entity
             {
                 self.removeEffect(effect.getEffect());
             }
-        }
-    }
-
-    @Inject(at = @At("RETURN"), method = "getSpeed()F", cancellable = true)
-    private void arc$getSpeed(CallbackInfoReturnable<Float> cir)
-    {
-        final LivingEntity self = (LivingEntity) (Object) this;
-
-        if (self instanceof ArcPlayer arcPlayer)
-        {
-            float walkSpeedModifier = new ActionDataBuilder(arcPlayer, ActionType.GET_WALK_SPEED).build().sendToAction().getWalkSpeedModifier();
-
-            cir.setReturnValue(cir.getReturnValue() * walkSpeedModifier);
         }
     }
 }

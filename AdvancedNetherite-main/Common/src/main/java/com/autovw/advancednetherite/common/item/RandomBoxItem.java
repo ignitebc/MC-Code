@@ -2,12 +2,14 @@ package com.autovw.advancednetherite.common.item;
 
 import com.autovw.advancednetherite.common.randombox.RandomBoxConfig;
 import com.autovw.advancednetherite.common.randombox.RandomBoxConfigManager;
+import com.mojang.logging.LogUtils;
+import org.slf4j.Logger;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.RandomSource;
@@ -17,15 +19,14 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class RandomBoxItem extends AdvancedItem {
 
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final ResourceLocation configId;
 
     public RandomBoxItem(Properties properties, ResourceLocation configId) {
@@ -37,16 +38,24 @@ public class RandomBoxItem extends AdvancedItem {
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack boxStack = player.getItemInHand(hand);
 
-        if (level.isClientSide()) {
-            return InteractionResult.SUCCESS;
-        }
+        Component boxNameComponent = boxStack.getHoverName();
+        ResourceLocation boxItemId = BuiltInRegistries.ITEM.getKey(boxStack.getItem());
+
+        LOGGER.info("[RandomBox] START player={} uuid={} hand={} boxItem={} boxCount={} configId={} boxNameKeyOrText={}",
+                player.getName().getString(), player.getUUID(), hand, boxItemId, boxStack.getCount(), configId, boxNameComponent.getString());
+
+        // 클라에서는 성공 반환(입력/애니메이션 흐름 유지)
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
 
         MinecraftServer server = level.getServer();
         if (server == null) {
+            LOGGER.warn("[RandomBox] Server is null. FAIL");
             return InteractionResult.FAIL;
         }
 
         RandomBoxConfig config = RandomBoxConfigManager.get(server, configId);
+        LOGGER.info("[RandomBox] Config lookup done. found={}", (config != null));
+
         if (config == null) {
             player.displayClientMessage(Component.literal("상자 설정(JSON)을 찾지 못했습니다: " + configId), true);
             return InteractionResult.FAIL;
@@ -55,34 +64,56 @@ public class RandomBoxItem extends AdvancedItem {
         int consumeBox = (config.consume != null && config.consume.box > 0) ? config.consume.box : 1;
         int consumeKey = (config.consume != null && config.consume.key > 0) ? config.consume.key : 1;
 
+        LOGGER.info("[RandomBox] consumeBox={} consumeKey={} requiredKey={} rollMode={} rewardsCount={}",
+                consumeBox, consumeKey, config.required_key, config.roll_mode, (config.rewards == null ? 0 : config.rewards.size()));
+
         if (config.required_key == null) {
             player.displayClientMessage(Component.literal("required_key가 설정되지 않았습니다: " + configId), true);
+            LOGGER.warn("[RandomBox] required_key is null. configId={}", configId);
             return InteractionResult.FAIL;
         }
 
         Item keyItem = getItemOrNull(config.required_key);
         if (keyItem == null) {
             player.displayClientMessage(Component.literal("열쇠 아이템을 찾지 못했습니다: " + config.required_key), true);
+            LOGGER.warn("[RandomBox] key item not found. required_key={} configId={}", config.required_key, configId);
             return InteractionResult.FAIL;
         }
 
         Inventory inv = player.getInventory();
 
-        if (countItem(inv, keyItem) < consumeKey) {
+        int keyHave = countItem(inv, keyItem);
+        LOGGER.info("[RandomBox] Key check: have={} need={}", keyHave, consumeKey);
+        if (keyHave < consumeKey) {
             player.displayClientMessage(Component.literal("열쇠가 부족합니다."), true);
             return InteractionResult.FAIL;
         }
 
+        LOGGER.info("[RandomBox] Box check: have={} need={}", boxStack.getCount(), consumeBox);
         if (boxStack.getCount() < consumeBox) {
             player.displayClientMessage(Component.literal("상자 수량이 부족합니다."), true);
             return InteractionResult.FAIL;
         }
 
-        // 소모 처리
+        // =========================
+        // 1) 소모 처리
+        // =========================
         removeItem(inv, keyItem, consumeKey);
         boxStack.shrink(consumeBox);
 
-        // 보상 목록
+        // 상자가 0개가 되면 즉시 손 슬롯 비우기(경계 상황 씹힘 완화)
+        if (boxStack.isEmpty()) {
+            player.setItemInHand(hand, ItemStack.EMPTY);
+            LOGGER.info("[RandomBox] Consumed to empty -> cleared hand slot BEFORE drop rewards");
+        }
+
+        // 즉시 동기화
+        inv.setChanged();
+        player.containerMenu.broadcastChanges();
+
+        LOGGER.info("[RandomBox] Consumed. handNow={} keyRemaining={}",
+                player.getItemInHand(hand).getCount(), countItem(inv, keyItem));
+
         List<RandomBoxConfig.Reward> rewards = config.rewards;
         if (rewards == null || rewards.isEmpty()) {
             player.displayClientMessage(Component.literal("보상 항목이 없습니다."), true);
@@ -90,214 +121,176 @@ public class RandomBoxItem extends AdvancedItem {
         }
 
         RandomSource rnd = player.getRandom();
-        List<ItemStack> givenRewards = new ArrayList<>();
+        List<ItemStack> droppedRewardsForBroadcast = new ArrayList<>();
 
         if (config.roll_mode == RandomBoxConfig.RollMode.SINGLE) {
-            // SINGLE: chance를 "가중치(weight)"로 사용하여 반드시 1개를 뽑는다.
-            // 단, 레지스트리에서 아이템을 못 찾는(EMPTY) 케이스가 있으면 후보에서 제거하고 재시도해서
-            // 결과적으로 "없음" 방송이 뜨는 것을 방지한다.
             List<RandomBoxConfig.Reward> pool = new ArrayList<>(rewards);
 
             while (!pool.isEmpty()) {
                 RandomBoxConfig.Reward chosen = pickOneRewardWeighted(pool, rnd);
-                if (chosen == null) {
-                    break;
-                }
+                if (chosen == null) break;
 
-                ItemStack given = giveReward(player, chosen);
-                if (given != null && !given.isEmpty()) {
-                    givenRewards.add(given);
-                    break; // SINGLE이므로 1개 지급 후 종료
-                }
+                Item chosenItem = getItemOrNull(chosen.item);
+                LOGGER.info("[RandomBox] SINGLE pick: chosenItem={} count={} weight(chance)={} valid={}",
+                        chosen.item, chosen.count, chosen.chance, (chosenItem != null));
 
-                // 지급 실패(대부분 아이템 레지스트리 누락/오타)면 후보에서 제외 후 재시도
-                pool.remove(chosen);
-            }
-
-        } else {
-            // INDEPENDENT: 각 보상을 독립 확률로 판정
-            for (RandomBoxConfig.Reward r : rewards) {
-                if (r == null || r.item == null) {
+                if (chosenItem == null) {
+                    LOGGER.warn("[RandomBox] SINGLE chosen item not found. remove from pool. itemId={}", chosen.item);
+                    pool.remove(chosen);
                     continue;
                 }
 
+                List<ItemStack> dropped = dropRewardSplit(player, chosen);
+                if (!dropped.isEmpty()) droppedRewardsForBroadcast.addAll(dropped);
+                break;
+            }
+        } else {
+            for (RandomBoxConfig.Reward r : rewards) {
                 double prob = normalizeChanceToProbability(r.chance);
-                if (rnd.nextDouble() <= prob) {
-                    ItemStack given = giveReward(player, r);
-                    if (given != null && !given.isEmpty()) {
-                        givenRewards.add(given);
-                    }
+                double roll = rnd.nextDouble();
+
+                LOGGER.info("[RandomBox] MULTI roll: item={} count={} chanceRaw={} prob={} roll={}",
+                        r.item, r.count, r.chance, prob, roll);
+
+                if (roll <= prob) {
+                    List<ItemStack> dropped = dropRewardSplit(player, r);
+                    if (!dropped.isEmpty()) droppedRewardsForBroadcast.addAll(dropped);
                 }
             }
         }
 
-        // 전체 방송 메시지 (빨간색)
-        String openerName = player.getName().getString();
-        String boxName = boxStack.getHoverName().getString();
-        String rewardText = buildRewardText(givenRewards);
+        MutableComponent rewardComponent = buildRewardComponent(droppedRewardsForBroadcast);
 
-        Component broadcast = Component.literal(openerName + "님이 " + boxName + " 오픈!!! 보상은 ★" + rewardText + "★ 입니다").withStyle(ChatFormatting.RED);
+        MutableComponent broadcast = Component.literal(player.getName().getString() + "님이 ")
+                .append(boxNameComponent)
+                .append(Component.literal(" 오픈!!! 보상은 ★"))
+                .append(rewardComponent)
+                .append(Component.literal("★ 입니다"))
+                .withStyle(ChatFormatting.RED);
 
+        LOGGER.info("[RandomBox] BROADCAST opener={} rewardsCount={}", player.getName().getString(), droppedRewardsForBroadcast.size());
         server.getPlayerList().broadcastSystemMessage(broadcast, false);
 
         return InteractionResult.CONSUME;
     }
 
-    /**
-     * BuiltInRegistries.ITEM.get(ResourceKey) -> Optional<Holder.Reference<Item>>
-     */
     private static Item getItemOrNull(ResourceLocation id) {
-        if (id == null) {
-            return null;
-        }
-
-        ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, id);
-        Optional<Holder.Reference<Item>> opt = BuiltInRegistries.ITEM.get(key);
-
-        Item item = opt.map(Holder.Reference::value).orElse(Items.AIR);
-        return (item == Items.AIR) ? null : item;
+        if (id == null) return null;
+        return BuiltInRegistries.ITEM.get(id).map(Holder.Reference::value).orElse(null);
     }
 
-    /**
-     * SINGLE 전용: 가중치 기반 1개 선택
-     * - chance(가중치)는 정수/실수 모두 허용 (예: 1.5, 0.5)
-     */
-    private static RandomBoxConfig.Reward pickOneRewardWeighted(List<RandomBoxConfig.Reward> rewards, RandomSource rnd) {
-        List<RandomBoxConfig.Reward> candidates = new ArrayList<>();
+    private static RandomBoxConfig.Reward pickOneRewardWeighted(List<RandomBoxConfig.Reward> candidates, RandomSource rnd) {
+        if (candidates == null || candidates.isEmpty()) return null;
+
         double total = 0.0;
+        for (RandomBoxConfig.Reward r : candidates) total += Math.max(r.chance, 0.0);
 
-        for (RandomBoxConfig.Reward r : rewards) {
-            if (r == null || r.item == null) {
-                continue;
-            }
-
-            double w = r.chance;
-            if (Double.isNaN(w) || Double.isInfinite(w) || w <= 0.0) {
-                continue;
-            }
-
-            candidates.add(r);
-            total += w;
-        }
-
-        if (candidates.isEmpty() || total <= 0.0) {
-            return null;
-        }
+        if (total <= 0.0) return candidates.get(rnd.nextInt(candidates.size()));
 
         double roll = rnd.nextDouble() * total;
         double acc = 0.0;
 
         for (RandomBoxConfig.Reward r : candidates) {
-            acc += r.chance;
-            if (roll <= acc) {
-                return r;
-            }
+            acc += Math.max(r.chance, 0.0);
+            if (roll <= acc) return r;
         }
-
-        // 부동소수 오차 대비: 마지막 반환
         return candidates.get(candidates.size() - 1);
     }
 
-    /**
-     * 보상을 지급하고, 실제 지급된 ItemStack(표시용)을 반환
-     */
-    private static ItemStack giveReward(Player player, RandomBoxConfig.Reward r) {
-        int count = Math.max(r.count, 1);
-
-        Item rewardItem = getItemOrNull(r.item);
-        if (rewardItem == null) {
-            return ItemStack.EMPTY;
-        }
-
-        ItemStack rewardStack = new ItemStack(rewardItem, count);
-
-        // 인벤토리가 가득찼을경우, 바닥에 드롭
-        if (!player.getInventory().add(rewardStack.copy())) {
-            player.drop(rewardStack.copy(), false);
-        }
-
-        return rewardStack.copy();
-    }
-
-    private static String buildRewardText(List<ItemStack> givenRewards) {
-        if (givenRewards == null || givenRewards.isEmpty()) {
-            return "없음";
-        }
-
-        // 같은 아이템이 여러 번 들어올 수 있어 합산
-        List<ItemStack> merged = new ArrayList<>();
-        outer:
-        for (ItemStack s : givenRewards) {
-            if (s == null || s.isEmpty()) {
-                continue;
-            }
-
-            for (ItemStack m : merged) {
-                if (ItemStack.isSameItemSameComponents(m, s)) {
-                    m.grow(s.getCount());
-                    continue outer;
-                }
-            }
-            merged.add(s.copy());
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < merged.size(); i++) {
-            ItemStack s = merged.get(i);
-            sb.append(s.getHoverName().getString()).append(" x").append(s.getCount());
-            if (i < merged.size() - 1) {
-                sb.append(", ");
-            }
-        }
-        return sb.toString();
-    }
-
-    /**
-     * INDEPENDENT 확률 정규화:
-     * - 0~1: 확률로 간주 (1.0 = 100%)
-     * - 1 초과: 퍼센트로 간주 (80 = 80%)
-     */
     private static double normalizeChanceToProbability(double chance) {
-        if (Double.isNaN(chance) || Double.isInfinite(chance) || chance <= 0.0) {
-            return 0.0;
-        }
-
+        if (Double.isNaN(chance) || Double.isInfinite(chance) || chance <= 0.0) return 0.0;
         double prob = (chance <= 1.0) ? chance : (chance / 100.0);
-
         if (prob < 0.0) return 0.0;
         if (prob > 1.0) return 1.0;
         return prob;
     }
 
+    /**
+     * 보상 지급을 인벤이 아니라 "무조건 드랍"으로 고정.
+     * - 인벤/슬롯/동기화 이슈로 인한 '같이 지워짐'을 구조적으로 차단.
+     * - maxStack 기준으로 쪼개서 여러 개 엔티티로 드랍.
+     */
+    private static List<ItemStack> dropRewardSplit(Player player, RandomBoxConfig.Reward r) {
+        int totalCount = Math.max(r.count, 1);
+
+        Item rewardItem = getItemOrNull(r.item);
+        if (rewardItem == null) {
+            LOGGER.warn("[RandomBox] dropRewardSplit: item not found. itemId={} totalCount={}", r.item, totalCount);
+            return List.of();
+        }
+
+        int maxStack = Math.max(1, new ItemStack(rewardItem).getMaxStackSize());
+
+        LOGGER.info("[RandomBox] dropRewardSplit: item={} totalCount={} maxStack={}",
+                BuiltInRegistries.ITEM.getKey(rewardItem), totalCount, maxStack);
+
+        List<ItemStack> dropped = new ArrayList<>();
+        int left = totalCount;
+
+        while (left > 0) {
+            int give = Math.min(left, maxStack);
+            ItemStack stack = new ItemStack(rewardItem, give);
+
+            // false = 무작위 던지기(방향), true/false는 프로젝트 상황에 따라 다를 수 있음.
+            // 여기서는 "바닥에 생성" 목적이므로 false로 둠.
+            player.drop(stack, false);
+
+            LOGGER.info("[RandomBox] dropRewardSplit: dropped item={} count={}",
+                    BuiltInRegistries.ITEM.getKey(rewardItem), give);
+
+            // 방송용 표기 리스트
+            dropped.add(new ItemStack(rewardItem, give));
+            left -= give;
+        }
+
+        return dropped;
+    }
+
+    private static MutableComponent buildRewardComponent(List<ItemStack> givenRewards) {
+        if (givenRewards == null || givenRewards.isEmpty()) return Component.literal("없음");
+
+        MutableComponent result = Component.empty();
+        boolean first = true;
+
+        for (ItemStack s : givenRewards) {
+            if (s == null || s.isEmpty()) continue;
+
+            MutableComponent part = Component.empty()
+                    .append(s.getHoverName())
+                    .append(Component.literal(" x" + s.getCount()));
+
+            if (!first) result.append(Component.literal(", "));
+            result.append(part);
+            first = false;
+        }
+
+        if (first) return Component.literal("없음");
+        return result;
+    }
+
     private static int countItem(Inventory inv, Item item) {
         int total = 0;
         int size = inv.getContainerSize();
-
         for (int i = 0; i < size; i++) {
-            ItemStack s = inv.getItem(i);
-            if (!s.isEmpty() && s.is(item)) {
-                total += s.getCount();
-            }
+            ItemStack stack = inv.getItem(i);
+            if (!stack.isEmpty() && stack.getItem() == item) total += stack.getCount();
         }
         return total;
     }
 
-    private static void removeItem(Inventory inv, Item item, int toRemove) {
-        int remain = toRemove;
+    private static void removeItem(Inventory inv, Item item, int count) {
+        int left = count;
         int size = inv.getContainerSize();
 
-        for (int i = 0; i < size; i++) {
-            ItemStack s = inv.getItem(i);
-            if (s.isEmpty() || !s.is(item)) {
-                continue;
-            }
+        for (int i = 0; i < size && left > 0; i++) {
+            ItemStack stack = inv.getItem(i);
+            if (stack.isEmpty()) continue;
 
-            int dec = Math.min(s.getCount(), remain);
-            s.shrink(dec);
-            remain -= dec;
-
-            if (remain <= 0) {
-                return;
+            if (stack.getItem() == item) {
+                int take = Math.min(stack.getCount(), left);
+                stack.shrink(take);
+                left -= take;
+                if (stack.getCount() <= 0) inv.setItem(i, ItemStack.EMPTY);
             }
         }
     }

@@ -60,7 +60,11 @@ public interface ActionType<T extends IAction> extends IActionType<T> {
     ActionType<TameAnimalAction> TAME_ANIMAL = register(Arc.getId("on_tame_animal"), new TameAnimalAction.Serializer());
     ActionType<InteractEntityAction> INTERACT_ENTITY = register(Arc.getId("on_interact_entity"), new InteractEntityAction.Serializer());
     ActionType<BreedAnimalAction> BREED_ANIMAL = register(Arc.getId("on_breed_animal"), new BreedAnimalAction.Serializer());
-    ActionType<FishedUpItemAction> FISHED_UP_ITEM = register(Arc.getId("on_fished_up_item"), new FishedUpItemAction.Serializer());
+
+    // ✅ 여기 오타 수정: new FISHED_UP_ITEM.Serializer() -> new FishedUpItemAction.Serializer()
+    ActionType<FishedUpItemAction> FISHED_UP_ITEM =
+            register(Arc.getId("on_fished_up_item"), new FishedUpItemAction.Serializer());
+
     ActionType<StripLogAction> STRIP_LOG = register(Arc.getId("on_strip_log"), new StripLogAction.Serializer());
     ActionType<GrindItemAction> GRIND_ITEM = register(Arc.getId("on_grind_item"), new GrindItemAction.Serializer());
     ActionType<UseAnvilAction> USE_ANVIL = register(Arc.getId("on_use_anvil"), new UseAnvilAction.Serializer());
@@ -68,11 +72,9 @@ public interface ActionType<T extends IAction> extends IActionType<T> {
     ActionType<GetDestroySpeedAction> GET_DESTROY_SPEED = register(Arc.getId("on_get_destroy_speed"), new GetDestroySpeedAction.Serializer());
     ActionType<GetAttackSpeedAction> GET_ATTACK_SPEED = register(Arc.getId("on_get_attack_speed"), new GetAttackSpeedAction.Serializer());
     ActionType<RodReelInAction> ROD_REEL_IN = register(Arc.getId("on_rod_reel_in"), new RodReelInAction.Serializer());
-    
-    ActionType<GetWalkSpeedAction> GET_WALK_SPEED = register(Arc.getId("on_get_walk_speed"), new GetWalkSpeedAction.Serializer());
 
     static <T extends IAction> ActionType<T> register(final ResourceLocation location, final IActionSerializer<T> serializer) {
-        return Registry.register(ArcRegistry.ACTION, location, new ActionType<T>(){
+        return Registry.register(ArcRegistry.ACTION, location, new ActionType<T>() {
 
             @Override
             public ResourceLocation getLocation() {

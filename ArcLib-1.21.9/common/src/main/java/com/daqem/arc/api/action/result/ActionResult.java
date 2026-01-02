@@ -6,7 +6,6 @@ public class ActionResult
     private boolean cancelAction = false;
     private float destroySpeedModifier = 1.0F;
     private float attackSpeedModifier = 1.0F;
-    private float walkSpeedModifier = 1.0F;
     private float damageModifier = 1.0F;
 
     public ActionResult merge(ActionResult other)
@@ -14,7 +13,6 @@ public class ActionResult
         this.cancelAction = this.cancelAction || other.cancelAction;
         this.destroySpeedModifier = this.destroySpeedModifier * other.destroySpeedModifier;
         this.attackSpeedModifier = this.attackSpeedModifier * other.attackSpeedModifier;
-        this.walkSpeedModifier = this.walkSpeedModifier * other.walkSpeedModifier;
         this.damageModifier = this.damageModifier * other.damageModifier;
         return this;
     }
@@ -40,11 +38,6 @@ public class ActionResult
         return attackSpeedModifier;
     }
 
-    public float getWalkSpeedModifier()
-    {
-        return walkSpeedModifier;
-    }
-
     public float getDamageModifier()
     {
         return damageModifier;
@@ -59,12 +52,6 @@ public class ActionResult
     public ActionResult withAttackSpeedModifier(float attackSpeedModifier)
     {
         this.attackSpeedModifier = attackSpeedModifier;
-        return this;
-    }
-
-    public ActionResult withWalkSpeedModifier(float walkSpeedModifier)
-    {
-        this.walkSpeedModifier = walkSpeedModifier;
         return this;
     }
 
