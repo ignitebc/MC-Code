@@ -9,8 +9,10 @@
     {
       "type": "arc:drop_item",
       "chance": 0.5,
-      "item": { "id": "minecraft:diamond" },
-      "amount": 1
+      "item": { 
+        "id": "minecraft:diamond" 
+      }
+
     }
   ],
   "conditions": [

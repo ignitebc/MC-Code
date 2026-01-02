@@ -1,7 +1,6 @@
 package com.daqem.arc.api.reward.type;
+
 import com.daqem.arc.Arc;
-import com.daqem.arc.api.action.IAction;
-import com.daqem.arc.api.action.type.ActionType;
 import com.daqem.arc.api.reward.IReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.data.reward.CancelActionReward;
@@ -19,13 +18,13 @@ import com.daqem.arc.data.reward.experience.ExpReward;
 import com.daqem.arc.data.reward.item.ItemReward;
 import com.daqem.arc.data.reward.player.AttackSpeedMultiplierReward;
 import com.daqem.arc.data.reward.player.MoveToEntityReward;
+import com.daqem.arc.data.reward.player.MovementSpeedAttributeModifierReward;
 import com.daqem.arc.data.reward.server.CommandReward;
 import com.daqem.arc.data.reward.world.DropItemReward;
 import com.daqem.arc.event.events.RegistryEvent;
 import com.daqem.arc.registry.ArcRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import com.daqem.arc.data.reward.player.WalkSpeedMultiplierReward;
 
 public interface RewardType<T extends IReward> extends IRewardType<T> {
 
@@ -47,10 +46,12 @@ public interface RewardType<T extends IReward> extends IRewardType<T> {
     IRewardType<DamageMultiplierReward> DAMAGE_MULTIPLIER = register(Arc.getId("damage_multiplier"), new DamageMultiplierReward.Serializer());
     IRewardType<CommandReward> COMMAND = register(Arc.getId("command"), new CommandReward.Serializer());
 
-    IRewardType<WalkSpeedMultiplierReward> WALK_SPEED_MULTIPLIER = register(Arc.getId("walk_speed"), new WalkSpeedMultiplierReward.Serializer());
+    // AttributeModifier 기반 실제 이동속도 증가 (유지)
+    IRewardType<MovementSpeedAttributeModifierReward> MOVEMENT_SPEED_ATTRIBUTE_MODIFIER =
+            register(Arc.getId("movement_speed_modifier"), new MovementSpeedAttributeModifierReward.Serializer());
 
     static <T extends IReward> IRewardType<T> register(final ResourceLocation location, final IRewardSerializer<T> serializer) {
-        return Registry.register(ArcRegistry.REWARD, location, new RewardType<T>(){
+        return Registry.register(ArcRegistry.REWARD, location, new RewardType<T>() {
 
             @Override
             public ResourceLocation getLocation() {

@@ -1,36 +1,20 @@
 {
-  "holder": { 
-    "type": "jobsplus:powerup", 
-    "id": "jobsplus:hunter/run_speed_v" 
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:hunter/run_speed_v"
   },
-  "type": "arc:on_get_walk_speed",
+  "type": "arc:on_sprint",
   "rewards": [
-    { 
-      "type": "arc:walk_speed", 
-      "multiplier": 5
+    {
+      "type": "arc:movement_speed_modifier",
+      "multiplier": 2.5
     }
   ],
   "conditions": [
-   
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/run_speed_vi"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/run_speed_vii"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/run_speed_viii"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/run_speed_viiii"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/run_speed_x"
-    }
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_vi" },
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_vii" },
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_viii" },
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_viiii" },
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_x" }
   ]
 }

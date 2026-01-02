@@ -25,6 +25,7 @@
     "MixinProjectile",
     "MixinResultSlot",
     "MixinServerPlayer",
+    "MixinServerPlayerMovementSpeedSync",
     "MixinSmithingMenu",
     "PlayerListMixin",
     "common.MixinPlayer"

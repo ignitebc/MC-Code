@@ -9,11 +9,6 @@
       "type": "jobsplus:job_exp",
       "min": 1,
       "max": 2
-    },
-    {
-      "type": "jobsplus:bitcoin_reward",
-      "chance": 0.01,
-      "amount": 1
     }
   ],
   "conditions": [

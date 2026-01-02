@@ -1,47 +1,23 @@
 {
-  "holder": { 
-    "type": "jobsplus:powerup", 
-    "id": "jobsplus:hunter/run_speed_ii" 
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:hunter/run_speed_ii"
   },
-  "type": "arc:on_get_walk_speed",
+  "type": "arc:on_sprint",
   "rewards": [
-    { 
-      "type": "arc:walk_speed", 
-      "multiplier": 2
+    {
+      "type": "arc:movement_speed_modifier",
+      "multiplier": 1
     }
   ],
   "conditions": [
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/run_speed_iii"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/run_speed_iv"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/run_speed_v"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/run_speed_vi"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/run_speed_vii"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/run_speed_viii"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/run_speed_viiii"
-    },
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:hunter/run_speed_x"
-    }
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_iii" },
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_iv" },
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_v" },
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_vi" },
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_vii" },
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_viii" },
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_viiii" },
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_x" }
   ]
 }
