@@ -67,7 +67,7 @@
   "jobsplus.job.jobsplus.lumberjack.name": "모험가(예정)",
   "jobsplus.job.jobsplus.lumberjack.description": "-5블록 걸을 시 비트코인 0.5% 확률로 획득",
   "jobsplus.job.jobsplus.miner.name": "광부",
-  "jobsplus.job.jobsplus.miner.description": "-일반블록 채굴시 비트코인 0.03% 확률로 획득\n-희귀광물(에메랄드,다이아몬드,네더라이트를 제외한)채굴시 비트코인 0.05% 확률로 획득\n-스페셜광물(에메랄드,다이아몬드) 채굴시 비트코인 0.1% 확률로 획득",
+  "jobsplus.job.jobsplus.miner.description": "-일반블록, Hard블록 채굴시 비트코인 0.03% 확률로 획득\n-광물(네더라이트 제외)채굴시 비트코인 0.05% 확률로 획득\n-심층암광물 채굴시 비트코인 100% 확률로 획득\n(섬세한곡괭이 사용금지)",
   "jobsplus.job.jobsplus.smith.name": "대장장이",
   "jobsplus.job.jobsplus.smith.description": "-도구/방어구 제작시 비트코인 0.1% 확률로 획득\n-광석 제련시 비트코인 0.05% 확률로 획득\n- 모루 사용시 비트코인 0.1% 확률로 획득\n- 숯돌 사용시 비트코인 0.1% 확률로 획득\n- 인챈터 작업대(세번째만) 적용시  비트코인 1% 확률로 획득",
 
@@ -569,7 +569,7 @@
   "jobsplus.powerup.jobsplus.lumberjack.double_drops_iii.description": "나무 벌목 시 드롭이 2배 (발동확률 20%)",
 
   "jobsplus.powerup.jobsplus.miner.root.name": "광부",
-  "jobsplus.powerup.jobsplus.miner.root.description": "-일반블록 채굴시 비트코인 0.03% 확률로 획득\n-희귀광물(에메랄드,다이아몬드,네더라이트를 제외한)채굴시 비트코인 0.05% 확률로 획득\n-스페셜광물(에메랄드,다이아몬드) 채굴시 비트코인 0.1% 확률로 획득",
+  "jobsplus.powerup.jobsplus.miner.root.description": "-일반블록, Hard블록 채굴시 비트코인 0.03% 확률로 획득\n-광물(네더라이트 제외)채굴시 비트코인 0.05% 확률로 획득\n-심층암광물 채굴시 비트코인 100% 확률로 획득\n(섬세한곡괭이 사용금지)",
   "jobsplus.powerup.jobsplus.miner.double_drops_i.name": "더블드롭 I",
   "jobsplus.powerup.jobsplus.miner.double_drops_i.description": "광물(고대잔해 제외)을 채굴 시 드롭이 2배 (발동확률 5%)",
   "jobsplus.powerup.jobsplus.miner.double_drops_ii.name": "더블드롭 II",
