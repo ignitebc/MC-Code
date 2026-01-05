@@ -5,7 +5,6 @@ import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.shop.ShopOffer;
-import com.mojang.logging.LogUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,7 +17,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -35,8 +33,6 @@ import java.util.stream.Stream;
  *   (전용 서버에서 클라 인벤에 안 보이는/가끔 보이는 문제 해결)
  */
 public class ServerboundSellItemPacket implements CustomPacketPayload {
-
-    private static final Logger LOGGER = LogUtils.getLogger();
 
     private final ResourceLocation inputItemId;
     private final int inputAmount;
@@ -97,13 +93,11 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
 
         if (inputHolder.isEmpty()) {
             player.sendSystemMessage(JobsPlus.translatable("error.shop_input_item_not_found", packet.inputItemId.toString()));
-            LOGGER.warn("[Shop] input item not found. input={}", packet.inputItemId);
             return;
         }
 
         if (outputHolder.isEmpty()) {
             player.sendSystemMessage(JobsPlus.translatable("error.shop_output_item_not_found", packet.outputItemId.toString()));
-            LOGGER.warn("[Shop] output item not found. output={}", packet.outputItemId);
             return;
         }
 
@@ -111,12 +105,6 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
         Item outputItem = outputHolder.get().value();
 
         Inventory inv = player.getInventory();
-
-        LOGGER.info("[Shop] START player={} uuid={} input={}x{} output={}x{}",
-                player.getName().getString(),
-                player.getUUID(),
-                packet.inputItemId, packet.inputAmount,
-                packet.outputItemId, packet.outputAmount);
 
         // 입력 아이템 보유량 계산
         int inputCount = 0;
@@ -127,18 +115,15 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
             }
         }
 
-        LOGGER.info("[Shop] haveInput={} needInput={}", inputCount, packet.inputAmount);
-
         if (inputCount < packet.inputAmount) {
             player.sendSystemMessage(JobsPlus.translatable(
                     "error.not_enough_items",
                     inputItem.getName(new ItemStack(inputItem)),
                     packet.inputAmount));
-            LOGGER.warn("[Shop] FAIL not enough input. have={} need={}", inputCount, packet.inputAmount);
             return;
         }
 
-        // 지급 전 스냅샷(디버그)
+        // 지급 전 스냅샷(기존 로직 유지: diff 계산은 하지만 출력은 하지 않음)
         ItemStack[] before = snapshotMainInventory(inv);
 
         // 입력 아이템 제거
@@ -168,9 +153,8 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
         inv.setChanged();
         player.containerMenu.broadcastChanges();
 
-        // 디버그: 어떤 슬롯이 변했는지, 실제로 인벤에 들어갔는지 로그
+        // 기존 로직 유지: 호출은 하되, 내부에서 로그를 찍지 않게 처리(현재 클래스에서는 로그 자체가 없음)
         int nowHasOutput = countItem(inv, outputItem);
-        LOGGER.info("[Shop] GIVEN output={}x{} nowHasOutput={}", packet.outputItemId, packet.outputAmount, nowHasOutput);
         dumpInventoryDiff(inv, before, outputItem);
 
         // 화면 업데이트 (maxJobs 포함)
@@ -180,7 +164,7 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
                         Stream.concat(serverPlayer.jobsplus$getJobs().stream(),
                                 serverPlayer.jobsplus$getInactiveJobs().stream()).toList(),
                         serverPlayer.jobsplus$getCoins(),
-                        serverPlayer.jobsplus$getEffectiveMaxJobs()));
+                        serverPlayer.jobsplus$getEffectiveMaxJobs())) ;
 
         player.sendSystemMessage(JobsPlus.translatable(
                 "gui.jobs.shop.sold",
@@ -188,8 +172,6 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
                 packet.inputAmount,
                 outputItem.getName(new ItemStack(outputItem)),
                 packet.outputAmount));
-
-        LOGGER.info("[Shop] DONE player={} uuid={}", player.getName().getString(), player.getUUID());
     }
 
     private static ItemStack[] snapshotMainInventory(Inventory inv) {
@@ -203,7 +185,6 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
 
     private static void dumpInventoryDiff(Inventory inv, ItemStack[] before, Item targetItem) {
         int size = Math.min(inv.getContainerSize(), 36);
-        boolean found = false;
 
         for (int i = 0; i < size; i++) {
             ItemStack after = inv.getItem(i);
@@ -211,22 +192,14 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
 
             boolean changed = !ItemStack.matches(after, b);
             if (changed) {
-                ResourceLocation afterId = after.isEmpty() ? null : BuiltInRegistries.ITEM.getKey(after.getItem());
-                int afterCnt = after.isEmpty() ? 0 : after.getCount();
-
-                ResourceLocation beforeId = b.isEmpty() ? null : BuiltInRegistries.ITEM.getKey(b.getItem());
-                int beforeCnt = b.isEmpty() ? 0 : b.getCount();
-
-                LOGGER.info("[Shop] slotDiff slot={} before={}x{} after={}x{}",
-                        i, beforeId, beforeCnt, afterId, afterCnt);
+                // 로그 제거 요청에 따라 출력하지 않음
             }
 
+            // targetItemFound 여부도 로그 제거 요청에 따라 출력하지 않음
             if (!after.isEmpty() && after.getItem() == targetItem) {
-                found = true;
+                // no-op
             }
         }
-
-        LOGGER.info("[Shop] dumpInventoryDiff targetItemFoundIn0to35={}", found);
     }
 
     private static int countItem(Inventory inv, Item item) {

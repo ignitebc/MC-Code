@@ -7,24 +7,17 @@
   "rewards": [
     {
       "type": "jobsplus:job_exp",
-      "min": 6,
-      "max": 6
-    },
-    {
-      "type": "jobsplus:bitcoin_reward",
-      "chance": 0.1,      
-      "amount": 1
+      "min": 3,
+      "max": 5
     }
   ],
   "conditions": [
     {
       "type": "arc:blocks",
       "blocks": [
-        "minecraft:diamond_ore",
-        "minecraft:deepslate_diamond_ore",
-        "minecraft:emerald_ore",
-        "minecraft:deepslate_emerald_ore",
-        "minecraft:ancient_debris"
+        "minecraft:reinforced_deepslate",
+        "minecraft:obsidian",
+        "minecraft:crying_obsidian"
       ]
     },
     {
@@ -46,5 +39,6 @@
         ]
       }
     }
+    
   ]
 }
