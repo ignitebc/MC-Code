@@ -49,6 +49,11 @@ public interface ConditionType<T extends ICondition> extends IConditionType<T> {
     ConditionType<ItemEquippedCondition> ITEM_EQUIPPED = register(Arc.getId("item_equipped"), new ItemEquippedCondition.Serializer());
     ConditionType<ItemCondition> ITEM = register(Arc.getId("item"), new ItemCondition.Serializer());
     ConditionType<ItemsCondition> ITEMS = register(Arc.getId("items"), new ItemsCondition.Serializer());
+
+    // Tool / enchantment related
+    ConditionType<EnchantmentsCondition> ENCHANTMENTS = register(Arc.getId("enchantments"), new EnchantmentsCondition.Serializer());
+    ConditionType<ToolCondition> TOOL = register(Arc.getId("tool"), new ToolCondition.Serializer());
+
     ConditionType<ExpDropCondition> EXP_DROP = register(Arc.getId("exp_drop"), new ExpDropCondition.Serializer());
     ConditionType<ExpLevelCondition> EXP_LEVEL = register(Arc.getId("exp_level"), new ExpLevelCondition.Serializer());
     ConditionType<ReadyForShearingCondition> READY_FOR_SHEARING = register(Arc.getId("ready_for_shearing"), new ReadyForShearingCondition.Serializer());
