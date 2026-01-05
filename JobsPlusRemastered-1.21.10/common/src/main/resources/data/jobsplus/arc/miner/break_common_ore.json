@@ -12,7 +12,7 @@
     },
     {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 0.05,
+      "chance": 0.06,
       "amount": 1
     }
   ],
@@ -29,7 +29,15 @@
         "minecraft:diamond_ore",
         "minecraft:emerald_ore",
         "minecraft:nether_quartz_ore",
-        "minecraft:nether_gold_ore"
+        "minecraft:nether_gold_ore",
+        "minecraft:deepslate_coal_ore",
+        "minecraft:deepslate_iron_ore",
+        "minecraft:deepslate_copper_ore",
+        "minecraft:deepslate_gold_ore",
+        "minecraft:deepslate_redstone_ore",
+        "minecraft:deepslate_lapis_ore",
+        "minecraft:deepslate_diamond_ore",
+        "minecraft:deepslate_emerald_ore"
       ]
     },
     {

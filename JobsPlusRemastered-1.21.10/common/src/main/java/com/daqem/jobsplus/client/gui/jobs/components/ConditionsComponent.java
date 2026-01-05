@@ -18,9 +18,7 @@ import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.components.conditions.BlockConditionComponent;
 import com.daqem.jobsplus.client.gui.jobs.components.conditions.ItemConditionComponent;
 import com.daqem.uilib.gui.component.EmptyComponent;
-import com.daqem.uilib.gui.component.text.TextComponent;
 import com.daqem.uilib.gui.component.text.TruncatedTextComponent;
-import com.daqem.uilib.gui.component.text.multiline.MultiLineTextComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -193,6 +191,7 @@ public class ConditionsComponent extends EmptyComponent
                                 {
                                     deniedBlocks.add(allowedBlock);
                                 }
+
                                 if (bhc.getMax() < hardness)
                                 {
                                     deniedBlocks.add(allowedBlock);
@@ -369,39 +368,13 @@ public class ConditionsComponent extends EmptyComponent
                 }
 
                 // 기본 조건들 (텍스트만 있는 것) – 한글화 + 줄바꿈
-                LocalizedDefaultConditionComponent conditionComponent =
-                        new LocalizedDefaultConditionComponent(condition);
-                conditionComponent.setY(yOffset);
-                this.addComponent(conditionComponent);
-                yOffset += conditionComponent.getHeight();
+                // 요구사항: 텍스트(이름/설명)는 표시하지 않고, 아이콘(블록/아이템)만 표시한다.
+                parsedConditions.add(condition);
+                continue;
             }
 
             // NOT 조건 처리
-            for (NotCondition notCondition : notConditions)
-            {
-                if (parsedConditions.contains(notCondition))
-                {
-                    continue;
-                }
-
-                for (ICondition innerCondition : notCondition.getConditions())
-                {
-                    if (parsedConditions.contains(innerCondition))
-                    {
-                        continue;
-                    }
-
-                    LocalizedNotConditionComponent notConditionComponent =
-                            new LocalizedNotConditionComponent(notCondition, innerCondition);
-                    notConditionComponent.setY(yOffset);
-                    this.addComponent(notConditionComponent);
-                    yOffset += notConditionComponent.getHeight();
-
-                    parsedConditions.add(innerCondition);
-                }
-
-                parsedConditions.add(notCondition);
-            }
+            // 요구사항: NOT 조건도 텍스트만 생성되므로 표시하지 않는다.
 
             this.setHeight(yOffset);
         }
@@ -518,73 +491,14 @@ public class ConditionsComponent extends EmptyComponent
 
         if (lower.contains("recipe is a smoking recipe"))
         {
-            return Component.literal("훈연기 사용하여 아이템 수거 시 (훈연기 가능 아이템만)");
+            return Component.literal("훈연기 제작 레시피일 때");
         }
 
-        if (lower.contains("is met if the player has traveled 10 blocks"))
+        if (lower.contains("distance between"))
         {
-            return Component.literal("플레이어가 수영으로 10블록 이동 시");
+            return Component.literal("수영 중일 때");
         }
 
         return Component.literal(original);
-    }
-
-    // ============================================================
-    //  기본 조건용 내부 컴포넌트 (점 + 멀티라인)
-    // ============================================================
-
-    private static class LocalizedDefaultConditionComponent extends EmptyComponent
-    {
-
-        public LocalizedDefaultConditionComponent(ICondition condition)
-        {
-            super(0, 0, 99, 0);
-
-            // 점(•) 표시
-            TextComponent dot = new TextComponent(0, 0, Component.literal(" • "), 0xFF1E1410);
-            this.addComponent(dot);
-
-            String originalName = condition.getName().getString();
-            String originalDesc = condition.getDescription().getString();
-
-            Component name = getKoreanConditionName(originalName);
-            Component desc = getKoreanConditionDescription(originalDesc);
-
-            MultiLineTextComponent nameComponent =
-                    new MultiLineTextComponent(10, 0, getWidth() - 10, name, 0xFF1E1410);
-            MultiLineTextComponent descComponent =
-                    new MultiLineTextComponent(10, nameComponent.getHeight(), getWidth() - 10, desc, 0xFFD8BF96);
-
-            this.addComponent(nameComponent);
-            this.addComponent(descComponent);
-
-            this.setHeight(nameComponent.getHeight() + descComponent.getHeight());
-        }
-    }
-
-    // ============================================================
-    //  NOT 조건용 내부 컴포넌트 (점 + 멀티라인)
-    // ============================================================
-
-    private static class LocalizedNotConditionComponent extends EmptyComponent
-    {
-
-        public LocalizedNotConditionComponent(NotCondition notCondition, ICondition innerCondition)
-        {
-            super(0, 0, 99, 0);
-
-            TextComponent dot = new TextComponent(0, 0, Component.literal(" • "), 0xFF1E1410);
-            this.addComponent(dot);
-
-            String innerOriginalName = innerCondition.getName().getString();
-            Component koreanInnerName = getKoreanConditionName(innerOriginalName);
-
-            Component text = Component.literal("NOT: ").append(koreanInnerName);
-            MultiLineTextComponent notText =
-                    new MultiLineTextComponent(10, 0, getWidth() - 10, text, 0xFF1E1410);
-
-            this.addComponent(notText);
-            this.setHeight(notText.getHeight());
-        }
     }
 }
