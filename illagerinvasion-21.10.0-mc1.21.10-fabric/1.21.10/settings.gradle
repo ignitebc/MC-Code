@@ -1,3 +1,25 @@
+// pluginManagement {
+//     repositories {
+//         gradlePluginPortal()
+//         maven { url "https://maven.architectury.dev/" }
+//         maven { url "https://maven.fabricmc.net/" }
+//         maven { url "https://maven.neoforged.net/releases/" }
+//         maven { url "https://maven.minecraftforge.net/" }
+//     }
+// }
+
+// include "Common"
+// include "Fabric"
+// include "NeoForge"
+
+// // Forge 폴더가 실제로 있을 때만 포함 (Fabric-only 소스 대응)
+// if (file("Forge").exists() && file("Forge").isDirectory()) {
+//     include "Forge"
+// }
+
+// apply from: "https://raw.githubusercontent.com/Fuzss/modresources/main/gradle/v3/settings.gradle"
+
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -8,9 +30,15 @@ pluginManagement {
     }
 }
 
+/**
+ * Fabric만 쓸 거면 Common + Fabric만 포함시키는 게 가장 안전합니다.
+ * (NeoForge/Forge 프로젝트 구성 단계에서 끌려들어와서 빌드를 막는 상황을 원천 차단)
+ */
 include "Common"
 include "Fabric"
-include "NeoForge"
-//include "Forge"
 
+/**
+ * modresources의 settings 스크립트가 version catalog(libs) 구성을 담당합니다.
+ * 이 줄이 없으면 build.gradle의 `alias libs.plugins...`가 해석 불가로 즉시 실패합니다.
+ */
 apply from: "https://raw.githubusercontent.com/Fuzss/modresources/main/gradle/v3/settings.gradle"
