@@ -20,6 +20,7 @@ public class ModEnumConstants {
     public static final Raid.RaiderType MARAUDER_RAIDER_TYPE = getRaiderType(ModEntityTypes.MARAUDER_ENTITY_TYPE);
     public static final Raid.RaiderType INQUISITOR_RAIDER_TYPE = getRaiderType(ModEntityTypes.INQUISITOR_ENTITY_TYPE);
     public static final Raid.RaiderType ALCHEMIST_RAIDER_TYPE = getRaiderType(ModEntityTypes.ALCHEMIST_ENTITY_TYPE);
+    public static final Raid.RaiderType FIRECALLER_RAIDER_TYPE = getRaiderType(ModEntityTypes.FIRECALLER_ENTITY_TYPE);
     public static final Raid.RaiderType INVOKER_RAIDER_TYPE = getRaiderType(ModEntityTypes.INVOKER_ENTITY_TYPE);
 
     public static void bootstrap() {
@@ -34,7 +35,8 @@ public class ModEnumConstants {
         return getEnumConstant(resourceLocation, Raid.RaiderType::valueOf);
     }
 
-    static <E extends Enum<E>> E getEnumConstant(ResourceLocation resourceLocation, Function<String, E> valueOfInvoker) {
+    static <E extends Enum<E>> E getEnumConstant(ResourceLocation resourceLocation,
+            Function<String, E> valueOfInvoker) {
         return valueOfInvoker.apply(resourceLocation.toDebugFileName().toUpperCase(Locale.ROOT));
     }
 }
