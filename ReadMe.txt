@@ -62,3 +62,4 @@ item_restrictions_version=1.3.3-1.21.9
 item_restrictions_file_fabric=7062108
 item_restrictions_file_fabric_sources=7062109
 item_restrictions_file_neoforge=7062110
+TXT
