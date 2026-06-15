@@ -17,6 +17,7 @@ import com.daqem.arc.data.reward.experience.ExpMultiplierReward;
 import com.daqem.arc.data.reward.experience.ExpReward;
 import com.daqem.arc.data.reward.item.ItemReward;
 import com.daqem.arc.data.reward.player.AttackSpeedMultiplierReward;
+import com.daqem.arc.data.reward.player.BlockInteractionRangeAttributeModifierReward;
 import com.daqem.arc.data.reward.player.MoveToEntityReward;
 import com.daqem.arc.data.reward.player.MovementSpeedAttributeModifierReward;
 import com.daqem.arc.data.reward.server.CommandReward;
@@ -49,6 +50,8 @@ public interface RewardType<T extends IReward> extends IRewardType<T> {
     // AttributeModifier 기반 실제 이동속도 증가 (유지)
     IRewardType<MovementSpeedAttributeModifierReward> MOVEMENT_SPEED_ATTRIBUTE_MODIFIER =
             register(Arc.getId("movement_speed_modifier"), new MovementSpeedAttributeModifierReward.Serializer());
+    IRewardType<BlockInteractionRangeAttributeModifierReward> BLOCK_INTERACTION_RANGE_ATTRIBUTE_MODIFIER =
+            register(Arc.getId("block_interaction_range_modifier"), new BlockInteractionRangeAttributeModifierReward.Serializer());
 
     static <T extends IReward> IRewardType<T> register(final ResourceLocation location, final IRewardSerializer<T> serializer) {
         return Registry.register(ArcRegistry.REWARD, location, new RewardType<T>() {
