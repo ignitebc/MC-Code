@@ -21,7 +21,7 @@ public class PowerupsComponent extends SpriteComponent
 
     public PowerupsComponent(PowerupsScreenState state)
     {
-        super(0, 0, 286, 212, JobsPlus.getId("powerups/background"));
+        super(0, 0, 326, 240, JobsPlus.getId("powerups/background"));
 
         TextComponent title = new TextComponent(11, 5, state.getJob().getJobInstance().getName().withStyle(Style.EMPTY.withBold(true)).append(JobsPlus.literal(" • " + state.getJob().getLevel()).withStyle(Style.EMPTY.withBold(false))), 0xFFEAF0FF);
         this.addComponent(title);
@@ -50,7 +50,7 @@ public class PowerupsComponent extends SpriteComponent
             if (parentLocation == null)
             {
                 rootItem.addChild(powerupItem);
-                if (powerupItem.getPowerup().getState() == PowerupState.LOCKED)
+                if (canUnlockPowerup(state, powerupItem, null))
                 {
                     powerupItem.getPowerup().setState(PowerupState.NOT_OWNED);
                 }
@@ -60,7 +60,7 @@ public class PowerupsComponent extends SpriteComponent
                 if (parentItem != null)
                 {
                     parentItem.addChild(powerupItem);
-                    if (parentItem.getPowerup().getState() != PowerupState.LOCKED && parentItem.getPowerup().getState() != PowerupState.NOT_OWNED && powerupItem.getPowerup().getState() == PowerupState.LOCKED)
+                    if (canUnlockPowerup(state, powerupItem, parentItem))
                     {
                         powerupItem.getPowerup().setState(PowerupState.NOT_OWNED);
                     }
@@ -69,7 +69,29 @@ public class PowerupsComponent extends SpriteComponent
         }
         powerupItems.put(state.getJob().getJobInstance().getLocation(), rootItem);
         PowerupsSkillTree powerupsSkillTree = new PowerupsSkillTree(new ArrayList<>(powerupItems.values()));
-        SkillTreeComponent skillTreeComponent = new SkillTreeComponent(23, 30, 242, 164, powerupsSkillTree);
+        SkillTreeComponent skillTreeComponent = new SkillTreeComponent(23, 30, 282, 192, powerupsSkillTree);
         this.addComponent(skillTreeComponent);
+    }
+
+    private static boolean canUnlockPowerup(PowerupsScreenState state, PowerupsSkillTreeItem powerupItem, PowerupsSkillTreeItem parentItem)
+    {
+        Powerup powerup = powerupItem.getPowerup();
+        if (powerup == null || powerup.getState() != PowerupState.LOCKED)
+        {
+            return false;
+        }
+
+        if (state.getJob().getLevel() < powerup.getPowerupInstance().getRequiredLevel())
+        {
+            return false;
+        }
+
+        if (parentItem == null)
+        {
+            return true;
+        }
+
+        Powerup parentPowerup = parentItem.getPowerup();
+        return parentPowerup != null && (parentPowerup.getState() == PowerupState.ACTIVE || parentPowerup.getState() == PowerupState.INACTIVE);
     }
 }
