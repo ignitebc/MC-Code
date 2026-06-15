@@ -9,12 +9,12 @@ public class TabSwitcherComponent extends EmptyComponent
 
     public TabSwitcherComponent(JobsScreenState state)
     {
-        super(164, 18, 150, 167);
+        super(164, 18, 174, 190);
 
         RightTabComponent experienceTab = new RightTabComponent(getWidth() - 30, 9, state, RightTab.EXPERIENCE);
         RightTabComponent recipesTab = new RightTabComponent(getWidth() - 30, 32, state, RightTab.RECIPES);
         RightTabComponent shopTab = new RightTabComponent(getWidth() - 30, 55, state, RightTab.SHOP);
-        RightPageContentComponent rightPageContentComponent = new RightPageContentComponent(state);
+        RightPageContentComponent rightPageContentComponent = new RightPageContentComponent(state, getWidth() - 33, getHeight());
 
         this.addComponent(experienceTab);
         this.addComponent(recipesTab);

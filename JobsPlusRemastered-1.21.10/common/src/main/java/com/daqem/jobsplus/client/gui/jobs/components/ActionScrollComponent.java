@@ -20,9 +20,9 @@ public class ActionScrollComponent extends EmptyComponent
     private IAction cachedAction;
     private final ActionScrollWidget actionScrollWidget;
 
-    public ActionScrollComponent(JobsScreenState state)
+    public ActionScrollComponent(JobsScreenState state, int width, int height)
     {
-        super(0, 38, 117, 130);
+        super(0, 38, width, height - 38);
         this.state = state;
 
         this.actionScrollWidget = new ActionScrollWidget(getWidth(), getHeight());

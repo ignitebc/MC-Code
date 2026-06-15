@@ -29,12 +29,12 @@ public class ShopComponent extends EmptyComponent
         return OFFERS;
     }
 
-    public ShopComponent(JobsScreenState state)
+    public ShopComponent(JobsScreenState state, int width, int height)
     {
-        super(0, 0, 117, 167);
+        super(0, 0, width, height);
 
         // 배너
-        SpriteComponent bannerComponent = new SpriteComponent(9, 0, 98, 33, JobsPlus.getId("jobs/shop_banner"));
+        SpriteComponent bannerComponent = new SpriteComponent((getWidth() - 98) / 2, 0, 98, 33, JobsPlus.getId("jobs/shop_banner"));
         this.addComponent(bannerComponent);
 
         // 선택값이 없으면 첫 상품을 기본 선택
@@ -65,7 +65,7 @@ public class ShopComponent extends EmptyComponent
         offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 100, ResourceLocation.parse("advancednetherite:reward_key_iv"), 1));
         offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:enhancement_shard"), 3, ResourceLocation.parse("advancednetherite:enhancement_gem"), 1));
         
-        offers.add(new ShopOffer(ResourceLocation.parse("minecraft:cooked_chicken"), 10, ResourceLocation.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(ResourceLocation.parse("minecraft:cooked_chicken"), 60, ResourceLocation.parse("minecraft:emerald"), 6));
         offers.add(new ShopOffer(ResourceLocation.parse("minecraft:dirt"), 192, ResourceLocation.parse("minecraft:emerald"), 1));
         offers.add(new ShopOffer(ResourceLocation.parse("minecraft:netherrack"), 320, ResourceLocation.parse("minecraft:emerald"), 1));
         return offers;

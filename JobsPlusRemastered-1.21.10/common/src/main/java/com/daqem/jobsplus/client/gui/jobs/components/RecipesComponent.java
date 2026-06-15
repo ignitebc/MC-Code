@@ -8,12 +8,12 @@ import com.daqem.uilib.gui.component.sprite.SpriteComponent;
 public class RecipesComponent extends EmptyComponent
 {
 
-    public RecipesComponent(JobsScreenState state)
+    public RecipesComponent(JobsScreenState state, int width, int height)
     {
-        super(0, 0, 117, 167);
+        super(0, 0, width, height);
 
-        SpriteComponent bannerComponent = new SpriteComponent(9, 0, 98, 33, JobsPlus.getId("jobs/recipes_banner"));
-        RecipesScrollComponent recipesScrollComponent = new RecipesScrollComponent(state);
+        SpriteComponent bannerComponent = new SpriteComponent((getWidth() - 98) / 2, 0, 98, 33, JobsPlus.getId("jobs/recipes_banner"));
+        RecipesScrollComponent recipesScrollComponent = new RecipesScrollComponent(state, getWidth(), getHeight());
 
         this.addComponent(bannerComponent);
         this.addComponent(recipesScrollComponent);

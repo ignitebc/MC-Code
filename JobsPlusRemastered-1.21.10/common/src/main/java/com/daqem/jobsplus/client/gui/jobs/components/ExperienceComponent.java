@@ -8,12 +8,12 @@ import com.daqem.uilib.gui.component.sprite.SpriteComponent;
 public class ExperienceComponent extends EmptyComponent
 {
 
-    public ExperienceComponent(JobsScreenState state)
+    public ExperienceComponent(JobsScreenState state, int width, int height)
     {
-        super(0, 0, 117, 167);
+        super(0, 0, width, height);
 
-        SpriteComponent bannerComponent = new SpriteComponent(9, 0, 98, 33, JobsPlus.getId("jobs/experience_banner"));
-        ActionScrollComponent actionScrollComponent = new ActionScrollComponent(state);
+        SpriteComponent bannerComponent = new SpriteComponent((getWidth() - 98) / 2, 0, 98, 33, JobsPlus.getId("jobs/experience_banner"));
+        ActionScrollComponent actionScrollComponent = new ActionScrollComponent(state, getWidth(), getHeight());
 
         this.addComponent(bannerComponent);
         this.addComponent(actionScrollComponent);

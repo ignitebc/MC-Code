@@ -12,7 +12,7 @@ public class JobsComponent extends AbstractComponent
 {
     public JobsComponent(JobsScreenState state)
     {
-        super(0, 0, 302, 204 + 2);
+        super(0, 0, 340, 230);
 
         JobSelectionComponent jobSelectionComponent = new JobSelectionComponent(state);
         SelectedJobComponent selectedJobComponent = new SelectedJobComponent(state);
