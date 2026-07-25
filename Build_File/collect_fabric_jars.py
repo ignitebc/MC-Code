@@ -1,5 +1,7 @@
+import os
 from pathlib import Path
 import shutil
+import subprocess
 import sys
 from typing import Optional
 
@@ -45,10 +47,52 @@ def find_latest_release_jar(module_root: Path, fabric_dir: str) -> Optional[Path
     return max(jars, key=lambda path: path.stat().st_mtime)
 
 
+def build_fabric_module(module_root: Path, fabric_dir: str) -> bool:
+    if sys.platform == "win32":
+        gradle_wrapper = module_root / "gradlew.bat"
+        command = [
+            os.environ.get("COMSPEC", "cmd.exe"),
+            "/d",
+            "/c",
+            str(gradle_wrapper),
+            f":{fabric_dir}:build",
+            "--rerun-tasks",
+        ]
+    else:
+        gradle_wrapper = module_root / "gradlew"
+        command = [
+            str(gradle_wrapper),
+            f":{fabric_dir}:build",
+            "--rerun-tasks",
+        ]
+
+    if not gradle_wrapper.is_file():
+        print(f"Gradle wrapper not found: {gradle_wrapper}")
+        return False
+
+    print(f"\nBuilding {module_root.name} ({fabric_dir})...")
+    result = subprocess.run(command, cwd=module_root, check=False)
+    if result.returncode != 0:
+        print(f"Build failed: {module_root.name} (exit code: {result.returncode})")
+        return False
+
+    return True
+
+
 def copy_module_jars() -> int:
     root = workspace_root()
     target_dir = Path(__file__).resolve().parent
     target_dir.mkdir(parents=True, exist_ok=True)
+
+    for module_name, fabric_dir in MODULES:
+        module_root = root / module_name
+        if not module_root.is_dir():
+            print(f"Module directory not found: {module_root}")
+            return 1
+
+        if not build_fabric_module(module_root, fabric_dir):
+            print("\nJAR collection stopped because a Fabric build failed.")
+            return 1
 
     copied = []
     missing = []
@@ -72,7 +116,7 @@ def copy_module_jars() -> int:
         print("\nNo release jar found for:")
         for module_name in missing:
             print(f"  - {module_name}")
-        print("\nRun the module's Fabric build first, then run this script again.")
+        print("\nThe Fabric build completed, but no release JAR was generated.")
 
     return 0 if not missing else 1
 
