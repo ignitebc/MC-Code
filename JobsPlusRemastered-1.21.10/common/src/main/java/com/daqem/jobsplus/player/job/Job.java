@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class Job
 {
@@ -56,7 +57,9 @@ public class Job
     {
         this.player = player;
         this.jobInstance = jobInstance;
-        this.powerupManager = new JobPowerupManager(powerups);
+        this.powerupManager = new JobPowerupManager(powerups.stream()
+                .filter(powerup -> powerup.getPowerupInstance() != null)
+                .collect(Collectors.toCollection(ArrayList::new)));
         this.level = level;
         this.experience = experience;
     }
