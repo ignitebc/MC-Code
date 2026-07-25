@@ -19,8 +19,6 @@ import java.util.List;
 
 public final class BlockInteractionRangeAttributeSync {
 
-    private static final ResourceLocation PICKAXES_TAG = ResourceLocation.fromNamespaceAndPath("minecraft", "pickaxes");
-
     private BlockInteractionRangeAttributeSync() {
     }
 
@@ -39,24 +37,21 @@ public final class BlockInteractionRangeAttributeSync {
         AttributeModifier[] desiredModifier = new AttributeModifier[1];
         double[] highestAmount = new double[]{0.0D};
 
-        if (isHoldingPickaxe(serverPlayer)) {
-            for (IActionHolder holder : arcPlayer.arc$getActionHolders()) {
-                if (holder == null) continue;
+        for (IActionHolder holder : arcPlayer.arc$getActionHolders()) {
+            if (holder == null) continue;
 
-                holder.getActions().forEach(action -> {
-                    if (!action.metConditions(actionData)) return;
-
-                    for (IReward reward : action.getRewards()) {
-                        if (!(reward instanceof BlockInteractionRangeAttributeModifierReward rangeReward)) continue;
-                        if (rangeReward.getAmount() > highestAmount[0]) {
-                            ResourceLocation id = BlockInteractionRangeAttributeModifierReward.computeModifierId(holder.getLocation(), action.getLocation());
-                            desiredId[0] = id;
-                            desiredModifier[0] = new AttributeModifier(id, rangeReward.getAmount(), AttributeModifier.Operation.ADD_VALUE);
-                            highestAmount[0] = rangeReward.getAmount();
-                        }
+            holder.getActions().forEach(action -> {
+                for (IReward reward : action.getRewards()) {
+                    if (!(reward instanceof BlockInteractionRangeAttributeModifierReward rangeReward)) continue;
+                    if (!action.metConditions(actionData)) continue;
+                    if (rangeReward.getAmount() > highestAmount[0]) {
+                        ResourceLocation id = BlockInteractionRangeAttributeModifierReward.computeModifierId(holder.getLocation(), action.getLocation());
+                        desiredId[0] = id;
+                        desiredModifier[0] = new AttributeModifier(id, rangeReward.getAmount(), AttributeModifier.Operation.ADD_VALUE);
+                        highestAmount[0] = rangeReward.getAmount();
                     }
-                });
-            }
+                }
+            });
         }
 
         List<ResourceLocation> toRemove = new ArrayList<>();
@@ -84,7 +79,4 @@ public final class BlockInteractionRangeAttributeSync {
         }
     }
 
-    private static boolean isHoldingPickaxe(ServerPlayer player) {
-        return player.getMainHandItem().getTags().anyMatch(tagKey -> tagKey.location().equals(PICKAXES_TAG));
-    }
 }

@@ -1,0 +1,19 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:fisherman/less_fall_damage_x"
+  },
+  "type": "arc:on_get_hurt",
+  "rewards": [
+    {
+      "type": "arc:damage_multiplier",
+      "multiplier": 0.5
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:damage_source",
+      "source": "fall"
+    }
+  ]
+}

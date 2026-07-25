@@ -1,0 +1,33 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:smith/sword_range_vii"
+  },
+  "type": "arc:on_get_destroy_speed",
+  "rewards": [
+    {
+      "type": "arc:entity_interaction_range_modifier",
+      "amount": 3.5
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:items",
+      "items": [
+        "#minecraft:swords"
+      ]
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/sword_range_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/sword_range_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/sword_range_x"
+    }
+  ]
+}

@@ -18,6 +18,7 @@ import com.daqem.arc.data.reward.experience.ExpReward;
 import com.daqem.arc.data.reward.item.ItemReward;
 import com.daqem.arc.data.reward.player.AttackSpeedMultiplierReward;
 import com.daqem.arc.data.reward.player.BlockInteractionRangeAttributeModifierReward;
+import com.daqem.arc.data.reward.player.EntityInteractionRangeAttributeModifierReward;
 import com.daqem.arc.data.reward.player.MoveToEntityReward;
 import com.daqem.arc.data.reward.player.MovementSpeedAttributeModifierReward;
 import com.daqem.arc.data.reward.server.CommandReward;
@@ -52,6 +53,8 @@ public interface RewardType<T extends IReward> extends IRewardType<T> {
             register(Arc.getId("movement_speed_modifier"), new MovementSpeedAttributeModifierReward.Serializer());
     IRewardType<BlockInteractionRangeAttributeModifierReward> BLOCK_INTERACTION_RANGE_ATTRIBUTE_MODIFIER =
             register(Arc.getId("block_interaction_range_modifier"), new BlockInteractionRangeAttributeModifierReward.Serializer());
+    IRewardType<EntityInteractionRangeAttributeModifierReward> ENTITY_INTERACTION_RANGE_ATTRIBUTE_MODIFIER =
+            register(Arc.getId("entity_interaction_range_modifier"), new EntityInteractionRangeAttributeModifierReward.Serializer());
 
     static <T extends IReward> IRewardType<T> register(final ResourceLocation location, final IRewardSerializer<T> serializer) {
         return Registry.register(ArcRegistry.REWARD, location, new RewardType<T>() {

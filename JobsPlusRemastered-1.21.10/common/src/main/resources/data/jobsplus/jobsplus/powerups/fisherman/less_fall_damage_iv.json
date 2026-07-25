@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:fisherman",
+  "parent": "jobsplus:fisherman/less_fall_damage_iii",
+  "icon": {
+    "id": "minecraft:leather_boots",
+    "count": 4
+  },
+  "price": 16,
+  "required_level": 15
+}
