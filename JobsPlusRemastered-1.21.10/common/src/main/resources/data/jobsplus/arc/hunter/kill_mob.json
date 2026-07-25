@@ -1,0 +1,19 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:hunter"
+  },
+  "type": "arc:on_kill_entity",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "min": 2,
+      "max": 4
+    },
+    {
+      "type": "jobsplus:bitcoin_reward",
+      "chance": 0.01,      
+      "amount": 1
+    }
+  ]
+}

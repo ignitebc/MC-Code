@@ -1,9 +1,0 @@
-{
-  "name": "Farmer",
-  "price": 10,
-  "color": "#228B22",
-  "icon": {
-    "id": "minecraft:stone_hoe"
-  },
-  "is_default": true
-}

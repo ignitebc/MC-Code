@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:smith",
+  "parent": "jobsplus:smith/less_damage_melee_iii",
+  "icon": {
+    "id": "minecraft:diamond_sword",
+    "count": 4
+  },
+  "price": 16,
+  "required_level": 15
+}

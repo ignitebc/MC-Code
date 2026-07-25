@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:fisherman",
+  "parent": "jobsplus:fisherman/get_special_item_iii",
+  "icon": {
+    "id": "minecraft:ender_chest",
+    "count": 4
+  },
+  "price": 16,
+  "required_level": 15
+}

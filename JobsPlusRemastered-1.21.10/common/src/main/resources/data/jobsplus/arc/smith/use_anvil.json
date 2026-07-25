@@ -1,0 +1,19 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:smith"
+  },
+  "type": "arc:on_use_anvil",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "min": 5,
+      "max": 10
+    },
+    {
+      "type": "jobsplus:bitcoin_reward",
+      "chance": 0.1,      
+      "amount": 1
+    }
+  ]
+}

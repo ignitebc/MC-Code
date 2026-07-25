@@ -1,0 +1,19 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:alchemist"
+  },
+  "type": "arc:on_brew_potion",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "min": 4,
+      "max": 4
+    },
+    {
+      "type": "jobsplus:bitcoin_reward",
+      "chance": 1.0,
+      "amount": 1
+    }
+  ]
+}

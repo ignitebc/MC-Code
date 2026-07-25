@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:alchemist",
+  "parent": "jobsplus:alchemist/longer_potions_viiii",
+  "icon": {
+    "id": "minecraft:bow",
+    "count": 10
+  },
+  "price": 28,
+  "required_level": 50
+}

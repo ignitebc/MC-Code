@@ -1,0 +1,28 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:hunter/exp_boost_mob_vii"
+  },
+  "type": "arc:on_kill_entity",
+  "rewards": [
+    {
+      "type": "arc:exp_multiplier",
+      "multiplier": 1.35
+    }
+  ],
+  "conditions": [
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/exp_boost_mob_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/exp_boost_mob_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/exp_boost_mob_x"
+    }
+
+  ]
+}

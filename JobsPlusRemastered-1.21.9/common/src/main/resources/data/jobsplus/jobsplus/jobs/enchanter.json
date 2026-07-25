@@ -1,9 +1,0 @@
-{
-  "name": "Enchanter",
-  "price": 10,
-  "color": "#663399",
-  "icon": {
-    "id": "minecraft:enchanted_book"
-  },
-  "is_default": true
-}

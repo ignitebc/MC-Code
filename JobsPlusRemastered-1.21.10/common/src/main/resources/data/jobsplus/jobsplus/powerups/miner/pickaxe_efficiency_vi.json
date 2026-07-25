@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:miner",
+  "parent": "jobsplus:miner/pickaxe_efficiency_v",
+  "icon": {
+    "id": "minecraft:diamond_pickaxe",
+    "count": 6
+  },
+  "price": 20,
+  "required_level": 25
+}

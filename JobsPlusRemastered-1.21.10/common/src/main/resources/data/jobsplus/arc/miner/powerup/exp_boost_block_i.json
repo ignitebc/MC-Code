@@ -1,0 +1,51 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:miner/exp_boost_block_i"
+  },
+  "type": "arc:on_break_block",
+  "rewards": [
+    {
+      "type": "arc:exp_multiplier",
+      "multiplier": 1.05
+    }
+  ],
+  "conditions": [
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/exp_boost_block_ii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/exp_boost_block_iii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/exp_boost_block_iv"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/exp_boost_block_v"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/exp_boost_block_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/exp_boost_block_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/exp_boost_block_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/exp_boost_block_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/exp_boost_block_x"
+    }
+  ]
+}

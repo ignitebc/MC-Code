@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:alchemist",
+  "parent": "jobsplus:alchemist/harmful_potion_immunity_v",
+  "icon": {
+    "id": "minecraft:milk_bucket",
+    "count": 6
+  },
+  "price": 20,
+  "required_level": 25
+}

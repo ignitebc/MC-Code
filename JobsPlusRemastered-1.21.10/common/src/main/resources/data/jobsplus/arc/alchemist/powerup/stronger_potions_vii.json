@@ -1,0 +1,29 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:alchemist/stronger_potions_vii"
+  },
+  "type": "arc:on_effect_added",
+  "rewards": [
+    {
+      "type": "arc:effect_amplifier_addition",
+      "addition": 2,
+      "chance": 35
+    }
+  ],
+  "conditions": [
+   
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/stronger_potions_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/stronger_potions_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/stronger_potions_x"
+    }
+  ]
+}

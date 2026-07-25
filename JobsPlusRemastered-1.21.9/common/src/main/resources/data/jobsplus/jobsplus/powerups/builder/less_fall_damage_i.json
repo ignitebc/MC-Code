@@ -1,8 +1,0 @@
-{
-  "job": "jobsplus:builder",
-  "icon": {
-    "id": "minecraft:leather_boots"
-  },
-  "price": 5,
-  "required_level": 15
-}

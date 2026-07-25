@@ -1,0 +1,9 @@
+[project]
+name = "mc-code-build-file"
+version = "0.1.0"
+description = "Collect Fabric build jars from local MC-CODE modules."
+requires-python = ">=3.9"
+dependencies = []
+
+[tool.uv]
+package = false

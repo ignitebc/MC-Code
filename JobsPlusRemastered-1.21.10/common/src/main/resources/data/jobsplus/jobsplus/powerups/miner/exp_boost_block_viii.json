@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:miner",
+  "parent": "jobsplus:miner/exp_boost_block_vii",
+  "icon": {
+    "id": "minecraft:amethyst_shard",
+    "count": 8
+  },
+  "price": 24,
+  "required_level": 35
+}
