@@ -58,6 +58,9 @@ public class ActionData implements IActionData {
                 .toList();
 
         return correctPlayerActions.stream()
+                .sorted((action1, action2) -> Integer.compare(
+                        getHighestRewardPriority(action2),
+                        getHighestRewardPriority(action1)))
                 .map(this::performCurrentAction)
                 .reduce(new ActionResult(), ActionResult::merge);
     }
@@ -80,6 +83,13 @@ public class ActionData implements IActionData {
 
     private boolean isTypeOfCurrentAction(IAction action) {
         return action.getType() == this.actionType;
+    }
+
+    private int getHighestRewardPriority(IAction action) {
+        return action.getRewards().stream()
+                .mapToInt(reward -> reward.getPriority())
+                .max()
+                .orElse(0);
     }
 
     private ActionResult performCurrentAction(IAction action) {
