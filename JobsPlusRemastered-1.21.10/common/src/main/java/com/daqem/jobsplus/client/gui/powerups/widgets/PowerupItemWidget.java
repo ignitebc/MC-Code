@@ -5,6 +5,7 @@ import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreen;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreenState;
 import com.daqem.jobsplus.client.gui.powerups.PowerupsScreen;
 import com.daqem.jobsplus.client.gui.powerups.PowerupsScreenState;
+import com.daqem.jobsplus.client.gui.powerups.components.PowerupsComponent;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
 import com.daqem.jobsplus.networking.c2s.ServerboundOpenPowerupsScreenPacket;
 import com.daqem.jobsplus.networking.c2s.ServerboundStartPowerupPacket;
@@ -39,6 +40,9 @@ import net.minecraft.world.item.ItemStack;
 // }
 
 public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeItemWidget {
+
+    private static final float TEXT_SCALE = 0.50f;
+    private static final int BASE_LINE_HEIGHT = 9;
 
     private final ISkillTreeItem skillTreeItem;
     private final PowerupsScreenState state;
@@ -122,7 +126,7 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
             Component description = this.powerup != null ? this.powerup.getPowerupInstance().getDescription() : state.getJob().getJobInstance().getDescription();
 
             // 제목 최소 폭
-            int titleWidth = Math.max(50, Minecraft.getInstance().font.width(title));
+            int titleWidth = Math.max(25, getScaledTextWidth(title));
 
             // ① 설명 부분 가로폭만 넓힘
             //    기존: titleWidth + getWidth() + 10
@@ -132,45 +136,45 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
             // ② 툴팁 전체 박스 폭 (좌우 여백 14px 유지)
             int tooltipWidth = descriptionWidth + 14;
 
-            MultiLineTextComponent descriptionComponent =
-                    new MultiLineTextComponent(0, 0, descriptionWidth, description, 0xFF1E1410);
+            int descriptionWrapWidth = Math.max(1, (int) Math.ceil(descriptionWidth / TEXT_SCALE));
+            ScaledMultiLineTextComponent descriptionComponent =
+                    new ScaledMultiLineTextComponent(0, 0, descriptionWrapWidth, description, 0xFF1E1410);
 
-            // 오른쪽으로 툴팁을 띄웠을 때 화면 밖으로 나가는지 체크
             int rightBgX = this.getX() - 6;
-            int guiWidth = guiGraphics.guiWidth();
+            int leftBgX = this.getX() + this.getWidth() + 6 - tooltipWidth;
 
             // 파워업 레벨 요구치/가격은 둘 다 브랜치에서 공통 사용
             int requiredLevel = this.powerup != null ? this.powerup.getPowerupInstance().getRequiredLevel() : 0;
             int extraHeight = (this.powerup != null && requiredLevel > 0 ? 25 : 13);
+            int tooltipHeight = 20 + descriptionComponent.getScaledHeight() + 6 + extraHeight;
+            int tooltipY = this.getY();
+            int skillTreeBottom = (guiGraphics.guiHeight() - PowerupsComponent.BACKGROUND_HEIGHT) / 2
+                    + PowerupsComponent.SKILL_TREE_Y
+                    + PowerupsComponent.SKILL_TREE_HEIGHT;
 
-            if (rightBgX + tooltipWidth > guiWidth) {
-                // ───── 왼쪽으로 툴팁 표시 (슬롯 기준 오른쪽 끝 + 6px 위치에 맞춰서 정렬)
-                int leftBgX = this.getX() + this.getWidth() + 6 - tooltipWidth;
+            if (tooltipY + 7 + tooltipHeight > skillTreeBottom) {
+                tooltipY = this.getY() - tooltipHeight - 10;
+            }
 
+            if (leftBgX >= 0) {
+                // ───── 왼쪽 공간이 확보되면 스킬 왼쪽으로 툴팁 표시
                 // 배경 및 상단 바
                 guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED,
                         JobsPlus.getId("powerups/text_background"),
                         leftBgX,
-                        this.getY() + 7,
+                        tooltipY + 7,
                         tooltipWidth,
-                        20 + descriptionComponent.getHeight() + 6 + extraHeight);
+                        tooltipHeight);
 
                 guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED,
                         JobsPlus.getId("powerups/bar"),
                         leftBgX,
-                        this.getY() + 3,
+                        tooltipY + 3,
                         tooltipWidth,
                         20);
 
                 // 제목
-                guiGraphics.drawString(
-                        Minecraft.getInstance().font,
-                        title,
-                        leftBgX + 12, // 기존 오프셋(배경 기준 +12) 유지
-                        this.getY() + 9,
-                        0xFF1E1410,
-                        false
-                );
+                drawScaledString(guiGraphics, title, leftBgX + 12, tooltipY + 9);
 
                 if (this.powerup != null) {
                     // 구분선
@@ -178,38 +182,34 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
                             RenderPipelines.GUI_TEXTURED,
                             JobsPlus.getId("powerups/line"),
                             leftBgX + 6,
-                            this.getY() + 29 + descriptionComponent.getHeight() + 1,
+                            tooltipY + 29 + descriptionComponent.getScaledHeight() + 1,
                             30,
                             1
                     );
 
                     if (requiredLevel > 0) {
-                        guiGraphics.drawString(
-                                Minecraft.getInstance().font,
+                        drawScaledString(
+                                guiGraphics,
                                 JobsPlus.translatable("gui.powerups.required_level", requiredLevel),
                                 leftBgX + 7,
-                                this.getY() + 29 + descriptionComponent.getHeight() + 4,
-                                0xFF1E1410,
-                                false
+                                tooltipY + 29 + descriptionComponent.getScaledHeight() + 4
                         );
                     }
 
                     MutableComponent price = JobsPlus.translatable("gui.powerups.price", this.powerup.getPowerupInstance().getPrice());
 
-                    guiGraphics.drawString(
-                            Minecraft.getInstance().font,
+                    drawScaledString(
+                            guiGraphics,
                             price,
                             leftBgX + 7,
-                            this.getY() + 29 + descriptionComponent.getHeight() + (requiredLevel > 0 ? 15 : 4),
-                            0xFF1E1410,
-                            false
+                            tooltipY + 29 + descriptionComponent.getScaledHeight() + (requiredLevel > 0 ? 15 : 4)
                     );
 
                     guiGraphics.blitSprite(
                             RenderPipelines.GUI_TEXTURED,
                             JobsPlus.getId("jobs/coins"),
-                            leftBgX + 7 + Minecraft.getInstance().font.width(price) + 2,
-                            this.getY() + 29 + descriptionComponent.getHeight() + (requiredLevel > 0 ? 15 : 4),
+                            leftBgX + 7 + getScaledTextWidth(price) + 2,
+                            tooltipY + 29 + descriptionComponent.getScaledHeight() + (requiredLevel > 0 ? 15 : 4),
                             7,
                             8
                     );
@@ -217,7 +217,7 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
 
                 // 설명 텍스트 위치 (배경 기준 +7px)
                 descriptionComponent.setX(leftBgX + 7);
-                descriptionComponent.setY(this.getY() + 29);
+                descriptionComponent.setY(tooltipY + 29);
                 descriptionComponent.renderBase(guiGraphics, mouseX, mouseY, 0, 0, 0);
 
             } else {
@@ -226,28 +226,26 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
                         RenderPipelines.GUI_TEXTURED,
                         JobsPlus.getId("powerups/text_background"),
                         rightBgX,
-                        this.getY() + 7,
+                        tooltipY + 7,
                         tooltipWidth,
-                        20 + descriptionComponent.getHeight() + 6 + extraHeight
+                        tooltipHeight
                 );
 
                 guiGraphics.blitSprite(
                         RenderPipelines.GUI_TEXTURED,
                         JobsPlus.getId("powerups/bar"),
                         rightBgX,
-                        this.getY() + 3,
+                        tooltipY + 3,
                         tooltipWidth,
                         20
                 );
 
                 // 제목 (기존: this.getX() + this.getWidth() + 8)
-                guiGraphics.drawString(
-                        Minecraft.getInstance().font,
+                drawScaledString(
+                        guiGraphics,
                         title,
-                        rightBgX + this.getWidth() + 14, // rightBgX(-6) 기준 + (슬롯폭+14) = 기존과 같은 비율
-                        this.getY() + 9,
-                        0xFF1E1410,
-                        false
+                        rightBgX + this.getWidth() + 14,
+                        tooltipY + 9
                 );
 
                 if (this.powerup != null) {
@@ -256,50 +254,90 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
                             RenderPipelines.GUI_TEXTURED,
                             JobsPlus.getId("powerups/line"),
                             rightBgX + 6,
-                            this.getY() + 29 + descriptionComponent.getHeight() + 1,
+                            tooltipY + 29 + descriptionComponent.getScaledHeight() + 1,
                             30,
                             1
                     );
 
                     if (requiredLevel > 0) {
-                        guiGraphics.drawString(
-                                Minecraft.getInstance().font,
+                        drawScaledString(
+                                guiGraphics,
                                 JobsPlus.translatable("gui.powerups.required_level", requiredLevel),
                                 rightBgX + 7,
-                                this.getY() + 29 + descriptionComponent.getHeight() + 4,
-                                0xFF1E1410,
-                                false
+                                tooltipY + 29 + descriptionComponent.getScaledHeight() + 4
                         );
                     }
 
                     MutableComponent price = JobsPlus.translatable("gui.powerups.price", this.powerup.getPowerupInstance().getPrice());
 
-                    guiGraphics.drawString(
-                            Minecraft.getInstance().font,
+                    drawScaledString(
+                            guiGraphics,
                             price,
                             rightBgX + 7,
-                            this.getY() + 29 + descriptionComponent.getHeight() + (requiredLevel > 0 ? 15 : 4),
-                            0xFF1E1410,
-                            false
+                            tooltipY + 29 + descriptionComponent.getScaledHeight() + (requiredLevel > 0 ? 15 : 4)
                     );
 
                     guiGraphics.blitSprite(
                             RenderPipelines.GUI_TEXTURED,
                             JobsPlus.getId("jobs/coins"),
-                            rightBgX + 7 + Minecraft.getInstance().font.width(price) + 2,
-                            this.getY() + 29 + descriptionComponent.getHeight() + (requiredLevel > 0 ? 15 : 4),
+                            rightBgX + 7 + getScaledTextWidth(price) + 2,
+                            tooltipY + 29 + descriptionComponent.getScaledHeight() + (requiredLevel > 0 ? 15 : 4),
                             7,
                             8
                     );
                 }
 
-                // 설명 텍스트 위치 (배경 기준 +1px, 기존과 동일한 상대 위치)
-                descriptionComponent.setX(rightBgX + 1);
-                descriptionComponent.setY(this.getY() + 29);
+                // 설명 텍스트 위치 (좌우 배치 모두 배경 기준 +7px)
+                descriptionComponent.setX(rightBgX + 7);
+                descriptionComponent.setY(tooltipY + 29);
                 descriptionComponent.renderBase(guiGraphics, mouseX, mouseY, 0, 0, 0);
             }
 
             this.blitSlot(guiGraphics);
+        }
+    }
+
+    private int getScaledTextWidth(Component text) {
+        return (int) Math.ceil(Minecraft.getInstance().font.width(text) * TEXT_SCALE);
+    }
+
+    private void drawScaledString(GuiGraphics guiGraphics, Component text, int x, int y) {
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(x, y);
+        guiGraphics.pose().scale(TEXT_SCALE, TEXT_SCALE);
+        guiGraphics.drawString(Minecraft.getInstance().font, text, 0, 0, 0xFF1E1410, false);
+        guiGraphics.pose().popMatrix();
+    }
+
+    private static final class ScaledMultiLineTextComponent extends MultiLineTextComponent {
+
+        public ScaledMultiLineTextComponent(int x, int y, int maxWidth, Component text, int color) {
+            super(x, y, maxWidth, text, color);
+        }
+
+        public int getScaledHeight() {
+            return (int) Math.ceil(getLines().size() * BASE_LINE_HEIGHT * TEXT_SCALE);
+        }
+
+        @Override
+        public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth,
+                           int parentHeight) {
+            guiGraphics.pose().pushMatrix();
+            guiGraphics.pose().translate(getTotalX(), getTotalY());
+            guiGraphics.pose().scale(TEXT_SCALE, TEXT_SCALE);
+
+            for (int i = 0; i < getLines().size(); i++) {
+                guiGraphics.drawString(
+                        getFont(),
+                        getLines().get(i),
+                        0,
+                        i * BASE_LINE_HEIGHT,
+                        getColor(),
+                        isDrawShadow()
+                );
+            }
+
+            guiGraphics.pose().popMatrix();
         }
     }
 

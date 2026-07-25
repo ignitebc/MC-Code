@@ -18,10 +18,16 @@ import java.util.stream.Collectors;
 
 public class PowerupsComponent extends SpriteComponent
 {
+    public static final int BACKGROUND_WIDTH = 326;
+    public static final int BACKGROUND_HEIGHT = 240;
+    public static final int SKILL_TREE_X = 23;
+    public static final int SKILL_TREE_Y = 30;
+    public static final int SKILL_TREE_WIDTH = 282;
+    public static final int SKILL_TREE_HEIGHT = 192;
 
     public PowerupsComponent(PowerupsScreenState state)
     {
-        super(0, 0, 326, 240, JobsPlus.getId("powerups/background"));
+        super(0, 0, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, JobsPlus.getId("powerups/background"));
 
         TextComponent title = new TextComponent(11, 5, state.getJob().getJobInstance().getName().withStyle(Style.EMPTY.withBold(true)).append(JobsPlus.literal(" • " + state.getJob().getLevel()).withStyle(Style.EMPTY.withBold(false))), 0xFFEAF0FF);
         this.addComponent(title);
@@ -69,7 +75,13 @@ public class PowerupsComponent extends SpriteComponent
         }
         powerupItems.put(state.getJob().getJobInstance().getLocation(), rootItem);
         PowerupsSkillTree powerupsSkillTree = new PowerupsSkillTree(new ArrayList<>(powerupItems.values()));
-        SkillTreeComponent skillTreeComponent = new SkillTreeComponent(23, 30, 282, 192, powerupsSkillTree);
+        SkillTreeComponent skillTreeComponent = new SkillTreeComponent(
+                SKILL_TREE_X,
+                SKILL_TREE_Y,
+                SKILL_TREE_WIDTH,
+                SKILL_TREE_HEIGHT,
+                powerupsSkillTree
+        );
         this.addComponent(skillTreeComponent);
     }
 
