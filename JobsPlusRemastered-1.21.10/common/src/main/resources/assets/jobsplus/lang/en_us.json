@@ -52,12 +52,8 @@
   "jobsplus.job.item_unlocked.toast": "새로운 아이템이 해금되었습니다!",
   "jobsplus.job.jobsplus.alchemist.name": "연금술사",
   "jobsplus.job.jobsplus.alchemist.description": "-물약 양조시 비트코인 0.7% 확률로 획득",
-  "jobsplus.job.jobsplus.builder.name": "건축가",
-  "jobsplus.job.jobsplus.builder.description": "건축가는 건물을 짓는 데 능숙한 전문가입니다. 건축가의 스킬을 사용하면 추락 피해를 덜 받게 됩니다. 높은 구조물을 지을 때 매우 유용합니다!",
   "jobsplus.job.jobsplus.digger.name": "굴착공",
   "jobsplus.job.jobsplus.digger.description": "-일반블록(경험치조건 참조) 채굴시 비트코인을 0.03% 확률로 획득",
-  "jobsplus.job.jobsplus.enchanter.name": "인챈터",
-  "jobsplus.job.jobsplus.enchanter.description": "인챈터는 방어구와 도구에 마법을 부여하는 데 능숙한 전문가입니다. 인챈터의 스킬을 사용해 마법 부여에 필요한 경험치를 더 많이 얻으세요!",
   "jobsplus.job.jobsplus.farmer.name": "농부",
   "jobsplus.job.jobsplus.farmer.description": "-작물 수확시(완전히자란것) 비트코인 0.1% 확률로 획득",
   "jobsplus.job.jobsplus.fisherman.name": "낚시꾼",
@@ -199,15 +195,6 @@
   "jobsplus.powerup.jobsplus.alchemist.stronger_potions_x.name": "포션 레벨업 V",
   "jobsplus.powerup.jobsplus.alchemist.stronger_potions_x.description": "포션 레벨 +2 증가 (발동 확률 50%)",
 
-  "jobsplus.powerup.jobsplus.builder.root.name": "건축가",
-  "jobsplus.powerup.jobsplus.builder.root.description": "건축가는 건물을 짓는 데 능숙한 전문가입니다. 건축가의 스킬을 사용하면 추락 피해를 덜 받게 됩니다. 높은 구조물을 지을 때 매우 유용합니다!",
-  "jobsplus.powerup.jobsplus.builder.less_fall_damage_i.name": "추락 피해 감소 I",
-  "jobsplus.powerup.jobsplus.builder.less_fall_damage_i.description": "추락 피해량 20% 감소",
-  "jobsplus.powerup.jobsplus.builder.less_fall_damage_ii.name": "추락 피해 감소 II",
-  "jobsplus.powerup.jobsplus.builder.less_fall_damage_ii.description": "추락 피해량 40% 감소",
-  "jobsplus.powerup.jobsplus.builder.less_fall_damage_iii.name": "추락 피해 감소 III",
-  "jobsplus.powerup.jobsplus.builder.less_fall_damage_iii.description": "추락 피해량 50% 감소",
-
   "jobsplus.powerup.jobsplus.digger.root.name": "굴착공",
   "jobsplus.powerup.jobsplus.digger.root.description": "-일반블록(경험치조건 참조) 채굴시 비트코인을 0.03% 확률로 획득",
   
@@ -316,14 +303,6 @@
   "jobsplus.powerup.jobsplus.digger.job_exp_x.name": "직업경험치 X",
   "jobsplus.powerup.jobsplus.digger.job_exp_x.description": "직업 경험치를 3배 증가",
 
-  "jobsplus.powerup.jobsplus.enchanter.root.name": "인챈터",
-  "jobsplus.powerup.jobsplus.enchanter.root.description": "인챈터는 방어구와 도구에 마법을 부여하는 데 능숙한 전문가입니다. 인챈터의 스킬을 사용해 마법 부여에 필요한 경험치를 더 많이 얻으세요!",
-  "jobsplus.powerup.jobsplus.enchanter.exp_boost_i.name": "경험치 증가 I",
-  "jobsplus.powerup.jobsplus.enchanter.exp_boost_i.description": "블록과 몹에서 얻는 경험치가 1.5배 증가합니다.",
-  "jobsplus.powerup.jobsplus.enchanter.exp_boost_ii.name": "경험치 증가 II",
-  "jobsplus.powerup.jobsplus.enchanter.exp_boost_ii.description": "블록과 몹에서 얻는 경험치가 2배 증가합니다.",
-  "jobsplus.powerup.jobsplus.enchanter.exp_boost_iii.name": "경험치 증가 III",
-  "jobsplus.powerup.jobsplus.enchanter.exp_boost_iii.description": "블록과 몹에서 얻는 경험치가 2.5배 증가합니다.",
 
   "jobsplus.powerup.jobsplus.farmer.root.name": "농부",
   "jobsplus.powerup.jobsplus.farmer.root.description": "-작물 수확시(완전히자란것) 비트코인 0.1% 확률로 획득",
