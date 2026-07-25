@@ -20,7 +20,7 @@ public class PowerupsButtonWidget extends CustomButtonWidget
 
     public PowerupsButtonWidget(JobsScreenState state)
     {
-        super(186, 212, Minecraft.getInstance().font.width(MESSAGE) + 20, 18, MESSAGE, null, button -> Minecraft.getInstance().setScreen(new PowerupsScreen(new PowerupsScreenState(state.getSelectedJob(), state.getCoins()), Minecraft.getInstance().screen)));
+        super(211, 212, Minecraft.getInstance().font.width(MESSAGE) + 20, 18, MESSAGE, null, button -> Minecraft.getInstance().setScreen(new PowerupsScreen(new PowerupsScreenState(state.getSelectedJob(), state.getCoins()), Minecraft.getInstance().screen)));
         this.state = state;
     }
 

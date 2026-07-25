@@ -11,10 +11,10 @@ public class JobSelectionComponent extends EmptyComponent
 
     public JobSelectionComponent(JobsScreenState state)
     {
-        super(21, 66, 117, 146);
+        super(31, 66, 117, 146);
 
         JobSelectionWidget jobSelectionWidget = new JobSelectionWidget(getWidth(), getHeight(), state);
-        TextComponent title = new TextComponent(0, -10, JobsPlus.translatable("gui.jobs.job_selection"), 0xFFD8BF96);
+        TextComponent title = new TextComponent(0, -10, JobsPlus.translatable("gui.jobs.job_selection"), 0xFF000000);
 
         this.addWidget(jobSelectionWidget);
         this.addComponent(title);

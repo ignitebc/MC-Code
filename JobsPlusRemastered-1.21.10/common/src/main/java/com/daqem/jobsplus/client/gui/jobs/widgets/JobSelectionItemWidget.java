@@ -38,7 +38,7 @@ public class JobSelectionItemWidget extends CustomButtonWidget
         guiGraphics.drawString(minecraft.font, this.getMessage().copy().withColor(this.job.getJobInstance().getColorDecimal()), this.getX() + 20, this.getY() + (this.job.getLevel() > 0 ? 4 : 5), 0xFF1E1410, false);
         if (this.job.getLevel() > 0)
         {
-            guiGraphics.drawString(minecraft.font, JobsPlus.literal(this.job.getLevel() + ""), this.getX() + this.getWidth() - 2 - minecraft.font.width(this.job.getLevel() + ""), this.getY() + 4, 0xFFD8BF96, false);
+            guiGraphics.drawString(minecraft.font, JobsPlus.literal(this.job.getLevel() + ""), this.getX() + this.getWidth() - 2 - minecraft.font.width(this.job.getLevel() + ""), this.getY() + 4, 0xFF1E1410, false);
             guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/exp_bar"), getX() + 20, getY() + 13, 76, 3);
             double expPercentage = this.job.getExperiencePercentage();
             int expWidth = (int) Mth.clamp(expPercentage / 100 * 75, 1, 75);

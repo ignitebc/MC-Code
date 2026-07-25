@@ -87,7 +87,8 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
                                 serverPlayer.jobsplus$getInactiveJobs().stream()
                         ).toList(),
                         serverPlayer.jobsplus$getCoins(),
-                        serverPlayer.jobsplus$getEffectiveMaxJobs()
+                        serverPlayer.jobsplus$getEffectiveMaxJobs(),
+                        serverPlayer.jobsplus$getStockAccount()
                 )
         );
     }

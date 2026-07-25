@@ -5,6 +5,8 @@ import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
 import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.shop.ShopOffer;
 import com.daqem.jobsplus.player.job.Job;
+import com.daqem.jobsplus.player.stock.StockAccount;
+import com.daqem.jobsplus.client.gui.jobs.stock.StockPanelMode;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
@@ -27,6 +29,10 @@ public class JobsScreenState {
     private @Nullable IAction activeAction;
 
     private @Nullable ShopOffer selectedShopOffer;
+    private StockAccount stockAccount;
+    private String selectedStockId;
+    private @Nullable String selectedHoldingStockId;
+    private StockPanelMode stockPanelMode;
 
     // 호환: 기존 시그니처 유지(서버가 maxJobs를 보내지 않는 경우)
     public JobsScreenState(List<Job> jobs, int coins) {
@@ -43,6 +49,11 @@ public class JobsScreenState {
     }
 
     public JobsScreenState(List<Job> jobs, int coins, int maxJobs, Job selectedJob, RightTab selectedRightTab) {
+        this(jobs, coins, maxJobs, selectedJob, selectedRightTab, StockAccount.EMPTY);
+    }
+
+    public JobsScreenState(List<Job> jobs, int coins, int maxJobs, Job selectedJob, RightTab selectedRightTab,
+                           StockAccount stockAccount) {
         this.jobs = jobs.stream()
                 .sorted(Comparator.comparing(Job::getLevel).reversed()
                         .thenComparingInt(job -> -job.getExperience())
@@ -57,6 +68,10 @@ public class JobsScreenState {
         this.selectedRightTab = selectedRightTab;
         this.activeAction = null;
         this.selectedShopOffer = null;
+        this.stockAccount = stockAccount;
+        this.selectedStockId = "AAPL";
+        this.selectedHoldingStockId = null;
+        this.stockPanelMode = StockPanelMode.BUY;
     }
 
     public List<Job> getJobs() {
@@ -113,6 +128,38 @@ public class JobsScreenState {
 
     public void setSelectedShopOffer(@Nullable ShopOffer selectedShopOffer) {
         this.selectedShopOffer = selectedShopOffer;
+    }
+
+    public StockAccount getStockAccount() {
+        return stockAccount;
+    }
+
+    public void setStockAccount(StockAccount stockAccount) {
+        this.stockAccount = stockAccount;
+    }
+
+    public String getSelectedStockId() {
+        return selectedStockId;
+    }
+
+    public void setSelectedStockId(String selectedStockId) {
+        this.selectedStockId = selectedStockId;
+    }
+
+    public @Nullable String getSelectedHoldingStockId() {
+        return selectedHoldingStockId;
+    }
+
+    public void setSelectedHoldingStockId(@Nullable String selectedHoldingStockId) {
+        this.selectedHoldingStockId = selectedHoldingStockId;
+    }
+
+    public StockPanelMode getStockPanelMode() {
+        return stockPanelMode;
+    }
+
+    public void setStockPanelMode(StockPanelMode stockPanelMode) {
+        this.stockPanelMode = stockPanelMode;
     }
 
     public int getActiveJobCount() {
