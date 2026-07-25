@@ -1,0 +1,20 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:fisherman/grappling_hook_x"
+  },
+  "type": "arc:on_rod_reel_in",
+  "rewards": [
+    {
+      "type": "arc:move_to_entity",
+      "force": 2.0
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:entity_in_block",
+      "block": "minecraft:air"
+    }
+
+  ]
+}

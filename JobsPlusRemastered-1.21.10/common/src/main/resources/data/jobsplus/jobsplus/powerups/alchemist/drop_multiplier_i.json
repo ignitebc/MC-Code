@@ -1,0 +1,8 @@
+{
+  "job": "jobsplus:alchemist",
+  "icon": {
+    "id": "minecraft:blaze_powder"
+  },
+  "price": 10,
+  "required_level": 0
+}

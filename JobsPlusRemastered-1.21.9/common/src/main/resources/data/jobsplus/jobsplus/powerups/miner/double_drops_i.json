@@ -1,9 +1,0 @@
-{
-  "job": "jobsplus:miner",
-  "parent": "jobsplus:miner/pickaxe_unbreaking_i",
-  "icon": {
-    "id": "minecraft:iron_ore"
-  },
-  "price": 5,
-  "required_level": 10
-}

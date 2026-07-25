@@ -1,0 +1,28 @@
+{
+  "holder": {
+    "type": "arc:player",
+    "id": "arc:player"
+  },
+  "type": "arc:on_drink",
+  "rewards": [
+    {
+      "type": "arc:command",
+      "command": "give %player% minecraft:dirt 1"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:item",
+      "check_components": false,
+      "item": {
+        "id": "minecraft:potion",
+        "count": 1,
+        "components": {
+          "minecraft:potion_contents": {
+            "potion": "minecraft:water"
+          }
+        }
+      }
+    }
+  ]
+}

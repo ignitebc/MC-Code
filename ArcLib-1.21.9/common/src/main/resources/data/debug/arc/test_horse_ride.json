@@ -1,0 +1,67 @@
+{
+  "holder": {
+    "type": "arc:player",
+    "id": "arc:player"
+  },
+  "type": "arc:on_horse_ride",
+  "conditions": [
+    {
+      "type": "arc:distance",
+      "distance_in_blocks": 10
+    },
+    {
+      "type": "arc:distance",
+      "distance_in_blocks": 10
+    },
+    {
+      "type": "arc:distance",
+      "distance_in_blocks": 10
+    },
+    {
+      "type": "arc:distance",
+      "distance_in_blocks": 10
+    },
+    {
+      "type": "arc:distance",
+      "distance_in_blocks": 10
+    },
+    {
+      "type": "arc:distance",
+      "distance_in_blocks": 10
+    },
+    {
+      "type": "arc:distance",
+      "distance_in_blocks": 10
+    }
+  ],
+  "rewards": [
+    {
+      "type": "arc:command",
+      "command": "give %player% minecraft:stone 1"
+    },
+    {
+      "type": "arc:command",
+      "command": "give %player% minecraft:stone 1"
+    },
+    {
+      "type": "arc:command",
+      "command": "give %player% minecraft:stone 1"
+    },
+    {
+      "type": "arc:command",
+      "command": "give %player% minecraft:stone 1"
+    },
+    {
+      "type": "arc:command",
+      "command": "give %player% minecraft:stone 1"
+    },
+    {
+      "type": "arc:command",
+      "command": "give %player% minecraft:stone 1"
+    },
+    {
+      "type": "arc:command",
+      "command": "give %player% minecraft:stone 1"
+    }
+  ]
+}

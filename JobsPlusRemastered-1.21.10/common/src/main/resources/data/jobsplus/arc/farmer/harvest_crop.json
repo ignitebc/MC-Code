@@ -1,0 +1,24 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:farmer"
+  },
+  "type": "arc:on_harvest_crop",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "min": 0,
+      "max": 2
+    },
+    {
+      "type": "jobsplus:bitcoin_reward",
+      "chance": 0.1,
+      "amount": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:crop_fully_grown"
+    }
+  ]
+}

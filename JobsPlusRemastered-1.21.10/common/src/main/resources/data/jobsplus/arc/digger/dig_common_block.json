@@ -1,0 +1,41 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:digger"
+  },
+  "type": "arc:on_break_block",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "type": "jobsplus:bitcoin_reward",
+      "chance": 0.03,
+      "amount": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:blocks",
+      "blocks": [
+        "minecraft:dirt",
+        "minecraft:sand",
+        "minecraft:grass_block",
+        "minecraft:coarse_dirt",
+        "minecraft:podzol",
+        "minecraft:rooted_dirt",
+        "minecraft:red_sand",
+        "minecraft:gravel",
+        "minecraft:clay",
+        "minecraft:snow",
+        "minecraft:snow_block",
+        "minecraft:mud",
+        "minecraft:muddy_mangrove_roots",
+        "minecraft:soul_sand",
+        "minecraft:soul_soil"
+      ]
+    }
+  ]
+}

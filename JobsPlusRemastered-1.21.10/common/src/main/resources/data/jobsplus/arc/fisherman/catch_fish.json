@@ -1,0 +1,27 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:fisherman"
+  },
+  "type": "arc:on_fished_up_item",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "min": 4,
+      "max": 6
+    },
+    {
+      "type": "jobsplus:bitcoin_reward",
+      "chance": 0.05,      
+      "amount": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:items",
+      "items": [
+        "#minecraft:fishes"
+      ]
+    }
+  ]
+}

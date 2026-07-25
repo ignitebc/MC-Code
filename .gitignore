@@ -1,0 +1,17 @@
+# IDE / Editor
+.vs/
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# Java / Gradle
+.gradle/
+build/
+*.jar
+
+# Misc
+*.log
+*.tmp

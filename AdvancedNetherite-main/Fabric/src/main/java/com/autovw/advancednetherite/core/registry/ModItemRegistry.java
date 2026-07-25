@@ -1,0 +1,110 @@
+package com.autovw.advancednetherite.core.registry;
+
+import com.autovw.advancednetherite.AdvancedNetherite;
+import com.autovw.advancednetherite.api.annotation.Internal;
+import com.autovw.advancednetherite.common.item.AdvancedItem;
+import com.autovw.advancednetherite.core.ModItems;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+
+/**
+ * @author Autovw
+ */
+@Internal
+public final class ModItemRegistry
+{
+    public static void registerItems()
+    {
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_ingot"), ModItems.NETHERITE_IRON_INGOT);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_gold_ingot"), ModItems.NETHERITE_GOLD_INGOT);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_emerald_ingot"), ModItems.NETHERITE_EMERALD_INGOT);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_diamond_ingot"), ModItems.NETHERITE_DIAMOND_INGOT);
+
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_helmet"), ModItems.NETHERITE_IRON_HELMET);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_chestplate"), ModItems.NETHERITE_IRON_CHESTPLATE);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_leggings"), ModItems.NETHERITE_IRON_LEGGINGS);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_boots"), ModItems.NETHERITE_IRON_BOOTS);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_gold_helmet"), ModItems.NETHERITE_GOLD_HELMET);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_gold_chestplate"), ModItems.NETHERITE_GOLD_CHESTPLATE);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_gold_leggings"), ModItems.NETHERITE_GOLD_LEGGINGS);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_gold_boots"), ModItems.NETHERITE_GOLD_BOOTS);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_emerald_helmet"), ModItems.NETHERITE_EMERALD_HELMET);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_emerald_chestplate"), ModItems.NETHERITE_EMERALD_CHESTPLATE);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_emerald_leggings"), ModItems.NETHERITE_EMERALD_LEGGINGS);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_emerald_boots"), ModItems.NETHERITE_EMERALD_BOOTS);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_diamond_helmet"), ModItems.NETHERITE_DIAMOND_HELMET);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_diamond_chestplate"), ModItems.NETHERITE_DIAMOND_CHESTPLATE);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_diamond_leggings"), ModItems.NETHERITE_DIAMOND_LEGGINGS);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_diamond_boots"), ModItems.NETHERITE_DIAMOND_BOOTS);
+
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_axe"), ModItems.NETHERITE_IRON_AXE);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_gold_axe"), ModItems.NETHERITE_GOLD_AXE);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_emerald_axe"), ModItems.NETHERITE_EMERALD_AXE);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_diamond_axe"), ModItems.NETHERITE_DIAMOND_AXE);
+
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_hoe"), ModItems.NETHERITE_IRON_HOE);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_gold_hoe"), ModItems.NETHERITE_GOLD_HOE);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_emerald_hoe"), ModItems.NETHERITE_EMERALD_HOE);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_diamond_hoe"), ModItems.NETHERITE_DIAMOND_HOE);
+
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_pickaxe"), ModItems.NETHERITE_IRON_PICKAXE);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_gold_pickaxe"), ModItems.NETHERITE_GOLD_PICKAXE);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_emerald_pickaxe"), ModItems.NETHERITE_EMERALD_PICKAXE);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_diamond_pickaxe"), ModItems.NETHERITE_DIAMOND_PICKAXE);
+
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_shovel"), ModItems.NETHERITE_IRON_SHOVEL);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_gold_shovel"), ModItems.NETHERITE_GOLD_SHOVEL);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_emerald_shovel"), ModItems.NETHERITE_EMERALD_SHOVEL);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_diamond_shovel"), ModItems.NETHERITE_DIAMOND_SHOVEL);
+
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_sword"), ModItems.NETHERITE_IRON_SWORD);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_gold_sword"), ModItems.NETHERITE_GOLD_SWORD);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_emerald_sword"), ModItems.NETHERITE_EMERALD_SWORD);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_diamond_sword"), ModItems.NETHERITE_DIAMOND_SWORD);
+
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_block"), ModItems.NETHERITE_IRON_BLOCK);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_gold_block"), ModItems.NETHERITE_GOLD_BLOCK);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_emerald_block"), ModItems.NETHERITE_EMERALD_BLOCK);
+        Registry.register(BuiltInRegistries.ITEM, id("netherite_diamond_block"), ModItems.NETHERITE_DIAMOND_BLOCK);
+
+        // 레지스트리 bitCoins 등록
+        Registry.register(BuiltInRegistries.ITEM, id("bitcoin"), ModItems.BITCOIN);
+         
+        // randomBox 1~4
+        Registry.register(BuiltInRegistries.ITEM, id("random_box_i"), ModItems.RANDOM_BOX_I);
+        Registry.register(BuiltInRegistries.ITEM, id("random_box_ii"), ModItems.RANDOM_BOX_II);
+        Registry.register(BuiltInRegistries.ITEM, id("random_box_iii"), ModItems.RANDOM_BOX_III);
+        Registry.register(BuiltInRegistries.ITEM, id("random_box_iv"), ModItems.RANDOM_BOX_IV);
+
+        // rewardKey 1~4
+        Registry.register(BuiltInRegistries.ITEM, id("reward_key_i"), ModItems.REWARD_KEY_I);
+        Registry.register(BuiltInRegistries.ITEM, id("reward_key_ii"), ModItems.REWARD_KEY_II);
+        Registry.register(BuiltInRegistries.ITEM, id("reward_key_iii"), ModItems.REWARD_KEY_III);
+        Registry.register(BuiltInRegistries.ITEM, id("reward_key_iv"), ModItems.REWARD_KEY_IV);
+
+        // 강화조각 / 강화보석
+        Registry.register(BuiltInRegistries.ITEM, id("enhancement_shard"), ModItems.ENHANCEMENT_SHARD);
+        Registry.register(BuiltInRegistries.ITEM, id("enhancement_gem"), ModItems.ENHANCEMENT_GEM);
+        
+        // 직업선택권 외 주문서
+        Registry.register(BuiltInRegistries.ITEM, id("job_select_ticket"), ModItems.JOB_SELECT_TICKET);
+        Registry.register(BuiltInRegistries.ITEM, id("death_item_protection_scroll"), ModItems.DEATH_ITEM_PROTECTION_SCROLL);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_protection_scroll"), ModItems.ENHANCE_PROTECTION_SCROLL);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_3"), ModItems.ENHANCE_SUCCESS_SCROLL_3);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_5"), ModItems.ENHANCE_SUCCESS_SCROLL_5);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_7"), ModItems.ENHANCE_SUCCESS_SCROLL_7);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_10"), ModItems.ENHANCE_SUCCESS_SCROLL_10);
+
+        // petbox
+        Registry.register(BuiltInRegistries.ITEM, id("nomal_petbox"), ModItems.NOMAL_PETBOX);
+        Registry.register(BuiltInRegistries.ITEM, id("rare_petbox"), ModItems.RARE_PETBOX);
+        Registry.register(BuiltInRegistries.ITEM, id("legend_petbox"), ModItems.LEGEND_PETBOX);
+    }
+    
+    private static ResourceLocation id(String name)
+    {
+        return ResourceLocation.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, name);
+    }
+}

@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:fisherman",
+  "parent": "jobsplus:fisherman/grappling_hook_viii",
+  "icon": {
+    "id": "minecraft:fishing_rod",
+    "count": 9
+  },
+  "price": 26,
+  "required_level": 40
+}

@@ -1,0 +1,33 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:smith"
+  },
+  "type": "arc:on_smelt_item",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "chance": 100,
+      "min": 3,
+      "max": 4
+    },
+    {
+      "type": "jobsplus:bitcoin_reward",
+      "chance": 0.05,      
+      "amount": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:items",
+      "items": [
+        "#c:gems",
+        "#c:ingots",
+        "#minecraft:beacon_payment_items",
+        "minecraft:coal",
+        "minecraft:lapis_lazuli",
+        "minecraft:redstone"
+      ]
+    }
+  ]
+}
