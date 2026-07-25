@@ -9,15 +9,27 @@ public class TabSwitcherComponent extends EmptyComponent
 
     public TabSwitcherComponent(JobsScreenState state)
     {
-        super(164, 18, 174, 190);
+        super(179, 18, 209, 190);
 
-        RightTabComponent experienceTab = new RightTabComponent(getWidth() - 30, 9, state, RightTab.EXPERIENCE);
-        RightTabComponent recipesTab = new RightTabComponent(getWidth() - 30, 32, state, RightTab.RECIPES);
-        RightTabComponent shopTab = new RightTabComponent(getWidth() - 30, 55, state, RightTab.SHOP);
-        RightPageContentComponent rightPageContentComponent = new RightPageContentComponent(state, getWidth() - 33, getHeight());
+        int experienceTabWidth = RightTabComponent.getTabWidth(RightTab.EXPERIENCE);
+        int recipesTabWidth = RightTabComponent.getTabWidth(RightTab.RECIPES);
+        int upAndDownTabWidth = RightTabComponent.getTabWidth(RightTab.UP_AND_DOWN);
+        int shopTabWidth = RightTabComponent.getTabWidth(RightTab.SHOP);
+        int tabY = 0;
+        int tabGap = 2;
+        int tabsWidth = experienceTabWidth + recipesTabWidth + upAndDownTabWidth + shopTabWidth + tabGap * 3;
+        int tabStartX = (getWidth() - tabsWidth) / 2;
+
+        RightTabComponent experienceTab = new RightTabComponent(tabStartX, tabY, state, RightTab.EXPERIENCE);
+        RightTabComponent recipesTab = new RightTabComponent(tabStartX + experienceTabWidth + tabGap, tabY, state, RightTab.RECIPES);
+        RightTabComponent upAndDownTab = new RightTabComponent(tabStartX + experienceTabWidth + recipesTabWidth + tabGap * 2, tabY, state, RightTab.UP_AND_DOWN);
+        RightTabComponent shopTab = new RightTabComponent(tabStartX + experienceTabWidth + recipesTabWidth + upAndDownTabWidth + tabGap * 3, tabY, state, RightTab.SHOP);
+        RightPageContentComponent rightPageContentComponent = new RightPageContentComponent(state, getWidth() - 53, getHeight());
+        rightPageContentComponent.setX(29);
 
         this.addComponent(experienceTab);
         this.addComponent(recipesTab);
+        this.addComponent(upAndDownTab);
         this.addComponent(shopTab);
         this.addComponent(rightPageContentComponent);
     }

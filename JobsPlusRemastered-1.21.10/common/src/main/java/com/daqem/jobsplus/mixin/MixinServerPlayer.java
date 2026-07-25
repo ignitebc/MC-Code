@@ -13,6 +13,7 @@ import com.daqem.jobsplus.player.job.Job;
 import com.daqem.jobsplus.player.job.exp.ExpCollector;
 import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
+import com.daqem.jobsplus.player.stock.StockAccount;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
@@ -43,6 +44,8 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     private List<Job> jobsplus$jobs = new ArrayList<>();
     @Unique
     private int jobsplus$coins = 0;
+    @Unique
+    private StockAccount jobsplus$stockAccount = StockAccount.EMPTY;
 
     /**
      * 직업추가권 등으로 얻는 추가 슬롯 (상한 없음)
@@ -154,6 +157,16 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     }
 
     @Override
+    public StockAccount jobsplus$getStockAccount() {
+        return this.jobsplus$stockAccount;
+    }
+
+    @Override
+    public void jobsplus$setStockAccount(StockAccount stockAccount) {
+        this.jobsplus$stockAccount = stockAccount;
+    }
+
+    @Override
     public int jobsplus$getExtraJobSlots() 
     {
         return jobsplus$extraJobSlots;
@@ -243,6 +256,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
             this.jobsplus$jobs = oldJobsServerPlayer.jobsplus$getJobs();
             this.jobsplus$coins = oldJobsServerPlayer.jobsplus$getCoins();
             this.jobsplus$extraJobSlots = oldJobsServerPlayer.jobsplus$getExtraJobSlots();
+            this.jobsplus$stockAccount = oldJobsServerPlayer.jobsplus$getStockAccount();
 
             this.jobsplus$jobs.forEach(job -> job.setPlayer(this));
         }
@@ -251,7 +265,8 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
     public void addAdditionalSaveData(ValueOutput valueOutput, CallbackInfo ci) {
         valueOutput.store("JobsPlus", ServerPlayerData.CODEC,
-                new ServerPlayerData(this.jobsplus$jobs, this.jobsplus$coins, this.jobsplus$extraJobSlots));
+                new ServerPlayerData(this.jobsplus$jobs, this.jobsplus$coins, this.jobsplus$extraJobSlots,
+                        this.jobsplus$stockAccount));
     }
 
     @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
@@ -264,6 +279,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
 
             this.jobsplus$coins = serverPlayerData.coins();
             this.jobsplus$extraJobSlots = Math.max(0, serverPlayerData.extraJobSlots());
+            this.jobsplus$stockAccount = serverPlayerData.stockAccount();
 
             if (jobsplus$getServerPlayer() instanceof ArcServerPlayer arcServerPlayer) {
                 List<IActionHolder> iActionHolders = this.jobsplus$getActionHolders();

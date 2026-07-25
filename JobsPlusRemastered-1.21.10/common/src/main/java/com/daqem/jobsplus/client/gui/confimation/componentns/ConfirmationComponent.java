@@ -1,6 +1,5 @@
 package com.daqem.jobsplus.client.gui.confimation.componentns;
 
-import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreenState;
 import com.daqem.jobsplus.client.gui.confimation.widgets.ConfirmationButtonWidget;
 import com.daqem.uilib.gui.component.EmptyComponent;
@@ -16,18 +15,43 @@ public class ConfirmationComponent extends EmptyComponent
         ConfirmationTextComponent confirmationTextComponent = new ConfirmationTextComponent(state);
         int buttonWidth = 50;
 
-        ConfirmationButtonWidget cancelButton = new ConfirmationButtonWidget(confirmationTextComponent.getWidth() / 2 - buttonWidth - 3, confirmationTextComponent.getHeight(), buttonWidth, 30, JobsPlus.translatable("gui.confirmation.cancel"), button ->
+        ConfirmationButtonWidget cancelButton = new ConfirmationButtonWidget(
+                confirmationTextComponent.getWidth() / 2 + 3,
+                confirmationTextComponent.getHeight(),
+                buttonWidth,
+                30,
+                state.getCancelButtonMessage(),
+                button ->
         {
             assert Minecraft.getInstance().screen != null;
             Minecraft.getInstance().screen.onClose();
         });
-        ConfirmationButtonWidget yesButton = new ConfirmationButtonWidget(confirmationTextComponent.getWidth() / 2 + 3, confirmationTextComponent.getHeight(), buttonWidth, 30, JobsPlus.translatable("gui.confirmation.yes"), button -> state.getOnConfirm().onConfirm());
+        ConfirmationButtonWidget confirmButton = new ConfirmationButtonWidget(
+                state.isAlert()
+                        ? confirmationTextComponent.getWidth() / 2 - buttonWidth / 2
+                        : confirmationTextComponent.getWidth() / 2 - buttonWidth - 3,
+                confirmationTextComponent.getHeight(),
+                buttonWidth,
+                30,
+                state.getConfirmButtonMessage(),
+                button -> {
+                    if (state.isAlert())
+                    {
+                        assert Minecraft.getInstance().screen != null;
+                        Minecraft.getInstance().screen.onClose();
+                        return;
+                    }
+                    state.getOnConfirm().onConfirm();
+                });
 
         this.setWidth(confirmationTextComponent.getWidth());
-        this.setHeight(confirmationTextComponent.getHeight() + yesButton.getHeight() + 5);
+        this.setHeight(confirmationTextComponent.getHeight() + confirmButton.getHeight() + 5);
 
         this.addComponent(confirmationTextComponent);
-        this.addWidget(yesButton);
-        this.addWidget(cancelButton);
+        this.addWidget(confirmButton);
+        if (!state.isAlert())
+        {
+            this.addWidget(cancelButton);
+        }
     }
 }

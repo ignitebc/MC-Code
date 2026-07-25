@@ -164,7 +164,8 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
                         Stream.concat(serverPlayer.jobsplus$getJobs().stream(),
                                 serverPlayer.jobsplus$getInactiveJobs().stream()).toList(),
                         serverPlayer.jobsplus$getCoins(),
-                        serverPlayer.jobsplus$getEffectiveMaxJobs())) ;
+                        serverPlayer.jobsplus$getEffectiveMaxJobs(),
+                        serverPlayer.jobsplus$getStockAccount())) ;
 
         player.sendSystemMessage(JobsPlus.translatable(
                 "gui.jobs.shop.sold",

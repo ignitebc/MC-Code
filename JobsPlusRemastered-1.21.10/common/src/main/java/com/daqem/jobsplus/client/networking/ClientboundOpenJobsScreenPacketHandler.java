@@ -38,16 +38,25 @@ public class ClientboundOpenJobsScreenPacketHandler {
             ShopOffer keepOffer = oldState.getSelectedShopOffer();
             @Nullable
             IAction keepAction = oldState.getActiveAction();
+            String keepStockId = oldState.getSelectedStockId();
+            String keepHoldingStockId = oldState.getSelectedHoldingStockId();
+            var keepStockPanelMode = oldState.getStockPanelMode();
 
-            JobsScreenState newState = new JobsScreenState(jobs, coins, maxJobs, keepJob, keepTab);
+            JobsScreenState newState = new JobsScreenState(
+                    jobs, coins, maxJobs, keepJob, keepTab, packet.getStockAccount());
             newState.setSelectedShopOffer(keepOffer);
             newState.setActiveAction(keepAction);
+            newState.setSelectedStockId(keepStockId);
+            newState.setSelectedHoldingStockId(keepHoldingStockId);
+            newState.setStockPanelMode(keepStockPanelMode);
 
             mc.setScreen(new JobsScreen(newState, previousScreen));
             return;
         }
 
-        mc.setScreen(new JobsScreen(new JobsScreenState(jobs, coins, maxJobs), previousScreen));
+        mc.setScreen(new JobsScreen(
+                new JobsScreenState(jobs, coins, maxJobs, null, RightTab.EXPERIENCE, packet.getStockAccount()),
+                previousScreen));
     }
 
     private static Job findSameJobOrFirst(List<Job> newJobs, @Nullable Job oldSelected) {

@@ -1,40 +1,23 @@
 package com.daqem.jobsplus.client.gui.jobs.tab;
 
-import com.daqem.jobsplus.JobsPlus;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 public enum RightTab implements ITab {
-    EXPERIENCE(JobsPlus.translatable("gui.jobs.tab.experience"), JobsPlus.getId("jobs/tab_1_active"), JobsPlus.getId("jobs/tab_1_inactive")),
-    RECIPES(JobsPlus.translatable("gui.jobs.tab.recipes"), JobsPlus.getId("jobs/tab_2_active"), JobsPlus.getId("jobs/tab_2_inactive")),
-    SHOP(JobsPlus.translatable("gui.jobs.tab.shop"), JobsPlus.getId("jobs/tab_3_active"), JobsPlus.getId("jobs/tab_3_inactive"));
+    EXPERIENCE(Component.literal("경험치획득")),
+    RECIPES(Component.literal("패치노트")),
+    UP_AND_DOWN(Component.literal("주식")),
+    SHOP(Component.literal("상점"));
 
     private final Component name;
-    private final ResourceLocation activeSprite;
-    private final ResourceLocation inactiveSprite;
 
-    RightTab(Component name, ResourceLocation activeSprite, ResourceLocation inactiveSprite)
+    RightTab(Component name)
     {
         this.name = name;
-        this.activeSprite = activeSprite;
-        this.inactiveSprite = inactiveSprite;
     }
 
     @Override
     public Component getName()
     {
         return name;
-    }
-
-    @Override
-    public ResourceLocation getActiveSprite()
-    {
-        return activeSprite;
-    }
-
-    @Override
-    public ResourceLocation getInactiveSprite()
-    {
-        return inactiveSprite;
     }
 }

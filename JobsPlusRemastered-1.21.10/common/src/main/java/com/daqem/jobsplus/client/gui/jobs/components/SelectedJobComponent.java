@@ -23,7 +23,7 @@ public class SelectedJobComponent extends EmptyComponent {
     private final StartJobButtonWidget startJobButtonWidget;
 
     public SelectedJobComponent(JobsScreenState state) {
-        super(21, 20, 117, 34);
+        super(31, 20, 117, 34);
         this.state = state;
         this.jobTitleComponent = new TruncatedTextComponent(26, 0, 90, Component.empty(), 0);
         this.jobIconComponent = new ItemComponent(4, 4, ItemStack.EMPTY);
@@ -55,7 +55,7 @@ public class SelectedJobComponent extends EmptyComponent {
         if (selectedJob.getLevel() > 0) {
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(getTotalX() + 26, getTotalY() + Minecraft.getInstance().font.lineHeight);
-            guiGraphics.pose().scale(0.75f, 0.75f);
+            guiGraphics.pose().scale(0.50f, 0.50f);
             guiGraphics.drawString(Minecraft.getInstance().font,
                     JobsPlus.translatable("gui.jobs.level", selectedJob.getLevel()), 0, 0, 0xFF1E1410, false);
             guiGraphics.drawString(Minecraft.getInstance().font,
@@ -68,7 +68,7 @@ public class SelectedJobComponent extends EmptyComponent {
         } else {
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(getTotalX() + 26, getTotalY() + Minecraft.getInstance().font.lineHeight);
-            guiGraphics.pose().scale(0.75f, 0.75f);
+            guiGraphics.pose().scale(0.50f, 0.50f);
 
             if (canStartNewJob()) {
                 // 기존 UI는 가격만 표시하지만, 버튼 노출/무료판단은 아래 canStartFreeJob()로 결정됨

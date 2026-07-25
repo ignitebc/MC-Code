@@ -1,6 +1,7 @@
 package com.daqem.jobsplus.player;
 
 import com.daqem.jobsplus.player.job.Job;
+import com.daqem.jobsplus.player.stock.StockAccount;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -12,10 +13,11 @@ import java.util.List;
  * - coins: 코인
  * - extra_job_slots: 직업추가권 등으로 증가한 추가 슬롯(상한 없음)
  */
-public record ServerPlayerData(List<Job> jobs, int coins, int extraJobSlots) {
+public record ServerPlayerData(List<Job> jobs, int coins, int extraJobSlots, StockAccount stockAccount) {
         public static final Codec<ServerPlayerData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                         Job.CODEC.listOf().fieldOf("jobs").forGetter(ServerPlayerData::jobs),
                         Codec.INT.fieldOf("coins").forGetter(ServerPlayerData::coins),
-                        Codec.INT.optionalFieldOf("extra_job_slots", 0).forGetter(ServerPlayerData::extraJobSlots))
+                        Codec.INT.optionalFieldOf("extra_job_slots", 0).forGetter(ServerPlayerData::extraJobSlots),
+                        StockAccount.CODEC.optionalFieldOf("stock_account", StockAccount.EMPTY).forGetter(ServerPlayerData::stockAccount))
                         .apply(instance, ServerPlayerData::new));
 }
