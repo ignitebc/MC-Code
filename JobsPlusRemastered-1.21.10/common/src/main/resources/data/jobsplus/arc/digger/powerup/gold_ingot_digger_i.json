@@ -1,0 +1,61 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:digger/gold_ingot_digger_i"
+  },
+  "type": "arc:on_break_block",
+  "rewards": [
+    {
+      "type": "arc:drop_item",
+      "chance": 0.1,
+      "item": {
+        "id": "minecraft:gold_ingot"
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:blocks",
+      "blocks": [
+        "#minecraft:mineable/shovel"
+      ]
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/gold_ingot_digger_ii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/gold_ingot_digger_iii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/gold_ingot_digger_iv"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/gold_ingot_digger_v"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/gold_ingot_digger_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/gold_ingot_digger_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/gold_ingot_digger_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/gold_ingot_digger_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:digger/gold_ingot_digger_x"
+    }
+
+  ]
+}

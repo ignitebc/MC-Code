@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:alchemist",
+  "parent": "jobsplus:alchemist/drop_multiplier_viii",
+  "icon": {
+    "id": "minecraft:blaze_powder",
+    "count": 9
+  },
+  "price": 26,
+  "required_level": 40
+}

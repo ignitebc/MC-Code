@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.daqem.jobsplus.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "client.AbstractScrollAreaAccessor"
+  ],
+  "mixins": [
+    "MixinServerPlayer",
+    "MixinLivingEntityDropMultiplier"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

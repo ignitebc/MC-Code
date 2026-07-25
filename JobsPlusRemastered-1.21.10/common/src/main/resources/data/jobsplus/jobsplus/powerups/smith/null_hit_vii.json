@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:smith",
+  "parent": "jobsplus:smith/null_hit_vi",
+  "icon": {
+    "id": "minecraft:diamond_chestplate",
+    "count": 7
+  },
+  "price": 22,
+  "required_level": 30
+}

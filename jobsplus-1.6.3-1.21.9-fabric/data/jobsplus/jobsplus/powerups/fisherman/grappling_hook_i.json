@@ -1,8 +1,0 @@
-{
-  "job": "jobsplus:fisherman",
-  "icon": {
-    "id": "minecraft:fishing_rod"
-  },
-  "price": 5,
-  "required_level": 10
-}

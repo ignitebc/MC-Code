@@ -1,9 +1,0 @@
-{
-  "name": "Digger",
-  "price": 10,
-  "color": "#9B7653",
-  "icon": {
-    "id": "minecraft:wooden_shovel"
-  },
-  "is_default": true
-}

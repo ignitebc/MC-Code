@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:digger",
+  "parent": "jobsplus:digger/shovel_efficiency_viiii",
+  "icon": {
+    "id": "minecraft:diamond_shovel",
+    "count": 10
+  },
+  "price": 28,
+  "required_level": 50
+}

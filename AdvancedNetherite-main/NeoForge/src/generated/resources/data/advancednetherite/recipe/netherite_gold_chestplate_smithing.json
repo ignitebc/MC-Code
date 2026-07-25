@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "#advancednetherite:upgrade_to_netherite_gold",
+  "base": "#advancednetherite:chestplate/upgrade_to_netherite_gold",
+  "result": {
+    "id": "advancednetherite:netherite_gold_chestplate"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

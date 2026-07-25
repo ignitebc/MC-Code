@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:hunter",
+  "parent": "jobsplus:hunter/run_speed_iii",
+  "icon": {
+    "id": "minecraft:diamond_boots",
+    "count": 4
+  },
+  "price": 16,
+  "required_level": 15
+}

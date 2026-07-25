@@ -1,0 +1,29 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:hunter/multiple_arrows_viii"
+  },
+  "type": "arc:on_shoot_projectile",
+  "rewards": [
+    {
+      "type": "arc:multiple_arrows",
+      "chance": 40,
+      "amount": 4
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:entity_type",
+      "entity_type": "minecraft:arrow"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/multiple_arrows_x"
+    }
+
+  ]
+}

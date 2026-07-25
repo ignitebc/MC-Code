@@ -1,0 +1,8 @@
+{
+  "job": "jobsplus:alchemist",
+  "icon": {
+    "id": "minecraft:milk_bucket"
+  },
+  "price": 10,
+  "required_level": 0
+}

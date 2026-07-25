@@ -1,0 +1,8 @@
+{
+  "job": "jobsplus:hunter",
+  "icon": {
+    "id": "minecraft:diamond_boots"
+  },
+  "price": 10,
+  "required_level": 0
+}

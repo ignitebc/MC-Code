@@ -1,0 +1,28 @@
+{
+  "icon": {
+    "id": "minecraft:potion",
+    "count": 1,
+    "components": {
+      "minecraft:potion_contents": {
+        "potion": "minecraft:swiftness"
+      }
+    }
+  },
+  "types": [
+    "brew"
+  ],
+  "conditions": [
+    {
+      "type": "arc:item",
+      "item": {
+        "id": "minecraft:potion",
+        "count": 1,
+        "components": {
+          "minecraft:potion_contents": {
+            "potion": "minecraft:swiftness"
+          }
+        }
+      }
+    }
+  ]
+}

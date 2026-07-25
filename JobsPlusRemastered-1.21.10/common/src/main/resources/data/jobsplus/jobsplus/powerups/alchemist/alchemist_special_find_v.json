@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:alchemist",
+  "parent": "jobsplus:alchemist/alchemist_special_find_iv",
+  "icon": {
+    "id": "minecraft:diamond",
+    "count": 5
+  },
+  "price": 18,
+  "required_level": 20
+}
