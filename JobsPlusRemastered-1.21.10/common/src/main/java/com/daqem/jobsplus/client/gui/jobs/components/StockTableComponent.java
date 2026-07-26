@@ -13,7 +13,7 @@ public class StockTableComponent extends EmptyComponent
     static final int HEADER_HEIGHT = 10;
     static final int ROW_HEIGHT = 8;
     static final int TABLE_WIDTH = 118;
-    static final int NAME_COLUMN_WIDTH = 38;
+    static final int NAME_COLUMN_WIDTH = 42;
     static final int PRICE_COLUMN_WIDTH = 86;
 
     private final StockMarketService stockMarketService;
@@ -48,11 +48,11 @@ public class StockTableComponent extends EmptyComponent
         guiGraphics.fill(x + PRICE_COLUMN_WIDTH, y, x + PRICE_COLUMN_WIDTH + 1, y + HEADER_HEIGHT, GRID_COLOR);
         guiGraphics.fill(right - 1, y, right, y + HEADER_HEIGHT, GRID_COLOR);
 
-        StockTableRowsContentComponent.drawScaledString(
-                guiGraphics, "주식명", x + 3, y + 3, TEXT_COLOR);
-        StockTableRowsContentComponent.drawScaledString(
-                guiGraphics, "가격(원)", x + NAME_COLUMN_WIDTH + 3, y + 3, TEXT_COLOR);
-        StockTableRowsContentComponent.drawScaledStringRight(
-                guiGraphics, "등락폭", right - 3, y + 3, TEXT_COLOR);
+        StockTableRowsContentComponent.drawScaledStringCentered(
+                guiGraphics, "주식명", x + NAME_COLUMN_WIDTH / 2, y + 3, TEXT_COLOR);
+        StockTableRowsContentComponent.drawScaledStringCentered(
+                guiGraphics, "가격(원)", x + (NAME_COLUMN_WIDTH + PRICE_COLUMN_WIDTH) / 2, y + 3, TEXT_COLOR);
+        StockTableRowsContentComponent.drawScaledStringCentered(
+                guiGraphics, "등락률(%)", x + (PRICE_COLUMN_WIDTH + TABLE_WIDTH) / 2, y + 3, TEXT_COLOR);
     }
 }
