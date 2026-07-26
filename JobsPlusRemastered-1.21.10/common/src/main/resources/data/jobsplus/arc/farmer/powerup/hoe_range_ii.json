@@ -1,0 +1,53 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:farmer/hoe_range_ii"
+  },
+  "type": "arc:on_get_destroy_speed",
+  "rewards": [
+    {
+      "type": "arc:block_interaction_range_modifier",
+      "amount": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:items",
+      "items": [
+        "#minecraft:hoes"
+      ]
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/hoe_range_iii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/hoe_range_iv"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/hoe_range_v"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/hoe_range_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/hoe_range_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/hoe_range_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/hoe_range_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/hoe_range_x"
+    }
+  ]
+}

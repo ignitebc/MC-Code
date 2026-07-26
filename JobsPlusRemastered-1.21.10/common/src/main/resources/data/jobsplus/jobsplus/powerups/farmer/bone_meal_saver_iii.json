@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:farmer",
+  "parent": "jobsplus:farmer/bone_meal_saver_ii",
+  "icon": {
+    "id": "minecraft:bone_meal",
+    "count": 3
+  },
+  "price": 14,
+  "required_level": 10
+}

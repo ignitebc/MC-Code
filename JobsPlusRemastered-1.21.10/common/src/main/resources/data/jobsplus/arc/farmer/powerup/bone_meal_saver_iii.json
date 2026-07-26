@@ -1,0 +1,49 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:farmer/bone_meal_saver_iii"
+  },
+  "type": "arc:on_use_item",
+  "rewards": [
+    {
+      "type": "jobsplus:preserve_bone_meal",
+      "chance": 15
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:item",
+      "item": {
+        "id": "minecraft:bone_meal"
+      }
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/bone_meal_saver_iv"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/bone_meal_saver_v"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/bone_meal_saver_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/bone_meal_saver_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/bone_meal_saver_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/bone_meal_saver_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/bone_meal_saver_x"
+    }
+  ]
+}

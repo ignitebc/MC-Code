@@ -1,0 +1,22 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:farmer/range_harvest_viiii"
+  },
+  "type": "arc:on_harvest_crop",
+  "rewards": [
+    {
+      "type": "jobsplus:range_harvest",
+      "chance": 45
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:crop_fully_grown"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/range_harvest_x"
+    }
+  ]
+}

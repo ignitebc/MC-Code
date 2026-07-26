@@ -3,6 +3,7 @@ package com.daqem.jobsplus;
 import com.daqem.arc.registry.ArcRegistry;
 import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.event.command.EventRegisterCommands;
+import com.daqem.jobsplus.event.block.CropReplantManager;
 import com.daqem.jobsplus.event.item.EventJobSelectTicketUse;
 import com.daqem.jobsplus.event.player.EventKillElytraDuringRaidOrWither;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobManager;
@@ -43,6 +44,7 @@ public class JobsPlus
         EventRegisterCommands.registerEvent();
         EventJobSelectTicketUse.registerEvent(); // 추가
         EventKillElytraDuringRaidOrWither.registerEvent(); // 레이드/위더 활성 시 겉날개 즉사
+        CropReplantManager.registerEvent();
     }
 
     private static void initRegistry()
