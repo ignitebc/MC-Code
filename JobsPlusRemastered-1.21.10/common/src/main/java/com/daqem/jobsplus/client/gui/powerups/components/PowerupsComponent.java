@@ -35,7 +35,7 @@ public class PowerupsComponent extends SpriteComponent
         coinsComponent.setX(-coinsComponent.getWidth() + 14);
         this.addComponent(coinsComponent);
 
-        Map<ResourceLocation, Powerup> allPowerups = state.getJob().getPowerupManager().getAllPowerups().stream().collect(Collectors.toMap(powerup -> powerup.getPowerupInstance().getLocation(), powerup -> powerup));
+        Map<ResourceLocation, Powerup> allPowerups = state.getJob().getPowerupManager().getAllPowerups().stream().collect(Collectors.toMap(Powerup::getPowerupLocation, powerup -> powerup));
         List<PowerupInstance> powerupInstances = state.getJob().getJobInstance().getPowerups();
         PowerupsSkillTreeItem rootItem = new PowerupsSkillTreeItem(state, null, true, new ArrayList<>());
         Map<ResourceLocation, PowerupsSkillTreeItem> powerupItems = new HashMap<>();

@@ -36,6 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Mixin(ServerPlayer.class)
@@ -109,7 +110,10 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
         if (jobsplus$getServerPlayer() instanceof ArcPlayer arcPlayer) {
             arcPlayer.arc$removeActionHolder(job.getJobInstance());
             job.getPowerupManager().getAllPowerups()
-                    .forEach(powerup -> arcPlayer.arc$removeActionHolder(powerup.getPowerupInstance()));
+                    .stream()
+                    .map(Powerup::getPowerupInstance)
+                    .filter(Objects::nonNull)
+                    .forEach(arcPlayer::arc$removeActionHolder);
         }
     }
 
@@ -136,7 +140,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
         return jobsplus$getJobs().stream()
                 .map(Job::getPowerupManager)
                 .flatMap(powerupManager -> powerupManager.getAllPowerups().stream())
-                .filter(powerup -> powerup.getPowerupInstance().getLocation().equals(powerupInstance.getLocation()))
+                .filter(powerup -> powerup.getPowerupLocation().equals(powerupInstance.getLocation()))
                 .findFirst()
                 .orElse(null);
     }
@@ -201,6 +205,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
                         .flatMap(powerupManager -> powerupManager.getAllPowerups().stream()
                                 .filter(powerup -> powerup.getState() == PowerupState.ACTIVE))
                         .map(Powerup::getPowerupInstance)
+                        .filter(Objects::nonNull)
                         .toList());
         return actionHolders;
     }
@@ -227,9 +232,16 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
         if (jobsplus$getServerPlayer() instanceof ArcPlayer arcPlayer)
         {
             arcPlayer.arc$removeActionHolder(job.getJobInstance());
-            job.getPowerupManager().getAllPowerups().forEach(powerup -> arcPlayer.arc$removeActionHolder(powerup.getPowerupInstance()));
+            job.getPowerupManager().getAllPowerups().stream()
+                    .map(Powerup::getPowerupInstance)
+                    .filter(Objects::nonNull)
+                    .forEach(arcPlayer::arc$removeActionHolder);
             arcPlayer.arc$addActionHolder(job.getJobInstance());
-            job.getPowerupManager().getAllPowerups().stream().filter(powerup -> powerup.getState() == PowerupState.ACTIVE).forEach(powerup -> arcPlayer.arc$addActionHolder(powerup.getPowerupInstance()));
+            job.getPowerupManager().getAllPowerups().stream()
+                    .filter(powerup -> powerup.getState() == PowerupState.ACTIVE)
+                    .map(Powerup::getPowerupInstance)
+                    .filter(Objects::nonNull)
+                    .forEach(arcPlayer::arc$addActionHolder);
         }
 
         // ---- 추가: 클라이언트에도 활성 홀더 목록 동기화 ----

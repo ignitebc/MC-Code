@@ -11,7 +11,6 @@ import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobManager;
-import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundTag;
@@ -24,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 public class Job
 {
@@ -57,9 +55,7 @@ public class Job
     {
         this.player = player;
         this.jobInstance = jobInstance;
-        this.powerupManager = new JobPowerupManager(powerups.stream()
-                .filter(powerup -> powerup.getPowerupInstance() != null)
-                .collect(Collectors.toCollection(ArrayList::new)));
+        this.powerupManager = new JobPowerupManager(new ArrayList<>(powerups));
         this.level = level;
         this.experience = experience;
     }
@@ -151,7 +147,7 @@ public class Job
         {
             CompoundTag powerupTag = new CompoundTag();
 
-            powerupTag.putString(Constants.POWERUP_LOCATION, powerup.getPowerupInstance().getLocation().toString());
+            powerupTag.putString(Constants.POWERUP_LOCATION, powerup.getPowerupLocation().toString());
             powerupTag.putString(Constants.POWERUP_STATE, powerup.getState().name());
 
             powerupsTag.add(powerupTag);
@@ -177,7 +173,7 @@ public class Job
                         for (Tag powerupTag : powerupsTag)
                         {
                             CompoundTag powerupNBT = (CompoundTag) powerupTag;
-                            powerupNBT.getString(Constants.POWERUP_LOCATION).ifPresent(powerupLocation -> powerupNBT.getString(Constants.POWERUP_STATE).ifPresent(powerupState -> powerups.add(new Powerup(PowerupInstance.of(ResourceLocation.parse(powerupLocation)), PowerupState.valueOf(powerupState)))));
+                            powerupNBT.getString(Constants.POWERUP_LOCATION).ifPresent(powerupLocation -> powerupNBT.getString(Constants.POWERUP_STATE).ifPresent(powerupState -> powerups.add(new Powerup(ResourceLocation.parse(powerupLocation), PowerupState.valueOf(powerupState)))));
                         }
                     });
                     job.set(new Job(player, ResourceLocation.parse(jobLocation), level, exp, powerups));
@@ -216,7 +212,7 @@ public class Job
             {
                 ResourceLocation powerupLocation = friendlyByteBuf.readResourceLocation();
                 PowerupState state = friendlyByteBuf.readEnum(PowerupState.class);
-                powerups.add(new Powerup(PowerupInstance.of(powerupLocation), state));
+                powerups.add(new Powerup(powerupLocation, state));
             }
             return new Job(player, jobInstanceLocation, level, experience, powerups);
         }
@@ -229,7 +225,7 @@ public class Job
             friendlyByteBuf.writeVarInt(job.getPowerupManager().getAllPowerups().size());
             for (Powerup powerup : job.getPowerupManager().getAllPowerups())
             {
-                friendlyByteBuf.writeResourceLocation(powerup.getPowerupInstance().getLocation());
+                friendlyByteBuf.writeResourceLocation(powerup.getPowerupLocation());
                 friendlyByteBuf.writeEnum(powerup.getState());
             }
         }
