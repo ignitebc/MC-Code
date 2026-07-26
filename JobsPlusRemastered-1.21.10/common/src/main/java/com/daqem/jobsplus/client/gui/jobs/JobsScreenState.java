@@ -1,6 +1,5 @@
 package com.daqem.jobsplus.client.gui.jobs;
 
-import com.daqem.arc.api.action.IAction;
 import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
 import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.shop.ShopOffer;
@@ -26,7 +25,6 @@ public class JobsScreenState {
 
     private Job selectedJob;
     private RightTab selectedRightTab;
-    private @Nullable IAction activeAction;
 
     private @Nullable ShopOffer selectedShopOffer;
     private StockAccount stockAccount;
@@ -66,7 +64,6 @@ public class JobsScreenState {
 
         this.selectedJob = selectedJob != null ? selectedJob : (this.jobs.isEmpty() ? null : this.jobs.getFirst());
         this.selectedRightTab = selectedRightTab;
-        this.activeAction = null;
         this.selectedShopOffer = null;
         this.stockAccount = stockAccount;
         this.selectedStockId = "AAPL";
@@ -112,14 +109,6 @@ public class JobsScreenState {
 
     public void setSelectedRightTab(RightTab selectedRightTab) {
         this.selectedRightTab = selectedRightTab;
-    }
-
-    public @Nullable IAction getActiveAction() {
-        return activeAction;
-    }
-
-    public void setActiveAction(@Nullable IAction activeAction) {
-        this.activeAction = activeAction;
     }
 
     public @Nullable ShopOffer getSelectedShopOffer() {
