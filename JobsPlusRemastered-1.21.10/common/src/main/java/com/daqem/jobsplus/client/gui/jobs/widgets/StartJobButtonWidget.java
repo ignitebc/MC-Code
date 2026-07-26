@@ -22,7 +22,7 @@ public class StartJobButtonWidget extends CustomButtonWidget {
     private final JobsScreenState state;
 
     public StartJobButtonWidget(JobsScreenState state) {
-        super(26, 168, Minecraft.getInstance().font.width(MESSAGE) + 20, 18, MESSAGE, null,
+        super(31, 192, Minecraft.getInstance().font.width(MESSAGE) + 20, 18, MESSAGE, null,
                 button -> {
                     Job selectedJob = state.getSelectedJob();
                     if (selectedJob == null) {
@@ -31,7 +31,7 @@ public class StartJobButtonWidget extends CustomButtonWidget {
 
                     int activeJobCount = state.getActiveJobCount();
 
-                    // maxJobs는 서버가 내려준 "유효 최대 직업 수" (무료 1 + 티켓 누적, 단 상한 7)
+                    // maxJobs는 서버가 내려준 "유효 최대 직업 수" (무료 2 + 티켓 누적, 단 상한 7)
                     if (activeJobCount >= state.getMaxJobs()) {
                         Minecraft.getInstance().setScreen(
                                 new ConfirmationScreen(
@@ -46,7 +46,7 @@ public class StartJobButtonWidget extends CustomButtonWidget {
                     JobInstance jobInstance = selectedJob.getJobInstance();
 
                     // 본 서버 정책: 티켓으로 늘린 슬롯까지 "무료 선택"으로 취급
-                    // -> 클라이언트 확인창도 유료/무료를 amount_of_free_jobs(=1)로 판단하면 안 됨
+                    // -> 클라이언트 확인창도 유료/무료를 amount_of_free_jobs(=2)로 판단하면 안 됨
                     int jobAmount = activeJobCount;
 
                     Component freeJobMessage = JobsPlus.translatable(

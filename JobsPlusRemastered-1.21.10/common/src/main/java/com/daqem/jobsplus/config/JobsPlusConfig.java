@@ -25,8 +25,8 @@ public class JobsPlusConfig
         config.push("jobs");
         enableDefaultJobs = config.defineBoolean("enable_default_jobs", true).withComments("true인 경우 기본 작업이 활성화됩니다. 경고: false로 설정하면 이러한 작업에 대한 모든 통계가 지워집니다.");
 
-        // 정책: 기본 무료 직업은 1개
-        amountOfFreeJobs = config.defineInteger("amount_of_free_jobs", 1, 0, Integer.MAX_VALUE).withComments("플레이어가 가질 수 있는 무료 작업의 양");
+        // 정책: 기본 무료 직업은 2개
+        amountOfFreeJobs = config.defineInteger("amount_of_free_jobs", 2, 0, Integer.MAX_VALUE).withComments("플레이어가 가질 수 있는 무료 작업의 양");
 
         // 정책: 최종 최대 직업 수 상한은 7개(티켓 사용해도 초과 불가)
         maxJobs = config.defineInteger("max_jobs", 7, 0, Integer.MAX_VALUE).withComments("플레이어가 가질 수 있는 최대 직업 수");
