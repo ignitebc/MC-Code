@@ -22,7 +22,7 @@ public abstract class MixinFishingHook {
     private void retrieve(ItemStack itemStack, CallbackInfoReturnable<Integer> info) {
         Player player = ((FishingHook) (Object) this).getPlayerOwner();
         if (player instanceof ArcPlayer serverPlayer) {
-            PlayerEvents.onRodReelIn(serverPlayer, ((FishingHook) (Object) this));
+            PlayerEvents.onRodReelIn(serverPlayer, ((FishingHook) (Object) this), itemStack);
         }
     }
 }

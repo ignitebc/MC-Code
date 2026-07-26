@@ -126,9 +126,11 @@ public class PlayerEvents {
                 .sendToAction();
     }
 
-    public static void onRodReelIn(ArcPlayer serverPlayer, FishingHook fishingHook) {
+    public static void onRodReelIn(ArcPlayer serverPlayer, FishingHook fishingHook, ItemStack fishingRod) {
         new ActionDataBuilder(serverPlayer, ActionType.ROD_REEL_IN)
                 .withData(ActionDataType.ENTITY, fishingHook)
+                .withData(ActionDataType.ITEM_STACK, fishingRod)
+                .withData(ActionDataType.ITEM, fishingRod.getItem())
                 .withData(ActionDataType.BLOCK_POSITION, fishingHook.blockPosition())
                 .withData(ActionDataType.WORLD, fishingHook.level())
                 .build()

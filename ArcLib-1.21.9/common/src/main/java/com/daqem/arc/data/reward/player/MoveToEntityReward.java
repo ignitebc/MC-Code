@@ -11,8 +11,11 @@ import com.google.gson.JsonObject;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class MoveToEntityReward extends AbstractReward {
 
@@ -33,8 +36,19 @@ public class MoveToEntityReward extends AbstractReward {
         Player player = actionData.getPlayer().arc$getPlayer();
         Entity entity = actionData.getData(ActionDataType.ENTITY);
         if (entity != null) {
-            player.setDeltaMovement((entity.position().x - player.position().x) / 2, force, (entity.position().z - player.position().z) / 2);
+            player.setDeltaMovement(
+                    (entity.position().x - player.position().x) / 2 * force,
+                    force,
+                    (entity.position().z - player.position().z) / 2 * force);
             player.hurtMarked = true;
+
+            ItemStack fishingRod = actionData.getData(ActionDataType.ITEM_STACK);
+            if (fishingRod != null && fishingRod.is(Items.FISHING_ROD)) {
+                InteractionHand hand = player.getMainHandItem() == fishingRod
+                        ? InteractionHand.MAIN_HAND
+                        : InteractionHand.OFF_HAND;
+                fishingRod.hurtAndBreak(10, player, hand);
+            }
         }
         return new ActionResult();
     }
