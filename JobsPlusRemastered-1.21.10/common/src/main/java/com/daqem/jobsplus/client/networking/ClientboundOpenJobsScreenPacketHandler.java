@@ -1,6 +1,5 @@
 package com.daqem.jobsplus.client.networking;
 
-import com.daqem.arc.api.action.IAction;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreen;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
@@ -36,8 +35,6 @@ public class ClientboundOpenJobsScreenPacketHandler {
             Job keepJob = findSameJobOrFirst(jobs, oldState.getSelectedJob());
             @Nullable
             ShopOffer keepOffer = oldState.getSelectedShopOffer();
-            @Nullable
-            IAction keepAction = oldState.getActiveAction();
             String keepStockId = oldState.getSelectedStockId();
             String keepHoldingStockId = oldState.getSelectedHoldingStockId();
             var keepStockPanelMode = oldState.getStockPanelMode();
@@ -45,7 +42,6 @@ public class ClientboundOpenJobsScreenPacketHandler {
             JobsScreenState newState = new JobsScreenState(
                     jobs, coins, maxJobs, keepJob, keepTab, packet.getStockAccount());
             newState.setSelectedShopOffer(keepOffer);
-            newState.setActiveAction(keepAction);
             newState.setSelectedStockId(keepStockId);
             newState.setSelectedHoldingStockId(keepHoldingStockId);
             newState.setStockPanelMode(keepStockPanelMode);
