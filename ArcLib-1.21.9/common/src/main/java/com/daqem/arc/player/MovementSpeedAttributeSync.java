@@ -40,11 +40,11 @@ public final class MovementSpeedAttributeSync {
 
                     ResourceLocation id = MovementSpeedAttributeModifierReward.computeModifierId(holder.getLocation(), action.getLocation());
 
-                    // (ADD_MULTIPLIED_TOTAL) = 구버전 MULTIPLY_TOTAL 과 동일 계열(총합 곱연산)
+                    // 직업별 이동속도 보상은 기본 이동속도를 기준으로 서로 더해집니다.
                     AttributeModifier modifier = new AttributeModifier(
                             id,
                             msReward.getAttributeAmount(),
-                            AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+                            AttributeModifier.Operation.ADD_MULTIPLIED_BASE
                     );
                     desired.put(id, modifier);
                 }
