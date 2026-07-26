@@ -81,7 +81,7 @@ def build_fabric_module(module_root: Path, fabric_dir: str) -> bool:
 
 def copy_module_jars() -> int:
     root = workspace_root()
-    target_dir = Path(__file__).resolve().parent
+    target_dir = Path(__file__).resolve().parent / "build_files"
     target_dir.mkdir(parents=True, exist_ok=True)
 
     for module_name, fabric_dir in MODULES:
