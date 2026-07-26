@@ -1,0 +1,8 @@
+{
+  "job": "jobsplus:farmer",
+  "icon": {
+    "id": "minecraft:golden_hoe"
+  },
+  "price": 10,
+  "required_level": 0
+}

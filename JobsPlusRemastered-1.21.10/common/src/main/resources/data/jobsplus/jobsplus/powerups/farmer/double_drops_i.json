@@ -1,8 +1,1 @@
-{
-  "job": "jobsplus:farmer",
-  "icon": {
-    "id": "minecraft:wheat"
-  },
-  "price": 5,
-  "required_level": 10
-}
+{"job":"jobsplus:farmer","icon":{"id":"minecraft:potato"},"price":10,"required_level":0}
