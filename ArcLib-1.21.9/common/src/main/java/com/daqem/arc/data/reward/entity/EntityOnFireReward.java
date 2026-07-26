@@ -1,5 +1,6 @@
 package com.daqem.arc.data.reward.entity;
 
+import com.daqem.arc.api.IArcAbstractArrow;
 import com.daqem.arc.api.action.data.ActionData;
 import com.daqem.arc.api.action.data.type.ActionDataType;
 import com.daqem.arc.api.action.result.ActionResult;
@@ -37,6 +38,9 @@ public class EntityOnFireReward extends AbstractReward {
         Entity entity = actionData.getData(ActionDataType.ENTITY);
         if (entity != null) {
             entity.setRemainingFireTicks(fireTicks);
+            if (entity instanceof IArcAbstractArrow abstractArrow) {
+                abstractArrow.arc$setFireDurationTicks(fireTicks);
+            }
         }
         return new ActionResult();
     }
