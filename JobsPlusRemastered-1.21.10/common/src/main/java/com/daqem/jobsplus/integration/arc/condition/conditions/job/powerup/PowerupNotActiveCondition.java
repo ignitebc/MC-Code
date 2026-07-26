@@ -34,10 +34,9 @@ public class PowerupNotActiveCondition extends AbstractCondition
     {
         if (actionData.getPlayer() instanceof JobsPlayer player)
         {
-            PowerupInstance powerupInstance = PowerupInstance.of(powerupThatShouldNotBeActiveLocation);
-            Optional<Powerup> powerup = player.jobsplus$getJobs().stream().map(job -> job.getPowerupManager().getPowerup(powerupInstance)).filter(Optional::isPresent).map(Optional::get).findFirst();
+            Optional<Powerup> powerup = player.jobsplus$getJobs().stream().map(job -> job.getPowerupManager().getPowerup(powerupThatShouldNotBeActiveLocation)).filter(Optional::isPresent).map(Optional::get).findFirst();
 
-            return powerup.isEmpty() || (powerup.get().getPowerupInstance().getLocation().equals(this.powerupThatShouldNotBeActiveLocation) && powerup.get().getState() != PowerupState.ACTIVE);
+            return powerup.isEmpty() || powerup.get().getState() != PowerupState.ACTIVE;
         }
         return false;
     }
