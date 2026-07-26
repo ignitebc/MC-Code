@@ -35,7 +35,7 @@ public interface JobsServerPlayer extends JobsPlayer {
      * - 단, 최종 최대치는 config.max_jobs(예: 7)로 제한
      */
     default int jobsplus$getEffectiveMaxJobs() {
-        int base = Math.max(0, JobsPlusConfig.amountOfFreeJobs.get()); // 기본 1
+        int base = Math.max(0, JobsPlusConfig.amountOfFreeJobs.get()); // 기본 2
         int extra = Math.max(0, jobsplus$getExtraJobSlots());          // 티켓 누적
         int cap = Math.max(0, JobsPlusConfig.maxJobs.get());           // 최종 상한 7
 
