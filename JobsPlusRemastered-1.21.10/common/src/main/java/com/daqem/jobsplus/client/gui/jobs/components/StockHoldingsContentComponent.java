@@ -17,6 +17,10 @@ import java.util.Locale;
 public class StockHoldingsContentComponent extends EmptyComponent
 {
     private static final int ROW_HEIGHT = 10;
+    private static final int TABLE_WIDTH = 146;
+    private static final int NAME_COLUMN_END = 48;
+    private static final int AVERAGE_PRICE_COLUMN_END = 88;
+    private static final int QUANTITY_COLUMN_END = 111;
     private static final int TEXT_COLOR = 0xFF1E1410;
     private static final int GRID_COLOR = 0xFFD8BF96;
     private static final NumberFormat PRICE_FORMAT = NumberFormat.getIntegerInstance(Locale.KOREA);
@@ -26,7 +30,7 @@ public class StockHoldingsContentComponent extends EmptyComponent
 
     public StockHoldingsContentComponent(JobsScreenState state)
     {
-        super(0, 0, 132, Math.max(20, (state.getStockAccount().positions().size() + 1) * ROW_HEIGHT));
+        super(0, 0, TABLE_WIDTH, Math.max(20, (state.getStockAccount().positions().size() + 1) * ROW_HEIGHT));
         this.state = state;
         this.stockMarketService = StockMarketService.getInstance();
         int index = 0;
@@ -54,10 +58,11 @@ public class StockHoldingsContentComponent extends EmptyComponent
         int x = getTotalX();
         int y = getTotalY();
         int right = x + getWidth();
-        drawScaled(guiGraphics, "주식명", x + 2, y + 2, TEXT_COLOR);
-        drawScaled(guiGraphics, "평단가", x + 40, y + 2, TEXT_COLOR);
-        drawScaled(guiGraphics, "갯수", x + 78, y + 2, TEXT_COLOR);
-        drawScaled(guiGraphics, "등락률", x + 105, y + 2, TEXT_COLOR);
+        int bottom = y + getHeight();
+        drawScaledCentered(guiGraphics, "주식명", x + NAME_COLUMN_END / 2, y + 2, TEXT_COLOR);
+        drawScaledCentered(guiGraphics, "평단가", x + (NAME_COLUMN_END + AVERAGE_PRICE_COLUMN_END) / 2, y + 2, TEXT_COLOR);
+        drawScaledCentered(guiGraphics, "갯수", x + (AVERAGE_PRICE_COLUMN_END + QUANTITY_COLUMN_END) / 2, y + 2, TEXT_COLOR);
+        drawScaledCentered(guiGraphics, "등락률(%)", x + (QUANTITY_COLUMN_END + TABLE_WIDTH) / 2, y + 2, TEXT_COLOR);
         guiGraphics.fill(x, y + ROW_HEIGHT - 1, right, y + ROW_HEIGHT, GRID_COLOR);
 
         int index = 0;
@@ -84,12 +89,16 @@ public class StockHoldingsContentComponent extends EmptyComponent
 
             drawScaled(guiGraphics, selected ? "▶" : "", x + 1, rowY + 2, TEXT_COLOR);
             drawScaled(guiGraphics, name, x + 6, rowY + 2, TEXT_COLOR);
-            drawScaledRight(guiGraphics, averagePrice, x + 74, rowY + 2, TEXT_COLOR);
-            drawScaledRight(guiGraphics, units, x + 101, rowY + 2, TEXT_COLOR);
-            drawScaled(guiGraphics, returnRate, x + 105, rowY + 2, returnColor);
+            drawScaledRight(guiGraphics, averagePrice, x + AVERAGE_PRICE_COLUMN_END - 2, rowY + 2, TEXT_COLOR);
+            drawScaledRight(guiGraphics, units, x + QUANTITY_COLUMN_END - 2, rowY + 2, TEXT_COLOR);
+            drawScaledRight(guiGraphics, returnRate, right - 2, rowY + 2, returnColor);
             guiGraphics.fill(x, rowY + ROW_HEIGHT - 1, right, rowY + ROW_HEIGHT, GRID_COLOR);
             index++;
         }
+
+        guiGraphics.fill(x + NAME_COLUMN_END, y, x + NAME_COLUMN_END + 1, bottom, GRID_COLOR);
+        guiGraphics.fill(x + AVERAGE_PRICE_COLUMN_END, y, x + AVERAGE_PRICE_COLUMN_END + 1, bottom, GRID_COLOR);
+        guiGraphics.fill(x + QUANTITY_COLUMN_END, y, x + QUANTITY_COLUMN_END + 1, bottom, GRID_COLOR);
     }
 
     private static String formatUnits(double units)
@@ -104,6 +113,12 @@ public class StockHoldingsContentComponent extends EmptyComponent
         guiGraphics.pose().scale(0.50f, 0.50f);
         guiGraphics.drawString(Minecraft.getInstance().font, text, 0, 0, color, false);
         guiGraphics.pose().popMatrix();
+    }
+
+    private static void drawScaledCentered(GuiGraphics guiGraphics, String text, int center, int y, int color)
+    {
+        int width = (int) Math.ceil(Minecraft.getInstance().font.width(text) * 0.50f);
+        drawScaled(guiGraphics, text, center - width / 2, y, color);
     }
 
     private static void drawScaledRight(GuiGraphics guiGraphics, String text, int right, int y, int color)

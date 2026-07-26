@@ -115,6 +115,12 @@ public class StockTableRowsContentComponent extends EmptyComponent
         drawScaledString(guiGraphics, text, right - width, y, color);
     }
 
+    static void drawScaledStringCentered(GuiGraphics guiGraphics, String text, int center, int y, int color)
+    {
+        int width = (int) Math.ceil(Minecraft.getInstance().font.width(text) * TEXT_SCALE);
+        drawScaledString(guiGraphics, text, center - width / 2, y, color);
+    }
+
     private static class StockRowButtonWidget extends CustomButtonWidget
     {
         public StockRowButtonWidget(int x, int y, int width, int height, Runnable onPress)
