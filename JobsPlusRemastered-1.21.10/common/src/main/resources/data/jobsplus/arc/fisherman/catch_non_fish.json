@@ -12,7 +12,7 @@
     },
     {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 0.5,      
+      "chance": 0.5,
       "amount": 1
     }
   ],
@@ -20,12 +20,18 @@
     {
       "type": "arc:items",
       "items": [
-        "minecraft:name_tag",
-        "minecraft:saddle",
-        "minecraft:bow",
-        "minecraft:fishing_rod",
-        "minecraft:book",
-        "minecraft:nautilus_shell"
+        "minecraft:lily_pad",
+        "minecraft:leather_boots",
+        "minecraft:leather",
+        "minecraft:bone",
+        "minecraft:potion",
+        "minecraft:string",
+        "minecraft:bowl",
+        "minecraft:stick",
+        "minecraft:ink_sac",
+        "minecraft:tripwire_hook",
+        "minecraft:rotten_flesh",
+        "minecraft:bamboo"
       ]
     }
   ]

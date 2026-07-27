@@ -12,7 +12,7 @@
     },
     {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 1,      
+      "chance": 1,
       "amount": 1
     }
   ],
@@ -20,11 +20,10 @@
     {
       "type": "arc:items",
       "items": [
-        "minecraft:copper_block",
-        "minecraft:iron_block",
-        "minecraft:gold_block",
-        "minecraft:emerald_block",
-        "minecraft:sea_lantern"
+        "minecraft:name_tag",
+        "minecraft:saddle",
+        "minecraft:bow",
+        "minecraft:fishing_rod"
       ]
     }
   ]
