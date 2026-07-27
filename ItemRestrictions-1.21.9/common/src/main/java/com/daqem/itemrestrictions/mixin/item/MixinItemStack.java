@@ -34,7 +34,7 @@ public abstract class MixinItemStack {
             if (player instanceof ItemRestrictionsServerPlayer itemRestrictionsPlayer) {
                 if (player instanceof ArcPlayer arcPlayer) {
                     RestrictionResult craftingResult = itemRestrictionsPlayer.itemrestrictions$isRestricted(new ActionDataBuilder(arcPlayer, null)
-                            .withData(ActionDataType.ITEM_STACK, jobsplus$getItemStack())
+                            .withData(ActionDataType.ITEM_STACK, itemrestrictions$getItemStack())
                             .build());
                     if (craftingResult.isRestricted(RestrictionType.USE_ITEM)) {
                         serverPlayer.sendSystemMessage(ItemRestrictions.translatable(RestrictionType.USE_ITEM.getTranslationKey()).withStyle(ChatFormatting.RED), true);
@@ -49,7 +49,7 @@ public abstract class MixinItemStack {
 
     @SuppressWarnings("DataFlowIssue")
     @Unique
-    private ItemStack jobsplus$getItemStack() {
+    private ItemStack itemrestrictions$getItemStack() {
         return (ItemStack) (Object) this;
     }
 }
