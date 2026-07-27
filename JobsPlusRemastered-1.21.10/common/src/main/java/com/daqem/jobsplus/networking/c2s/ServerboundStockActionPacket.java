@@ -9,6 +9,7 @@ import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundStockAlertPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundStockSnapshotPacket;
 import com.daqem.jobsplus.stock.SnapshotStatus;
+import com.daqem.jobsplus.stock.StockCatalog;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.stock.StockAccount;
 import dev.architectury.networking.NetworkManager;
@@ -33,6 +34,12 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
     private static final ResourceLocation BITCOIN_ID = ResourceLocation.parse("advancednetherite:bitcoin");
     private static final double SELL_FEE_RATE = 0.00015D;
     private static final double WITHDRAW_TAX_RATE = 0.002D;
+
+    /** 종목 ID는 카탈로그에 정의된 짧은 문자열뿐이다. 조작된 패킷이 긴 문자열을 보내지 못하게 막는다. */
+    private static final int MAX_STOCK_ID_LENGTH = 16;
+
+    /** 계좌 검사 전에 비정상적으로 큰 수량을 걸러 낸다. */
+    private static final int MAX_TRANSACTION_AMOUNT = 99_999_999;
 
     private final Action action;
     private final String stockId;
@@ -74,7 +81,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
     public ServerboundStockActionPacket(RegistryFriendlyByteBuf buffer)
     {
         this.action = buffer.readEnum(Action.class);
-        this.stockId = buffer.readUtf();
+        this.stockId = buffer.readUtf(MAX_STOCK_ID_LENGTH);
         this.amount = buffer.readInt();
         this.snapshotVersion = buffer.readLong();
     }
@@ -87,7 +94,11 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
 
     public static void handleServerSide(ServerboundStockActionPacket packet, NetworkManager.PacketContext context)
     {
-        if (!(context.getPlayer() instanceof JobsServerPlayer jobsServerPlayer) || packet.amount <= 0)
+        if (!(context.getPlayer() instanceof JobsServerPlayer jobsServerPlayer))
+        {
+            return;
+        }
+        if (packet.amount <= 0 || packet.amount > MAX_TRANSACTION_AMOUNT)
         {
             return;
         }
@@ -228,7 +239,10 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
             return null;
         }
 
-        StockQuote quote = snapshot.getQuote(packet.stockId);
+        // 스냅샷에 없는 종목은 물론, 카탈로그에 없는 ID도 거절한다.
+        StockQuote quote = StockCatalog.getStock(packet.stockId) == null
+                ? null
+                : snapshot.getQuote(packet.stockId);
         if (quote == null)
         {
             NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket("거래할 수 없는 종목입니다."));
