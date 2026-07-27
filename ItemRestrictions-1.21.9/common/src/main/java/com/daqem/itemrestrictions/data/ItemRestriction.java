@@ -40,10 +40,11 @@ public class ItemRestriction {
         }
 
         boolean allConditionsMet = this.conditions.stream()
-                .allMatch(condition ->
-                        (condition.isMet(actionData) && !condition.isInverted()) ||
-                                (!condition.isMet(actionData) && condition.isInverted())
-                );
+                .allMatch(condition -> {
+                    // isMet()이 확률·상태 변경을 포함할 수 있으므로 반드시 한 번만 평가한다.
+                    boolean result = condition.isMet(actionData);
+                    return condition.isInverted() ? !result : result;
+                });
 
         if (allConditionsMet) {
             return new RestrictionResult(this.restrictionTypes);
