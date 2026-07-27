@@ -89,12 +89,12 @@ public class MovementSpeedAttributeModifierReward extends AbstractReward {
 
     @Override
     public Component getName() {
-        return Component.literal("Movement Speed Modifier");
+        return Component.literal("이동 속도 보정");
     }
 
     @Override
     public Component getDescription(Object... args) {
-        return Component.literal("Increases movement speed by " + multiplierPercent + "% (AttributeModifier)");
+        return Component.literal("이동 속도를 " + multiplierPercent + "% 증가시킵니다 (속성 보정)");
     }
 
     public static class Serializer implements IRewardSerializer<MovementSpeedAttributeModifierReward> {

@@ -59,13 +59,13 @@ public class SafeFallDistanceAttributeModifierReward extends AbstractReward
     @Override
     public Component getName()
     {
-        return Component.literal("Safe Fall Distance Modifier");
+        return Component.literal("안전 낙하 거리 보정");
     }
 
     @Override
     public Component getDescription(Object... args)
     {
-        return Component.literal("Sets safe fall distance to " + distance);
+        return Component.literal("안전 낙하 거리를 " + distance + "(으)로 설정합니다");
     }
 
     public static class Serializer implements IRewardSerializer<SafeFallDistanceAttributeModifierReward>

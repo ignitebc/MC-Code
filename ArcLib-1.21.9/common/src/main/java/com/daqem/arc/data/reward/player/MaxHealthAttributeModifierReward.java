@@ -59,13 +59,13 @@ public class MaxHealthAttributeModifierReward extends AbstractReward
     @Override
     public Component getName()
     {
-        return Component.literal("Max Health Modifier");
+        return Component.literal("최대 체력 보정");
     }
 
     @Override
     public Component getDescription(Object... args)
     {
-        return Component.literal("Increases maximum health by " + amount);
+        return Component.literal("최대 체력을 " + amount + " 증가시킵니다");
     }
 
     public static class Serializer implements IRewardSerializer<MaxHealthAttributeModifierReward>

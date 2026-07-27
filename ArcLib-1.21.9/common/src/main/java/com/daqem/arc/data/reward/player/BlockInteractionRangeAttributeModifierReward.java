@@ -51,12 +51,12 @@ public class BlockInteractionRangeAttributeModifierReward extends AbstractReward
 
     @Override
     public Component getName() {
-        return Component.literal("Block Interaction Range Modifier");
+        return Component.literal("블록 상호작용 거리 보정");
     }
 
     @Override
     public Component getDescription(Object... args) {
-        return Component.literal("Increases block interaction range by " + amount);
+        return Component.literal("블록 상호작용 거리를 " + amount + " 증가시킵니다");
     }
 
     public static class Serializer implements IRewardSerializer<BlockInteractionRangeAttributeModifierReward> {

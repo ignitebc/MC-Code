@@ -51,12 +51,12 @@ public class EntityInteractionRangeAttributeModifierReward extends AbstractRewar
 
     @Override
     public Component getName() {
-        return Component.literal("Entity Interaction Range Modifier");
+        return Component.literal("개체 상호작용 거리 보정");
     }
 
     @Override
     public Component getDescription(Object... args) {
-        return Component.literal("Increases entity interaction range by " + amount);
+        return Component.literal("개체 상호작용 거리를 " + amount + " 증가시킵니다");
     }
 
     public static class Serializer implements IRewardSerializer<EntityInteractionRangeAttributeModifierReward> {

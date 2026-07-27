@@ -31,7 +31,7 @@ public class ActionArgument implements ArgumentType<IAction> {
     public IAction parse(StringReader reader) throws CommandSyntaxException {
         return actionHolderManager.getAction(ResourceLocation.read(reader)).orElseThrow(() -> {
             reader.setCursor(reader.getRemainingLength());
-            return new CommandSyntaxException(null, Component.literal("Unknown action location: " + reader.getString()), reader.getString(), reader.getCursor());
+            return new CommandSyntaxException(null, Component.literal("알 수 없는 액션 경로입니다: " + reader.getString()), reader.getString(), reader.getCursor());
         });
     }
 

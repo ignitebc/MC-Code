@@ -30,7 +30,7 @@ public class ArcCommand {
                                 .executes(context -> {
                                     List<IAction> actions = ActionHolderManager.getInstance().getActions();
                                     if (actions.isEmpty()) {
-                                        context.getSource().sendFailure(Component.literal("No actions found"));
+                                        context.getSource().sendFailure(Component.literal("액션을 찾을 수 없습니다."));
                                         return 1;
                                     } else {
                                         return openActionScreen(context.getSource(), actions.get(0));
@@ -41,7 +41,7 @@ public class ArcCommand {
                                     if (context.getSource().getPlayer() instanceof ArcServerPlayer arcServerPlayer) {
                                         List<IActionHolder> actionHolders = arcServerPlayer.arc$getActionHolders();
                                         if (actionHolders.isEmpty()) {
-                                            context.getSource().sendFailure(Component.literal("No action holders found"));
+                                            context.getSource().sendFailure(Component.literal("액션 보유 대상을 찾을 수 없습니다."));
                                             return 1;
                                         } else {
                                             return openActionHoldersScreen(context.getSource(), actionHolders);
@@ -56,7 +56,7 @@ public class ArcCommand {
 
     private static int openActionScreen(CommandSourceStack source, IAction action) {
         if (action == null) {
-            source.sendFailure(Component.literal("Unknown action"));
+            source.sendFailure(Component.literal("알 수 없는 액션입니다."));
             return 0;
         }
         if (source.getPlayer() != null) {
