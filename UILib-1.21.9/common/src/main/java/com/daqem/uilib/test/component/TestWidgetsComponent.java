@@ -32,7 +32,7 @@ public class TestWidgetsComponent extends AbstractComponent {
         button.setTooltip(Tooltip.create(text));
 
         List<String> values = List.of("test", "testen");
-        EditBoxWidget editBox = new EditBoxWidget(Minecraft.getInstance().font, 0, 22, 200, 20, Component.literal("test")) {
+        EditBoxWidget editBox = new EditBoxWidget(Minecraft.getInstance().font, 0, 22, 200, 20, Component.literal("테스트")) {
             @Override
             public List<Component> validateInput(String input) {
                 List<Component> list = super.validateInput(input);
@@ -48,7 +48,7 @@ public class TestWidgetsComponent extends AbstractComponent {
         editBox.setValue("This is a test!");
         editBox.setMaxLength(128);
 
-        MultiLineEditBoxWidget multiLineEditBox = new MultiLineEditBoxWidget(Minecraft.getInstance().font, 0, 44, 200, 60, text, Component.literal("test")) {
+        MultiLineEditBoxWidget multiLineEditBox = new MultiLineEditBoxWidget(Minecraft.getInstance().font, 0, 44, 200, 60, text, Component.literal("테스트")) {
             @Override
             public List<Component> validateInput(String input) {
                 List<Component> list = super.validateInput(input);
