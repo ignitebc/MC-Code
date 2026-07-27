@@ -20,8 +20,8 @@ public class ArcCommonConfig {
         IConfigBuilder config = new ConfigBuilder(Arc.MOD_ID, "arc-common", ConfigExtension.YAML, ConfigType.COMMON);
 
         config.push("block");
-        maxBlockPosCacheSize = config.defineInteger("max_block_pos_cache_size", 10_000)
-                .withComments("The maximum size of the block pos cache, used to not drop double drops on placed blocks");
+        maxBlockPosCacheSize = config.defineInteger("max_block_pos_cache_size", 1_000)
+                .withComments("The block pos cache is limited to at most 1,000 positions");
         config.pop();
 
         config.push("debug");

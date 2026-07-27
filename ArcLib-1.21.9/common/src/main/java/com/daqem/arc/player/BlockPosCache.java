@@ -9,6 +9,8 @@ import java.util.Queue;
 import java.util.Set;
 
 public class BlockPosCache {
+    private static final int MAX_POSITION_COUNT = 1_000;
+
     private final Set<Vec3i> positionSet = new HashSet<>();
     private final Queue<Vec3i> positionQueue = new LinkedList<>();
 
@@ -17,7 +19,8 @@ public class BlockPosCache {
             return; // Avoid duplicate entries
         }
 
-        if (positionQueue.size() >= ArcCommonConfig.maxBlockPosCacheSize.get()) {
+        int maxPositionCount = Math.min(MAX_POSITION_COUNT, Math.max(1, ArcCommonConfig.maxBlockPosCacheSize.get()));
+        while (positionQueue.size() >= maxPositionCount) {
             Vec3i oldest = positionQueue.poll(); // Remove first added element
             if (oldest != null) {
                 positionSet.remove(oldest);
