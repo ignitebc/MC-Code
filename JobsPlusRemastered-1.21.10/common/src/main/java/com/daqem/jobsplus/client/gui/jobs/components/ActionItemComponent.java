@@ -53,9 +53,7 @@ public class ActionItemComponent extends EmptyComponent
                         formatExperience(jobExpReward.getMax()));
         experienceText = experienceText.copy()
                 .append("\n")
-                .append(JobsPlus.translatable(
-                        "gui.jobs.experience.reward.chance",
-                        formatChance(jobExpReward.getChance())));
+                .append(JobsPlus.translatable("gui.jobs.experience.reward.chance"));
         if (jobBitcoinReward != null)
         {
             experienceText = experienceText.copy()
