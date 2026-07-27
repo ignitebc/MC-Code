@@ -106,10 +106,15 @@ public final class StockMarketService
      */
     public void startSessionAndRefresh(long targetMinute)
     {
-        this.sessionGeneration.incrementAndGet();
-        this.sessionActive = true;
-        this.requestedMinute.set(Long.MIN_VALUE);
-        this.refreshForMinute(targetMinute);
+        long generation;
+        synchronized (this.snapshotLock)
+        {
+            generation = this.sessionGeneration.incrementAndGet();
+            this.sessionActive = true;
+            this.requestedMinute.set(targetMinute);
+            this.snapshot = StockMarketSnapshot.refreshing(this.versionCounter.incrementAndGet(), targetMinute);
+        }
+        this.refreshExecutor.execute(() -> this.fetchAndPublish(targetMinute, generation));
     }
 
     /**
@@ -118,11 +123,11 @@ public final class StockMarketService
      */
     public void stopSession()
     {
-        this.sessionGeneration.incrementAndGet();
-        this.sessionActive = false;
-        this.requestedMinute.set(Long.MIN_VALUE);
         synchronized (this.snapshotLock)
         {
+            this.sessionGeneration.incrementAndGet();
+            this.sessionActive = false;
+            this.requestedMinute.set(Long.MIN_VALUE);
             this.snapshot = StockMarketSnapshot.EMPTY;
         }
     }
@@ -132,24 +137,26 @@ public final class StockMarketService
      * <p>
      * 호출 즉시 해당 분의 {@link SnapshotStatus#REFRESHING} 스냅샷으로 교체하여 거래를 중지시키고,
      * 실제 조회는 별도 스레드에서 진행한다. 같은 분이나 지난 분에 대한 요청은 무시한다.
+     * <p>
+     * 세션 상태 확인과 스냅샷 교체를 같은 잠금 안에서 처리한다. 검사만 잠금 밖에서 하면
+     * 그 사이에 세션이 끝났을 때 아무도 보지 않는 갱신 중 스냅샷이 남을 수 있다.
      */
     public void refreshForMinute(long targetMinute)
     {
-        if (!this.sessionActive)
-        {
-            return;
-        }
-
-        long previousMinute = this.requestedMinute.getAndUpdate(
-                current -> Math.max(current, targetMinute));
-        if (targetMinute <= previousMinute)
-        {
-            return;
-        }
-
-        long generation = this.sessionGeneration.get();
+        long generation;
         synchronized (this.snapshotLock)
         {
+            if (!this.sessionActive)
+            {
+                return;
+            }
+            if (targetMinute <= this.requestedMinute.get())
+            {
+                return;
+            }
+
+            this.requestedMinute.set(targetMinute);
+            generation = this.sessionGeneration.get();
             this.snapshot = StockMarketSnapshot.refreshing(this.versionCounter.incrementAndGet(), targetMinute);
         }
         this.refreshExecutor.execute(() -> this.fetchAndPublish(targetMinute, generation));
@@ -386,6 +393,35 @@ public final class StockMarketService
      */
     private static String awaitBody(CompletableFuture<HttpResponse<String>> request, long deadline, String label)
     {
+        HttpResponse<String> response = awaitResponse(request, deadline, label);
+        if (response == null)
+        {
+            return null;
+        }
+        if (response.statusCode() != 200)
+        {
+            JobsPlus.LOGGER.warn("Stock quote response for {} returned status {}", label, response.statusCode());
+            return null;
+        }
+        return response.body();
+    }
+
+    private static HttpResponse<String> awaitResponse(CompletableFuture<HttpResponse<String>> request,
+                                                      long deadline, String label)
+    {
+        // 이미 도착한 응답은 남은 시간과 상관없이 그대로 쓴다.
+        // 응답을 순서대로 읽기 때문에, 앞선 요청이 오래 걸렸다는 이유만으로
+        // 이미 받아 둔 다른 종목의 시세까지 버리면 성공률이 크게 떨어진다.
+        if (request.isDone())
+        {
+            if (request.isCancelled() || request.isCompletedExceptionally())
+            {
+                JobsPlus.LOGGER.warn("Stock quote request for {} did not complete normally", label);
+                return null;
+            }
+            return request.getNow(null);
+        }
+
         long remaining = deadline - System.currentTimeMillis();
         if (remaining <= 0)
         {
@@ -396,14 +432,7 @@ public final class StockMarketService
 
         try
         {
-            HttpResponse<String> response = request.get(remaining, TimeUnit.MILLISECONDS);
-            if (response.statusCode() != 200)
-            {
-                JobsPlus.LOGGER.warn("Stock quote response for {} returned status {}", label,
-                        response.statusCode());
-                return null;
-            }
-            return response.body();
+            return request.get(remaining, TimeUnit.MILLISECONDS);
         }
         catch (TimeoutException e)
         {
