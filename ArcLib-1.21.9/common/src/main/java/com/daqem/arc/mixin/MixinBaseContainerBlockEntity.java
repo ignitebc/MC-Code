@@ -1,6 +1,7 @@
 package com.daqem.arc.mixin;
 
 import com.daqem.arc.Arc;
+import com.daqem.arc.api.block.ArcHopperFedContainer;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.player.brewing.BrewingStandData;
 import net.minecraft.core.BlockPos;
@@ -8,12 +9,26 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BaseContainerBlockEntity.class)
-public class MixinBaseContainerBlockEntity {
+public class MixinBaseContainerBlockEntity implements ArcHopperFedContainer {
+
+    @Unique
+    private boolean arc$hopperFed = false;
+
+    @Override
+    public boolean arc$isHopperFed() {
+        return this.arc$hopperFed;
+    }
+
+    @Override
+    public void arc$setHopperFed(boolean hopperFed) {
+        this.arc$hopperFed = hopperFed;
+    }
 
     @Inject(at = @At("HEAD"), method = "stillValid(Lnet/minecraft/world/entity/player/Player;)Z")
     private void stillValid(Player player, CallbackInfoReturnable<Boolean> cir) {

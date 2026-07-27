@@ -19,6 +19,7 @@
     "MixinConsumable",
     "MixinFishingHook",
     "MixinFishingRodHookedTrigger",
+    "MixinHopperBlockEntity",
     "MixinIngredient",
     "MixinItemStack",
     "MixinLivingEntity",

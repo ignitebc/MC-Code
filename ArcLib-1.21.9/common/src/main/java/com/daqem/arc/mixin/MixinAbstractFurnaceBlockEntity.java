@@ -1,6 +1,7 @@
 package com.daqem.arc.mixin;
 
 import com.daqem.arc.api.IArcAbstractCookingRecipe;
+import com.daqem.arc.api.block.ArcHopperFedContainer;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.event.triggers.PlayerEvents;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
@@ -26,6 +27,13 @@ public abstract class MixinAbstractFurnaceBlockEntity {
 
     @Inject(at = @At("HEAD"), method = "awardUsedRecipesAndPopExperience")
     private void awardUsedRecipesAndPopExperience(ServerPlayer serverPlayer, CallbackInfo ci) {
+        // 호퍼로 재료가 들어온 화로는 병렬 자동화가 가능하므로 보상 대상에서 제외한다.
+        // 표시를 지워 두어 이후 사람이 직접 넣은 분량은 다시 인정받는다.
+        if (((ArcHopperFedContainer) this).arc$isHopperFed()) {
+            ((ArcHopperFedContainer) this).arc$setHopperFed(false);
+            return;
+        }
+
         if (serverPlayer instanceof ArcServerPlayer arcServerPlayer) {
             ServerLevel serverLevel = serverPlayer.level();
             this.recipesUsed.forEach((recipeId, recipeCount) -> serverLevel.recipeAccess().byKey(recipeId).ifPresent((recipe) -> {
