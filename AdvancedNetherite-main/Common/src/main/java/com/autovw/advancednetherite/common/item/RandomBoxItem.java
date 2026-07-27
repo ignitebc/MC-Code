@@ -2,6 +2,8 @@ package com.autovw.advancednetherite.common.item;
 
 import com.autovw.advancednetherite.common.randombox.RandomBoxConfig;
 import com.autovw.advancednetherite.common.randombox.RandomBoxConfigManager;
+import com.mojang.logging.LogUtils;
+import org.slf4j.Logger;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
@@ -25,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 public class RandomBoxItem extends AdvancedItem {
+
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     private final ResourceLocation configId;
 
@@ -150,7 +154,12 @@ public class RandomBoxItem extends AdvancedItem {
 
     private static Item getItemOrNull(ResourceLocation id) {
         if (id == null) return null;
-        return BuiltInRegistries.ITEM.get(id).map(Holder.Reference::value).orElse(null);
+
+        Item item = BuiltInRegistries.ITEM.get(id).map(Holder.Reference::value).orElse(null);
+        if (item == null) {
+            LOGGER.warn("RandomBox reward item not found in registry, skipping: {}", id);
+        }
+        return item;
     }
 
     private static RandomBoxConfig.Reward pickOneRewardWeighted(List<RandomBoxConfig.Reward> candidates, RandomSource rnd) {
