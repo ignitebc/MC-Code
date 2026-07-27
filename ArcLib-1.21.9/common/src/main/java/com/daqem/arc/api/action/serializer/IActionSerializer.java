@@ -9,6 +9,7 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.data.serializer.ArcSerializer;
 import com.daqem.arc.registry.ArcRegistry;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -38,21 +39,27 @@ public interface IActionSerializer<T extends IAction> extends ArcSerializer {
     }
 
     default T fromJson(ResourceLocation location, JsonObject jsonObject) {
+        // 등록되지 않은 타입을 조용히 건너뛰면 조건이 사라진 액션이 모든 대상에서 발동한다.
+        // ActionManager 가 JsonParseException 을 잡아 로그를 남기고 해당 액션만 제외한다.
         List<IReward> rewards = new ArrayList<>();
         if (jsonObject.has("rewards")) {
             jsonObject.getAsJsonArray("rewards").forEach(jsonElement -> {
-                ResourceLocation rewardTypeLocation = getResourceLocation(jsonElement.getAsJsonObject(), "type");
-                ArcRegistry.REWARD.getOptional(rewardTypeLocation).ifPresent(rewardType ->
-                        rewards.add(rewardType.getSerializer().fromJson(location, jsonElement.getAsJsonObject())));
+                JsonObject rewardObject = jsonElement.getAsJsonObject();
+                ResourceLocation rewardTypeLocation = getResourceLocation(rewardObject, "type");
+                rewards.add(ArcRegistry.REWARD.getOptional(rewardTypeLocation)
+                        .orElseThrow(() -> new JsonParseException("Unknown reward type: " + rewardTypeLocation))
+                        .getSerializer().fromJson(location, rewardObject));
             });
         }
 
         List<ICondition> conditions = new ArrayList<>();
         if (jsonObject.has("conditions")) {
             jsonObject.getAsJsonArray("conditions").forEach(jsonElement -> {
-                ResourceLocation conditionTypeLocation = getResourceLocation(jsonElement.getAsJsonObject(), "type");
-                ArcRegistry.CONDITION.getOptional(conditionTypeLocation).ifPresent(conditionType ->
-                        conditions.add(conditionType.getSerializer().fromJson(location, jsonElement.getAsJsonObject())));
+                JsonObject conditionObject = jsonElement.getAsJsonObject();
+                ResourceLocation conditionTypeLocation = getResourceLocation(conditionObject, "type");
+                conditions.add(ArcRegistry.CONDITION.getOptional(conditionTypeLocation)
+                        .orElseThrow(() -> new JsonParseException("Unknown condition type: " + conditionTypeLocation))
+                        .getSerializer().fromJson(location, conditionObject));
             });
         }
 
