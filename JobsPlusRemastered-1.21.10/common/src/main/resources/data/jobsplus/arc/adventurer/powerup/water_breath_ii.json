@@ -1,0 +1,13 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:adventurer/water_breath_ii"
+  },
+  "type": "arc:on_swim",
+  "rewards": [
+    {
+      "type": "arc:oxygen_bonus_modifier",
+      "bonus": 2
+    }
+  ]
+}

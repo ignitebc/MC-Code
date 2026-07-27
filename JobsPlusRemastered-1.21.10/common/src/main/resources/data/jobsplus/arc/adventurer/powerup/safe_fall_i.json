@@ -1,0 +1,1 @@
+{"holder":{"type":"jobsplus:powerup","id":"jobsplus:adventurer/safe_fall_i"},"type":"arc:on_walk","rewards":[{"type":"arc:safe_fall_distance_modifier","distance":2.5}]}

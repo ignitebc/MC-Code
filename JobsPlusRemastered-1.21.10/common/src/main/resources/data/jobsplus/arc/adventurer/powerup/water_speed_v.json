@@ -1,0 +1,13 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:adventurer/water_speed_v"
+  },
+  "type": "arc:on_swim",
+  "rewards": [
+    {
+      "type": "arc:water_movement_efficiency_modifier",
+      "efficiency": 0.5
+    }
+  ]
+}

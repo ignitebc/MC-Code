@@ -1,1 +1,0 @@
-{"holder":{"type":"jobsplus:powerup","id":"jobsplus:lumberjack/safe_fall_vi"},"type":"arc:on_walk","rewards":[{"type":"arc:safe_fall_distance_modifier","distance":5.0}]}

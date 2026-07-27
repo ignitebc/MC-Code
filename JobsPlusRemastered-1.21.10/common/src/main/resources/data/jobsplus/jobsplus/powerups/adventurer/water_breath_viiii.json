@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:adventurer",
+  "parent": "jobsplus:adventurer/water_breath_viii",
+  "icon": {
+    "id": "minecraft:turtle_helmet",
+    "count": 9
+  },
+  "price": 26,
+  "required_level": 40
+}

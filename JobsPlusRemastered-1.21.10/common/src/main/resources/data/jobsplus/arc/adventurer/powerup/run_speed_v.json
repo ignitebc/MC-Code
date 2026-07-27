@@ -1,0 +1,35 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:adventurer/run_speed_v"
+  },
+  "type": "arc:on_sprint",
+  "rewards": [
+    {
+      "type": "arc:movement_speed_modifier",
+      "multiplier": 2.5
+    }
+  ],
+  "conditions": [
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:adventurer/run_speed_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:adventurer/run_speed_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:adventurer/run_speed_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:adventurer/run_speed_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:adventurer/run_speed_x"
+    }
+  ]
+}

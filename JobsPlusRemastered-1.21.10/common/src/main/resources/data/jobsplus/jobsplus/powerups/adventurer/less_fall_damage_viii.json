@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:adventurer",
+  "parent": "jobsplus:adventurer/less_fall_damage_vii",
+  "icon": {
+    "id": "minecraft:leather_boots",
+    "count": 8
+  },
+  "price": 24,
+  "required_level": 35
+}

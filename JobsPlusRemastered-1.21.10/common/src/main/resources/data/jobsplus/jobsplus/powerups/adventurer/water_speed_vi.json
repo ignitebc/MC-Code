@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:adventurer",
+  "parent": "jobsplus:adventurer/water_speed_v",
+  "icon": {
+    "id": "minecraft:heart_of_the_sea",
+    "count": 6
+  },
+  "price": 20,
+  "required_level": 25
+}

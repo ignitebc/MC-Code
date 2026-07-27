@@ -1,0 +1,35 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:adventurer"
+  },
+  "type": "arc:on_sprint",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "type": "jobsplus:bitcoin_reward",
+      "chance": 0.03,
+      "amount": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:distance",
+      "distance_in_blocks": 5
+    },
+    {
+      "type": "arc:movement_state",
+      "state": "elytra_flying",
+      "inverted": true
+    },
+    {
+      "type": "arc:movement_state",
+      "state": "horse_riding",
+      "inverted": true
+    }
+  ]
+}
