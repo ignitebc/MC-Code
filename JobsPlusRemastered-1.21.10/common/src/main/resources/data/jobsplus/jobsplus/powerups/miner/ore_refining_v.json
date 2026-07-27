@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:miner",
+  "parent": "jobsplus:miner/ore_refining_iv",
+  "icon": {
+    "id": "minecraft:raw_gold",
+    "count": 5
+  },
+  "price": 18,
+  "required_level": 20
+}

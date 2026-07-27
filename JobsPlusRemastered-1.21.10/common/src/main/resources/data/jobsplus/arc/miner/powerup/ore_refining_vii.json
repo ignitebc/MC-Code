@@ -1,0 +1,70 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:miner/ore_refining_vii"
+  },
+  "type": "arc:on_break_block",
+  "rewards": [
+    {
+      "type": "arc:block_drop_multiplier",
+      "chance": 35,
+      "multiplier": 2
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:blocks",
+      "blocks": [
+        "minecraft:coal_ore",
+        "minecraft:iron_ore",
+        "minecraft:copper_ore",
+        "minecraft:gold_ore",
+        "minecraft:redstone_ore",
+        "minecraft:lapis_ore",
+        "minecraft:diamond_ore",
+        "minecraft:emerald_ore",
+        "minecraft:nether_quartz_ore",
+        "minecraft:nether_gold_ore",
+        "minecraft:deepslate_coal_ore",
+        "minecraft:deepslate_iron_ore",
+        "minecraft:deepslate_copper_ore",
+        "minecraft:deepslate_gold_ore",
+        "minecraft:deepslate_redstone_ore",
+        "minecraft:deepslate_lapis_ore",
+        "minecraft:deepslate_diamond_ore",
+        "minecraft:deepslate_emerald_ore"
+      ]
+    },
+    {
+      "type": "arc:not_in_block_pos_cache"
+    },
+    {
+      "type": "arc:tool",
+      "tool": {
+        "type": "arc:not",
+        "conditions": [
+          {
+            "type": "arc:enchantments",
+            "enchantments": {
+              "minecraft:silk_touch": {
+                "min": 1
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/ore_refining_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/ore_refining_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:miner/ore_refining_x"
+    }
+  ]
+}

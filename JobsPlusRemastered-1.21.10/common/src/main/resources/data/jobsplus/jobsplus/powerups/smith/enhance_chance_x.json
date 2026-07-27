@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:smith",
+  "parent": "jobsplus:smith/enhance_chance_viiii",
+  "icon": {
+    "id": "minecraft:blaze_powder",
+    "count": 10
+  },
+  "price": 28,
+  "required_level": 50
+}

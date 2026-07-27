@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:smith",
+  "parent": "jobsplus:smith/enhance_protect_viiii",
+  "icon": {
+    "id": "minecraft:netherite_scrap",
+    "count": 10
+  },
+  "price": 28,
+  "required_level": 50
+}
