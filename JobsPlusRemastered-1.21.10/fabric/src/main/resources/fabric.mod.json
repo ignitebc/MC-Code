@@ -32,6 +32,7 @@
     "yamlconfig": ">=${config_library_version}",
     "arc": ">=${arc_version}",
     "itemrestrictions": ">=${item_restrictions_version}",
-    "uilib": ">=${ui_library_version}"
+    "uilib": ">=${ui_library_version}",
+    "advancednetherite": "*"
   }
 }
