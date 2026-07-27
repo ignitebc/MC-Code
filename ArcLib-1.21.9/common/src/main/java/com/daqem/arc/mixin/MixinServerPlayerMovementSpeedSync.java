@@ -1,6 +1,7 @@
 package com.daqem.arc.mixin;
 
 import com.daqem.arc.api.player.ArcPlayer;
+import com.daqem.arc.player.AquaticAttributeSync;
 import com.daqem.arc.player.BlockInteractionRangeAttributeSync;
 import com.daqem.arc.player.EntityInteractionRangeAttributeSync;
 import com.daqem.arc.player.DefensiveAttributeSync;
@@ -21,6 +22,7 @@ public class MixinServerPlayerMovementSpeedSync {
             BlockInteractionRangeAttributeSync.sync(arcPlayer);
             EntityInteractionRangeAttributeSync.sync(arcPlayer);
             DefensiveAttributeSync.sync(arcPlayer);
+            AquaticAttributeSync.sync(arcPlayer);
         }
     }
 }

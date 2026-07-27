@@ -19,6 +19,7 @@ import com.daqem.arc.data.condition.experience.ExpDropCondition;
 import com.daqem.arc.data.condition.experience.ExpLevelCondition;
 import com.daqem.arc.data.condition.item.*;
 import com.daqem.arc.data.condition.movement.DistanceCondition;
+import com.daqem.arc.data.condition.movement.MovementStateCondition;
 import com.daqem.arc.data.condition.recipe.IsBlastingRecipeCondition;
 import com.daqem.arc.data.condition.recipe.IsSmokingRecipeCondition;
 import com.daqem.arc.data.condition.scoreboard.ScoreboardCondition;
@@ -66,6 +67,9 @@ public interface ConditionType<T extends ICondition> extends IConditionType<T> {
     IConditionType<EntityInBlockCondition> ENTITY_IN_BLOCK = register(Arc.getId("entity_in_block"), new EntityInBlockCondition.Serializer());
     IConditionType<DamageSourceCondition> DAMAGE_SOURCE = register(Arc.getId("damage_source"), new DamageSourceCondition.Serializer());
     IConditionType<NotInBlockPosCacheCondition> NOT_IN_BLOCK_POS_CACHE = register(Arc.getId("not_in_block_pos_cache"), new NotInBlockPosCacheCondition.Serializer());
+
+    // 이동 액션이 서로 겹쳐 발동하는 것을 막기 위한 상태 조건
+    ConditionType<MovementStateCondition> MOVEMENT_STATE = register(Arc.getId("movement_state"), new MovementStateCondition.Serializer());
 
     static <T extends ICondition> ConditionType<T> register(final ResourceLocation location, final IConditionSerializer<T> serializer) {
         return Registry.register(ArcRegistry.CONDITION, location, new ConditionType<T>(){

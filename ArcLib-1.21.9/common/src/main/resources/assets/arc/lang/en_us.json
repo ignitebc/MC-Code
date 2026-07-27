@@ -199,12 +199,12 @@
   "arc.condition.description.damage_source": "피해 원인이 %s일 때 성립합니다.",
   "arc.condition.not_in_block_pos_cache": "블록 위치 캐시 제외",
   "arc.condition.description.not_in_block_pos_cache": "블록 위치가 캐시에 없을 때 성립합니다.",
-
+  "arc.condition.movement_state": "이동 상태",
+  "arc.condition.description.movement_state": "플레이어가 %s 상태일 때 성립합니다.",
   "arc.condition.tool": "도구",
   "arc.condition.description.tool": "사용한 도구가 하위 도구 조건과 일치할 때만 발동합니다.",
   "arc.condition.enchantments": "마법 부여",
   "arc.condition.description.enchantments": "아이템이 지정한 마법 부여를 가지고 있을 때만 발동합니다.",
-
   "tag.item.c.armor": "방어구",
   "tag.item.c.boots": "부츠",
   "tag.item.c.chestplates": "흉갑",
@@ -215,5 +215,9 @@
   "yamlconfig.arc.arc-common.debug": "디버그",
   "yamlconfig.arc.arc-common.debug.is_debug": "디버그 활성화",
   "yamlconfig.arc.arc-common.block": "블록",
-  "yamlconfig.arc.arc-common.block.max_block_pos_cache_size": "블록 위치 캐시 최대 크기"
+  "yamlconfig.arc.arc-common.block.max_block_pos_cache_size": "블록 위치 캐시 최대 크기",
+  "arc.reward.oxygen_bonus_modifier": "산소 보너스 보정",
+  "arc.reward.description.oxygen_bonus_modifier": "잠수 가능 시간을 %s배로 늘립니다.",
+  "arc.reward.water_movement_efficiency_modifier": "수중 이동 효율 보정",
+  "arc.reward.description.water_movement_efficiency_modifier": "수중 이동 효율을 %s 증가시킵니다."
 }
