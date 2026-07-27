@@ -1,0 +1,17 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:fisherman/water_child_i"
+  },
+  "type": "arc:on_swim",
+  "rewards": [
+    {
+      "type": "arc:oxygen_bonus_modifier",
+      "bonus": 1
+    },
+    {
+      "type": "arc:water_movement_efficiency_modifier",
+      "efficiency": 0.1
+    }
+  ]
+}

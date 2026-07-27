@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:fisherman",
+  "parent": "jobsplus:fisherman/water_child_iii",
+  "icon": {
+    "id": "minecraft:conduit",
+    "count": 4
+  },
+  "price": 16,
+  "required_level": 15
+}

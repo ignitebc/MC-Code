@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:fisherman",
+  "parent": "jobsplus:fisherman/full_catch_ii",
+  "icon": {
+    "id": "minecraft:heart_of_the_sea",
+    "count": 3
+  },
+  "price": 14,
+  "required_level": 10
+}
