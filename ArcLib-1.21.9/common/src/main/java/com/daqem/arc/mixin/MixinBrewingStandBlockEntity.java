@@ -48,11 +48,8 @@ public abstract class MixinBrewingStandBlockEntity {
 
     @Inject(at = @At("HEAD"), method = "doBrew(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/NonNullList;)V")
     private static void doBrew(Level level, BlockPos blockPos, NonNullList<ItemStack> nonNullList, CallbackInfo ci) {
-        // 호퍼로 재료가 들어온 양조대는 무한 병렬 자동화가 가능하므로 보상 대상에서 제외한다.
-        // 표시를 지워 두어 이후 사람이 직접 넣은 분량은 다시 인정받는다.
         if (level.getBlockEntity(blockPos) instanceof ArcHopperFedContainer hopperFedContainer
-                && hopperFedContainer.arc$isHopperFed()) {
-            hopperFedContainer.arc$setHopperFed(false);
+                && hopperFedContainer.arc$consumeHopperFedItems(1) > 0) {
             return;
         }
 
