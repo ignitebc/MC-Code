@@ -1184,5 +1184,6 @@
   "jobsplus.gui.jobs.experience.details.fisherman.catch_treasure_rod.header": "보물 낚싯대 낚기",
   "jobsplus.gui.jobs.experience.details.fisherman.catch_treasure_rod.description": "마법이 부여된 낚싯대를 낚아 올릴 때 적용됩니다. 보물로 낚인 낚싯대만 마법이 부여되어 있으며, 쓰레기로 낚인 낚싯대에는 적용되지 않습니다.",
   "arc.reward.special_item": "특수 아이템",
-  "arc.reward.description.special_item": "플레이어에게 %s %s을(를) 지급하며, 보너스 계열을 보유했다면 확률로 개수가 두 배가 됩니다."
+  "arc.reward.description.special_item": "플레이어에게 %s %s을(를) 지급하며, 보너스 계열을 보유했다면 확률로 개수가 두 배가 됩니다.",
+  "jobsplus.death.item_lost": "%s님이 죽었습니다. %s이(가) 사라집니다."
 }

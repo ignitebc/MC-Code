@@ -5,6 +5,7 @@ import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.event.command.EventRegisterCommands;
 import com.daqem.jobsplus.event.block.CropReplantManager;
 import com.daqem.jobsplus.event.item.EventJobSelectTicketUse;
+import com.daqem.jobsplus.event.player.EventDeleteRandomItemOnDeath;
 import com.daqem.jobsplus.event.player.EventKillElytraDuringRaidOrWither;
 import com.daqem.jobsplus.event.stock.StockMarketTicker;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobManager;
@@ -47,6 +48,7 @@ public class JobsPlus
         EventKillElytraDuringRaidOrWither.registerEvent(); // 레이드/위더 활성 시 겉날개 즉사
         CropReplantManager.registerEvent();
         StockMarketTicker.registerEvent(); // 주식 탭 시청자가 있을 때만 매분 00초에 시세 갱신
+        EventDeleteRandomItemOnDeath.registerEvent(); // 사망 시 소지품 한 칸을 무작위로 삭제
     }
 
     private static void initRegistry()
