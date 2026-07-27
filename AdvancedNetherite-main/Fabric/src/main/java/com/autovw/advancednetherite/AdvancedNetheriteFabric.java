@@ -5,6 +5,7 @@ import com.autovw.advancednetherite.common.randombox.RandomBoxConfigManager;
 import com.autovw.advancednetherite.config.ConfigHelper;
 import com.autovw.advancednetherite.config.TempConfig;
 import com.autovw.advancednetherite.core.registry.ModBlockRegistry;
+import com.autovw.advancednetherite.core.registry.ModEntityRegistry;
 import com.autovw.advancednetherite.core.registry.ModItemRegistry;
 import com.autovw.advancednetherite.registry.FabricRegistryHelper;
 import com.mojang.logging.LogUtils;
@@ -26,6 +27,7 @@ public class AdvancedNetheriteFabric implements ModInitializer
         AdvancedNetherite.setRegistryHelper(new FabricRegistryHelper());
 
         ModBlockRegistry.registerBlocks();
+        ModEntityRegistry.registerEntityTypes();
         ModItemRegistry.registerItems();
 
         AdvancedNetheriteTab.registerTab();
