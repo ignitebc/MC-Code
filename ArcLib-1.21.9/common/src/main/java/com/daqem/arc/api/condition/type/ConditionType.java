@@ -42,6 +42,7 @@ public interface ConditionType<T extends ICondition> extends IConditionType<T> {
     ConditionType<DistanceCondition> DISTANCE = register(Arc.getId("distance"), new DistanceCondition.Serializer());
     ConditionType<EntityTypeCondition> ENTITY_TYPE = register(Arc.getId("entity_type"), new EntityTypeCondition.Serializer());
     ConditionType<EntityTypesCondition> ENTITY_TYPES = register(Arc.getId("entity_types"), new EntityTypesCondition.Serializer());
+    ConditionType<HostileEntityCondition> HOSTILE_ENTITY = register(Arc.getId("hostile_entity"), new HostileEntityCondition.Serializer());
     ConditionType<DimensionCondition> DIMENSION = register(Arc.getId("dimension"), new DimensionCondition.Serializer());
     ConditionType<ScoreboardCondition> SCOREBOARD = register(Arc.getId("scoreboard"), new ScoreboardCondition.Serializer());
     ConditionType<TeamCondition> TEAM = register(Arc.getId("team"), new TeamCondition.Serializer());

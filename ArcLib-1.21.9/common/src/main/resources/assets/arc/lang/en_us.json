@@ -219,5 +219,7 @@
   "arc.reward.oxygen_bonus_modifier": "산소 보너스 보정",
   "arc.reward.description.oxygen_bonus_modifier": "잠수 가능 시간을 %s배로 늘립니다.",
   "arc.reward.water_movement_efficiency_modifier": "수중 이동 효율 보정",
-  "arc.reward.description.water_movement_efficiency_modifier": "수중 이동 효율을 %s 증가시킵니다."
+  "arc.reward.description.water_movement_efficiency_modifier": "수중 이동 효율을 %s 증가시킵니다.",
+  "arc.condition.hostile_entity": "적대적 생명체",
+  "arc.condition.description.hostile_entity": "대상이 적대적 생명체일 때 성립합니다. 소, 닭, 주민 같은 중립·우호 생명체는 제외됩니다."
 }
