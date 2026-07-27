@@ -51,6 +51,7 @@ public final class EventDeleteRandomItemOnDeath
         List<Integer> filledSlots = collectFilledSlots(inventory);
         if (filledSlots.isEmpty())
         {
+            broadcast(player, JobsPlus.translatable("death.no_item_lost", formatPlayerName(player)));
             return;
         }
 
@@ -60,10 +61,12 @@ public final class EventDeleteRandomItemOnDeath
         ItemStack removed = inventory.removeItemNoUpdate(selectedSlot);
         if (removed.isEmpty())
         {
+            broadcast(player, JobsPlus.translatable("death.no_item_lost", formatPlayerName(player)));
             return;
         }
 
-        broadcastLoss(player, removed);
+        Component itemName = describeItem(removed).copy().withStyle(ChatFormatting.RED);
+        broadcast(player, JobsPlus.translatable("death.item_lost", formatPlayerName(player), itemName));
     }
 
     private static List<Integer> collectFilledSlots(Inventory inventory)
@@ -80,19 +83,18 @@ public final class EventDeleteRandomItemOnDeath
         return filledSlots;
     }
 
-    private static void broadcastLoss(ServerPlayer player, ItemStack removed)
+    private static Component formatPlayerName(ServerPlayer player)
+    {
+        return player.getName().copy().withStyle(ChatFormatting.GOLD);
+    }
+
+    private static void broadcast(ServerPlayer player, Component message)
     {
         MinecraftServer server = player.level().getServer();
-        if (server == null)
+        if (server != null)
         {
-            return;
+            server.getPlayerList().broadcastSystemMessage(message, false);
         }
-
-        Component playerName = player.getName().copy().withStyle(ChatFormatting.GOLD);
-        Component itemName = describeItem(removed).copy().withStyle(ChatFormatting.RED);
-
-        server.getPlayerList().broadcastSystemMessage(
-                JobsPlus.translatable("death.item_lost", playerName, itemName), false);
     }
 
     /** 여러 개가 든 칸이 사라졌을 때 손실 규모를 알 수 있도록 개수를 함께 표시한다. */
