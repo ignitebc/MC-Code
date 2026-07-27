@@ -16,7 +16,7 @@
     { "item": "advancednetherite:enhance_protection_scroll", "count": 2, "chance": 7 },
     
     { "item": "advancednetherite:job_select_ticket", "count": 1, "chance": 15 },
-    { "item": "advancednetherite:rare_pet_box", "count": 1, "chance": 4 },
+    { "item": "advancednetherite:rare_petbox", "count": 1, "chance": 4 },
     { "item": "advancednetherite:bitcoin", "count": 200, "chance": 1.5 },
     { "item": "advancednetherite:bitcoin", "count": 300, "chance": 1 },
     { "item": "advancednetherite:bitcoin", "count": 400, "chance": 0.5 },

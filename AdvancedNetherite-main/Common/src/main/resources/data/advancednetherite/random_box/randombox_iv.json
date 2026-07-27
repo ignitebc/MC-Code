@@ -14,7 +14,7 @@
     { "item": "advancednetherite:enhance_protection_scroll", "count": 5, "chance": 6.5 },
     { "item": "advancednetherite:death_item_protection_scroll", "count": 5, "chance": 6.5 },
 
-    { "item": "advancednetherite:legendary_pet_box", "count": 1, "chance": 1 },
+    { "item": "advancednetherite:legend_petbox", "count": 1, "chance": 1 },
     { "item": "advancednetherite:bitcoin", "count": 500, "chance": 1.5 },
     { "item": "advancednetherite:bitcoin", "count": 700, "chance": 1 },
     { "item": "advancednetherite:bitcoin", "count": 1000, "chance": 0.5 }
