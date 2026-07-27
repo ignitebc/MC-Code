@@ -2,7 +2,9 @@ package com.daqem.jobsplus.client.gui.jobs.components;
 
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.stock.ClientStockMarket;
+import com.daqem.jobsplus.stock.SnapshotStatus;
 import com.daqem.jobsplus.stock.StockCatalog;
+import com.daqem.jobsplus.stock.StockMarketSnapshot;
 import com.daqem.jobsplus.stock.StockQuote;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import com.daqem.uilib.gui.widget.CustomButtonWidget;
@@ -61,11 +63,13 @@ public class StockTableRowsContentComponent extends EmptyComponent
         guiGraphics.fill(right - 1, y, right, bottom, StockTableComponent.GRID_COLOR);
 
         List<StockCatalog.StockDefinition> stocks = StockCatalog.getStocks();
-        long now = System.currentTimeMillis();
+        // 플레이어 PC 시간이 아니라 서버가 알려 준 상태로만 판단한다.
+        StockMarketSnapshot snapshot = ClientStockMarket.getSnapshot();
+        boolean refreshing = snapshot.status() == SnapshotStatus.REFRESHING;
         for (int index = 0; index < stocks.size(); index++)
         {
             StockCatalog.StockDefinition stock = stocks.get(index);
-            StockQuote quote = ClientStockMarket.getQuote(stock.id());
+            StockQuote quote = snapshot.getQuote(stock.id());
             int rowY = y + index * StockTableComponent.ROW_HEIGHT;
             boolean selected = stock.id().equals(this.state.getSelectedStockId());
             if (selected)
@@ -79,9 +83,11 @@ public class StockTableRowsContentComponent extends EmptyComponent
             drawScaledString(guiGraphics, selected ? "▶" : "",
                     x + 1, rowY + 2, StockTableComponent.TEXT_COLOR);
             drawScaledString(guiGraphics, stock.name(), x + 5, rowY + 2, StockTableComponent.TEXT_COLOR);
-            if (quote == null || !quote.available())
+            if (quote == null || !quote.hasValidPrice())
             {
-                drawScaledString(guiGraphics, "불러오는 중",
+                // 갱신 중과 조회 실패는 모두 거래가 막히지만, 원인이 다르므로 구분해서 알린다.
+                String statusText = refreshing ? "갱신 중" : "조회 실패";
+                drawScaledString(guiGraphics, statusText,
                         x + StockTableComponent.NAME_COLUMN_WIDTH + 2, rowY + 2,
                         StockTableComponent.TEXT_COLOR);
                 drawScaledStringRight(guiGraphics, "-", right - 3, rowY + 2,
@@ -93,13 +99,6 @@ public class StockTableRowsContentComponent extends EmptyComponent
             drawScaledStringRight(guiGraphics, priceText,
                     x + StockTableComponent.PRICE_COLUMN_WIDTH - 2, rowY + 2,
                     StockTableComponent.TEXT_COLOR);
-
-            // 갱신이 끊긴 가격은 서버에서도 체결을 막으므로 등락률 대신 지연 상태를 알린다.
-            if (quote.isStale(now))
-            {
-                drawScaledStringRight(guiGraphics, "갱신 지연", right - 3, rowY + 2, NEGATIVE_COLOR);
-                continue;
-            }
 
             String changeText = String.format(Locale.ROOT, "%+.2f%%", quote.percentChange());
             int changeColor = quote.percentChange() > 0

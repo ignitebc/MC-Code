@@ -46,7 +46,7 @@ public class JobsPlus
         EventJobSelectTicketUse.registerEvent(); // 추가
         EventKillElytraDuringRaidOrWither.registerEvent(); // 레이드/위더 활성 시 겉날개 즉사
         CropReplantManager.registerEvent();
-        StockMarketTicker.registerEvent(); // 서버가 1분 주기로 시세 스냅샷 확정 후 전원에게 전송
+        StockMarketTicker.registerEvent(); // 주식 탭 시청자가 있을 때만 매분 00초에 시세 갱신
     }
 
     private static void initRegistry()

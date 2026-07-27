@@ -23,6 +23,8 @@ public interface JobsPlusNetworking
         CustomPacketPayload.Type<ServerboundOpenJobsScreenPacket> SERVERBOUND_OPEN_JOBS_SCREEN = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_open_jobs_screen"));
         CustomPacketPayload.Type<ServerboundOpenPowerupsScreenPacket> SERVERBOUND_OPEN_POWERUPS_SCREEN = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_open_powerups_screen"));
         CustomPacketPayload.Type<ServerboundStockActionPacket> SERVERBOUND_STOCK_ACTION = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_stock_action"));
+        // 주식 탭을 보고 있는지 알려 시세 갱신을 켜고 끈다
+        CustomPacketPayload.Type<ServerboundStockViewStatePacket> SERVERBOUND_STOCK_VIEW_STATE = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_stock_view_state"));
 
         CustomPacketPayload.Type<ClientboundUnlockItemRestrictionPacket> CLIENTBOUND_UNLOCK_ITEM_RESTRICTION = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_unlock_item_restriction"));
         CustomPacketPayload.Type<ClientboundOpenJobsScreenPacket> CLIENTBOUND_OPEN_JOBS_SCREEN = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_open_jobs_screen"));
@@ -60,6 +62,7 @@ public interface JobsPlusNetworking
                 NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_OPEN_JOBS_SCREEN, ServerboundOpenJobsScreenPacket.STREAM_CODEC, ServerboundOpenJobsScreenPacket::handleServerSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_OPEN_POWERUPS_SCREEN, ServerboundOpenPowerupsScreenPacket.STREAM_CODEC, ServerboundOpenPowerupsScreenPacket::handleServerSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_STOCK_ACTION, ServerboundStockActionPacket.STREAM_CODEC, ServerboundStockActionPacket::handleServerSide);
+                NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_STOCK_VIEW_STATE, ServerboundStockViewStatePacket.STREAM_CODEC, ServerboundStockViewStatePacket::handleServerSide);
 
                 // 251217 jjh, 상점(아이템 판매) - C2S 리시버 등록
                 NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_SELL_ITEM, ServerboundSellItemPacket.STREAM_CODEC, ServerboundSellItemPacket::handleServerSide);

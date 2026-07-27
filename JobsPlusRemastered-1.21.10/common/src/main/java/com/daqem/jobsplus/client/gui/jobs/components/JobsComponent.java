@@ -5,6 +5,9 @@ import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
 import com.daqem.jobsplus.client.gui.jobs.widgets.PowerupsButtonWidget;
 import com.daqem.jobsplus.client.gui.jobs.widgets.ShopSellButtonWidget;
+import com.daqem.jobsplus.client.stock.ClientStockMarket;
+import com.daqem.jobsplus.networking.c2s.ServerboundStockViewStatePacket;
+import dev.architectury.networking.NetworkManager;
 import com.daqem.uilib.gui.component.AbstractComponent;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -59,6 +62,13 @@ public class JobsComponent extends AbstractComponent
         this.addWidget(this.shopSellButtonWidget);
 
         this.updateStockPageVisibility();
+
+        // 거래 후 화면이 다시 만들어질 때도 주식 탭이면 시청 상태를 다시 알린다.
+        // 서버는 중복 등록을 무시하고 현재 시세만 보내 주므로 API를 다시 호출하지 않는다.
+        if (this.cachedRightTab == RightTab.UP_AND_DOWN)
+        {
+            NetworkManager.sendToServer(new ServerboundStockViewStatePacket(true));
+        }
     }
 
     @Override
@@ -66,7 +76,9 @@ public class JobsComponent extends AbstractComponent
     {
         if (this.cachedRightTab != this.state.getSelectedRightTab())
         {
+            RightTab previousTab = this.cachedRightTab;
             this.cachedRightTab = this.state.getSelectedRightTab();
+            this.updateStockViewState(previousTab, this.cachedRightTab);
             this.updateStockPageVisibility();
             this.updateParentPosition(getParentX(), getParentY(), parentWidth, parentHeight);
         }
@@ -77,6 +89,27 @@ public class JobsComponent extends AbstractComponent
                 this.getTotalX(), this.getTotalY(),
                 this.getWidth(), this.getHeight() - 2
         );
+    }
+
+    /**
+     * 주식 탭에 들어오고 나가는 것을 서버에 알린다.
+     * 서버는 실제로 보고 있는 사람이 있을 때만 시세를 조회한다.
+     */
+    private void updateStockViewState(RightTab previousTab, RightTab currentTab)
+    {
+        if (currentTab == RightTab.UP_AND_DOWN)
+        {
+            // 지난 세션 가격이 잠깐 보이지 않도록 먼저 지운다.
+            ClientStockMarket.clear();
+            NetworkManager.sendToServer(new ServerboundStockViewStatePacket(true));
+            return;
+        }
+
+        if (previousTab == RightTab.UP_AND_DOWN)
+        {
+            NetworkManager.sendToServer(new ServerboundStockViewStatePacket(false));
+            ClientStockMarket.clear();
+        }
     }
 
     private void updateStockPageVisibility()

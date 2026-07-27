@@ -2,7 +2,9 @@ package com.daqem.jobsplus.client.gui.jobs.components;
 
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.stock.ClientStockMarket;
+import com.daqem.jobsplus.stock.SnapshotStatus;
 import com.daqem.jobsplus.stock.StockCatalog;
+import com.daqem.jobsplus.stock.StockMarketSnapshot;
 import com.daqem.jobsplus.stock.StockQuote;
 import com.daqem.jobsplus.player.stock.StockPosition;
 import com.daqem.uilib.gui.component.EmptyComponent;
@@ -65,6 +67,7 @@ public class StockHoldingsContentComponent extends EmptyComponent
         drawScaledCentered(guiGraphics, "수익률(%)", x + (QUANTITY_COLUMN_END + TABLE_WIDTH) / 2, y + 2, TEXT_COLOR);
         guiGraphics.fill(x, y + ROW_HEIGHT - 1, right, y + ROW_HEIGHT, GRID_COLOR);
 
+        StockMarketSnapshot snapshot = ClientStockMarket.getSnapshot();
         int index = 0;
         for (StockPosition position : this.state.getStockAccount().positions())
         {
@@ -74,13 +77,14 @@ public class StockHoldingsContentComponent extends EmptyComponent
             {
                 guiGraphics.fill(x, rowY, right, rowY + ROW_HEIGHT - 1, 0x55F2C94C);
             }
-            StockQuote quote = ClientStockMarket.getQuote(position.stockId());
+            StockQuote quote = snapshot.getQuote(position.stockId());
             String name = StockCatalog.getStockName(position.stockId());
             String averagePrice = PRICE_FORMAT.format(Math.round(position.getAverageEntryPrice()));
             String investedAmount = formatAmount(position.investedAmount());
-            String returnRate = "-";
+            // 시세를 못 받은 상태와 해당 종목만 실패한 상태를 구분해서 알린다.
+            String returnRate = snapshot.status() == SnapshotStatus.REFRESHING ? "갱신중" : "실패";
             int returnColor = TEXT_COLOR;
-            if (quote != null && quote.available() && position.getAverageEntryPrice() > 0)
+            if (quote != null && quote.hasValidPrice() && position.getAverageEntryPrice() > 0)
             {
                 double rate = (quote.priceKrw() / position.getAverageEntryPrice() - 1) * 100;
                 returnRate = String.format(Locale.ROOT, "%+.2f%%", rate);

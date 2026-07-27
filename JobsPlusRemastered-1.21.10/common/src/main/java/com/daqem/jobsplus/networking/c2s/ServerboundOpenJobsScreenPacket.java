@@ -1,6 +1,5 @@
 package com.daqem.jobsplus.networking.c2s;
 
-import com.daqem.jobsplus.event.stock.StockMarketTicker;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
@@ -37,8 +36,6 @@ public class ServerboundOpenJobsScreenPacket implements CustomPacketPayload {
 
     public static void handleServerSide(ServerboundOpenJobsScreenPacket packet, NetworkManager.PacketContext context) {
         if (context.getPlayer() instanceof JobsServerPlayer jobsServerPlayer) {
-            // 표에 그릴 가격을 화면이 열리기 전에 먼저 내려보낸다.
-            StockMarketTicker.sendSnapshot(jobsServerPlayer.jobsplus$getServerPlayer());
             NetworkManager.sendToPlayer(
                     jobsServerPlayer.jobsplus$getServerPlayer(),
                     new ClientboundOpenJobsScreenPacket(

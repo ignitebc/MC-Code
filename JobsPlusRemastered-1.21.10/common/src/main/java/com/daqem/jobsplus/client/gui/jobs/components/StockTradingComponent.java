@@ -6,7 +6,9 @@ import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreenState;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.jobs.stock.StockPanelMode;
 import com.daqem.jobsplus.client.stock.ClientStockMarket;
+import com.daqem.jobsplus.stock.SnapshotStatus;
 import com.daqem.jobsplus.stock.StockCatalog;
+import com.daqem.jobsplus.stock.StockMarketSnapshot;
 import com.daqem.jobsplus.stock.StockQuote;
 import com.daqem.jobsplus.client.gui.jobs.widgets.StockHistoryScrollWidget;
 import com.daqem.jobsplus.client.gui.jobs.widgets.StockHoldingsScrollWidget;
@@ -169,12 +171,13 @@ public class StockTradingComponent extends EmptyComponent
             return;
         }
 
+        StockMarketSnapshot snapshot = ClientStockMarket.getSnapshot();
         String displayedStockId = panelMode == StockPanelMode.SELL
                 ? selectedHoldingStockId
                 : this.state.getSelectedStockId();
         StockQuote selectedQuote = displayedStockId == null
                 ? null
-                : ClientStockMarket.getQuote(displayedStockId);
+                : snapshot.getQuote(displayedStockId);
         String selectedName = displayedStockId == null
                 ? "선택 필요"
                 : StockCatalog.getStockName(displayedStockId);
@@ -182,7 +185,7 @@ public class StockTradingComponent extends EmptyComponent
         drawCenteredScaled(guiGraphics, "보유 자산: " + formatAmount(this.state.getStockAccount().balance()),
                 x + getWidth() / 2, y + 26);
 
-        drawCenteredScaled(guiGraphics, "내 주식 평가: " + formatAmount(getTotalStockValue()),
+        drawCenteredScaled(guiGraphics, "내 주식 평가: " + formatTotalStockValue(snapshot),
                 x + getWidth() / 2, y + 37);
 
         if (panelMode == StockPanelMode.TRANSFER)
@@ -192,7 +195,7 @@ public class StockTradingComponent extends EmptyComponent
             return;
         }
 
-        String currentPrice = formatCurrentPrice(selectedQuote);
+        String currentPrice = formatCurrentPrice(snapshot, selectedQuote);
 
         if (panelMode == StockPanelMode.SELL)
         {
@@ -215,36 +218,60 @@ public class StockTradingComponent extends EmptyComponent
     }
 
     /**
-     * 표에 보이는 가격 문구. 갱신이 끊긴 가격은 거래도 막히므로 그 사실을 함께 알린다.
+     * 표에 보이는 가격 문구. 거래가 막힌 상태는 원인을 구분해서 알린다.
      */
-    private static String formatCurrentPrice(StockQuote quote)
+    private static String formatCurrentPrice(StockMarketSnapshot snapshot, StockQuote quote)
     {
-        if (quote == null || !quote.available())
+        if (snapshot.status() == SnapshotStatus.REFRESHING)
         {
-            return "현재가격: 조회 중";
+            return "현재가격: 갱신 중";
         }
-
-        String price = "현재가격: " + NUMBER_FORMAT.format(Math.round(quote.priceKrw()));
-        if (quote.isStale(System.currentTimeMillis()))
+        if (quote == null || !quote.hasValidPrice())
         {
-            return price + " (갱신 지연)";
+            return "현재가격: 조회 실패";
         }
-        return price;
+        return "현재가격: " + NUMBER_FORMAT.format(Math.round(quote.priceKrw()));
     }
 
-    private double getTotalStockValue()
+    /**
+     * 보유 주식 평가금액 문구.
+     * <p>
+     * 시세를 못 받은 상태에서 0으로 표시하면 자산이 사라진 것처럼 보이므로 상태를 그대로 알린다.
+     */
+    private String formatTotalStockValue(StockMarketSnapshot snapshot)
     {
         StockAccount account = this.state.getStockAccount();
+        if (account.positions().isEmpty())
+        {
+            return formatAmount(0);
+        }
+        if (snapshot.status() == SnapshotStatus.REFRESHING)
+        {
+            return "갱신 중";
+        }
+        if (snapshot.status() == SnapshotStatus.FAILED)
+        {
+            return "조회 실패";
+        }
+
         double total = 0;
+        boolean missingQuote = false;
         for (StockPosition position : account.positions())
         {
-            StockQuote quote = ClientStockMarket.getQuote(position.stockId());
-            if (quote != null && quote.available())
+            StockQuote quote = snapshot.getQuote(position.stockId());
+            if (quote != null && quote.hasValidPrice())
             {
                 total += position.getCurrentValue(quote.priceKrw());
+                continue;
             }
+            missingQuote = true;
         }
-        return total;
+
+        if (missingQuote)
+        {
+            return formatAmount(total) + " (일부 조회 실패)";
+        }
+        return formatAmount(total);
     }
 
     private EditBoxWidget createAmountInput(int x, int y, int defaultValue)
@@ -307,14 +334,17 @@ public class StockTradingComponent extends EmptyComponent
             showAlert("판매할 투자원금을 1개 이상 입력해 주세요.");
             return;
         }
-        if (!isTradable(selectedHoldingStockId))
+
+        // 가격 확인과 번호 추출이 서로 다른 스냅샷을 보지 않도록 한 번만 읽는다.
+        StockMarketSnapshot snapshot = ClientStockMarket.getSnapshot();
+        if (!isTradable(snapshot, selectedHoldingStockId))
         {
             return;
         }
 
         String stockName = StockCatalog.getStockName(selectedHoldingStockId);
         // 확인창을 띄운 시점의 가격으로만 체결한다. 그 사이 가격이 갱신되면 서버가 거래를 거절한다.
-        long snapshotVersion = ClientStockMarket.getSnapshotVersion();
+        long snapshotVersion = snapshot.version();
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.setScreen(new ConfirmationScreen(
                 minecraft.screen,
@@ -350,18 +380,19 @@ public class StockTradingComponent extends EmptyComponent
         }
 
         String selectedStockId = this.state.getSelectedStockId();
-        if (!isTradable(selectedStockId))
+        StockMarketSnapshot snapshot = ClientStockMarket.getSnapshot();
+        if (!isTradable(snapshot, selectedStockId))
         {
             return;
         }
 
         String stockName = StockCatalog.getStockName(selectedStockId);
-        long snapshotVersion = ClientStockMarket.getSnapshotVersion();
+        long snapshotVersion = snapshot.version();
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.setScreen(new ConfirmationScreen(
                 minecraft.screen,
                 new ConfirmationScreenState(
-                        Component.literal(stockName + "를 " + amount + "개 구매 하시겠습니까?"),
+                        Component.literal(stockName + "에 비트코인 " + amount + "개를 투자 하시겠습니까?"),
                         Component.literal("구매"),
                         Component.literal("취소"),
                         () -> {
@@ -379,18 +410,28 @@ public class StockTradingComponent extends EmptyComponent
 
     /**
      * 서버가 거절할 것이 확실한 거래는 확인창을 띄우기 전에 막는다.
+     * <p>
+     * 최종 판정은 서버가 현재 분을 기준으로 다시 수행한다. 여기서는 플레이어 PC 시간을 쓰지 않고
+     * 서버가 보내 준 상태만 본다.
      */
-    private boolean isTradable(String stockId)
+    private boolean isTradable(StockMarketSnapshot snapshot, String stockId)
     {
-        StockQuote quote = stockId == null ? null : ClientStockMarket.getQuote(stockId);
-        if (quote == null || !quote.available())
+        if (snapshot.status() == SnapshotStatus.REFRESHING)
         {
-            showAlert("아직 시세를 불러오지 못했습니다.\n잠시 후 다시 시도해 주세요.");
+            showAlert("시세를 갱신하는 중입니다.\n잠시 후 다시 시도해 주세요.");
             return false;
         }
-        if (!quote.isTradable(System.currentTimeMillis()))
+        if (snapshot.status() == SnapshotStatus.FAILED)
         {
-            showAlert(quote.name() + " 시세 갱신이 지연되고 있습니다.\n가격이 다시 갱신된 후 거래해 주세요.");
+            showAlert("시세를 불러오지 못했습니다.\n다음 갱신을 기다려 주세요.");
+            return false;
+        }
+
+        StockQuote quote = stockId == null ? null : snapshot.getQuote(stockId);
+        if (quote == null || !quote.hasValidPrice())
+        {
+            String stockName = stockId == null ? "해당 종목" : StockCatalog.getStockName(stockId);
+            showAlert(stockName + " 시세를 불러오지 못했습니다.\n다음 갱신을 기다려 주세요.");
             return false;
         }
         return true;

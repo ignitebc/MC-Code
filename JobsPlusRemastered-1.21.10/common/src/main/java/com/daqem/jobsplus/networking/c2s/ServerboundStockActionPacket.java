@@ -1,11 +1,14 @@
 package com.daqem.jobsplus.networking.c2s;
 
+import com.daqem.jobsplus.event.stock.StockMarketTicker;
 import com.daqem.jobsplus.stock.StockMarketService;
 import com.daqem.jobsplus.stock.StockMarketSnapshot;
 import com.daqem.jobsplus.stock.StockQuote;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundStockAlertPacket;
+import com.daqem.jobsplus.networking.s2c.ClientboundStockSnapshotPacket;
+import com.daqem.jobsplus.stock.SnapshotStatus;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.stock.StockAccount;
 import dev.architectury.networking.NetworkManager;
@@ -181,43 +184,70 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
      * 체결에 사용할 시세를 서버 스냅샷에서 가져온다.
      * <p>
      * 시세 API를 다시 조회하지 않는다. 조회는 비동기라서 즉시 반영되지 않고, 무엇보다 클라이언트 표가
-     * 보여 준 가격과 다른 가격으로 체결될 수 있기 때문이다. 대신 클라이언트가 보고 있던 스냅샷 번호를
-     * 서버 스냅샷과 대조해서, 두 값이 다르면 거래를 진행하지 않고 새 가격을 확인하도록 안내한다.
+     * 보여 준 가격과 다른 가격으로 체결될 수 있기 때문이다. 대신 아래를 모두 확인한다.
+     * <ul>
+     *   <li>클라이언트가 보고 있던 스냅샷 번호가 서버 스냅샷과 같은지</li>
+     *   <li>그 스냅샷이 현재 서버 분의 가격인지 (이전 분 가격으로 체결 금지)</li>
+     *   <li>스냅샷 상태가 {@link SnapshotStatus#READY}인지 (조회 중이거나 실패면 거래 중지)</li>
+     *   <li>해당 종목의 가격이 유한한 양수인지</li>
+     * </ul>
      *
      * @return 체결 가능한 시세. 불가능하면 {@code null}이며 사유는 플레이어에게 전달된다.
      */
     private static StockQuote resolveTradableQuote(ServerPlayer player, ServerboundStockActionPacket packet)
     {
-        StockMarketSnapshot snapshot = StockMarketService.getInstance().getSnapshot();
-        if (snapshot.isEmpty())
+        // 주식 탭을 열어야만 서버가 시세를 갱신하므로, 탭을 열지 않은 요청은 조작된 패킷이다.
+        if (!StockMarketTicker.isViewing(player))
         {
             NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
-                    "아직 시세를 불러오지 못했습니다.\n잠시 후 다시 시도해 주세요."));
+                    "주식 탭을 연 상태에서만 거래할 수 있습니다."));
             return null;
         }
 
+        StockMarketSnapshot snapshot = StockMarketService.getInstance().getSnapshot();
+
         if (packet.snapshotVersion != snapshot.version())
         {
-            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
-                    "가격이 갱신되었습니다.\n새 가격을 확인한 후 다시 거래해 주세요."));
+            // 클라이언트가 갱신 패킷을 놓쳤을 수 있으므로 현재 스냅샷을 다시 보내 준다.
+            rejectAndResync(player, snapshot, "가격이 갱신되었습니다.\n새 가격을 확인한 후 다시 거래해 주세요.");
+            return null;
+        }
+
+        if (snapshot.marketMinute() != StockMarketSnapshot.currentMarketMinute())
+        {
+            rejectAndResync(player, snapshot, "시세 갱신 시점이 지났습니다.\n새 가격을 확인한 후 다시 거래해 주세요.");
+            return null;
+        }
+
+        if (snapshot.status() != SnapshotStatus.READY)
+        {
+            String reason = snapshot.status() == SnapshotStatus.REFRESHING
+                    ? "시세를 갱신하는 중입니다.\n잠시 후 다시 시도해 주세요."
+                    : "시세를 불러오지 못했습니다.\n다음 갱신을 기다려 주세요.";
+            rejectAndResync(player, snapshot, reason);
             return null;
         }
 
         StockQuote quote = snapshot.getQuote(packet.stockId);
         if (quote == null)
         {
-            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
-                    "거래할 수 없는 종목입니다."));
+            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket("거래할 수 없는 종목입니다."));
             return null;
         }
 
-        if (!quote.isTradable(System.currentTimeMillis()))
+        if (!quote.hasValidPrice())
         {
-            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
-                    quote.name() + " 시세 갱신이 지연되고 있습니다.\n가격이 다시 갱신된 후 거래해 주세요."));
+            rejectAndResync(player, snapshot,
+                    quote.name() + " 시세를 불러오지 못했습니다.\n다음 갱신을 기다려 주세요.");
             return null;
         }
         return quote;
+    }
+
+    private static void rejectAndResync(ServerPlayer player, StockMarketSnapshot snapshot, String reason)
+    {
+        NetworkManager.sendToPlayer(player, new ClientboundStockSnapshotPacket(snapshot));
+        NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(reason));
     }
 
     private static boolean isValidTransferAmount(int amount)

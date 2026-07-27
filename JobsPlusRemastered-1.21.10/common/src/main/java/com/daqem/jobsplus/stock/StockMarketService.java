@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -16,27 +15,36 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 시세 조회 및 스냅샷 확정을 담당한다.
+ * 시세 조회와 분 단위 스냅샷 확정을 담당한다.
  * <p>
  * <b>서버 전용이다.</b> 클라이언트는 API를 직접 조회하지 않고 서버가 보내 준
  * {@link StockMarketSnapshot}만 사용한다. 클라이언트가 따로 조회하면 표에 보이는 가격과
  * 서버가 체결에 쓰는 가격이 서로 달라질 수 있기 때문이다.
  * <p>
- * 갱신은 {@link com.daqem.jobsplus.event.stock.StockMarketTicker}가 서버 틱마다 호출하는
- * {@link #refreshIfNeeded()}로만 이루어지며, 실제 HTTP 요청은 {@link #REFRESH_INTERVAL_MILLIS}에
- * 한 번으로 제한된다. 조회가 끝나면 스냅샷을 통째로 교체하므로 1분 동안은 모든 플레이어가
- * 동일한 가격을 본다.
+ * 갱신 시점은 {@link com.daqem.jobsplus.event.stock.StockMarketTicker}가 서버 시스템 시간의
+ * 분 경계에서 {@link #refreshForMinute(long)}을 호출해 결정한다. 이 클래스는 "이전 조회로부터
+ * 몇 초가 지났는가"를 따지지 않는다.
+ * <p>
+ * 조회를 시작하는 즉시 모든 종목을 거래 불가로 만든 {@link SnapshotStatus#REFRESHING} 스냅샷을
+ * 내보내므로, 응답이 도착하기 전까지는 이전 분 가격으로 거래할 수 없다.
  */
 public final class StockMarketService
 {
-    private static final long REFRESH_INTERVAL_MILLIS = 60_000L;
+    /** 한 분의 조회에 허용하는 총 시간. 다음 분 경계를 넘기지 않도록 넉넉히 잡되 1분보다 짧아야 한다. */
+    private static final long FETCH_DEADLINE_MILLIS = 20_000L;
+    private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(10);
     private static final String YAHOO_CHART_URL =
             "https://query1.finance.yahoo.com/v8/finance/chart/%s?interval=1m&range=1d";
+    private static final String YAHOO_EXCHANGE_RATE_SYMBOL = "KRW=X";
     private static final String UPBIT_TICKER_URL =
             "https://api.upbit.com/v1/ticker?markets=KRW-BTC,KRW-ETH,KRW-DOGE,KRW-XRP,KRW-SOL";
 
@@ -44,13 +52,31 @@ public final class StockMarketService
 
     private final HttpClient httpClient;
     private final ExecutorService refreshExecutor;
-    private final AtomicBoolean refreshing = new AtomicBoolean();
-    private volatile StockMarketSnapshot snapshot;
-    private volatile long lastRefreshAttempt;
+    private final AtomicLong requestedMinute = new AtomicLong(Long.MIN_VALUE);
+    private final AtomicLong versionCounter = new AtomicLong();
+
+    /**
+     * 시청 세션 번호. 세션이 끝나거나 새로 시작되면 값이 올라간다.
+     * 조회를 시작할 때의 번호와 끝났을 때의 번호가 다르면 그 결과는 버린다.
+     */
+    private final AtomicLong sessionGeneration = new AtomicLong();
+    private volatile boolean sessionActive;
+
+    /**
+     * 스냅샷 교체 잠금.
+     * <p>
+     * 갱신 시작(서버 스레드)과 조회 완료(작업 스레드)가 동시에 스냅샷을 건드리면, 지난 분 결과가
+     * 새 분의 갱신 중 스냅샷을 덮어써 표에 지난 가격이 남을 수 있다. 두 경로를 같은 잠금으로 묶어
+     * 유효성 검사와 교체가 끊기지 않게 한다.
+     */
+    private final Object snapshotLock = new Object();
+    private volatile StockMarketSnapshot snapshot = StockMarketSnapshot.EMPTY;
 
     private StockMarketService()
     {
-        this.refreshExecutor = Executors.newSingleThreadExecutor(runnable -> {
+        // 분 경계 직전에 진입 조회가 시작되면 다음 분 조회와 겹칠 수 있다.
+        // 단일 스레드면 새 분 조회가 이전 조회를 기다리게 되므로 여유분을 둔다.
+        this.refreshExecutor = Executors.newFixedThreadPool(2, runnable -> {
             Thread thread = new Thread(runnable, "JobsPlus-StockMarket");
             thread.setDaemon(true);
             return thread;
@@ -58,9 +84,6 @@ public final class StockMarketService
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(8))
                 .build();
-        this.snapshot = new StockMarketSnapshot(0, 0, StockCatalog.getStocks().stream()
-                .map(stock -> StockQuote.loading(stock.id(), stock.name()))
-                .toList());
     }
 
     public static StockMarketService getInstance()
@@ -77,131 +100,337 @@ public final class StockMarketService
     }
 
     /**
-     * 마지막 조회로부터 {@link #REFRESH_INTERVAL_MILLIS}가 지났으면 갱신을 시작한다.
+     * 첫 시청자가 들어왔을 때 시세 조회를 시작한다.
      * <p>
-     * 조회는 별도 스레드에서 진행되며, 성공해야만 스냅샷이 교체된다. 조회가 끝나기 전까지는
-     * 이전 스냅샷이 그대로 유지되므로 이 메서드를 호출한 직후에 가격이 바뀌는 일은 없다.
+     * 새 세션 번호를 부여해서, 이전 세션에서 돌고 있던 조회가 뒤늦게 끝나도 반영되지 않게 한다.
      */
-    public void refreshIfNeeded()
+    public void startSessionAndRefresh(long targetMinute)
     {
-        long now = System.currentTimeMillis();
-        if (now - this.lastRefreshAttempt < REFRESH_INTERVAL_MILLIS || !this.refreshing.compareAndSet(false, true))
+        this.sessionGeneration.incrementAndGet();
+        this.sessionActive = true;
+        this.requestedMinute.set(Long.MIN_VALUE);
+        this.refreshForMinute(targetMinute);
+    }
+
+    /**
+     * 마지막 시청자가 나갔거나 서버가 멈출 때 호출한다.
+     * 진행 중인 조회 결과는 세션 번호가 어긋나므로 자동으로 폐기된다.
+     */
+    public void stopSession()
+    {
+        this.sessionGeneration.incrementAndGet();
+        this.sessionActive = false;
+        this.requestedMinute.set(Long.MIN_VALUE);
+        synchronized (this.snapshotLock)
+        {
+            this.snapshot = StockMarketSnapshot.EMPTY;
+        }
+    }
+
+    /**
+     * 지정한 분의 시세 조회를 시작한다.
+     * <p>
+     * 호출 즉시 해당 분의 {@link SnapshotStatus#REFRESHING} 스냅샷으로 교체하여 거래를 중지시키고,
+     * 실제 조회는 별도 스레드에서 진행한다. 같은 분이나 지난 분에 대한 요청은 무시한다.
+     */
+    public void refreshForMinute(long targetMinute)
+    {
+        if (!this.sessionActive)
         {
             return;
         }
 
-        this.lastRefreshAttempt = now;
-        this.refreshExecutor.execute(() -> {
-            try
-            {
-                this.refreshQuotes();
-            }
-            finally
-            {
-                this.refreshing.set(false);
-            }
-        });
+        long previousMinute = this.requestedMinute.getAndUpdate(
+                current -> Math.max(current, targetMinute));
+        if (targetMinute <= previousMinute)
+        {
+            return;
+        }
+
+        long generation = this.sessionGeneration.get();
+        synchronized (this.snapshotLock)
+        {
+            this.snapshot = StockMarketSnapshot.refreshing(this.versionCounter.incrementAndGet(), targetMinute);
+        }
+        this.refreshExecutor.execute(() -> this.fetchAndPublish(targetMinute, generation));
     }
 
-    private void refreshQuotes()
+    private void fetchAndPublish(long targetMinute, long generation)
     {
-        StockMarketSnapshot previousSnapshot = this.snapshot;
-        Map<String, StockQuote> refreshedQuotes = new LinkedHashMap<>();
-        previousSnapshot.quotes().forEach(quote -> refreshedQuotes.put(quote.id(), quote));
-
-        long fetchedAt = System.currentTimeMillis();
-        int successCount = 0;
-
-        double usdKrw = 0;
         try
         {
-            usdKrw = this.fetchYahooPrice("KRW=X").price();
+            this.publishResult(targetMinute, generation, this.fetchQuotes(targetMinute));
         }
-        catch (IOException | InterruptedException | RuntimeException e)
+        catch (RuntimeException e)
         {
-            JobsPlus.LOGGER.warn("Failed to fetch USD/KRW exchange rate: {}", e.toString());
-            restoreInterruptFlag(e);
+            JobsPlus.LOGGER.error("Stock market refresh failed for minute {}", targetMinute, e);
+            this.publishResult(targetMinute, generation, buildUnavailableQuotes());
         }
+    }
 
+    /**
+     * 모든 요청을 동시에 보내고 제한 시간 안에 도착한 응답만 사용한다.
+     * <p>
+     * 종목을 하나씩 순차 조회하면 최악의 경우 1분을 넘겨 그 분의 시세를 쓸 수 없게 된다.
+     */
+    private Map<String, StockQuote> fetchQuotes(long targetMinute)
+    {
+        Map<String, StockQuote> quotes = buildUnavailableQuotes();
+        long deadline = System.currentTimeMillis() + FETCH_DEADLINE_MILLIS;
+
+        CompletableFuture<HttpResponse<String>> exchangeRateRequest =
+                this.requestAsync(YAHOO_CHART_URL.formatted(YAHOO_EXCHANGE_RATE_SYMBOL));
+        Map<String, CompletableFuture<HttpResponse<String>>> yahooRequests = new LinkedHashMap<>();
         for (StockCatalog.StockDefinition stock : StockCatalog.getStocks())
         {
-            if (stock.market() != StockCatalog.Market.YAHOO)
+            if (stock.market() == StockCatalog.Market.YAHOO)
+            {
+                yahooRequests.put(stock.id(), this.requestAsync(YAHOO_CHART_URL.formatted(stock.symbol())));
+            }
+        }
+        CompletableFuture<HttpResponse<String>> upbitRequest = this.requestAsync(UPBIT_TICKER_URL);
+
+        double usdKrw = readExchangeRate(exchangeRateRequest, deadline);
+        for (StockCatalog.StockDefinition stock : StockCatalog.getStocks())
+        {
+            CompletableFuture<HttpResponse<String>> request = yahooRequests.get(stock.id());
+            if (request == null)
             {
                 continue;
             }
 
-            try
+            StockQuote quote = readYahooQuote(stock, request, usdKrw, deadline);
+            if (quote != null)
             {
-                YahooQuote yahooQuote = this.fetchYahooPrice(stock.symbol());
-                boolean isKoreanStock = stock.symbol().endsWith(".KS") || stock.symbol().endsWith(".KQ");
-                if (!isKoreanStock && usdKrw == 0)
-                {
-                    continue;
-                }
-                double priceKrw = isKoreanStock ? yahooQuote.price() : yahooQuote.price() * usdKrw;
-                refreshedQuotes.put(
-                        stock.id(),
-                        new StockQuote(stock.id(), stock.name(), priceKrw, yahooQuote.percentChange(), true, fetchedAt)
-                );
-                successCount++;
-            }
-            catch (IOException | InterruptedException | RuntimeException e)
-            {
-                JobsPlus.LOGGER.warn("Failed to fetch Yahoo quote for {} ({}): {}", stock.id(), stock.symbol(), e.toString());
-                restoreInterruptFlag(e);
+                quotes.put(stock.id(), quote);
             }
         }
+        readUpbitQuotes(upbitRequest, quotes, deadline);
 
-        try
-        {
-            successCount += this.fetchUpbitPrices(refreshedQuotes, fetchedAt);
-        }
-        catch (IOException | InterruptedException | RuntimeException e)
-        {
-            JobsPlus.LOGGER.warn("Failed to fetch Upbit tickers: {}", e.toString());
-            restoreInterruptFlag(e);
-        }
+        JobsPlus.LOGGER.debug("Stock market minute {} fetched {} of {} symbols", targetMinute,
+                quotes.values().stream().filter(StockQuote::available).count(), quotes.size());
+        return quotes;
+    }
 
-        // 한 종목도 못 받았으면 스냅샷을 교체하지 않는다.
-        // 버전이 그대로 유지되므로 진행 중인 거래가 불필요하게 취소되지 않고,
-        // 각 시세의 updatedAt이 그대로 늙어 일정 시간 후 자동으로 거래가 차단된다.
-        if (successCount == 0)
-        {
-            JobsPlus.LOGGER.warn("Stock market refresh failed for every symbol. Keeping snapshot version {}.",
-                    previousSnapshot.version());
-            return;
-        }
-
+    private void publishResult(long targetMinute, long generation, Map<String, StockQuote> quotes)
+    {
         List<StockQuote> orderedQuotes = new ArrayList<>(StockCatalog.getStocks().size());
         for (StockCatalog.StockDefinition stock : StockCatalog.getStocks())
         {
-            StockQuote quote = refreshedQuotes.get(stock.id());
-            orderedQuotes.add(quote != null ? quote : StockQuote.loading(stock.id(), stock.name()));
+            StockQuote quote = quotes.get(stock.id());
+            orderedQuotes.add(quote != null ? quote : StockQuote.unavailable(stock.id(), stock.name()));
         }
-        this.snapshot = new StockMarketSnapshot(
-                previousSnapshot.version() + 1, fetchedAt, List.copyOf(orderedQuotes));
+
+        // NaN이나 0 이하 가격은 available이어도 거래에 쓸 수 없으므로 성공으로 보지 않는다.
+        boolean anySucceeded = orderedQuotes.stream().anyMatch(StockQuote::hasValidPrice);
+        SnapshotStatus status = anySucceeded ? SnapshotStatus.READY : SnapshotStatus.FAILED;
+        if (!anySucceeded)
+        {
+            JobsPlus.LOGGER.warn("Stock market refresh failed for every symbol at minute {}", targetMinute);
+        }
+
+        synchronized (this.snapshotLock)
+        {
+            if (!this.isResultStillWanted(targetMinute, generation))
+            {
+                return;
+            }
+
+            this.snapshot = new StockMarketSnapshot(
+                    this.versionCounter.incrementAndGet(),
+                    targetMinute,
+                    System.currentTimeMillis(),
+                    status,
+                    List.copyOf(orderedQuotes)
+            );
+        }
     }
 
-    private YahooQuote fetchYahooPrice(String symbol) throws IOException, InterruptedException
+    /**
+     * 조회를 시작한 뒤 세션이 끝났거나 다음 분이 시작됐다면 이 결과는 더 이상 쓸 수 없다.
+     */
+    private boolean isResultStillWanted(long targetMinute, long generation)
+    {
+        if (!this.sessionActive)
+        {
+            JobsPlus.LOGGER.debug("Discarding stock quotes for minute {}: no one is viewing", targetMinute);
+            return false;
+        }
+        if (generation != this.sessionGeneration.get())
+        {
+            JobsPlus.LOGGER.debug("Discarding stock quotes for minute {}: session restarted", targetMinute);
+            return false;
+        }
+        if (targetMinute != this.requestedMinute.get())
+        {
+            JobsPlus.LOGGER.warn("Discarding stale stock quotes for minute {} (current: {})",
+                    targetMinute, this.requestedMinute.get());
+            return false;
+        }
+        return true;
+    }
+
+    private static Map<String, StockQuote> buildUnavailableQuotes()
+    {
+        Map<String, StockQuote> quotes = new LinkedHashMap<>();
+        for (StockCatalog.StockDefinition stock : StockCatalog.getStocks())
+        {
+            quotes.put(stock.id(), StockQuote.unavailable(stock.id(), stock.name()));
+        }
+        return quotes;
+    }
+
+    private CompletableFuture<HttpResponse<String>> requestAsync(String url)
     {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(YAHOO_CHART_URL.formatted(symbol)))
-                .timeout(Duration.ofSeconds(10))
+                .uri(URI.create(url))
+                .timeout(REQUEST_TIMEOUT)
                 .header("Accept", "application/json")
                 .header("User-Agent", "JobsPlus/1.0")
                 .GET()
                 .build();
-        HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() != 200)
+        return this.httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private static double readExchangeRate(CompletableFuture<HttpResponse<String>> request, long deadline)
+    {
+        String body = awaitBody(request, deadline, YAHOO_EXCHANGE_RATE_SYMBOL);
+        if (body == null)
         {
-            throw new IOException("Stock quote response status: " + response.statusCode());
+            return 0;
         }
 
-        JsonObject chart = JsonParser.parseString(response.body()).getAsJsonObject().getAsJsonObject("chart");
+        try
+        {
+            return parseYahooQuote(body).price();
+        }
+        catch (RuntimeException e)
+        {
+            JobsPlus.LOGGER.warn("Failed to parse USD/KRW exchange rate: {}", e.toString());
+            return 0;
+        }
+    }
+
+    private static StockQuote readYahooQuote(StockCatalog.StockDefinition stock,
+                                             CompletableFuture<HttpResponse<String>> request,
+                                             double usdKrw, long deadline)
+    {
+        String body = awaitBody(request, deadline, stock.symbol());
+        if (body == null)
+        {
+            return null;
+        }
+
+        boolean isKoreanStock = stock.symbol().endsWith(".KS") || stock.symbol().endsWith(".KQ");
+        if (!isKoreanStock && usdKrw <= 0)
+        {
+            JobsPlus.LOGGER.warn("Skipping {} because the exchange rate is unavailable", stock.id());
+            return null;
+        }
+
+        try
+        {
+            YahooQuote yahooQuote = parseYahooQuote(body);
+            double priceKrw = isKoreanStock ? yahooQuote.price() : yahooQuote.price() * usdKrw;
+            return StockQuote.available(stock.id(), stock.name(), priceKrw, yahooQuote.percentChange(),
+                    System.currentTimeMillis());
+        }
+        catch (RuntimeException e)
+        {
+            JobsPlus.LOGGER.warn("Failed to parse Yahoo quote for {} ({}): {}", stock.id(), stock.symbol(),
+                    e.toString());
+            return null;
+        }
+    }
+
+    private static void readUpbitQuotes(CompletableFuture<HttpResponse<String>> request,
+                                        Map<String, StockQuote> quotes, long deadline)
+    {
+        String body = awaitBody(request, deadline, "Upbit");
+        if (body == null)
+        {
+            return;
+        }
+
+        try
+        {
+            long updatedAt = System.currentTimeMillis();
+            JsonArray tickers = JsonParser.parseString(body).getAsJsonArray();
+            for (JsonElement tickerElement : tickers)
+            {
+                JsonObject ticker = tickerElement.getAsJsonObject();
+                StockCatalog.StockDefinition stock =
+                        StockCatalog.getStockBySymbol(ticker.get("market").getAsString());
+                if (stock == null)
+                {
+                    continue;
+                }
+
+                quotes.put(stock.id(), StockQuote.available(
+                        stock.id(),
+                        stock.name(),
+                        ticker.get("trade_price").getAsDouble(),
+                        ticker.get("signed_change_rate").getAsDouble() * 100,
+                        updatedAt
+                ));
+            }
+        }
+        catch (RuntimeException e)
+        {
+            JobsPlus.LOGGER.warn("Failed to parse Upbit tickers: {}", e.toString());
+        }
+    }
+
+    /**
+     * 제한 시간 안에 도착한 응답 본문. 실패하거나 늦으면 요청을 취소하고 {@code null}을 돌려준다.
+     */
+    private static String awaitBody(CompletableFuture<HttpResponse<String>> request, long deadline, String label)
+    {
+        long remaining = deadline - System.currentTimeMillis();
+        if (remaining <= 0)
+        {
+            request.cancel(true);
+            JobsPlus.LOGGER.warn("Stock quote request for {} exceeded the fetch deadline", label);
+            return null;
+        }
+
+        try
+        {
+            HttpResponse<String> response = request.get(remaining, TimeUnit.MILLISECONDS);
+            if (response.statusCode() != 200)
+            {
+                JobsPlus.LOGGER.warn("Stock quote response for {} returned status {}", label,
+                        response.statusCode());
+                return null;
+            }
+            return response.body();
+        }
+        catch (TimeoutException e)
+        {
+            request.cancel(true);
+            JobsPlus.LOGGER.warn("Stock quote request for {} timed out", label);
+            return null;
+        }
+        catch (ExecutionException e)
+        {
+            JobsPlus.LOGGER.warn("Stock quote request for {} failed: {}", label, e.getCause());
+            return null;
+        }
+        catch (InterruptedException e)
+        {
+            Thread.currentThread().interrupt();
+            request.cancel(true);
+            return null;
+        }
+    }
+
+    private static YahooQuote parseYahooQuote(String body)
+    {
+        JsonObject chart = JsonParser.parseString(body).getAsJsonObject().getAsJsonObject("chart");
         JsonArray result = chart.getAsJsonArray("result");
         if (result == null || result.isEmpty())
         {
-            throw new IOException("Stock quote result is empty");
+            throw new IllegalStateException("Stock quote result is empty");
         }
 
         JsonObject meta = result.get(0).getAsJsonObject().getAsJsonObject("meta");
@@ -209,57 +438,6 @@ public final class StockMarketService
         double previousClose = getPreviousClose(meta);
         double percentChange = previousClose == 0 ? 0 : (price - previousClose) / previousClose * 100;
         return new YahooQuote(price, percentChange);
-    }
-
-    private int fetchUpbitPrices(Map<String, StockQuote> refreshedQuotes, long fetchedAt)
-            throws IOException, InterruptedException
-    {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(UPBIT_TICKER_URL))
-                .timeout(Duration.ofSeconds(10))
-                .header("Accept", "application/json")
-                .header("User-Agent", "JobsPlus/1.0")
-                .GET()
-                .build();
-        HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() != 200)
-        {
-            throw new IOException("Upbit ticker response status: " + response.statusCode());
-        }
-
-        int successCount = 0;
-        JsonArray tickers = JsonParser.parseString(response.body()).getAsJsonArray();
-        for (JsonElement tickerElement : tickers)
-        {
-            JsonObject ticker = tickerElement.getAsJsonObject();
-            StockCatalog.StockDefinition stock = StockCatalog.getStockBySymbol(ticker.get("market").getAsString());
-            if (stock == null)
-            {
-                continue;
-            }
-
-            refreshedQuotes.put(
-                    stock.id(),
-                    new StockQuote(
-                            stock.id(),
-                            stock.name(),
-                            ticker.get("trade_price").getAsDouble(),
-                            ticker.get("signed_change_rate").getAsDouble() * 100,
-                            true,
-                            fetchedAt
-                    )
-            );
-            successCount++;
-        }
-        return successCount;
-    }
-
-    private static void restoreInterruptFlag(Exception e)
-    {
-        if (e instanceof InterruptedException)
-        {
-            Thread.currentThread().interrupt();
-        }
     }
 
     private static double getPreviousClose(JsonObject meta)

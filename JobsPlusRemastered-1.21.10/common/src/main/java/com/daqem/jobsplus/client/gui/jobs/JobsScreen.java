@@ -2,8 +2,12 @@ package com.daqem.jobsplus.client.gui.jobs;
 
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.components.JobsComponent;
+import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
 import com.daqem.jobsplus.client.gui.jobs.widgets.ShopTooltipState;
+import com.daqem.jobsplus.client.stock.ClientStockMarket;
+import com.daqem.jobsplus.networking.c2s.ServerboundStockViewStatePacket;
 import com.daqem.uilib.gui.AbstractScreen;
+import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -90,6 +94,15 @@ public class JobsScreen extends AbstractScreen
     public void onClose()
     {
         assert this.minecraft != null;
+
+        // 거래 후 화면이 새로 만들어지는 경우에는 removed()만 호출되므로 여기서 처리해야
+        // 실제로 창을 닫을 때만 시청 상태가 해제된다.
+        if (this.state.getSelectedRightTab() == RightTab.UP_AND_DOWN)
+        {
+            NetworkManager.sendToServer(new ServerboundStockViewStatePacket(false));
+            ClientStockMarket.clear();
+        }
+
         this.minecraft.setScreen(previousScreen);
     }
 
