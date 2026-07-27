@@ -7,12 +7,13 @@
   "rewards": [
     {
       "type": "jobsplus:job_exp",
-      "min": 0,
-      "max": 1
+      "chance": 16.5,
+      "min": 5,
+      "max": 5
     },
     {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 0.03,
+      "chance": 0.19,
       "amount": 1
     }
   ],
@@ -34,6 +35,11 @@
     {
       "type": "arc:movement_state",
       "state": "sprinting",
+      "inverted": true
+    },
+    {
+      "type": "arc:movement_state",
+      "state": "swimming",
       "inverted": true
     }
   ]

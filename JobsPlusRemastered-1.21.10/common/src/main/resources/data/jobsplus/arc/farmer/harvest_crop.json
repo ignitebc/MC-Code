@@ -7,18 +7,25 @@
   "rewards": [
     {
       "type": "jobsplus:job_exp",
-      "min": 0,
-      "max": 2
+      "chance": 6.41,
+      "min": 5,
+      "max": 5
     },
     {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 0.1,
+      "chance": 0.075,
       "amount": 1
     }
   ],
   "conditions": [
     {
       "type": "arc:crop_fully_grown"
+    },
+    {
+      "type": "arc:items",
+      "items": [
+        "#minecraft:hoes"
+      ]
     }
   ]
 }

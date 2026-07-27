@@ -7,12 +7,13 @@
   "rewards": [
     {
       "type": "jobsplus:job_exp",
-      "min": 0,
-      "max": 1
+      "chance": 4.75,
+      "min": 5,
+      "max": 5
     },
     {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 0.03,
+      "chance": 0.055,
       "amount": 1
     }
   ],
@@ -36,6 +37,9 @@
         "minecraft:soul_sand",
         "minecraft:soul_soil"
       ]
+    },
+    {
+      "type": "arc:not_in_block_pos_cache"
     }
   ]
 }

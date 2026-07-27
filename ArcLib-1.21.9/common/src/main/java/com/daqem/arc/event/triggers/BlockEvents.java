@@ -108,6 +108,7 @@ public class BlockEvents {
                 .withData(ActionDataType.BLOCK_STATE, state)
                 .withData(ActionDataType.BLOCK_POSITION, pos)
                 .withData(ActionDataType.WORLD, level)
+                .withData(ActionDataType.ITEM_STACK, player.arc$getServerPlayer().getMainHandItem().copy())
                 .build()
                 .sendToAction();
     }

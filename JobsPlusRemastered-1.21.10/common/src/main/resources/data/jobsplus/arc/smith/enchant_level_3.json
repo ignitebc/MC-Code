@@ -7,12 +7,13 @@
   "rewards": [
     {
       "type": "jobsplus:job_exp",
-      "min": 50,
-      "max": 50
+      "chance": 85.5,
+      "min": 25,
+      "max": 25
     },
     {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 1,
+      "chance": 15,
       "amount": 1
     }
   ],

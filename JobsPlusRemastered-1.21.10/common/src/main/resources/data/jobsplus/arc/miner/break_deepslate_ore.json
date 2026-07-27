@@ -7,13 +7,13 @@
   "rewards": [
     {
       "type": "jobsplus:job_exp",
-      "chance": 10.68,
+      "chance": 15.08,
       "min": 5,
       "max": 5
     },
     {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 0.125,
+      "chance": 0.53,
       "amount": 1
     }
   ],
@@ -21,9 +21,14 @@
     {
       "type": "arc:blocks",
       "blocks": [
-        "minecraft:deepslate",
-        "minecraft:end_stone",
-        "minecraft:cobbled_deepslate"
+        "minecraft:deepslate_coal_ore",
+        "minecraft:deepslate_iron_ore",
+        "minecraft:deepslate_copper_ore",
+        "minecraft:deepslate_gold_ore",
+        "minecraft:deepslate_redstone_ore",
+        "minecraft:deepslate_lapis_ore",
+        "minecraft:deepslate_diamond_ore",
+        "minecraft:deepslate_emerald_ore"
       ]
     },
     {
@@ -45,6 +50,5 @@
         ]
       }
     }
-    
   ]
 }
