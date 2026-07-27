@@ -60,6 +60,11 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
 
     @Shadow public ServerGamePacketListenerImpl connection;
 
+    // 바닐라 moveDist 는 실제 수평 이동 거리에 0.6 을 곱해 누적한다(Entity#applyMovementEmissionAndPlaySound).
+    // 거리 조건이 실제 블록 수를 기준으로 동작하도록 이벤트로 넘기기 전에 되돌린다.
+    @Unique
+    private static final float ARC_MOVE_DIST_SCALE = 0.6F;
+
     @Unique
     private Map<ResourceLocation, IActionHolder> arc$actionHolders = new HashMap<>();
     @Unique
@@ -304,7 +309,7 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
         float distance = this.moveDist - this.arc$walkingDistance;
         if (this.arc$isWalking && isCurrentlyWalking) {
             this.arc$walkingDistance = this.moveDist;
-            MovementEvents.onWalk(this, (int) (this.arc$walkingDistance * 100));
+            MovementEvents.onWalk(this, (int) (this.arc$walkingDistance / ARC_MOVE_DIST_SCALE * 100));
         } else {
             if (this.arc$isWalking) {
                 this.arc$isWalking = false;
@@ -317,7 +322,7 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
 
         if (this.arc$isSprinting && this.isSprinting()) {
             this.arc$sprintingDistance += distance;
-            MovementEvents.onSprint(this, (int) (this.arc$sprintingDistance * 100));
+            MovementEvents.onSprint(this, (int) (this.arc$sprintingDistance / ARC_MOVE_DIST_SCALE * 100));
         } else {
             if (this.arc$isSprinting) {
                 this.arc$isSprinting = false;
@@ -333,7 +338,7 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
             float horseRidingDistance = horse.moveDist - this.arc$horseRidingDistance;
             if (isCurrentlyRiding) {
                 this.arc$horseRidingDistance += horseRidingDistance;
-                MovementEvents.onHorseRide(this, (int) (this.arc$horseRidingDistance * 100));
+                MovementEvents.onHorseRide(this, (int) (this.arc$horseRidingDistance / ARC_MOVE_DIST_SCALE * 100));
             }
         } else {
             if (this.arc$isHorseRiding) {
@@ -351,7 +356,7 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
 
         if (this.arc$isCrouching && this.isCrouching()) {
             this.arc$crouchingDistance += distance;
-            MovementEvents.onCrouch(this, (int) (this.arc$crouchingDistance * 100));
+            MovementEvents.onCrouch(this, (int) (this.arc$crouchingDistance / ARC_MOVE_DIST_SCALE * 100));
         } else {
             if (this.arc$isCrouching) {
                 this.arc$isCrouching = false;
