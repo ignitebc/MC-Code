@@ -22,12 +22,12 @@ public class JobPowerupManager
 
     public Optional<Powerup> getPowerup(PowerupInstance powerupInstance)
     {
-        return powerups.stream().filter(powerup -> powerup.getPowerupInstance().getLocation().equals(powerupInstance.getLocation())).findFirst();
+        return powerups.stream().filter(powerup -> powerup.getPowerupLocation().equals(powerupInstance.getLocation())).findFirst();
     }
 
     public Optional<Powerup> getPowerup(ResourceLocation powerupLocation)
     {
-        return powerups.stream().filter(powerup -> powerup.getPowerupInstance().getLocation().equals(powerupLocation)).findFirst();
+        return powerups.stream().filter(powerup -> powerup.getPowerupLocation().equals(powerupLocation)).findFirst();
     }
 
     public List<Powerup> getAllPowerups()
@@ -61,7 +61,7 @@ public class JobPowerupManager
 
     public boolean canAddPowerup(PowerupInstance powerupInstance)
     {
-        if (powerups.stream().anyMatch(powerup -> powerup.getPowerupInstance().getLocation().equals(powerupInstance.getLocation())))
+        if (powerups.stream().anyMatch(powerup -> powerup.getPowerupLocation().equals(powerupInstance.getLocation())))
             return false;
         if (powerupInstance.getParent() == null)
             return true;
@@ -89,7 +89,10 @@ public class JobPowerupManager
 
     public Optional<Powerup> getParent(Powerup powerup)
     {
-        PowerupInstance parentPowerupInstance = powerup.getPowerupInstance().getParent();
+        PowerupInstance powerupInstance = powerup.getPowerupInstance();
+        if (powerupInstance == null)
+            return Optional.empty();
+        PowerupInstance parentPowerupInstance = powerupInstance.getParent();
         if (parentPowerupInstance == null)
             return Optional.empty();
         return getPowerup(parentPowerupInstance);
@@ -107,11 +110,18 @@ public class JobPowerupManager
 
     public static List<Powerup> getChildren(PowerupInstance powerupInstance, List<Powerup> powerups)
     {
-        return powerups.stream().filter(powerup -> powerup.getPowerupInstance().getParentLocation() != null && powerup.getPowerupInstance().getParentLocation().equals(powerupInstance.getLocation())).toList();
+        return powerups.stream().filter(powerup ->
+        {
+            PowerupInstance childPowerupInstance = powerup.getPowerupInstance();
+            return childPowerupInstance != null
+                    && childPowerupInstance.getParentLocation() != null
+                    && childPowerupInstance.getParentLocation().equals(powerupInstance.getLocation());
+        }).toList();
     }
 
     public static List<Powerup> getChildren(Powerup powerup, List<Powerup> powerups)
     {
-        return getChildren(powerup.getPowerupInstance(), powerups);
+        PowerupInstance powerupInstance = powerup.getPowerupInstance();
+        return powerupInstance == null ? List.of() : getChildren(powerupInstance, powerups);
     }
 }

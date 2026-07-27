@@ -60,6 +60,11 @@ public class ServerboundStartPowerupPacket implements CustomPacketPayload {
                         JobsPlus.translatable("error.powerup_not_found", packet.powerupLocation.toString()));
                 return;
             }
+            if (!powerupInstance.getJobLocation().equals(job.getJobInstance().getLocation())) {
+                serverPlayer.jobsplus$getServerPlayer().sendSystemMessage(
+                        JobsPlus.translatable("error.could_not_add_powerup", powerupInstance.getName()));
+                return;
+            }
             if (serverPlayer.jobsplus$getCoins() < powerupInstance.getPrice()) {
                 serverPlayer.jobsplus$getServerPlayer()
                         .sendSystemMessage(JobsPlus.translatable("error.not_enough_coins"));
@@ -73,6 +78,11 @@ public class ServerboundStartPowerupPacket implements CustomPacketPayload {
             if (job.getPowerupManager().getPowerup(powerupInstance).isPresent()) {
                 serverPlayer.jobsplus$getServerPlayer().sendSystemMessage(
                         JobsPlus.translatable("error.powerup_already_owned", powerupInstance.getName()));
+                return;
+            }
+            if (powerupInstance.getParent() != null && job.getPowerupManager().getPowerup(powerupInstance.getParent()).isEmpty()) {
+                serverPlayer.jobsplus$getServerPlayer().sendSystemMessage(
+                        JobsPlus.translatable("error.could_not_add_powerup", powerupInstance.getName()));
                 return;
             }
 

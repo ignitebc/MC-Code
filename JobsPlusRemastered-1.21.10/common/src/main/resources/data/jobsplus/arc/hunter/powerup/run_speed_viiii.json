@@ -7,7 +7,7 @@
   "rewards": [
     {
       "type": "arc:movement_speed_modifier",
-      "multiplier": 4.5
+      "multiplier": 1.8
     }
   ],
   "conditions": [

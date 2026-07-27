@@ -10,13 +10,17 @@ public class RightPageContentComponent extends EmptyComponent
 {
 
     private final JobsScreenState state;
+    private final int contentWidth;
+    private final int contentHeight;
     private RightTab cachedTab;
     private Job cachedJob;
 
-    public RightPageContentComponent(JobsScreenState state)
+    public RightPageContentComponent(JobsScreenState state, int contentWidth, int contentHeight)
     {
-        super(0, 0, 117, 167);
+        super(0, 0, contentWidth, contentHeight);
         this.state = state;
+        this.contentWidth = contentWidth;
+        this.contentHeight = contentHeight;
         this.cachedTab = state.getSelectedRightTab();
         this.cachedJob = state.getSelectedJob();
         this.addTabComponent();
@@ -25,9 +29,11 @@ public class RightPageContentComponent extends EmptyComponent
     private void addTabComponent()
     {
         switch (this.cachedTab) {
-        case EXPERIENCE -> this.addComponent(new ExperienceComponent(state));
-        case RECIPES -> this.addComponent(new RecipesComponent(state));
-        case SHOP -> this.addComponent(new ShopComponent(state));
+        case EXPERIENCE -> this.addComponent(new ExperienceComponent(state, contentWidth, contentHeight));
+        case RECIPES -> this.addComponent(new RecipesComponent(state, contentWidth, contentHeight));
+        case UP_AND_DOWN -> {
+        }
+        case SHOP -> this.addComponent(new ShopComponent(state, contentWidth, contentHeight));
         }
     }
 

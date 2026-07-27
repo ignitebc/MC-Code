@@ -3,6 +3,7 @@ package com.daqem.jobsplus.player;
 import com.daqem.arc.api.action.holder.IActionHolder;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.player.job.Job;
+import com.daqem.jobsplus.player.stock.StockAccount;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +35,10 @@ public interface JobsPlayer
     void jobsplus$addCoins(int coins);
 
     void jobsplus$setCoins(int coins);
+
+    StockAccount jobsplus$getStockAccount();
+
+    void jobsplus$setStockAccount(StockAccount stockAccount);
 
     String jobsplus$getName();
 

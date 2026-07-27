@@ -29,8 +29,7 @@ public class MovementSpeedAttributeModifierReward extends AbstractReward {
     }
 
     /**
-     * (ADD_MULTIPLIED_TOTAL 기준)
-     * 0.01 = +1%
+     * 기본 이동속도 기준 0.01 = +1%
      */
     public double getAttributeAmount() {
         return (double) multiplierPercent / 100.0D;

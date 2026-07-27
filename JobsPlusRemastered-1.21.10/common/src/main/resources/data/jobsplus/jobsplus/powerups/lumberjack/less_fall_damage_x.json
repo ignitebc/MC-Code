@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:lumberjack",
+  "parent": "jobsplus:lumberjack/less_fall_damage_viiii",
+  "icon": {
+    "id": "minecraft:leather_boots",
+    "count": 10
+  },
+  "price": 28,
+  "required_level": 50
+}

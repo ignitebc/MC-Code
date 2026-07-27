@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:farmer",
+  "parent": "jobsplus:farmer/auto_replant_v",
+  "icon": {
+    "id": "minecraft:wheat_seeds",
+    "count": 6
+  },
+  "price": 20,
+  "required_level": 25
+}

@@ -1,0 +1,31 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:lumberjack/run_speed_vi"
+  },
+  "type": "arc:on_sprint",
+  "rewards": [
+    {
+      "type": "arc:movement_speed_modifier",
+      "multiplier": 3
+    }
+  ],
+  "conditions": [
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:lumberjack/run_speed_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:lumberjack/run_speed_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:lumberjack/run_speed_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:lumberjack/run_speed_x"
+    }
+  ]
+}

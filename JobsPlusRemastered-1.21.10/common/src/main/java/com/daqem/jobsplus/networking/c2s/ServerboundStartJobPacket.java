@@ -56,7 +56,7 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
             return;
         }
 
-        // 1) 최대 직업 수 제한: "유효 최대 직업 수"(무료 1 + 티켓 누적, 단 config max_jobs로 상한) 기준
+        // 1) 최대 직업 수 제한: "유효 최대 직업 수"(무료 2 + 티켓 누적, 단 config max_jobs로 상한) 기준
         if (serverPlayer.jobsplus$getJobs().size() >= serverPlayer.jobsplus$getEffectiveMaxJobs()) {
             serverPlayer.jobsplus$getServerPlayer()
                     .sendSystemMessage(JobsPlus.translatable("error.max_jobs_reached"));
@@ -64,7 +64,7 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
         }
 
         // 2) 코인 요구 여부:
-        // - 기본 free_jobs(예: 1)만으로 판단하면 "티켓으로 늘린 슬롯"도 유료가 되어 버림
+        // - 기본 free_jobs(예: 2)만으로 판단하면 "티켓으로 늘린 슬롯"도 유료가 되어 버림
         // - 본 서버 정책: 티켓으로 확보한 슬롯은 "무료 선택 가능 슬롯"으로 취급
         // => 따라서 "유효 무료 직업 수"를 기준으로 초과 시에만 코인 차감
         if (serverPlayer.jobsplus$getJobs().size() >= serverPlayer.jobsplus$getEffectiveFreeJobs()) {
@@ -87,7 +87,8 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
                                 serverPlayer.jobsplus$getInactiveJobs().stream()
                         ).toList(),
                         serverPlayer.jobsplus$getCoins(),
-                        serverPlayer.jobsplus$getEffectiveMaxJobs()
+                        serverPlayer.jobsplus$getEffectiveMaxJobs(),
+                        serverPlayer.jobsplus$getStockAccount()
                 )
         );
     }

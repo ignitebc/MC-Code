@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:farmer",
+  "parent": "jobsplus:farmer/hoe_range_viii",
+  "icon": {
+    "id": "minecraft:diamond_hoe",
+    "count": 9
+  },
+  "price": 26,
+  "required_level": 40
+}

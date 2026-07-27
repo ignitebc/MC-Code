@@ -1,6 +1,9 @@
 package com.daqem.arc.mixin;
 
 import com.daqem.arc.api.player.ArcPlayer;
+import com.daqem.arc.player.BlockInteractionRangeAttributeSync;
+import com.daqem.arc.player.EntityInteractionRangeAttributeSync;
+import com.daqem.arc.player.DefensiveAttributeSync;
 import com.daqem.arc.player.MovementSpeedAttributeSync;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,6 +18,9 @@ public class MixinServerPlayerMovementSpeedSync {
     private void arc$syncMovementSpeedModifier(CallbackInfo ci) {
         if ((Object) this instanceof ArcPlayer arcPlayer) {
             MovementSpeedAttributeSync.sync(arcPlayer);
+            BlockInteractionRangeAttributeSync.sync(arcPlayer);
+            EntityInteractionRangeAttributeSync.sync(arcPlayer);
+            DefensiveAttributeSync.sync(arcPlayer);
         }
     }
 }

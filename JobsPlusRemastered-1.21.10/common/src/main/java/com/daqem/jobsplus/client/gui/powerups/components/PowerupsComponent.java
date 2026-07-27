@@ -18,10 +18,16 @@ import java.util.stream.Collectors;
 
 public class PowerupsComponent extends SpriteComponent
 {
+    public static final int BACKGROUND_WIDTH = 326;
+    public static final int BACKGROUND_HEIGHT = 240;
+    public static final int SKILL_TREE_X = 23;
+    public static final int SKILL_TREE_Y = 30;
+    public static final int SKILL_TREE_WIDTH = 282;
+    public static final int SKILL_TREE_HEIGHT = 192;
 
     public PowerupsComponent(PowerupsScreenState state)
     {
-        super(0, 0, 286, 212, JobsPlus.getId("powerups/background"));
+        super(0, 0, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, JobsPlus.getId("powerups/background"));
 
         TextComponent title = new TextComponent(11, 5, state.getJob().getJobInstance().getName().withStyle(Style.EMPTY.withBold(true)).append(JobsPlus.literal(" • " + state.getJob().getLevel()).withStyle(Style.EMPTY.withBold(false))), 0xFFEAF0FF);
         this.addComponent(title);
@@ -29,7 +35,7 @@ public class PowerupsComponent extends SpriteComponent
         coinsComponent.setX(-coinsComponent.getWidth() + 14);
         this.addComponent(coinsComponent);
 
-        Map<ResourceLocation, Powerup> allPowerups = state.getJob().getPowerupManager().getAllPowerups().stream().collect(Collectors.toMap(powerup -> powerup.getPowerupInstance().getLocation(), powerup -> powerup));
+        Map<ResourceLocation, Powerup> allPowerups = state.getJob().getPowerupManager().getAllPowerups().stream().collect(Collectors.toMap(Powerup::getPowerupLocation, powerup -> powerup));
         List<PowerupInstance> powerupInstances = state.getJob().getJobInstance().getPowerups();
         PowerupsSkillTreeItem rootItem = new PowerupsSkillTreeItem(state, null, true, new ArrayList<>());
         Map<ResourceLocation, PowerupsSkillTreeItem> powerupItems = new HashMap<>();
@@ -50,7 +56,7 @@ public class PowerupsComponent extends SpriteComponent
             if (parentLocation == null)
             {
                 rootItem.addChild(powerupItem);
-                if (powerupItem.getPowerup().getState() == PowerupState.LOCKED)
+                if (canUnlockPowerup(state, powerupItem, null))
                 {
                     powerupItem.getPowerup().setState(PowerupState.NOT_OWNED);
                 }
@@ -60,7 +66,7 @@ public class PowerupsComponent extends SpriteComponent
                 if (parentItem != null)
                 {
                     parentItem.addChild(powerupItem);
-                    if (parentItem.getPowerup().getState() != PowerupState.LOCKED && parentItem.getPowerup().getState() != PowerupState.NOT_OWNED && powerupItem.getPowerup().getState() == PowerupState.LOCKED)
+                    if (canUnlockPowerup(state, powerupItem, parentItem))
                     {
                         powerupItem.getPowerup().setState(PowerupState.NOT_OWNED);
                     }
@@ -69,7 +75,35 @@ public class PowerupsComponent extends SpriteComponent
         }
         powerupItems.put(state.getJob().getJobInstance().getLocation(), rootItem);
         PowerupsSkillTree powerupsSkillTree = new PowerupsSkillTree(new ArrayList<>(powerupItems.values()));
-        SkillTreeComponent skillTreeComponent = new SkillTreeComponent(23, 30, 242, 164, powerupsSkillTree);
+        SkillTreeComponent skillTreeComponent = new SkillTreeComponent(
+                SKILL_TREE_X,
+                SKILL_TREE_Y,
+                SKILL_TREE_WIDTH,
+                SKILL_TREE_HEIGHT,
+                powerupsSkillTree
+        );
         this.addComponent(skillTreeComponent);
+    }
+
+    private static boolean canUnlockPowerup(PowerupsScreenState state, PowerupsSkillTreeItem powerupItem, PowerupsSkillTreeItem parentItem)
+    {
+        Powerup powerup = powerupItem.getPowerup();
+        if (powerup == null || powerup.getState() != PowerupState.LOCKED)
+        {
+            return false;
+        }
+
+        if (state.getJob().getLevel() < powerup.getPowerupInstance().getRequiredLevel())
+        {
+            return false;
+        }
+
+        if (parentItem == null)
+        {
+            return true;
+        }
+
+        Powerup parentPowerup = parentItem.getPowerup();
+        return parentPowerup != null && (parentPowerup.getState() == PowerupState.ACTIVE || parentPowerup.getState() == PowerupState.INACTIVE);
     }
 }

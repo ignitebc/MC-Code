@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:farmer",
+  "parent": "jobsplus:farmer/range_harvest_v",
+  "icon": {
+    "id": "minecraft:golden_hoe",
+    "count": 6
+  },
+  "price": 20,
+  "required_level": 25
+}

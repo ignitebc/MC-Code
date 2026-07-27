@@ -43,7 +43,8 @@ public class ServerboundOpenJobsScreenPacket implements CustomPacketPayload {
                                     jobsServerPlayer.jobsplus$getJobs().stream(),
                                     jobsServerPlayer.jobsplus$getInactiveJobs().stream()).toList(),
                             jobsServerPlayer.jobsplus$getCoins(),
-                            jobsServerPlayer.jobsplus$getEffectiveMaxJobs()));
+                            jobsServerPlayer.jobsplus$getEffectiveMaxJobs(),
+                            jobsServerPlayer.jobsplus$getStockAccount()));
         }
     }
 }

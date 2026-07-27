@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:smith",
+  "parent": "jobsplus:smith/sword_range_viiii",
+  "icon": {
+    "id": "minecraft:diamond_sword",
+    "count": 10
+  },
+  "price": 28,
+  "required_level": 50
+}

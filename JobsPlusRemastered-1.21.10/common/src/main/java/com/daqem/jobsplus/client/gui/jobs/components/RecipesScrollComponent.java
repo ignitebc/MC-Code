@@ -16,7 +16,8 @@ public class RecipesScrollComponent extends EmptyComponent
     // 업데이트 내역(표시 텍스트)
     private static final String PATCH_NOTES = """
             ★ 추후 업데이트 ★
-            - illager invasion 모드 도입 예정 (추가몬스터)
+            - 레이드 난이도 조정중 (TEST)
+            - 레이드 및 보스 보상 조정중 (TEST)
             - 레이드 추가레벨 도입 예정 (현재 5단계 최대)
             - 광부 스킬 추가 예정 (사거리, 화염저항)
             - 낚시꾼, 갈고리 낚시대 사용시 내구도 감소 예정
@@ -31,7 +32,52 @@ public class RecipesScrollComponent extends EmptyComponent
             - 농부 스킬 개편중
             - 대장장이 스킬추가예정 (원거리 데미지감소, 폭발저항)
             - 전 직업 하이퍼스킬 개방 예정 (lv 150 ~ 300)        
-    
+            
+
+            - 신규 아이템 추가 중 
+            (신성한 마법부여대 : 강화 마법부여대)
+            (잃어버린 양초 : 근처에 있는 광물의 위치를 ​​알려줌으로써 광물을 찾는 데 도움)
+            (시야의 뿔 : 주변 몬스터를 빛나게 하여 숨은 위치 추적기능)
+            
+
+
+
+
+            ★ 26.01.10 업데이트 완료 ★
+            - 상점아이템 조정 (닭고기 10개 -> 1개 / 60개 -> 6개)
+            - illager invasion 모드 도입
+            - 레이드 난이도 급상승
+            
+            - 신규 던전 및 모험 개방 
+            (연금술사의오두막, 일리져요새, 일루셔너타워, 미궁, 마법사의오두막)
+            
+            - 플래티넘 강화 도끼(신규 아이템 - 원거리 도끼)
+
+            ★ 신규 몬스터 추가 (레이드 및 던전에서 스폰)
+            도발자 - 인챈트된 활로 공격
+            연금술사 - 활공격, 물약던지기(상태이상폭격)
+            파쇄병 - 방패를 휘두르며 플레이어에게 돌진하는 불량배
+            강령술사 - 마법을 이용해, 좀비, 스켈레톤 부활
+            주술사 - 마법 보라색 불꽃공격 (땅에서 쏟아나는 화염)
+            환영술사 - 활공격, 분신술
+            기록관 - 주변 아군에 마법효과 부여
+            약탈자 - 치명적인 도끼를 던지는 원거리 공격형
+            심문관(대장일리저) - 방패를 파괴해야만 잡을 수 있는 전사
+            화염술사 - 마그마블록을 던짐(화염구)
+            찬란한 기원자(보스) - 준보스급 (매우쌤)
+            
+            - 레이드 팜 무효화 
+            (몬스터들 플레이 뒤로 텔레포트 가능)
+            (몬스터들 플레이어 주변 추가 몬스터 소환 - 소환사)
+            (몬스터들 낙뎀 받을 시 풀피로 회복)
+
+            ★ 레이드 시작 시,시작 후 종료전까지 모든 철골렘 즉사(80블록,5청크 제한)
+            ★ 위더 시작시, 시작 후 종료전까지 모든 철골렘 즉사(80블록,5청크 제한)                   
+            ★ 레이드 시작후, 겉날개 사용시 즉사 (80블록,5청크 제한)
+            ★ 위더(보스몹) 시작후, 겉날개 사용시 즉사 (80블록,5청크 제한)
+
+
+
 
 
 
@@ -62,11 +108,6 @@ public class RecipesScrollComponent extends EmptyComponent
 
             - 대장장이 (너프)
             - 광물 블록을 캘시 직업경험치 4~6 증가 (제거)
-
-
-
-
-
 
 
 
@@ -188,9 +229,9 @@ public class RecipesScrollComponent extends EmptyComponent
             비트코인 1000개 (0.5%)
             """;
 
-    public RecipesScrollComponent(JobsScreenState state)
+    public RecipesScrollComponent(JobsScreenState state, int width, int height)
     {
-        super(0, 43, 117, 124);
+        super(0, 43, width, height - 43);
 
         RecipesScrollWidget recipesScrollWidget = new RecipesScrollWidget(getWidth(), getHeight(), state);
 

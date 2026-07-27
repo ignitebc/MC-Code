@@ -105,7 +105,7 @@ public class PowerupInstance extends AbstractActionHolder
             Job job = jobsPlayer.jobsplus$getJobs().stream().filter(job1 -> job1 != null && job1.getJobInstance() != null && job1.getJobInstance().getLocation().equals(this.getJobLocation())).findFirst().orElse(null);
             if (job != null)
             {
-                Powerup powerup = job.getPowerupManager().getAllPowerups().stream().filter(powerup1 -> powerup1.getPowerupInstance().getLocation().equals(this.getLocation())).findFirst().orElse(null);
+                Powerup powerup = job.getPowerupManager().getAllPowerups().stream().filter(powerup1 -> powerup1.getPowerupLocation().equals(this.getLocation())).findFirst().orElse(null);
                 
                 if (powerup != null)
                 {

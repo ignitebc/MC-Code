@@ -1,6 +1,9 @@
 package com.daqem.arc.player;
 
+import com.daqem.arc.api.action.data.ActionData;
+import com.daqem.arc.api.action.data.ActionDataBuilder;
 import com.daqem.arc.api.action.holder.IActionHolder;
+import com.daqem.arc.api.action.type.ActionType;
 import com.daqem.arc.api.player.ArcPlayer;
 import com.daqem.arc.api.reward.IReward;
 import com.daqem.arc.data.reward.player.MovementSpeedAttributeModifierReward;
@@ -25,6 +28,7 @@ public final class MovementSpeedAttributeSync {
 
         // 1.21.10+ (official mappings) 기준: AttributeModifier 식별자는 ResourceLocation 입니다.
         Map<ResourceLocation, AttributeModifier> desired = new HashMap<>();
+        ActionData actionData = new ActionDataBuilder(arcPlayer, ActionType.SPRINT).build();
 
         for (IActionHolder holder : arcPlayer.arc$getActionHolders()) {
             if (holder == null) continue;
@@ -32,14 +36,15 @@ public final class MovementSpeedAttributeSync {
             holder.getActions().forEach(action -> {
                 for (IReward reward : action.getRewards()) {
                     if (!(reward instanceof MovementSpeedAttributeModifierReward msReward)) continue;
+                    if (!action.metConditions(actionData)) continue;
 
                     ResourceLocation id = MovementSpeedAttributeModifierReward.computeModifierId(holder.getLocation(), action.getLocation());
 
-                    // (ADD_MULTIPLIED_TOTAL) = 구버전 MULTIPLY_TOTAL 과 동일 계열(총합 곱연산)
+                    // 직업별 이동속도 보상은 기본 이동속도를 기준으로 서로 더해집니다.
                     AttributeModifier modifier = new AttributeModifier(
                             id,
                             msReward.getAttributeAmount(),
-                            AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+                            AttributeModifier.Operation.ADD_MULTIPLIED_BASE
                     );
                     desired.put(id, modifier);
                 }

@@ -13,6 +13,7 @@ import com.daqem.jobsplus.player.job.Job;
 import com.daqem.jobsplus.player.job.exp.ExpCollector;
 import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
+import com.daqem.jobsplus.player.stock.StockAccount;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
@@ -35,6 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Mixin(ServerPlayer.class)
@@ -43,6 +45,8 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     private List<Job> jobsplus$jobs = new ArrayList<>();
     @Unique
     private int jobsplus$coins = 0;
+    @Unique
+    private StockAccount jobsplus$stockAccount = StockAccount.EMPTY;
 
     /**
      * 직업추가권 등으로 얻는 추가 슬롯 (상한 없음)
@@ -106,7 +110,10 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
         if (jobsplus$getServerPlayer() instanceof ArcPlayer arcPlayer) {
             arcPlayer.arc$removeActionHolder(job.getJobInstance());
             job.getPowerupManager().getAllPowerups()
-                    .forEach(powerup -> arcPlayer.arc$removeActionHolder(powerup.getPowerupInstance()));
+                    .stream()
+                    .map(Powerup::getPowerupInstance)
+                    .filter(Objects::nonNull)
+                    .forEach(arcPlayer::arc$removeActionHolder);
         }
     }
 
@@ -133,7 +140,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
         return jobsplus$getJobs().stream()
                 .map(Job::getPowerupManager)
                 .flatMap(powerupManager -> powerupManager.getAllPowerups().stream())
-                .filter(powerup -> powerup.getPowerupInstance().getLocation().equals(powerupInstance.getLocation()))
+                .filter(powerup -> powerup.getPowerupLocation().equals(powerupInstance.getLocation()))
                 .findFirst()
                 .orElse(null);
     }
@@ -151,6 +158,16 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     @Override
     public void jobsplus$setCoins(int coins) {
         this.jobsplus$coins = coins;
+    }
+
+    @Override
+    public StockAccount jobsplus$getStockAccount() {
+        return this.jobsplus$stockAccount;
+    }
+
+    @Override
+    public void jobsplus$setStockAccount(StockAccount stockAccount) {
+        this.jobsplus$stockAccount = stockAccount;
     }
 
     @Override
@@ -188,6 +205,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
                         .flatMap(powerupManager -> powerupManager.getAllPowerups().stream()
                                 .filter(powerup -> powerup.getState() == PowerupState.ACTIVE))
                         .map(Powerup::getPowerupInstance)
+                        .filter(Objects::nonNull)
                         .toList());
         return actionHolders;
     }
@@ -214,9 +232,16 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
         if (jobsplus$getServerPlayer() instanceof ArcPlayer arcPlayer)
         {
             arcPlayer.arc$removeActionHolder(job.getJobInstance());
-            job.getPowerupManager().getAllPowerups().forEach(powerup -> arcPlayer.arc$removeActionHolder(powerup.getPowerupInstance()));
+            job.getPowerupManager().getAllPowerups().stream()
+                    .map(Powerup::getPowerupInstance)
+                    .filter(Objects::nonNull)
+                    .forEach(arcPlayer::arc$removeActionHolder);
             arcPlayer.arc$addActionHolder(job.getJobInstance());
-            job.getPowerupManager().getAllPowerups().stream().filter(powerup -> powerup.getState() == PowerupState.ACTIVE).forEach(powerup -> arcPlayer.arc$addActionHolder(powerup.getPowerupInstance()));
+            job.getPowerupManager().getAllPowerups().stream()
+                    .filter(powerup -> powerup.getState() == PowerupState.ACTIVE)
+                    .map(Powerup::getPowerupInstance)
+                    .filter(Objects::nonNull)
+                    .forEach(arcPlayer::arc$addActionHolder);
         }
 
         // ---- 추가: 클라이언트에도 활성 홀더 목록 동기화 ----
@@ -243,6 +268,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
             this.jobsplus$jobs = oldJobsServerPlayer.jobsplus$getJobs();
             this.jobsplus$coins = oldJobsServerPlayer.jobsplus$getCoins();
             this.jobsplus$extraJobSlots = oldJobsServerPlayer.jobsplus$getExtraJobSlots();
+            this.jobsplus$stockAccount = oldJobsServerPlayer.jobsplus$getStockAccount();
 
             this.jobsplus$jobs.forEach(job -> job.setPlayer(this));
         }
@@ -251,7 +277,8 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
     public void addAdditionalSaveData(ValueOutput valueOutput, CallbackInfo ci) {
         valueOutput.store("JobsPlus", ServerPlayerData.CODEC,
-                new ServerPlayerData(this.jobsplus$jobs, this.jobsplus$coins, this.jobsplus$extraJobSlots));
+                new ServerPlayerData(this.jobsplus$jobs, this.jobsplus$coins, this.jobsplus$extraJobSlots,
+                        this.jobsplus$stockAccount));
     }
 
     @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
@@ -264,6 +291,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
 
             this.jobsplus$coins = serverPlayerData.coins();
             this.jobsplus$extraJobSlots = Math.max(0, serverPlayerData.extraJobSlots());
+            this.jobsplus$stockAccount = serverPlayerData.stockAccount();
 
             if (jobsplus$getServerPlayer() instanceof ArcServerPlayer arcServerPlayer) {
                 List<IActionHolder> iActionHolders = this.jobsplus$getActionHolders();

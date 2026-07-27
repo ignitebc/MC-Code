@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:lumberjack",
+  "parent": "jobsplus:lumberjack/run_speed_vi",
+  "icon": {
+    "id": "minecraft:diamond_boots",
+    "count": 7
+  },
+  "price": 22,
+  "required_level": 30
+}

@@ -23,7 +23,7 @@ public class SelectedJobComponent extends EmptyComponent {
     private final StartJobButtonWidget startJobButtonWidget;
 
     public SelectedJobComponent(JobsScreenState state) {
-        super(21, 20, 117, 34);
+        super(31, 20, 117, 34);
         this.state = state;
         this.jobTitleComponent = new TruncatedTextComponent(26, 0, 90, Component.empty(), 0);
         this.jobIconComponent = new ItemComponent(4, 4, ItemStack.EMPTY);
@@ -55,7 +55,7 @@ public class SelectedJobComponent extends EmptyComponent {
         if (selectedJob.getLevel() > 0) {
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(getTotalX() + 26, getTotalY() + Minecraft.getInstance().font.lineHeight);
-            guiGraphics.pose().scale(0.75f, 0.75f);
+            guiGraphics.pose().scale(0.50f, 0.50f);
             guiGraphics.drawString(Minecraft.getInstance().font,
                     JobsPlus.translatable("gui.jobs.level", selectedJob.getLevel()), 0, 0, 0xFF1E1410, false);
             guiGraphics.drawString(Minecraft.getInstance().font,
@@ -68,12 +68,14 @@ public class SelectedJobComponent extends EmptyComponent {
         } else {
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(getTotalX() + 26, getTotalY() + Minecraft.getInstance().font.lineHeight);
-            guiGraphics.pose().scale(0.75f, 0.75f);
+            guiGraphics.pose().scale(0.50f, 0.50f);
 
             if (canStartNewJob()) {
-                // 기존 UI는 가격만 표시하지만, 버튼 노출/무료판단은 아래 canStartFreeJob()로 결정됨
-                guiGraphics.drawString(Minecraft.getInstance().font,
-                        JobsPlus.translatable("gui.jobs.price", jobInstance.getPrice()), 0, 0, 0xFF1E1410, false);
+                int remainingFreeJobs = Math.max(0, this.state.getMaxJobs() - this.state.getActiveJobCount());
+                Component startCost = canStartFreeJob()
+                        ? JobsPlus.translatable("gui.jobs.free_remaining", remainingFreeJobs)
+                        : JobsPlus.translatable("gui.jobs.price", jobInstance.getPrice());
+                guiGraphics.drawString(Minecraft.getInstance().font, startCost, 0, 0, 0xFF1E1410, false);
             } else {
                 guiGraphics.drawString(Minecraft.getInstance().font,
                         JobsPlus.translatable("gui.jobs.max_jobs", this.state.getMaxJobs()), 0, 0, 0xFFFF5555, false);
@@ -83,7 +85,7 @@ public class SelectedJobComponent extends EmptyComponent {
 
             // 핵심 수정:
             // 티켓으로 늘린 슬롯도 "무료 선택 가능"으로 취급해야 하므로,
-            // amount_of_free_jobs(=1)로 막지 말고 state.getMaxJobs() 기준으로 무료판단
+            // amount_of_free_jobs(=2)로 막지 말고 state.getMaxJobs() 기준으로 무료판단
             if (jobInstance.getPrice() > this.state.getCoins() && !canStartFreeJob()) {
                 this.removeWidget(this.startJobButtonWidget);
             } else {
@@ -102,7 +104,7 @@ public class SelectedJobComponent extends EmptyComponent {
     }
 
     private boolean canStartFreeJob() {
-        // 기존: active < amount_of_free_jobs(=1)  -> 티켓으로 늘린 슬롯이 "유료"가 되어 버튼이 사라짐
+        // 기존: active < amount_of_free_jobs(=2)  -> 티켓으로 늘린 슬롯이 "유료"가 되어 버튼이 사라짐
         // 수정: 티켓으로 늘어난 슬롯까지 무료로 취급 => active < state.getMaxJobs()
         return this.state.getActiveJobCount() < this.state.getMaxJobs();
     }
