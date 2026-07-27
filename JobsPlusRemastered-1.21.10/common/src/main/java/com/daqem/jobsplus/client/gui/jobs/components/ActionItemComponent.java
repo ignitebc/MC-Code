@@ -2,6 +2,7 @@ package com.daqem.jobsplus.client.gui.jobs.components;
 
 import com.daqem.arc.api.action.IAction;
 import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.integration.arc.reward.rewards.job.JobBitcoinReward;
 import com.daqem.jobsplus.integration.arc.reward.rewards.job.JobExpReward;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import com.daqem.uilib.gui.component.text.multiline.MultiLineTextComponent;
@@ -28,6 +29,12 @@ public class ActionItemComponent extends EmptyComponent
             return;
         }
 
+        JobBitcoinReward jobBitcoinReward = action.getRewards().stream()
+                .filter(JobBitcoinReward.class::isInstance)
+                .map(JobBitcoinReward.class::cast)
+                .findFirst()
+                .orElse(null);
+
         String actionPath = action.getLocation().getPath();
         int pathSeparatorIndex = actionPath.lastIndexOf('/');
         if (pathSeparatorIndex >= 0)
@@ -44,6 +51,23 @@ public class ActionItemComponent extends EmptyComponent
                         "gui.jobs.experience.reward.range",
                         jobExpReward.getMin(),
                         jobExpReward.getMax());
+        experienceText = experienceText.copy()
+                .append("\n")
+                .append(JobsPlus.translatable(
+                        "gui.jobs.experience.reward.chance",
+                        formatChance(jobExpReward.getChance())));
+        if (jobBitcoinReward != null)
+        {
+            experienceText = experienceText.copy()
+                    .append("\n")
+                    .append(JobsPlus.translatable(
+                            "gui.jobs.bitcoin.reward",
+                            jobBitcoinReward.getAmount()))
+                    .append("\n")
+                    .append(JobsPlus.translatable(
+                            "gui.jobs.bitcoin.reward.chance",
+                            formatChance(jobBitcoinReward.getChance())));
+        }
         Component contentText = experienceText.copy()
                 .append("\n")
                 .append(JobsPlus.translatable(translationPath + ".description"));
@@ -57,5 +81,14 @@ public class ActionItemComponent extends EmptyComponent
         this.addComponent(headerComponent);
         this.addComponent(contentComponent);
         this.setHeight(headerComponent.getHeight() + CONTENT_GAP + contentComponent.getHeight());
+    }
+
+    private String formatChance(double chance)
+    {
+        if (chance == Math.rint(chance))
+        {
+            return Long.toString((long) chance);
+        }
+        return Double.toString(chance);
     }
 }

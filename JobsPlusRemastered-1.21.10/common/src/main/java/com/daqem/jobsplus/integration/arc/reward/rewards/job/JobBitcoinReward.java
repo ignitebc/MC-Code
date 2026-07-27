@@ -102,6 +102,10 @@ public class JobBitcoinReward extends AbstractReward
         return new ActionResult();
     }
 
+    public int getAmount()
+    {
+        return amount;
+    }
 
     public static class Serializer implements IRewardSerializer<JobBitcoinReward>
     {
