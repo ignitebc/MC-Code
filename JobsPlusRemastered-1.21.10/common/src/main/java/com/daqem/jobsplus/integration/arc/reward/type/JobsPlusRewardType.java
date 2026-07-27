@@ -12,6 +12,7 @@ import com.daqem.jobsplus.integration.arc.reward.rewards.job.JobBitcoinReward;
 import com.daqem.jobsplus.integration.arc.reward.rewards.job.JobCoinReward;
 import com.daqem.jobsplus.integration.arc.reward.rewards.job.JobExpMultiplierReward;
 import com.daqem.jobsplus.integration.arc.reward.rewards.job.JobExpReward;
+import com.daqem.jobsplus.integration.arc.reward.rewards.job.SpecialItemReward;
 
 public interface JobsPlusRewardType<T extends IReward> extends RewardType<T>
 {
@@ -33,6 +34,9 @@ public interface JobsPlusRewardType<T extends IReward> extends RewardType<T>
     IRewardType<AutoReplantReward> AUTO_REPLANT = RewardType.register(JobsPlus.getId("auto_replant"), new AutoReplantReward.Serializer());
 
     IRewardType<PreserveBoneMealReward> PRESERVE_BONE_MEAL = RewardType.register(JobsPlus.getId("preserve_bone_meal"), new PreserveBoneMealReward.Serializer());
+
+    // 지급이 확정된 뒤 보너스 계열 단계만큼 개수를 두 배로 올리는 아이템 보상
+    IRewardType<SpecialItemReward> SPECIAL_ITEM = RewardType.register(JobsPlus.getId("special_item"), new SpecialItemReward.Serializer());
 
     static void init()
     {
