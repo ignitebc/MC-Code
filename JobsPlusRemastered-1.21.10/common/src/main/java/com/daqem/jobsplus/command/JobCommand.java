@@ -80,7 +80,7 @@ public class JobCommand
                         arcPlayer.arc$getActionHolders().forEach(actionHolder ->
                         {
                                 source.sendSuccess(() -> Component.literal(actionHolder.getLocation().toString()), false);
-                                source.sendSuccess(() -> Component.literal("actions: " + actionHolder.getActions().size()), false);
+                                source.sendSuccess(() -> Component.literal("액션 수: " + actionHolder.getActions().size()), false);
                                 source.sendSuccess(() -> Component.literal(" "), false);
                         });
                 }
