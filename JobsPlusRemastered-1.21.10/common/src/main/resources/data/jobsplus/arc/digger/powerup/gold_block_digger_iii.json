@@ -20,11 +20,6 @@
         "#minecraft:mineable/shovel"
       ]
     },
-    
-    {
-      "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:digger/gold_block_digger_iii"
-    },
     {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:digger/gold_block_digger_iv"
@@ -53,6 +48,5 @@
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:digger/gold_block_digger_x"
     }
-
   ]
 }
