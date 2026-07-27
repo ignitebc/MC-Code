@@ -1,10 +1,13 @@
 package com.daqem.jobsplus.event.player;
 
 import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.player.JobsServerPlayer;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -15,13 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 플레이어가 죽을 때 소지품 한 칸을 무작위로 골라 완전히 삭제하고 서버 전체에 알린다.
+ * 플레이어가 죽을 때 사망 시 아이템 보존권이 있으면 1개를 소비하고 모든 소지품을 보호한다.
  *
- * 삭제 대상에는 방어구와 보조 손 칸도 포함된다. 사망 시 전리품이 떨어지기 전에 발동하므로
- * 선택된 칸은 바닥에 드롭되지 않고 그대로 사라진다.
+ * 보존권이 없으면 소지품 한 칸을 무작위로 골라 완전히 삭제하고 서버 전체에 알린다.
+ * 삭제 대상과 보존권 검색 대상에는 방어구와 보조 손 칸도 포함된다.
  */
 public final class EventDeleteRandomItemOnDeath
 {
+
+    private static final ResourceLocation DEATH_ITEM_PROTECTION_SCROLL_ID =
+            ResourceLocation.fromNamespaceAndPath("advancednetherite", "death_item_protection_scroll");
 
     private EventDeleteRandomItemOnDeath()
     {
@@ -33,13 +39,13 @@ public final class EventDeleteRandomItemOnDeath
         {
             if (entity instanceof ServerPlayer serverPlayer)
             {
-                deleteRandomItem(serverPlayer);
+                handleDeath(serverPlayer);
             }
             return EventResult.pass();
         });
     }
 
-    private static void deleteRandomItem(ServerPlayer player)
+    private static void handleDeath(ServerPlayer player)
     {
         // 크리에이티브는 소지품을 잃지 않으므로 제외한다.
         if (player.isCreative() || player.isSpectator())
@@ -48,6 +54,17 @@ public final class EventDeleteRandomItemOnDeath
         }
 
         Inventory inventory = player.getInventory();
+        if (player instanceof JobsServerPlayer jobsServerPlayer
+                && consumeDeathItemProtectionScroll(inventory))
+        {
+            jobsServerPlayer.jobsplus$setDeathItemProtected(true);
+            broadcast(
+                    player,
+                    JobsPlus.translatable("death.items_protected", formatPlayerName(player))
+            );
+            return;
+        }
+
         List<Integer> filledSlots = collectFilledSlots(inventory);
         if (filledSlots.isEmpty())
         {
@@ -67,6 +84,29 @@ public final class EventDeleteRandomItemOnDeath
 
         Component itemName = describeItem(removed).copy().withStyle(ChatFormatting.RED);
         broadcast(player, JobsPlus.translatable("death.item_lost", formatPlayerName(player), itemName));
+    }
+
+    private static boolean consumeDeathItemProtectionScroll(Inventory inventory)
+    {
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++)
+        {
+            ItemStack stack = inventory.getItem(slot);
+            if (stack.isEmpty()
+                    || !DEATH_ITEM_PROTECTION_SCROLL_ID.equals(
+                            BuiltInRegistries.ITEM.getKey(stack.getItem())))
+            {
+                continue;
+            }
+
+            stack.shrink(1);
+            if (stack.isEmpty())
+            {
+                inventory.setItem(slot, ItemStack.EMPTY);
+            }
+            inventory.setChanged();
+            return true;
+        }
+        return false;
     }
 
     private static List<Integer> collectFilledSlots(Inventory inventory)

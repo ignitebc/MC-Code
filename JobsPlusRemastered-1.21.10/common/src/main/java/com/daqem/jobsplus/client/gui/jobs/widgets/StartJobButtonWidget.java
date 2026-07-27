@@ -31,7 +31,7 @@ public class StartJobButtonWidget extends CustomButtonWidget {
 
                     int activeJobCount = state.getActiveJobCount();
 
-                    // maxJobs는 서버가 내려준 "유효 최대 직업 수" (무료 2 + 티켓 누적, 단 상한 7)
+                    // maxJobs는 서버가 내려준 "유효 최대 직업 수" (무료 2 + 티켓 누적, 단 상한 8)
                     if (activeJobCount >= state.getMaxJobs()) {
                         Minecraft.getInstance().setScreen(
                                 new ConfirmationScreen(

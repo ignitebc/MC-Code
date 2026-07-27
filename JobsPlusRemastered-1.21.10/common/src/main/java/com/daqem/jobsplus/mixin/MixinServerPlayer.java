@@ -7,6 +7,7 @@ import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobManager;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
+import com.daqem.jobsplus.player.JobHealthSync;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.ServerPlayerData;
 import com.daqem.jobsplus.player.job.Job;
@@ -47,6 +48,8 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     private int jobsplus$coins = 0;
     @Unique
     private StockAccount jobsplus$stockAccount = StockAccount.EMPTY;
+    @Unique
+    private boolean jobsplus$deathItemProtected;
 
     /**
      * 직업추가권 등으로 얻는 추가 슬롯 (상한 없음)
@@ -91,6 +94,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
             job = new Job(this, jobInstance, 1, 0);
             jobsplus$jobs.add(job);
             jobsplus$updateJob(job);
+            JobHealthSync.sync(this);
             return job;
         }
         return null;
@@ -102,6 +106,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
         if (job != null) {
             jobsplus$jobs.remove(job);
             jobsplus$removeActionHolders(job);
+            JobHealthSync.sync(this);
         }
     }
 
@@ -197,6 +202,18 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     }
 
     @Override
+    public boolean jobsplus$isDeathItemProtected()
+    {
+        return this.jobsplus$deathItemProtected;
+    }
+
+    @Override
+    public void jobsplus$setDeathItemProtected(boolean deathItemProtected)
+    {
+        this.jobsplus$deathItemProtected = deathItemProtected;
+    }
+
+    @Override
     public List<IActionHolder> jobsplus$getActionHolders() {
         List<IActionHolder> actionHolders = new ArrayList<>(jobsplus$getJobInstances());
         actionHolders.addAll(
@@ -271,6 +288,13 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
             this.jobsplus$stockAccount = oldJobsServerPlayer.jobsplus$getStockAccount();
 
             this.jobsplus$jobs.forEach(job -> job.setPlayer(this));
+            if (oldJobsServerPlayer.jobsplus$isDeathItemProtected())
+            {
+                this.getInventory().replaceWith(oldPlayer.getInventory());
+                this.jobsplus$deathItemProtected = false;
+                oldJobsServerPlayer.jobsplus$setDeathItemProtected(false);
+            }
+            JobHealthSync.sync(this);
         }
     }
 
@@ -297,6 +321,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
                 List<IActionHolder> iActionHolders = this.jobsplus$getActionHolders();
                 arcServerPlayer.arc$addActionHolders(new ArrayList<>(iActionHolders));
             }
+            JobHealthSync.sync(this);
         });
     }
 

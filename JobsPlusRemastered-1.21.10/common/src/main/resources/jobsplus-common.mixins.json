@@ -8,6 +8,7 @@
   ],
   "mixins": [
     "CropBlockAccessor",
+    "MixinPlayerDeathItemProtection",
     "MixinServerPlayer",
     "MixinLivingEntityDropMultiplier"
   ],

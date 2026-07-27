@@ -10,6 +10,8 @@ import com.daqem.yamlconfig.impl.config.ConfigBuilder;
 public class JobsPlusConfig
 {
 
+    public static final int MAX_JOB_COUNT = 8;
+
     public static final IConfigEntry<Boolean> enableDefaultJobs;
     public static final IConfigEntry<Integer> amountOfFreeJobs;
     public static final IConfigEntry<Integer> maxJobs;
@@ -28,8 +30,9 @@ public class JobsPlusConfig
         // 정책: 기본 무료 직업은 2개
         amountOfFreeJobs = config.defineInteger("amount_of_free_jobs", 2, 0, Integer.MAX_VALUE).withComments("플레이어가 가질 수 있는 무료 작업의 양");
 
-        // 정책: 최종 최대 직업 수 상한은 7개(티켓 사용해도 초과 불가)
-        maxJobs = config.defineInteger("max_jobs", 7, 0, Integer.MAX_VALUE).withComments("플레이어가 가질 수 있는 최대 직업 수");
+        // 정책: 최종 최대 직업 수는 8개로 고정한다. 기존 설정값도 실행 시 8로 교정된다.
+        maxJobs = config.defineInteger("max_jobs", MAX_JOB_COUNT, MAX_JOB_COUNT, MAX_JOB_COUNT)
+                .withComments("직업선택권으로 확장할 수 있는 최대 직업 수");
 
         config.push("coins");
         // 정책: 레벨업당 20코인 고정. 전 직업 공통이며 직업별로 다르게 주지 않는다.
