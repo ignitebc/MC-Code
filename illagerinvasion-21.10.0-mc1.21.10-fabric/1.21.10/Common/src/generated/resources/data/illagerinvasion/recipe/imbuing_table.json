@@ -2,16 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "minecraft:copper_block",
-    "E": "minecraft:experience_bottle",
-    "O": "minecraft:dark_oak_log",
-    "P": "minecraft:paper",
-    "S": "illagerinvasion:primal_essence"
+    "D": "minecraft:diamond_block",
+    "N": "minecraft:netherite_block"
   },
   "pattern": [
-    "#P#",
-    "OSO",
-    "#E#"
+    "DDD",
+    "DND",
+    "DDD"
   ],
   "result": {
     "count": 1,

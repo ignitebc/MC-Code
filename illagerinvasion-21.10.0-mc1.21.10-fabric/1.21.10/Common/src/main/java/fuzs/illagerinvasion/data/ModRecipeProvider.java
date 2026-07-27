@@ -31,16 +31,12 @@ public class ModRecipeProvider extends AbstractRecipeProvider {
                         this.has(ModItems.ILLUSIONARY_DUST_ITEM.value()))
                 .save(recipeOutput);
         ShapedRecipeBuilder.shaped(this.items(), RecipeCategory.DECORATIONS, ModItems.IMBUING_TABLE_ITEM.value())
-                .define('#', Items.COPPER_BLOCK)
-                .define('P', Items.PAPER)
-                .define('O', Items.DARK_OAK_LOG)
-                .define('S', ModItems.PRIMAL_ESSENCE_ITEM.value())
-                .define('E', Items.EXPERIENCE_BOTTLE)
-                .pattern("#P#")
-                .pattern("OSO")
-                .pattern("#E#")
-                .unlockedBy(getHasName(ModItems.PRIMAL_ESSENCE_ITEM.value()),
-                        this.has(ModItems.PRIMAL_ESSENCE_ITEM.value()))
+                .define('D', Items.DIAMOND_BLOCK)
+                .define('N', Items.NETHERITE_BLOCK)
+                .pattern("DDD")
+                .pattern("DND")
+                .pattern("DDD")
+                .unlockedBy(getHasName(Items.NETHERITE_BLOCK), this.has(Items.NETHERITE_BLOCK))
                 .save(recipeOutput);
         ShapelessRecipeBuilder.shapeless(this.items(), RecipeCategory.MISC, ModItems.PLATINUM_SHEET_ITEM.value())
                 .requires(ModItems.PLATINUM_CHUNK_ITEM.value(), 4)
