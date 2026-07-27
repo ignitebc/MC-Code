@@ -4,9 +4,10 @@ import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreen;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreenState;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
-import com.daqem.jobsplus.client.gui.jobs.stock.StockMarketService;
 import com.daqem.jobsplus.client.gui.jobs.stock.StockPanelMode;
-import com.daqem.jobsplus.client.gui.jobs.stock.StockQuote;
+import com.daqem.jobsplus.client.stock.ClientStockMarket;
+import com.daqem.jobsplus.stock.StockCatalog;
+import com.daqem.jobsplus.stock.StockQuote;
 import com.daqem.jobsplus.client.gui.jobs.widgets.StockHistoryScrollWidget;
 import com.daqem.jobsplus.client.gui.jobs.widgets.StockHoldingsScrollWidget;
 import com.daqem.jobsplus.networking.c2s.ServerboundStockActionPacket;
@@ -36,7 +37,6 @@ public class StockTradingComponent extends EmptyComponent
     private static final int BORDER_COLOR = 0xFFD8BF96;
     private static final NumberFormat NUMBER_FORMAT = NumberFormat.getNumberInstance(Locale.KOREA);
     private final JobsScreenState state;
-    private final StockMarketService stockMarketService;
     private final EditBoxWidget buyAmountInput;
     private final EditBoxWidget sellAmountInput;
     private final EditBoxWidget transferAmountInput;
@@ -50,7 +50,6 @@ public class StockTradingComponent extends EmptyComponent
     {
         super(208, 38, 156, 173);
         this.state = state;
-        this.stockMarketService = StockMarketService.getInstance();
 
         int modeButtonX = 0;
         for (StockPanelMode mode : StockPanelMode.values())
@@ -139,7 +138,6 @@ public class StockTradingComponent extends EmptyComponent
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth,
                        int parentHeight)
     {
-        this.stockMarketService.refreshIfNeeded();
         this.styledButtons.forEach(StyledButton::updateVisibility);
         StockPanelMode panelMode = this.state.getStockPanelMode();
         this.buyAmountInput.visible = panelMode == StockPanelMode.BUY;
@@ -176,10 +174,10 @@ public class StockTradingComponent extends EmptyComponent
                 : this.state.getSelectedStockId();
         StockQuote selectedQuote = displayedStockId == null
                 ? null
-                : this.stockMarketService.getQuote(displayedStockId);
+                : ClientStockMarket.getQuote(displayedStockId);
         String selectedName = displayedStockId == null
                 ? "선택 필요"
-                : selectedQuote == null ? displayedStockId : selectedQuote.name();
+                : StockCatalog.getStockName(displayedStockId);
         drawBox(guiGraphics, x + 5, y + 22, CONTENT_WIDTH, 26);
         drawCenteredScaled(guiGraphics, "보유 자산: " + formatAmount(this.state.getStockAccount().balance()),
                 x + getWidth() / 2, y + 26);
@@ -194,9 +192,7 @@ public class StockTradingComponent extends EmptyComponent
             return;
         }
 
-        String currentPrice = selectedQuote != null && selectedQuote.available()
-                ? "현재가격: " + NUMBER_FORMAT.format(Math.round(selectedQuote.priceKrw()))
-                : "현재가격: 조회 중";
+        String currentPrice = formatCurrentPrice(selectedQuote);
 
         if (panelMode == StockPanelMode.SELL)
         {
@@ -205,7 +201,8 @@ public class StockTradingComponent extends EmptyComponent
             drawCenteredScaled(guiGraphics, "판매 종목: " + selectedName, x + getWidth() / 2, y + 108);
             drawCenteredScaled(guiGraphics, currentPrice, x + getWidth() / 2, y + 119);
             drawBox(guiGraphics, x + 5, y + 134, CONTENT_WIDTH, 34);
-            drawCentered(guiGraphics, "판매할 수량 (1개 단위)", x + getWidth() / 2, y + 137);
+            // 입력값은 평가금액이 아니라 처분할 투자원금이다.
+            drawCentered(guiGraphics, "판매할 투자원금 (비트코인 1개 단위)", x + getWidth() / 2, y + 137);
             return;
         }
 
@@ -213,8 +210,26 @@ public class StockTradingComponent extends EmptyComponent
         drawCenteredScaled(guiGraphics, "선택 종목: " + selectedName, x + getWidth() / 2, y + 56);
         drawCenteredScaled(guiGraphics, currentPrice, x + getWidth() / 2, y + 67);
         drawBox(guiGraphics, x + 5, y + 82, CONTENT_WIDTH, 34);
-        drawCentered(guiGraphics, "구매할 수량 (1개 단위)", x + getWidth() / 2, y + 85);
+        drawCentered(guiGraphics, "투자할 금액 (비트코인 1개 단위)", x + getWidth() / 2, y + 85);
         drawBox(guiGraphics, x + 5, y + 119, CONTENT_WIDTH, 49);
+    }
+
+    /**
+     * 표에 보이는 가격 문구. 갱신이 끊긴 가격은 거래도 막히므로 그 사실을 함께 알린다.
+     */
+    private static String formatCurrentPrice(StockQuote quote)
+    {
+        if (quote == null || !quote.available())
+        {
+            return "현재가격: 조회 중";
+        }
+
+        String price = "현재가격: " + NUMBER_FORMAT.format(Math.round(quote.priceKrw()));
+        if (quote.isStale(System.currentTimeMillis()))
+        {
+            return price + " (갱신 지연)";
+        }
+        return price;
     }
 
     private double getTotalStockValue()
@@ -223,7 +238,7 @@ public class StockTradingComponent extends EmptyComponent
         double total = 0;
         for (StockPosition position : account.positions())
         {
-            StockQuote quote = this.stockMarketService.getQuote(position.stockId());
+            StockQuote quote = ClientStockMarket.getQuote(position.stockId());
             if (quote != null && quote.available())
             {
                 total += position.getCurrentValue(quote.priceKrw());
@@ -232,16 +247,10 @@ public class StockTradingComponent extends EmptyComponent
         return total;
     }
 
-    private String getStockName(String stockId)
-    {
-        StockQuote quote = this.stockMarketService.getQuote(stockId);
-        return quote == null ? stockId : quote.name();
-    }
-
     private EditBoxWidget createAmountInput(int x, int y, int defaultValue)
     {
         EditBoxWidget amountInput = new EditBoxWidget(
-                Minecraft.getInstance().font, x, y, 54, 16, Component.literal("수량"));
+                Minecraft.getInstance().font, x, y, 54, 16, Component.literal("금액"));
         amountInput.setValue(Integer.toString(defaultValue));
         amountInput.setMaxLength(8);
         amountInput.setFilter(value -> value.isEmpty() || value.chars().allMatch(Character::isDigit));
@@ -267,6 +276,10 @@ public class StockTradingComponent extends EmptyComponent
         amountInput.setValue(Integer.toString(Math.max(0, amount + delta)));
     }
 
+    /**
+     * 입력칸의 수량. 비어 있거나 숫자가 아니면 0으로 본다.
+     * 예전에는 10을 돌려줘서 빈칸인데도 10개 거래 확인창이 떴다.
+     */
     private int getAmount(EditBoxWidget amountInput)
     {
         try
@@ -275,7 +288,7 @@ public class StockTradingComponent extends EmptyComponent
         }
         catch (NumberFormatException ignored)
         {
-            return 10;
+            return 0;
         }
     }
 
@@ -291,15 +304,22 @@ public class StockTradingComponent extends EmptyComponent
         int amount = getAmount(this.sellAmountInput);
         if (amount <= 0)
         {
-            showAlert("판매할 수량을 1개 이상 입력해 주세요.");
+            showAlert("판매할 투자원금을 1개 이상 입력해 주세요.");
             return;
         }
-        String stockName = getStockName(selectedHoldingStockId);
+        if (!isTradable(selectedHoldingStockId))
+        {
+            return;
+        }
+
+        String stockName = StockCatalog.getStockName(selectedHoldingStockId);
+        // 확인창을 띄운 시점의 가격으로만 체결한다. 그 사이 가격이 갱신되면 서버가 거래를 거절한다.
+        long snapshotVersion = ClientStockMarket.getSnapshotVersion();
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.setScreen(new ConfirmationScreen(
                 minecraft.screen,
                 new ConfirmationScreenState(
-                        Component.literal(stockName + "를 " + amount + "개 판매 하시겠습니까?"),
+                        Component.literal(stockName + " 투자원금 " + amount + "개를 판매 하시겠습니까?"),
                         Component.literal("판매"),
                         Component.literal("취소"),
                         () -> {
@@ -308,7 +328,8 @@ public class StockTradingComponent extends EmptyComponent
                                 minecraft.setScreen(confirmationScreen.getPreviousScreen());
                             }
                             NetworkManager.sendToServer(new ServerboundStockActionPacket(
-                                    ServerboundStockActionPacket.Action.SELL, selectedHoldingStockId, amount));
+                                    ServerboundStockActionPacket.Action.SELL, selectedHoldingStockId, amount,
+                                    snapshotVersion));
                         }
                 )
         ));
@@ -319,7 +340,7 @@ public class StockTradingComponent extends EmptyComponent
         int amount = getAmount(this.buyAmountInput);
         if (amount <= 0)
         {
-            showAlert("구매할 수량을 1개 이상 입력해 주세요.");
+            showAlert("투자할 금액을 1개 이상 입력해 주세요.");
             return;
         }
         if (this.state.getStockAccount().balance() + 0.00000001 < amount)
@@ -329,7 +350,13 @@ public class StockTradingComponent extends EmptyComponent
         }
 
         String selectedStockId = this.state.getSelectedStockId();
-        String stockName = getStockName(selectedStockId);
+        if (!isTradable(selectedStockId))
+        {
+            return;
+        }
+
+        String stockName = StockCatalog.getStockName(selectedStockId);
+        long snapshotVersion = ClientStockMarket.getSnapshotVersion();
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.setScreen(new ConfirmationScreen(
                 minecraft.screen,
@@ -343,10 +370,30 @@ public class StockTradingComponent extends EmptyComponent
                                 minecraft.setScreen(confirmationScreen.getPreviousScreen());
                             }
                             NetworkManager.sendToServer(new ServerboundStockActionPacket(
-                                    ServerboundStockActionPacket.Action.BUY, selectedStockId, amount));
+                                    ServerboundStockActionPacket.Action.BUY, selectedStockId, amount,
+                                    snapshotVersion));
                         }
                 )
         ));
+    }
+
+    /**
+     * 서버가 거절할 것이 확실한 거래는 확인창을 띄우기 전에 막는다.
+     */
+    private boolean isTradable(String stockId)
+    {
+        StockQuote quote = stockId == null ? null : ClientStockMarket.getQuote(stockId);
+        if (quote == null || !quote.available())
+        {
+            showAlert("아직 시세를 불러오지 못했습니다.\n잠시 후 다시 시도해 주세요.");
+            return false;
+        }
+        if (!quote.isTradable(System.currentTimeMillis()))
+        {
+            showAlert(quote.name() + " 시세 갱신이 지연되고 있습니다.\n가격이 다시 갱신된 후 거래해 주세요.");
+            return false;
+        }
+        return true;
     }
 
     private void showAlert(String message)
@@ -362,6 +409,13 @@ public class StockTradingComponent extends EmptyComponent
     {
         int amount = getAmount(this.transferAmountInput);
         String actionName = action == ServerboundStockActionPacket.Action.DEPOSIT ? "입금" : "출금";
+        // 서버도 같은 조건을 검사하지만, 확인창을 띄우기 전에 알려 주는 편이 덜 헷갈린다.
+        if (amount < 10 || amount % 10 != 0)
+        {
+            showAlert(actionName + "은 10개 단위로만 가능합니다.");
+            return;
+        }
+
         String confirmationMessage = action == ServerboundStockActionPacket.Action.WITHDRAW
                 ? "출금하시겠습니까?\n(※ 0.2% 소득세 차감)"
                 : "입금하시겠습니까?";
@@ -377,7 +431,8 @@ public class StockTradingComponent extends EmptyComponent
                             {
                                 minecraft.setScreen(confirmationScreen.getPreviousScreen());
                             }
-                            NetworkManager.sendToServer(new ServerboundStockActionPacket(action, "", amount));
+                            // 입출금은 시세와 무관하므로 스냅샷 번호를 사용하지 않는다.
+                            NetworkManager.sendToServer(new ServerboundStockActionPacket(action, "", amount, 0));
                         }
                 )
         ));

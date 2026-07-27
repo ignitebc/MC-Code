@@ -24,7 +24,7 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
                         position.stockId(),
                         0,
                         StockDecimal.truncate(position.costBasis()),
-                        StockDecimal.truncate(position.quantity()),
+                        StockDecimal.truncate(position.investedAmount()),
                         StockDecimal.truncate(position.getAverageEntryPrice())
                 ))
                 .toList();
@@ -69,9 +69,7 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
         }
         else
         {
-            double oldUnits = oldPosition.getAverageEntryPrice() <= 0
-                    ? 0
-                    : oldPosition.costBasis() / oldPosition.getAverageEntryPrice();
+            double oldUnits = oldPosition.getUnits();
             double addedUnits = amount / currentPrice;
             double updatedCostBasis = oldPosition.costBasis() + amount;
             double updatedAverageEntryPrice = oldUnits + addedUnits <= 0
@@ -82,7 +80,7 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
                     stockId,
                     0,
                     updatedCostBasis,
-                    oldPosition.quantity() + amount,
+                    oldPosition.investedAmount() + amount,
                     updatedAverageEntryPrice
             ));
         }
@@ -98,23 +96,23 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
             return this;
         }
 
-        double quantityReductionRatio = oldPosition.quantity() <= 0 ? 1 : amount / oldPosition.quantity();
-        double soldCostBasis = Math.max(0, oldPosition.costBasis() * quantityReductionRatio);
+        double soldRatio = oldPosition.investedAmount() <= 0 ? 1 : amount / oldPosition.investedAmount();
+        double soldCostBasis = Math.max(0, oldPosition.costBasis() * soldRatio);
         double saleAmount = oldPosition.getAverageEntryPrice() <= 0
                 ? 0
                 : soldCostBasis / oldPosition.getAverageEntryPrice() * currentPrice;
         double feeAmount = StockDecimal.truncate(saleAmount * feeRate);
-        double remainingQuantity = Math.max(0, oldPosition.quantity() - amount);
+        double remainingInvestedAmount = Math.max(0, oldPosition.investedAmount() - amount);
         double remainingCostBasis = Math.max(0, oldPosition.costBasis() - soldCostBasis);
         double returnRate = soldCostBasis <= 0
                 ? 0
                 : ((saleAmount - feeAmount) / soldCostBasis - 1) * 100;
         List<StockPosition> updatedPositions = new ArrayList<>(this.positions);
         updatedPositions.remove(oldPosition);
-        if (remainingQuantity > 0.00000001)
+        if (remainingInvestedAmount > 0.00000001)
         {
             updatedPositions.add(new StockPosition(
-                    stockId, 0, remainingCostBasis, remainingQuantity,
+                    stockId, 0, remainingCostBasis, remainingInvestedAmount,
                     oldPosition.getAverageEntryPrice()));
         }
         return new StockAccount(this.balance + saleAmount - feeAmount, List.copyOf(updatedPositions),
@@ -147,7 +145,7 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
             buf.writeUtf(position.stockId());
             buf.writeDouble(position.units());
             buf.writeDouble(position.costBasis());
-            buf.writeDouble(position.quantity());
+            buf.writeDouble(position.investedAmount());
             buf.writeDouble(position.getAverageEntryPrice());
         });
         buffer.writeCollection(this.transactions, (buf, transaction) -> {

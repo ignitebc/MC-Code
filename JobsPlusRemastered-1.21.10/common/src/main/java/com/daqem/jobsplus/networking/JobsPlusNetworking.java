@@ -6,6 +6,7 @@ import com.daqem.jobsplus.client.networking.ClientboundOpenJobsScreenPacketHandl
 import com.daqem.jobsplus.client.networking.ClientboundOpenPowerupsScreenPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundSyncActionHoldersPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundStockAlertPacketHandler;
+import com.daqem.jobsplus.client.networking.ClientboundStockSnapshotPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundUnlockItemRestrictionPacketHandler;
 import com.daqem.jobsplus.networking.c2s.*;
 import com.daqem.jobsplus.networking.s2c.*;
@@ -29,6 +30,9 @@ public interface JobsPlusNetworking
         CustomPacketPayload.Type<ClientboundOpenPowerupsScreenPacket> CLIENTBOUND_OPEN_POWERUPS_SCREEN = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_open_powerups_screen"));
         CustomPacketPayload.Type<ClientboundStockAlertPacket> CLIENTBOUND_STOCK_ALERT = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_stock_alert"));
 
+        // 서버가 확정한 1분 시세 스냅샷 전달용
+        CustomPacketPayload.Type<ClientboundStockSnapshotPacket> CLIENTBOUND_STOCK_SNAPSHOT = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_stock_snapshot"));
+
         // 신규: 서버 -> 클라 활성 홀더 동기화
         CustomPacketPayload.Type<ClientboundSyncActionHoldersPacket> CLIENTBOUND_SYNC_ACTION_HOLDERS = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_sync_action_holders"));
 
@@ -42,6 +46,7 @@ public interface JobsPlusNetworking
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_UNLOCK_ITEM_RESTRICTION, ClientboundUnlockItemRestrictionPacket.STREAM_CODEC, ClientboundUnlockItemRestrictionPacketHandler::handleClientSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_OPEN_POWERUPS_SCREEN, ClientboundOpenPowerupsScreenPacket.STREAM_CODEC, ClientboundOpenPowerupsScreenPacketHandler::handleClientSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_STOCK_ALERT, ClientboundStockAlertPacket.STREAM_CODEC, ClientboundStockAlertPacketHandler::handleClientSide);
+                NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_STOCK_SNAPSHOT, ClientboundStockSnapshotPacket.STREAM_CODEC, ClientboundStockSnapshotPacketHandler::handleClientSide);
 
                 // 신규 등록
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_SYNC_ACTION_HOLDERS, ClientboundSyncActionHoldersPacket.STREAM_CODEC, ClientboundSyncActionHoldersPacketHandler::handleClientSide);
@@ -67,6 +72,7 @@ public interface JobsPlusNetworking
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_UNLOCK_ITEM_RESTRICTION, ClientboundUnlockItemRestrictionPacket.STREAM_CODEC);
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_OPEN_POWERUPS_SCREEN, ClientboundOpenPowerupsScreenPacket.STREAM_CODEC);
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_STOCK_ALERT, ClientboundStockAlertPacket.STREAM_CODEC);
+                NetworkManager.registerS2CPayloadType(CLIENTBOUND_STOCK_SNAPSHOT, ClientboundStockSnapshotPacket.STREAM_CODEC);
 
                 // 신규 타입 등록
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_SYNC_ACTION_HOLDERS, ClientboundSyncActionHoldersPacket.STREAM_CODEC);

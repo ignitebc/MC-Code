@@ -1,5 +1,6 @@
-package com.daqem.jobsplus.client.gui.jobs.stock;
+package com.daqem.jobsplus.stock;
 
+import com.daqem.jobsplus.JobsPlus;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -19,6 +20,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * 시세 조회 및 스냅샷 확정을 담당한다.
+ * <p>
+ * <b>서버 전용이다.</b> 클라이언트는 API를 직접 조회하지 않고 서버가 보내 준
+ * {@link StockMarketSnapshot}만 사용한다. 클라이언트가 따로 조회하면 표에 보이는 가격과
+ * 서버가 체결에 쓰는 가격이 서로 달라질 수 있기 때문이다.
+ * <p>
+ * 갱신은 {@link com.daqem.jobsplus.event.stock.StockMarketTicker}가 서버 틱마다 호출하는
+ * {@link #refreshIfNeeded()}로만 이루어지며, 실제 HTTP 요청은 {@link #REFRESH_INTERVAL_MILLIS}에
+ * 한 번으로 제한된다. 조회가 끝나면 스냅샷을 통째로 교체하므로 1분 동안은 모든 플레이어가
+ * 동일한 가격을 본다.
+ */
 public final class StockMarketService
 {
     private static final long REFRESH_INTERVAL_MILLIS = 60_000L;
@@ -27,46 +40,13 @@ public final class StockMarketService
     private static final String UPBIT_TICKER_URL =
             "https://api.upbit.com/v1/ticker?markets=KRW-BTC,KRW-ETH,KRW-DOGE,KRW-XRP,KRW-SOL";
 
-    private static final List<StockDefinition> STOCKS = List.of(
-            new StockDefinition("AAPL", "애플", "AAPL", Market.YAHOO),
-            new StockDefinition("MSFT", "마이크로소프트", "MSFT", Market.YAHOO),
-            new StockDefinition("005930", "삼성전자", "005930.KS", Market.YAHOO),
-            new StockDefinition("000660", "SK하이닉스", "000660.KS", Market.YAHOO),
-            new StockDefinition("009150", "삼성전기", "009150.KS", Market.YAHOO),
-            new StockDefinition("006400", "삼성SDI", "006400.KS", Market.YAHOO),
-            new StockDefinition("012450", "한화에어로스페이스", "012450.KS", Market.YAHOO),
-            new StockDefinition("066570", "LG전자", "066570.KS", Market.YAHOO),
-            new StockDefinition("BTC", "비트코인", "KRW-BTC", Market.UPBIT),
-            new StockDefinition("ETH", "이더리움", "KRW-ETH", Market.UPBIT),
-            new StockDefinition("389680", "유디엠텍", "389680.KQ", Market.YAHOO),
-            new StockDefinition("035420", "네이버", "035420.KS", Market.YAHOO),
-            new StockDefinition("005380", "현대차", "005380.KS", Market.YAHOO),
-            new StockDefinition("NVDA", "엔비디아", "NVDA", Market.YAHOO),
-            new StockDefinition("AVGO", "브로드컴", "AVGO", Market.YAHOO),
-            new StockDefinition("INTC", "인텔", "INTC", Market.YAHOO),
-            new StockDefinition("QCOM", "퀄컴", "QCOM", Market.YAHOO),
-            new StockDefinition("GOOGL", "알파벳", "GOOGL", Market.YAHOO),
-            new StockDefinition("TSLA", "테슬라", "TSLA", Market.YAHOO),
-            new StockDefinition("AMZN", "아마존", "AMZN", Market.YAHOO),
-            new StockDefinition("META", "메타", "META", Market.YAHOO),
-            new StockDefinition("NFLX", "넷플릭스", "NFLX", Market.YAHOO),
-            new StockDefinition("KO", "코카콜라", "KO", Market.YAHOO),
-            new StockDefinition("DIS", "디즈니", "DIS", Market.YAHOO),
-            new StockDefinition("TSM", "TSMC", "TSM", Market.YAHOO),
-            new StockDefinition("035720", "카카오", "035720.KS", Market.YAHOO),
-            new StockDefinition("SPCX", "스페이스X", "SPCX", Market.YAHOO),
-            new StockDefinition("DOGE", "도지코인", "KRW-DOGE", Market.UPBIT),
-            new StockDefinition("XRP", "리플", "KRW-XRP", Market.UPBIT),
-            new StockDefinition("SOL", "솔라나", "KRW-SOL", Market.UPBIT)
-    );
     private static final StockMarketService INSTANCE = new StockMarketService();
 
     private final HttpClient httpClient;
     private final ExecutorService refreshExecutor;
     private final AtomicBoolean refreshing = new AtomicBoolean();
-    private volatile List<StockQuote> quotes;
+    private volatile StockMarketSnapshot snapshot;
     private volatile long lastRefreshAttempt;
-    private volatile long lastSuccessfulRefresh;
 
     private StockMarketService()
     {
@@ -78,9 +58,9 @@ public final class StockMarketService
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(8))
                 .build();
-        this.quotes = STOCKS.stream()
+        this.snapshot = new StockMarketSnapshot(0, 0, StockCatalog.getStocks().stream()
                 .map(stock -> StockQuote.loading(stock.id(), stock.name()))
-                .toList();
+                .toList());
     }
 
     public static StockMarketService getInstance()
@@ -88,29 +68,20 @@ public final class StockMarketService
         return INSTANCE;
     }
 
-    public List<StockQuote> getQuotes()
+    /**
+     * 현재 확정된 스냅샷. 매수·매도는 반드시 이 값만 사용해야 한다.
+     */
+    public StockMarketSnapshot getSnapshot()
     {
-        return this.quotes;
+        return this.snapshot;
     }
 
-    public StockQuote getQuote(String stockId)
-    {
-        return this.quotes.stream()
-                .filter(quote -> quote.id().equals(stockId))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public long getLastSuccessfulRefresh()
-    {
-        return this.lastSuccessfulRefresh;
-    }
-
-    public boolean isRefreshing()
-    {
-        return this.refreshing.get();
-    }
-
+    /**
+     * 마지막 조회로부터 {@link #REFRESH_INTERVAL_MILLIS}가 지났으면 갱신을 시작한다.
+     * <p>
+     * 조회는 별도 스레드에서 진행되며, 성공해야만 스냅샷이 교체된다. 조회가 끝나기 전까지는
+     * 이전 스냅샷이 그대로 유지되므로 이 메서드를 호출한 직후에 가격이 바뀌는 일은 없다.
+     */
     public void refreshIfNeeded()
     {
         long now = System.currentTimeMillis();
@@ -134,21 +105,27 @@ public final class StockMarketService
 
     private void refreshQuotes()
     {
+        StockMarketSnapshot previousSnapshot = this.snapshot;
         Map<String, StockQuote> refreshedQuotes = new LinkedHashMap<>();
-        this.quotes.forEach(quote -> refreshedQuotes.put(quote.id(), quote));
+        previousSnapshot.quotes().forEach(quote -> refreshedQuotes.put(quote.id(), quote));
+
+        long fetchedAt = System.currentTimeMillis();
+        int successCount = 0;
 
         double usdKrw = 0;
         try
         {
             usdKrw = this.fetchYahooPrice("KRW=X").price();
         }
-        catch (IOException | InterruptedException | RuntimeException ignored)
+        catch (IOException | InterruptedException | RuntimeException e)
         {
+            JobsPlus.LOGGER.warn("Failed to fetch USD/KRW exchange rate: {}", e.toString());
+            restoreInterruptFlag(e);
         }
 
-        for (StockDefinition stock : STOCKS)
+        for (StockCatalog.StockDefinition stock : StockCatalog.getStocks())
         {
-            if (stock.market() != Market.YAHOO)
+            if (stock.market() != StockCatalog.Market.YAHOO)
             {
                 continue;
             }
@@ -164,32 +141,45 @@ public final class StockMarketService
                 double priceKrw = isKoreanStock ? yahooQuote.price() : yahooQuote.price() * usdKrw;
                 refreshedQuotes.put(
                         stock.id(),
-                        new StockQuote(stock.id(), stock.name(), priceKrw, yahooQuote.percentChange(), true)
+                        new StockQuote(stock.id(), stock.name(), priceKrw, yahooQuote.percentChange(), true, fetchedAt)
                 );
+                successCount++;
             }
-            catch (IOException | InterruptedException | RuntimeException ignored)
+            catch (IOException | InterruptedException | RuntimeException e)
             {
+                JobsPlus.LOGGER.warn("Failed to fetch Yahoo quote for {} ({}): {}", stock.id(), stock.symbol(), e.toString());
+                restoreInterruptFlag(e);
             }
         }
 
         try
         {
-            this.fetchUpbitPrices(refreshedQuotes);
+            successCount += this.fetchUpbitPrices(refreshedQuotes, fetchedAt);
         }
-        catch (IOException | InterruptedException | RuntimeException ignored)
+        catch (IOException | InterruptedException | RuntimeException e)
         {
+            JobsPlus.LOGGER.warn("Failed to fetch Upbit tickers: {}", e.toString());
+            restoreInterruptFlag(e);
         }
 
-        List<StockQuote> orderedQuotes = new ArrayList<>(STOCKS.size());
-        for (StockDefinition stock : STOCKS)
+        // 한 종목도 못 받았으면 스냅샷을 교체하지 않는다.
+        // 버전이 그대로 유지되므로 진행 중인 거래가 불필요하게 취소되지 않고,
+        // 각 시세의 updatedAt이 그대로 늙어 일정 시간 후 자동으로 거래가 차단된다.
+        if (successCount == 0)
         {
-            orderedQuotes.add(refreshedQuotes.get(stock.id()));
+            JobsPlus.LOGGER.warn("Stock market refresh failed for every symbol. Keeping snapshot version {}.",
+                    previousSnapshot.version());
+            return;
         }
-        this.quotes = List.copyOf(orderedQuotes);
-        if (this.quotes.stream().anyMatch(StockQuote::available))
+
+        List<StockQuote> orderedQuotes = new ArrayList<>(StockCatalog.getStocks().size());
+        for (StockCatalog.StockDefinition stock : StockCatalog.getStocks())
         {
-            this.lastSuccessfulRefresh = System.currentTimeMillis();
+            StockQuote quote = refreshedQuotes.get(stock.id());
+            orderedQuotes.add(quote != null ? quote : StockQuote.loading(stock.id(), stock.name()));
         }
+        this.snapshot = new StockMarketSnapshot(
+                previousSnapshot.version() + 1, fetchedAt, List.copyOf(orderedQuotes));
     }
 
     private YahooQuote fetchYahooPrice(String symbol) throws IOException, InterruptedException
@@ -221,7 +211,8 @@ public final class StockMarketService
         return new YahooQuote(price, percentChange);
     }
 
-    private void fetchUpbitPrices(Map<String, StockQuote> refreshedQuotes) throws IOException, InterruptedException
+    private int fetchUpbitPrices(Map<String, StockQuote> refreshedQuotes, long fetchedAt)
+            throws IOException, InterruptedException
     {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(UPBIT_TICKER_URL))
@@ -236,15 +227,12 @@ public final class StockMarketService
             throw new IOException("Upbit ticker response status: " + response.statusCode());
         }
 
+        int successCount = 0;
         JsonArray tickers = JsonParser.parseString(response.body()).getAsJsonArray();
         for (JsonElement tickerElement : tickers)
         {
             JsonObject ticker = tickerElement.getAsJsonObject();
-            String market = ticker.get("market").getAsString();
-            StockDefinition stock = STOCKS.stream()
-                    .filter(definition -> definition.symbol().equals(market))
-                    .findFirst()
-                    .orElse(null);
+            StockCatalog.StockDefinition stock = StockCatalog.getStockBySymbol(ticker.get("market").getAsString());
             if (stock == null)
             {
                 continue;
@@ -257,9 +245,20 @@ public final class StockMarketService
                             stock.name(),
                             ticker.get("trade_price").getAsDouble(),
                             ticker.get("signed_change_rate").getAsDouble() * 100,
-                            true
+                            true,
+                            fetchedAt
                     )
             );
+            successCount++;
+        }
+        return successCount;
+    }
+
+    private static void restoreInterruptFlag(Exception e)
+    {
+        if (e instanceof InterruptedException)
+        {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -279,16 +278,6 @@ public final class StockMarketService
             throw new IllegalStateException("Missing stock quote field: " + key);
         }
         return object.get(key).getAsDouble();
-    }
-
-    private enum Market
-    {
-        YAHOO,
-        UPBIT
-    }
-
-    private record StockDefinition(String id, String name, String symbol, Market market)
-    {
     }
 
     private record YahooQuote(double price, double percentChange)

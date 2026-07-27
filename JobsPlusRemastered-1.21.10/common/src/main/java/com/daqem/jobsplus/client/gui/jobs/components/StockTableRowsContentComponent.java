@@ -1,8 +1,9 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
-import com.daqem.jobsplus.client.gui.jobs.stock.StockMarketService;
-import com.daqem.jobsplus.client.gui.jobs.stock.StockQuote;
+import com.daqem.jobsplus.client.stock.ClientStockMarket;
+import com.daqem.jobsplus.stock.StockCatalog;
+import com.daqem.jobsplus.stock.StockQuote;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import com.daqem.uilib.gui.widget.CustomButtonWidget;
 import net.minecraft.client.Minecraft;
@@ -20,19 +21,20 @@ public class StockTableRowsContentComponent extends EmptyComponent
     private static final int NEGATIVE_COLOR = 0xFF1976D2;
     private static final NumberFormat PRICE_FORMAT = NumberFormat.getIntegerInstance(Locale.KOREA);
 
-    private final StockMarketService stockMarketService;
     private final JobsScreenState state;
 
     public StockTableRowsContentComponent(JobsScreenState state)
     {
+        // 행 구성은 서버 스냅샷이 아니라 고정된 종목 목록을 따른다.
+        // 스냅샷이 아직 도착하지 않아도 표 높이와 종목명이 흔들리지 않도록 하기 위함이다.
         super(0, 0, StockTableComponent.TABLE_WIDTH,
-                StockTableComponent.ROW_HEIGHT * StockMarketService.getInstance().getQuotes().size());
+                StockTableComponent.ROW_HEIGHT * StockCatalog.getStocks().size());
         this.state = state;
-        this.stockMarketService = StockMarketService.getInstance();
 
-        for (int index = 0; index < this.stockMarketService.getQuotes().size(); index++)
+        List<StockCatalog.StockDefinition> stocks = StockCatalog.getStocks();
+        for (int index = 0; index < stocks.size(); index++)
         {
-            String stockId = this.stockMarketService.getQuotes().get(index).id();
+            String stockId = stocks.get(index).id();
             this.addWidget(new StockRowButtonWidget(
                     0,
                     index * StockTableComponent.ROW_HEIGHT,
@@ -47,8 +49,6 @@ public class StockTableRowsContentComponent extends EmptyComponent
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth,
                        int parentHeight)
     {
-        this.stockMarketService.refreshIfNeeded();
-
         int x = getTotalX();
         int y = getTotalY();
         int right = x + getWidth();
@@ -60,12 +60,15 @@ public class StockTableRowsContentComponent extends EmptyComponent
                 x + StockTableComponent.PRICE_COLUMN_WIDTH + 1, bottom, StockTableComponent.GRID_COLOR);
         guiGraphics.fill(right - 1, y, right, bottom, StockTableComponent.GRID_COLOR);
 
-        List<StockQuote> quotes = this.stockMarketService.getQuotes();
-        for (int index = 0; index < quotes.size(); index++)
+        List<StockCatalog.StockDefinition> stocks = StockCatalog.getStocks();
+        long now = System.currentTimeMillis();
+        for (int index = 0; index < stocks.size(); index++)
         {
-            StockQuote quote = quotes.get(index);
+            StockCatalog.StockDefinition stock = stocks.get(index);
+            StockQuote quote = ClientStockMarket.getQuote(stock.id());
             int rowY = y + index * StockTableComponent.ROW_HEIGHT;
-            if (quote.id().equals(this.state.getSelectedStockId()))
+            boolean selected = stock.id().equals(this.state.getSelectedStockId());
+            if (selected)
             {
                 guiGraphics.fill(x + 1, rowY, right - 1,
                         rowY + StockTableComponent.ROW_HEIGHT - 1, 0x55F2C94C);
@@ -73,13 +76,12 @@ public class StockTableRowsContentComponent extends EmptyComponent
             guiGraphics.fill(x, rowY + StockTableComponent.ROW_HEIGHT - 1, right,
                     rowY + StockTableComponent.ROW_HEIGHT, StockTableComponent.GRID_COLOR);
 
-            drawScaledString(guiGraphics, quote.id().equals(this.state.getSelectedStockId()) ? "▶" : "",
+            drawScaledString(guiGraphics, selected ? "▶" : "",
                     x + 1, rowY + 2, StockTableComponent.TEXT_COLOR);
-            drawScaledString(guiGraphics, quote.name(), x + 5, rowY + 2, StockTableComponent.TEXT_COLOR);
-            if (!quote.available())
+            drawScaledString(guiGraphics, stock.name(), x + 5, rowY + 2, StockTableComponent.TEXT_COLOR);
+            if (quote == null || !quote.available())
             {
-                String unavailableText = this.stockMarketService.isRefreshing() ? "불러오는 중" : "조회 불가";
-                drawScaledString(guiGraphics, unavailableText,
+                drawScaledString(guiGraphics, "불러오는 중",
                         x + StockTableComponent.NAME_COLUMN_WIDTH + 2, rowY + 2,
                         StockTableComponent.TEXT_COLOR);
                 drawScaledStringRight(guiGraphics, "-", right - 3, rowY + 2,
@@ -88,14 +90,21 @@ public class StockTableRowsContentComponent extends EmptyComponent
             }
 
             String priceText = PRICE_FORMAT.format(Math.round(quote.priceKrw()));
+            drawScaledStringRight(guiGraphics, priceText,
+                    x + StockTableComponent.PRICE_COLUMN_WIDTH - 2, rowY + 2,
+                    StockTableComponent.TEXT_COLOR);
+
+            // 갱신이 끊긴 가격은 서버에서도 체결을 막으므로 등락률 대신 지연 상태를 알린다.
+            if (quote.isStale(now))
+            {
+                drawScaledStringRight(guiGraphics, "갱신 지연", right - 3, rowY + 2, NEGATIVE_COLOR);
+                continue;
+            }
+
             String changeText = String.format(Locale.ROOT, "%+.2f%%", quote.percentChange());
             int changeColor = quote.percentChange() > 0
                     ? POSITIVE_COLOR
                     : quote.percentChange() < 0 ? NEGATIVE_COLOR : StockTableComponent.TEXT_COLOR;
-
-            drawScaledStringRight(guiGraphics, priceText,
-                    x + StockTableComponent.PRICE_COLUMN_WIDTH - 2, rowY + 2,
-                    StockTableComponent.TEXT_COLOR);
             drawScaledStringRight(guiGraphics, changeText, right - 3, rowY + 2, changeColor);
         }
     }

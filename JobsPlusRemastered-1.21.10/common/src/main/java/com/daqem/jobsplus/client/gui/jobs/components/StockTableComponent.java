@@ -1,6 +1,5 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
-import com.daqem.jobsplus.client.gui.jobs.stock.StockMarketService;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.jobs.widgets.StockTableScrollWidget;
 import com.daqem.uilib.gui.component.EmptyComponent;
@@ -16,13 +15,9 @@ public class StockTableComponent extends EmptyComponent
     static final int NAME_COLUMN_WIDTH = 42;
     static final int PRICE_COLUMN_WIDTH = 86;
 
-    private final StockMarketService stockMarketService;
-
     public StockTableComponent(JobsScreenState state)
     {
         super(31, 31, 132, 178);
-        this.stockMarketService = StockMarketService.getInstance();
-        this.stockMarketService.refreshIfNeeded();
 
         EmptyComponent rowsComponent = new EmptyComponent(
                 0, HEADER_HEIGHT, getWidth(), getHeight() - HEADER_HEIGHT);
@@ -35,8 +30,6 @@ public class StockTableComponent extends EmptyComponent
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth,
                        int parentHeight)
     {
-        this.stockMarketService.refreshIfNeeded();
-
         int x = getTotalX();
         int y = getTotalY();
         int right = x + TABLE_WIDTH;

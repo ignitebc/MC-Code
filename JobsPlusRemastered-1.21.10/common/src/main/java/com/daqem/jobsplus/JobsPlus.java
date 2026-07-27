@@ -6,6 +6,7 @@ import com.daqem.jobsplus.event.command.EventRegisterCommands;
 import com.daqem.jobsplus.event.block.CropReplantManager;
 import com.daqem.jobsplus.event.item.EventJobSelectTicketUse;
 import com.daqem.jobsplus.event.player.EventKillElytraDuringRaidOrWither;
+import com.daqem.jobsplus.event.stock.StockMarketTicker;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobManager;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupManager;
 import com.daqem.jobsplus.integration.arc.holder.type.JobsPlusActionHolderType;
@@ -45,6 +46,7 @@ public class JobsPlus
         EventJobSelectTicketUse.registerEvent(); // 추가
         EventKillElytraDuringRaidOrWither.registerEvent(); // 레이드/위더 활성 시 겉날개 즉사
         CropReplantManager.registerEvent();
+        StockMarketTicker.registerEvent(); // 서버가 1분 주기로 시세 스냅샷 확정 후 전원에게 전송
     }
 
     private static void initRegistry()

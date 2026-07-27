@@ -1,8 +1,7 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
-import com.daqem.jobsplus.client.gui.jobs.stock.StockMarketService;
-import com.daqem.jobsplus.client.gui.jobs.stock.StockQuote;
+import com.daqem.jobsplus.stock.StockCatalog;
 import com.daqem.jobsplus.player.stock.StockTransaction;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import net.minecraft.client.Minecraft;
@@ -26,7 +25,6 @@ public class StockHistoryContentComponent extends EmptyComponent
             DateTimeFormatter.ofPattern("MM-dd HH:mm").withZone(ZoneId.systemDefault());
 
     private final JobsScreenState state;
-    private final StockMarketService stockMarketService;
 
     public StockHistoryContentComponent(JobsScreenState state)
     {
@@ -34,7 +32,6 @@ public class StockHistoryContentComponent extends EmptyComponent
                 + Math.max(1, Math.min(MAX_TRANSACTIONS, state.getStockAccount().transactions().size()))
                 * ROW_HEIGHT);
         this.state = state;
-        this.stockMarketService = StockMarketService.getInstance();
     }
 
     @Override
@@ -49,7 +46,8 @@ public class StockHistoryContentComponent extends EmptyComponent
         drawScaled(guiGraphics, "일시", x + 2, y + 13, TEXT_COLOR);
         drawScaled(guiGraphics, "구분", x + 35, y + 13, TEXT_COLOR);
         drawScaled(guiGraphics, "종목", x + 52, y + 13, TEXT_COLOR);
-        drawScaledRight(guiGraphics, "수량", x + 103, y + 13, TEXT_COLOR);
+        // 표시값은 주식 수량이 아니라 거래에 쓰인 비트코인 금액이다.
+        drawScaledRight(guiGraphics, "금액", x + 103, y + 13, TEXT_COLOR);
         drawScaledRight(guiGraphics, "수익률(%)", right - 2, y + 13, TEXT_COLOR);
         guiGraphics.fill(x, y + HEADER_HEIGHT - 1, right, y + HEADER_HEIGHT, GRID_COLOR);
 
@@ -100,14 +98,13 @@ public class StockHistoryContentComponent extends EmptyComponent
                 : transaction.returnRate() < 0 ? 0xFF1976D2 : TEXT_COLOR;
     }
 
-    private String getStockName(String stockId)
+    private static String getStockName(String stockId)
     {
         if (stockId.isEmpty())
         {
             return "-";
         }
-        StockQuote quote = this.stockMarketService.getQuote(stockId);
-        return quote == null ? stockId : quote.name();
+        return StockCatalog.getStockName(stockId);
     }
 
     private static String getTransactionName(String type)

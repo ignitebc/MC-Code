@@ -1,8 +1,9 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
-import com.daqem.jobsplus.client.gui.jobs.stock.StockMarketService;
-import com.daqem.jobsplus.client.gui.jobs.stock.StockQuote;
+import com.daqem.jobsplus.client.stock.ClientStockMarket;
+import com.daqem.jobsplus.stock.StockCatalog;
+import com.daqem.jobsplus.stock.StockQuote;
 import com.daqem.jobsplus.player.stock.StockPosition;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import com.daqem.uilib.gui.widget.CustomButtonWidget;
@@ -26,13 +27,11 @@ public class StockHoldingsContentComponent extends EmptyComponent
     private static final NumberFormat PRICE_FORMAT = NumberFormat.getIntegerInstance(Locale.KOREA);
 
     private final JobsScreenState state;
-    private final StockMarketService stockMarketService;
 
     public StockHoldingsContentComponent(JobsScreenState state)
     {
         super(0, 0, TABLE_WIDTH, Math.max(20, (state.getStockAccount().positions().size() + 1) * ROW_HEIGHT));
         this.state = state;
-        this.stockMarketService = StockMarketService.getInstance();
         int index = 0;
         for (StockPosition position : state.getStockAccount().positions())
         {
@@ -61,8 +60,9 @@ public class StockHoldingsContentComponent extends EmptyComponent
         int bottom = y + getHeight();
         drawScaledCentered(guiGraphics, "주식명", x + NAME_COLUMN_END / 2, y + 2, TEXT_COLOR);
         drawScaledCentered(guiGraphics, "평단가", x + (NAME_COLUMN_END + AVERAGE_PRICE_COLUMN_END) / 2, y + 2, TEXT_COLOR);
-        drawScaledCentered(guiGraphics, "갯수", x + (AVERAGE_PRICE_COLUMN_END + QUANTITY_COLUMN_END) / 2, y + 2, TEXT_COLOR);
-        drawScaledCentered(guiGraphics, "등락률(%)", x + (QUANTITY_COLUMN_END + TABLE_WIDTH) / 2, y + 2, TEXT_COLOR);
+        drawScaledCentered(guiGraphics, "투자금", x + (AVERAGE_PRICE_COLUMN_END + QUANTITY_COLUMN_END) / 2, y + 2, TEXT_COLOR);
+        // 전일 대비가 아니라 평단가 대비 손익이므로 "수익률"이 맞다.
+        drawScaledCentered(guiGraphics, "수익률(%)", x + (QUANTITY_COLUMN_END + TABLE_WIDTH) / 2, y + 2, TEXT_COLOR);
         guiGraphics.fill(x, y + ROW_HEIGHT - 1, right, y + ROW_HEIGHT, GRID_COLOR);
 
         int index = 0;
@@ -74,10 +74,10 @@ public class StockHoldingsContentComponent extends EmptyComponent
             {
                 guiGraphics.fill(x, rowY, right, rowY + ROW_HEIGHT - 1, 0x55F2C94C);
             }
-            StockQuote quote = this.stockMarketService.getQuote(position.stockId());
-            String name = quote == null ? position.stockId() : quote.name();
+            StockQuote quote = ClientStockMarket.getQuote(position.stockId());
+            String name = StockCatalog.getStockName(position.stockId());
             String averagePrice = PRICE_FORMAT.format(Math.round(position.getAverageEntryPrice()));
-            String units = formatUnits(position.quantity());
+            String investedAmount = formatAmount(position.investedAmount());
             String returnRate = "-";
             int returnColor = TEXT_COLOR;
             if (quote != null && quote.available() && position.getAverageEntryPrice() > 0)
@@ -90,7 +90,7 @@ public class StockHoldingsContentComponent extends EmptyComponent
             drawScaled(guiGraphics, selected ? "▶" : "", x + 1, rowY + 2, TEXT_COLOR);
             drawScaled(guiGraphics, name, x + 6, rowY + 2, TEXT_COLOR);
             drawScaledRight(guiGraphics, averagePrice, x + AVERAGE_PRICE_COLUMN_END - 2, rowY + 2, TEXT_COLOR);
-            drawScaledRight(guiGraphics, units, x + QUANTITY_COLUMN_END - 2, rowY + 2, TEXT_COLOR);
+            drawScaledRight(guiGraphics, investedAmount, x + QUANTITY_COLUMN_END - 2, rowY + 2, TEXT_COLOR);
             drawScaledRight(guiGraphics, returnRate, right - 2, rowY + 2, returnColor);
             guiGraphics.fill(x, rowY + ROW_HEIGHT - 1, right, rowY + ROW_HEIGHT, GRID_COLOR);
             index++;
@@ -101,9 +101,9 @@ public class StockHoldingsContentComponent extends EmptyComponent
         guiGraphics.fill(x + QUANTITY_COLUMN_END, y, x + QUANTITY_COLUMN_END + 1, bottom, GRID_COLOR);
     }
 
-    private static String formatUnits(double units)
+    private static String formatAmount(double amount)
     {
-        return BigDecimal.valueOf(units).stripTrailingZeros().toPlainString();
+        return BigDecimal.valueOf(amount).stripTrailingZeros().toPlainString();
     }
 
     private static void drawScaled(GuiGraphics guiGraphics, String text, int x, int y, int color)

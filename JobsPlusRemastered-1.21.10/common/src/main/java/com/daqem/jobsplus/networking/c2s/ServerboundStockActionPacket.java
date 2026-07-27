@@ -1,7 +1,8 @@
 package com.daqem.jobsplus.networking.c2s;
 
-import com.daqem.jobsplus.client.gui.jobs.stock.StockMarketService;
-import com.daqem.jobsplus.client.gui.jobs.stock.StockQuote;
+import com.daqem.jobsplus.stock.StockMarketService;
+import com.daqem.jobsplus.stock.StockMarketSnapshot;
+import com.daqem.jobsplus.stock.StockQuote;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundStockAlertPacket;
@@ -34,6 +35,12 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
     private final String stockId;
     private final int amount;
 
+    /**
+     * 클라이언트가 화면에서 보고 있던 시세 스냅샷 번호.
+     * 서버 스냅샷과 다르면 표시 가격과 체결 가격이 어긋나므로 거래를 진행하지 않는다.
+     */
+    private final long snapshotVersion;
+
     public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundStockActionPacket> STREAM_CODEC =
             new StreamCodec<>()
             {
@@ -49,14 +56,16 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                     buffer.writeEnum(packet.action);
                     buffer.writeUtf(packet.stockId);
                     buffer.writeInt(packet.amount);
+                    buffer.writeLong(packet.snapshotVersion);
                 }
             };
 
-    public ServerboundStockActionPacket(Action action, String stockId, int amount)
+    public ServerboundStockActionPacket(Action action, String stockId, int amount, long snapshotVersion)
     {
         this.action = action;
         this.stockId = stockId;
         this.amount = amount;
+        this.snapshotVersion = snapshotVersion;
     }
 
     public ServerboundStockActionPacket(RegistryFriendlyByteBuf buffer)
@@ -64,6 +73,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         this.action = buffer.readEnum(Action.class);
         this.stockId = buffer.readUtf();
         this.amount = buffer.readInt();
+        this.snapshotVersion = buffer.readLong();
     }
 
     @Override
@@ -126,10 +136,9 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                 completedMessage = packet.amount + "개가 출금되었습니다.";
             }
             case BUY -> {
-                StockQuote quote = getAvailableQuote(packet.stockId);
+                StockQuote quote = resolveTradableQuote(player, packet);
                 if (quote == null)
                 {
-                    player.sendSystemMessage(Component.literal("현재 종목 시세를 불러온 후 다시 시도해 주세요."));
                     return;
                 }
                 if (account.balance() + 0.00000001 < packet.amount)
@@ -142,16 +151,15 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                 completedMessage = quote.name() + "를 구매했습니다.";
             }
             case SELL -> {
-                StockQuote quote = getAvailableQuote(packet.stockId);
+                StockQuote quote = resolveTradableQuote(player, packet);
                 if (quote == null)
                 {
-                    player.sendSystemMessage(Component.literal("현재 종목 시세를 불러온 후 다시 시도해 주세요."));
                     return;
                 }
                 if (account.getPosition(packet.stockId) == null
-                        || account.getPosition(packet.stockId).quantity() + 0.00000001 < packet.amount)
+                        || account.getPosition(packet.stockId).investedAmount() + 0.00000001 < packet.amount)
                 {
-                    player.sendSystemMessage(Component.literal("판매 가능한 주식 수량이 부족합니다."));
+                    player.sendSystemMessage(Component.literal("판매 가능한 투자 금액이 부족합니다."));
                     return;
                 }
                 account = account.sell(packet.stockId, packet.amount, quote.priceKrw(), SELL_FEE_RATE);
@@ -169,12 +177,47 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         }
     }
 
-    private static StockQuote getAvailableQuote(String stockId)
+    /**
+     * 체결에 사용할 시세를 서버 스냅샷에서 가져온다.
+     * <p>
+     * 시세 API를 다시 조회하지 않는다. 조회는 비동기라서 즉시 반영되지 않고, 무엇보다 클라이언트 표가
+     * 보여 준 가격과 다른 가격으로 체결될 수 있기 때문이다. 대신 클라이언트가 보고 있던 스냅샷 번호를
+     * 서버 스냅샷과 대조해서, 두 값이 다르면 거래를 진행하지 않고 새 가격을 확인하도록 안내한다.
+     *
+     * @return 체결 가능한 시세. 불가능하면 {@code null}이며 사유는 플레이어에게 전달된다.
+     */
+    private static StockQuote resolveTradableQuote(ServerPlayer player, ServerboundStockActionPacket packet)
     {
-        StockMarketService stockMarketService = StockMarketService.getInstance();
-        stockMarketService.refreshIfNeeded();
-        StockQuote quote = stockMarketService.getQuote(stockId);
-        return quote != null && quote.available() && quote.priceKrw() > 0 ? quote : null;
+        StockMarketSnapshot snapshot = StockMarketService.getInstance().getSnapshot();
+        if (snapshot.isEmpty())
+        {
+            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                    "아직 시세를 불러오지 못했습니다.\n잠시 후 다시 시도해 주세요."));
+            return null;
+        }
+
+        if (packet.snapshotVersion != snapshot.version())
+        {
+            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                    "가격이 갱신되었습니다.\n새 가격을 확인한 후 다시 거래해 주세요."));
+            return null;
+        }
+
+        StockQuote quote = snapshot.getQuote(packet.stockId);
+        if (quote == null)
+        {
+            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                    "거래할 수 없는 종목입니다."));
+            return null;
+        }
+
+        if (!quote.isTradable(System.currentTimeMillis()))
+        {
+            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                    quote.name() + " 시세 갱신이 지연되고 있습니다.\n가격이 다시 갱신된 후 거래해 주세요."));
+            return null;
+        }
+        return quote;
     }
 
     private static boolean isValidTransferAmount(int amount)
