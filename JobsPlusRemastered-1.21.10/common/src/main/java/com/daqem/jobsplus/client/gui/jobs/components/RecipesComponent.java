@@ -10,8 +10,9 @@ public class RecipesComponent extends EmptyComponent
     {
         super(0, 0, width, height);
 
-        RecipesScrollComponent recipesScrollComponent = new RecipesScrollComponent(state, getWidth() - 10, getHeight());
+        UserGuideScrollComponent userGuideScrollComponent =
+                new UserGuideScrollComponent(state, getWidth() - 10, getHeight());
 
-        this.addComponent(recipesScrollComponent);
+        this.addComponent(userGuideScrollComponent);
     }
 }
