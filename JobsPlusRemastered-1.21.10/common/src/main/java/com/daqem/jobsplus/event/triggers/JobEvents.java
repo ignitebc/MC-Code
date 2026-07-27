@@ -55,7 +55,7 @@ public class JobEvents
         }
     }
 
-    public static void onJobExperience(JobsPlayer player, Job job, int experience)
+    public static void onJobExperience(JobsPlayer player, Job job, double experience)
     {
         if (player instanceof ArcPlayer arcPlayer)
         {

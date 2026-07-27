@@ -19,10 +19,10 @@ import net.minecraft.util.GsonHelper;
 public class JobExpReward extends AbstractReward
 {
 
-    private final int min;
-    private final int max;
+    private final double min;
+    private final double max;
 
-    public JobExpReward(double chance, int priority, int min, int max)
+    public JobExpReward(double chance, int priority, double min, double max)
     {
         super(chance, priority);
         this.min = min;
@@ -50,7 +50,19 @@ public class JobExpReward extends AbstractReward
                 Job job = jobsServerPlayer.jobsplus$getJob(jobInstance);
                 if (job != null)
                 {
-                    int exp = actionData.getPlayer().arc$getPlayer().getRandom().nextInt(min, max + 1);
+                    double exp;
+                    if (min == max)
+                    {
+                        exp = min;
+                    }
+                    else if (min == Math.rint(min) && max == Math.rint(max))
+                    {
+                        exp = actionData.getPlayer().arc$getPlayer().getRandom().nextInt((int) min, (int) max + 1);
+                    }
+                    else
+                    {
+                        exp = min + actionData.getPlayer().arc$getPlayer().getRandom().nextDouble() * (max - min);
+                    }
                     job.addExperience(exp);
                 }
             }
@@ -64,12 +76,12 @@ public class JobExpReward extends AbstractReward
         return this.getDescription(this.min, this.max);
     }
 
-    public int getMin()
+    public double getMin()
     {
         return min;
     }
 
-    public int getMax()
+    public double getMax()
     {
         return max;
     }
@@ -79,21 +91,21 @@ public class JobExpReward extends AbstractReward
         @Override
         public JobExpReward fromJson(JsonObject jsonObject, double chance, int priority)
         {
-            return new JobExpReward(chance, priority, GsonHelper.getAsInt(jsonObject, "min"), GsonHelper.getAsInt(jsonObject, "max"));
+            return new JobExpReward(chance, priority, GsonHelper.getAsDouble(jsonObject, "min"), GsonHelper.getAsDouble(jsonObject, "max"));
         }
 
         @Override
         public JobExpReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority)
         {
-            return new JobExpReward(chance, priority, friendlyByteBuf.readInt(), friendlyByteBuf.readInt());
+            return new JobExpReward(chance, priority, friendlyByteBuf.readDouble(), friendlyByteBuf.readDouble());
         }
 
         @Override
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobExpReward type)
         {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
-            friendlyByteBuf.writeInt(type.min);
-            friendlyByteBuf.writeInt(type.max);
+            friendlyByteBuf.writeDouble(type.min);
+            friendlyByteBuf.writeDouble(type.max);
         }
     }
 }

@@ -24,7 +24,7 @@ public class ExperienceScrollContentComponent extends EmptyComponent
 
         List<IAction> actions = state.getSelectedJob().getJobInstance().getActions().stream()
                 .filter(action -> action.getRewards().stream().anyMatch(JobExpReward.class::isInstance))
-                .sorted(Comparator.comparingInt(this::getMaximumExperience)
+                .sorted(Comparator.comparingDouble(this::getMaximumExperience)
                         .thenComparing(action -> action.getLocation().getPath()))
                 .toList();
 
@@ -59,12 +59,12 @@ public class ExperienceScrollContentComponent extends EmptyComponent
         this.setHeight(Math.max(0, yOffset - SECTION_GAP));
     }
 
-    private int getMaximumExperience(IAction action)
+    private double getMaximumExperience(IAction action)
     {
         return action.getRewards().stream()
                 .filter(JobExpReward.class::isInstance)
                 .map(JobExpReward.class::cast)
-                .mapToInt(JobExpReward::getMax)
+                .mapToDouble(JobExpReward::getMax)
                 .findFirst()
                 .orElse(0);
     }

@@ -46,11 +46,11 @@ public class ActionItemComponent extends EmptyComponent
                 0, 0, getWidth(), JobsPlus.translatable(translationPath + ".header"), HEADER_COLOR);
 
         Component experienceText = jobExpReward.getMin() == jobExpReward.getMax()
-                ? JobsPlus.translatable("gui.jobs.experience.reward", jobExpReward.getMin())
+                ? JobsPlus.translatable("gui.jobs.experience.reward", formatExperience(jobExpReward.getMin()))
                 : JobsPlus.translatable(
                         "gui.jobs.experience.reward.range",
-                        jobExpReward.getMin(),
-                        jobExpReward.getMax());
+                        formatExperience(jobExpReward.getMin()),
+                        formatExperience(jobExpReward.getMax()));
         experienceText = experienceText.copy()
                 .append("\n")
                 .append(JobsPlus.translatable(
@@ -90,5 +90,14 @@ public class ActionItemComponent extends EmptyComponent
             return Long.toString((long) chance);
         }
         return Double.toString(chance);
+    }
+
+    private String formatExperience(double experience)
+    {
+        if (experience == Math.rint(experience))
+        {
+            return Long.toString((long) experience);
+        }
+        return Double.toString(experience);
     }
 }
