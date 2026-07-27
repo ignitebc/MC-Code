@@ -1,0 +1,72 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:fisherman"
+  },
+  "type": "arc:on_fished_up_item",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "min": 30,
+      "max": 30
+    },
+    {
+      "type": "jobsplus:bitcoin_reward",
+      "chance": 1,
+      "amount": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:items",
+      "items": [
+        "minecraft:fishing_rod"
+      ]
+    },
+    {
+      "type": "arc:or",
+      "conditions": [
+        {
+          "type": "arc:enchantments",
+          "enchantments": {
+            "minecraft:lure": {
+              "min": 1
+            }
+          }
+        },
+        {
+          "type": "arc:enchantments",
+          "enchantments": {
+            "minecraft:luck_of_the_sea": {
+              "min": 1
+            }
+          }
+        },
+        {
+          "type": "arc:enchantments",
+          "enchantments": {
+            "minecraft:unbreaking": {
+              "min": 1
+            }
+          }
+        },
+        {
+          "type": "arc:enchantments",
+          "enchantments": {
+            "minecraft:mending": {
+              "min": 1
+            }
+          }
+        },
+        {
+          "type": "arc:enchantments",
+          "enchantments": {
+            "minecraft:vanishing_curse": {
+              "min": 1
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
