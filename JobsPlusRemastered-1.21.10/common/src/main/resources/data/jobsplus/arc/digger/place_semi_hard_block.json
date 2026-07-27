@@ -16,6 +16,9 @@
       "type": "arc:block_hardness",
       "min": 3,
       "max": 9.9
+    },
+    {
+      "type": "arc:not_in_block_pos_cache"
     }
   ]
 }

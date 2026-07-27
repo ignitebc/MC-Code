@@ -12,8 +12,13 @@
     },
     {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 0.01,      
+      "chance": 0.01,
       "amount": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:hostile_entity"
     }
   ]
 }
