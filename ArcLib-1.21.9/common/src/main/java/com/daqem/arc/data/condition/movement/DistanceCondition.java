@@ -29,23 +29,35 @@ public class DistanceCondition extends AbstractCondition {
 
     @Override
     public boolean isMet(ActionData actionData) {
-        if (actionData.getPlayer() instanceof ArcServerPlayer serverPlayer) {
-            Integer totalDistanceMovedInCm = actionData.getData(ActionDataType.DISTANCE_IN_CM);
-            if (totalDistanceMovedInCm != null) {
-                totalDistanceMovedInCm += serverPlayer.arc$getLastRemainderInCm(this);
-
-                double lastTotalDistanceMovedInCm = serverPlayer.arc$getLastDistanceInCm(this);
-                double currentDistanceMovedInCm = totalDistanceMovedInCm - lastTotalDistanceMovedInCm;
-                double currentDistanceMovedInBlocks = currentDistanceMovedInCm / 100.0;
-
-                if (currentDistanceMovedInBlocks >= distanceInBlocks) {
-                    serverPlayer.arc$setLastDistanceInCm(this, totalDistanceMovedInCm);
-                    return true;
-                }
-                serverPlayer.arc$setLastRemainderInCm(this, (int) (currentDistanceMovedInBlocks % distanceInBlocks) * 100);
-            }
+        if (!(actionData.getPlayer() instanceof ArcServerPlayer serverPlayer)) {
+            return false;
         }
-        return false;
+
+        Integer totalDistanceMovedInCm = actionData.getData(ActionDataType.DISTANCE_IN_CM);
+        if (totalDistanceMovedInCm == null) {
+            return false;
+        }
+
+        int thresholdInCm = distanceInBlocks * 100;
+        if (thresholdInCm <= 0) {
+            return false;
+        }
+
+        int lastDistanceInCm = serverPlayer.arc$getLastDistanceInCm(this);
+
+        // 이동 통계가 초기화되면 기준점이 현재 거리보다 커져 다시는 발동하지 않는다.
+        if (totalDistanceMovedInCm < lastDistanceInCm) {
+            serverPlayer.arc$setLastDistanceInCm(this, totalDistanceMovedInCm);
+            return false;
+        }
+
+        if (totalDistanceMovedInCm - lastDistanceInCm < thresholdInCm) {
+            return false;
+        }
+
+        // 기준점을 임계값만큼만 올려 초과분을 다음 판정으로 넘긴다.
+        serverPlayer.arc$setLastDistanceInCm(this, lastDistanceInCm + thresholdInCm);
+        return true;
     }
 
     @Override
