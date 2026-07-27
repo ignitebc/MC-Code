@@ -32,7 +32,9 @@ public class JobsPlusConfig
         maxJobs = config.defineInteger("max_jobs", 7, 0, Integer.MAX_VALUE).withComments("플레이어가 가질 수 있는 최대 직업 수");
 
         config.push("coins");
-        coinsPerLevelUp = config.defineInteger("coins_per_level_up", 5, 0, Integer.MAX_VALUE).withComments("플레이어가 레벨업 시 얻는 직업 코인의 양");
+        // 정책: 레벨업당 20코인 고정. 전 직업 공통이며 직업별로 다르게 주지 않는다.
+        // Lv95 까지 94회 레벨업으로 1,880코인이 모여 여섯 계열(1,500)과 일곱 계열(1,690)을 모두 해방할 수 있다.
+        coinsPerLevelUp = config.defineInteger("coins_per_level_up", 20, 0, Integer.MAX_VALUE).withComments("플레이어가 레벨업 시 얻는 직업 코인의 양");
         config.pop();
         config.pop();
 
