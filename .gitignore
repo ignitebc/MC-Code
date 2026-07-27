@@ -2,15 +2,42 @@
 .vs/
 .vscode/
 .idea/
+*.iml
+*.ipr
+*.iws
 
 # Python
 __pycache__/
 *.pyc
+.venv/
 
 # Java / Gradle
 .gradle/
 build/
+bin/
+out/
+classes/
+libs/
+remappedSrc/
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
+!**/gradle/wrapper/gradle-wrapper.jar
+
+# Minecraft dev (게임 실행 시 생성되는 폴더)
+run/
+runs/
+logs/
+crash-reports/
+
+# 빌드 산출물 수집 폴더 (collect_fabric_jars.py 출력)
+Build_File/build_files/
+
+# 서버 반영용 수정 파일 전달 폴더
+mc수정한파일/
+
+# OS
+Thumbs.db
+desktop.ini
 
 # Misc
 *.log
