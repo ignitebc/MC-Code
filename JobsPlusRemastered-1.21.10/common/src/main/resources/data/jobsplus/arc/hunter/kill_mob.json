@@ -8,18 +8,30 @@
     {
       "type": "jobsplus:job_exp",
       "chance": 100,
-      "min": 2.23,
-      "max": 2.23
+      "min": 2.19,
+      "max": 2.19
     },
     {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 0.52,
+      "chance": 0.49,
       "amount": 1
     }
   ],
   "conditions": [
     {
       "type": "arc:hostile_entity"
+    },
+    {
+      "type": "arc:not",
+      "conditions": [
+        {
+          "type": "arc:entity_types",
+          "entity_types": [
+            "minecraft:creeper",
+            "minecraft:wither_skeleton"
+          ]
+        }
+      ]
     }
   ]
 }

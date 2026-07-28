@@ -6,8 +6,14 @@
   "type": "arc:on_kill_entity",
   "rewards": [
     {
+      "type": "jobsplus:job_exp",
+      "chance": 100,
+      "min": 2.46,
+      "max": 2.46
+    },
+    {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 1.04,
+      "chance": 0.73,
       "amount": 1
     }
   ],
