@@ -5,6 +5,7 @@ import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.shop.ShopOffer;
+import com.daqem.jobsplus.shop.ShopOffers;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -85,6 +86,23 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
         ServerPlayer player = serverPlayer.jobsplus$getServerPlayer();
 
         if (packet.inputAmount <= 0 || packet.outputAmount <= 0) {
+            return;
+        }
+
+        // 거래 내용은 클라이언트가 보내므로 실제 상점 목록에 있는 거래인지 반드시 대조한다.
+        // 대조하지 않으면 조작된 클라이언트가 임의의 아이템을 임의 수량으로 교환할 수 있다.
+        boolean isRegisteredOffer = ShopOffers.isValidOffer(packet.inputItemId,
+                packet.inputAmount,
+                packet.outputItemId,
+                packet.outputAmount);
+        if (!isRegisteredOffer) {
+            JobsPlus.LOGGER.warn("Rejected shop trade not present in the offer list: {} x{} -> {} x{} (player: {})",
+                    packet.inputItemId,
+                    packet.inputAmount,
+                    packet.outputItemId,
+                    packet.outputAmount,
+                    player.getName().getString());
+            player.sendSystemMessage(JobsPlus.translatable("error.shop_offer_not_found"));
             return;
         }
 
