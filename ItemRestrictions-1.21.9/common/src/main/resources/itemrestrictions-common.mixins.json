@@ -20,7 +20,12 @@
     "menu.MixinEnchantmentMenu",
     "menu.MixinGrindStoneMenu",
     "menu.MixingSmithingMenu",
-    "menu.MixinItemCombinerMenu"
+    "menu.MixinItemCombinerMenu",
+    "block.MixinDispenserBlock",
+    "block.MixinDropperBlock",
+    "block.MixinFlowingFluid",
+    "block.MixinPistonBaseBlock",
+    "block.MixinHopperBlockEntity"
   ],
   "injectors": {
     "defaultRequire": 1

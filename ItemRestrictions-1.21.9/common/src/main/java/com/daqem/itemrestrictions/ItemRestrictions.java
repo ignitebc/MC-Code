@@ -4,6 +4,7 @@ import com.daqem.arc.registry.ArcRegistry;
 import com.daqem.itemrestrictions.config.ItemRestrictionsConfig;
 import com.daqem.itemrestrictions.data.ItemRestrictionManager;
 import com.daqem.itemrestrictions.event.ArcEvents;
+import com.daqem.itemrestrictions.event.ChunkProtectionEvents;
 import com.daqem.itemrestrictions.networking.ItemRestrictionsNetworking;
 import com.mojang.logging.LogUtils;
 import dev.architectury.registry.ReloadListenerRegistry;
@@ -35,6 +36,7 @@ public class ItemRestrictions {
 
     private static void registerEvents() {
         ArcEvents.registerEvents();
+        ChunkProtectionEvents.registerEvents();
     }
 
     public static ResourceLocation getId(String id) {

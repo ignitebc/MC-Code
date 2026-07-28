@@ -13,5 +13,13 @@
   "yamlconfig.itemrestrictions": "아이템 제한",
   "yamlconfig.itemrestrictions.item-restrictions-common": "공통",
   "yamlconfig.itemrestrictions.item-restrictions-common.debug": "디버그",
-  "yamlconfig.itemrestrictions.item-restrictions-common.debug.is_debug": "디버그 활성화"
+  "yamlconfig.itemrestrictions.item-restrictions-common.debug.is_debug": "디버그 활성화",
+  "itemrestrictions.chunk.protected": "보호된 청크입니다.",
+  "itemrestrictions.chunk.unavailable": "청크 소유권 데이터를 불러오지 못해 보호 기능이 잠겼습니다.",
+  "itemrestrictions.chunk.claim.success": "청크를 구매했습니다. (%s, %s)",
+  "itemrestrictions.chunk.claim.already_own": "이미 소유한 청크입니다.",
+  "itemrestrictions.chunk.claim.already_claimed": "이미 보호된 청크입니다.",
+  "itemrestrictions.chunk.claim.failed": "청크를 구매하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+  "itemrestrictions.chunk.blast_too_close": "보호된 청크가 폭발 범위 안에 있어 설치할 수 없습니다.",
+  "itemrestrictions.chunk.fluid_too_close": "보호된 청크가 가까워 유체를 부을 수 없습니다."
 }
