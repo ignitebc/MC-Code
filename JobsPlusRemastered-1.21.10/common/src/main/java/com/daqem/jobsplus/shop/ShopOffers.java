@@ -62,6 +62,7 @@ public final class ShopOffers
         offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 50, ResourceLocation.parse("advancednetherite:reward_key_iii"), 1));
         offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 100, ResourceLocation.parse("advancednetherite:reward_key_iv"), 1));
         offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:enhancement_shard"), 3, ResourceLocation.parse("advancednetherite:enhancement_gem"), 1));
+        offers.add(new ShopOffer(ResourceLocation.parse("advancednetherite:bitcoin"), 50, ResourceLocation.parse("advancednetherite:chunk_claim_map"), 1));
 
         offers.add(new ShopOffer(ResourceLocation.parse("minecraft:cooked_chicken"), 60, ResourceLocation.parse("minecraft:emerald"), 6));
         offers.add(new ShopOffer(ResourceLocation.parse("minecraft:dirt"), 192, ResourceLocation.parse("minecraft:emerald"), 1));

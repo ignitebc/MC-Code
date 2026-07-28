@@ -3,79 +3,62 @@
   "block.advancednetherite.netherite_gold_block": "금-네더라이트 블록",
   "block.advancednetherite.netherite_emerald_block": "에메랄드-네더라이트 블록",
   "block.advancednetherite.netherite_diamond_block": "다이아몬드-네더라이트 블록",
-
   "item.advancednetherite.netherite_iron_ingot": "철-네더라이트 주괴",
   "item.advancednetherite.netherite_gold_ingot": "금-네더라이트 주괴",
   "item.advancednetherite.netherite_emerald_ingot": "에메랄드-네더라이트 주괴",
   "item.advancednetherite.netherite_diamond_ingot": "다이아몬드-네더라이트 주괴",
-
   "item.advancednetherite.netherite_iron_helmet": "철-네더라이트 투구",
   "item.advancednetherite.netherite_gold_helmet": "금-네더라이트 투구",
   "item.advancednetherite.netherite_emerald_helmet": "에메랄드-네더라이트 투구",
   "item.advancednetherite.netherite_diamond_helmet": "다이아몬드-네더라이트 투구",
-
   "item.advancednetherite.netherite_iron_chestplate": "철-네더라이트 흉갑",
   "item.advancednetherite.netherite_gold_chestplate": "금-네더라이트 흉갑",
   "item.advancednetherite.netherite_emerald_chestplate": "에메랄드-네더라이트 흉갑",
   "item.advancednetherite.netherite_diamond_chestplate": "다이아몬드-네더라이트 흉갑",
-
   "item.advancednetherite.netherite_iron_leggings": "철-네더라이트 레깅스",
   "item.advancednetherite.netherite_gold_leggings": "금-네더라이트 레깅스",
   "item.advancednetherite.netherite_emerald_leggings": "에메랄드-네더라이트 레깅스",
   "item.advancednetherite.netherite_diamond_leggings": "다이아몬드-네더라이트 레깅스",
-
   "item.advancednetherite.netherite_iron_boots": "철-네더라이트 부츠",
   "item.advancednetherite.netherite_gold_boots": "금-네더라이트 부츠",
   "item.advancednetherite.netherite_emerald_boots": "에메랄드-네더라이트 부츠",
   "item.advancednetherite.netherite_diamond_boots": "다이아몬드-네더라이트 부츠",
-
   "item.advancednetherite.netherite_iron_axe": "철-네더라이트 도끼",
   "item.advancednetherite.netherite_gold_axe": "금-네더라이트 도끼",
   "item.advancednetherite.netherite_emerald_axe": "에메랄드-네더라이트 도끼",
   "item.advancednetherite.netherite_diamond_axe": "다이아몬드-네더라이트 도끼",
-
   "item.advancednetherite.netherite_iron_hoe": "철-네더라이트 괭이",
   "item.advancednetherite.netherite_gold_hoe": "금-네더라이트 괭이",
   "item.advancednetherite.netherite_emerald_hoe": "에메랄드-네더라이트 괭이",
   "item.advancednetherite.netherite_diamond_hoe": "다이아몬드-네더라이트 괭이",
-
   "item.advancednetherite.netherite_iron_pickaxe": "철-네더라이트 곡괭이",
   "item.advancednetherite.netherite_gold_pickaxe": "금-네더라이트 곡괭이",
   "item.advancednetherite.netherite_emerald_pickaxe": "에메랄드-네더라이트 곡괭이",
   "item.advancednetherite.netherite_diamond_pickaxe": "다이아몬드-네더라이트 곡괭이",
-
   "item.advancednetherite.netherite_iron_shovel": "철-네더라이트 삽",
   "item.advancednetherite.netherite_gold_shovel": "금-네더라이트 삽",
   "item.advancednetherite.netherite_emerald_shovel": "에메랄드-네더라이트 삽",
   "item.advancednetherite.netherite_diamond_shovel": "다이아몬드-네더라이트 삽",
-
   "item.advancednetherite.netherite_iron_sword": "철-네더라이트 검",
   "item.advancednetherite.netherite_gold_sword": "금-네더라이트 검",
   "item.advancednetherite.netherite_emerald_sword": "에메랄드-네더라이트 검",
   "item.advancednetherite.netherite_diamond_sword": "다이아몬드-네더라이트 검",
-
   "itemGroup.advancednetherite.tab": "강화 네더라이트",
-
   "tooltip.advancednetherite.armor.enderman_passive": "%s 엔더맨과의 평화",
   "tooltip.advancednetherite.armor.piglin_passive": "%s 피글린과의 평화",
   "tooltip.advancednetherite.armor.phantom_passive": "%s 팬텀과의 평화",
-
   "tooltip.advancednetherite.hoe.additional_crop_drops": "%s 작물을 수확할 때 작물 추가 드롭 확률",
-
   "tooltip.advancednetherite.pickaxe.additional_diamond_drop": "%s 다이아몬드 광석을 채굴할 때 다이아몬드 추가 드롭 확률",
   "tooltip.advancednetherite.pickaxe.additional_emerald_drop": "%s 에메랄드 광석을 채굴할 때 에메랄드 추가 드롭 확률",
   "tooltip.advancednetherite.pickaxe.additional_gold_drop": "%s 금 광석을 채굴할 때 금 추가 드롭 확률",
   "tooltip.advancednetherite.pickaxe.additional_iron_drop": "%s 철 광석을 채굴할 때 철 추가 드롭 확률",
-
   "tooltip.advancednetherite.sword.additional_enderman_mob_drop": "%s 엔더맨을 죽였을 때 엔더 진주 추가 드롭 확률",
   "tooltip.advancednetherite.sword.additional_piglin_mob_drop": "%s 피글린을 죽였을 때 금 주괴 추가 드롭 확률",
   "tooltip.advancednetherite.sword.additional_zombified_piglin_mob_drop": "%s 좀비화 피글린을 죽였을 때 금 조각 추가 드롭 확률",
   "tooltip.advancednetherite.sword.additional_phantom_mob_drop": "%s 팬텀을 죽였을 때 팬텀 막 추가 드롭 확률",
-
   "tooltip.advancednetherite.misc.press_shift_key": "모든 특전을 보려면 %s 키를 누르세요",
   "tooltip.advancednetherite.misc.shift": "[SHIFT]",
   "tooltip.advancednetherite.misc.plus": "+",
-
   "advancements.advancednetherite.husbandry.netherite_diamond_hoe.title": "왜?",
   "advancements.advancednetherite.husbandry.netherite_diamond_hoe.description": "다이아몬드-네더라이트 괭이를 제작 후 심리학자를 방문하세요",
   "advancements.advancednetherite.nether.netherite_iron_armor.title": "더 이상 팬텀은 없어",
@@ -90,19 +73,16 @@
   "advancements.advancednetherite.nether.obtain_netherite_iron_ingot.description": "철-네더라이트 주괴를 획득하세요",
   "advancements.advancednetherite.nether.obtain_netherite_diamond_block.title": "매우 비싼 블록",
   "advancements.advancednetherite.nether.obtain_netherite_diamond_block.description": "다이아몬드-네더라이트 블록을 획득하세요",
-
   "config.advancednetherite.client": "클라이언트 설정",
   "config.advancednetherite.client.show_tooltips": "이 모드가 추가한 설명을 표시",
   "config.advancednetherite.client.matching_durability_bars": "아이템 아래에 어울리는 색상의 내구도 막대 표시",
   "config.advancednetherite.client.enable_search_bar": "강화 네더라이트 제작 탭에 검색창 사용",
   "config.advancednetherite.client.force_disable_dab_support": "Detail Armor Bar 모드 지원 강제 비활성화",
-
   "config.advancednetherite.common": "공통 설정",
   "config.advancednetherite.common.additional_drops": "추가 드롭",
   "config.advancednetherite.common.additional_drops.enable_additional_crop_drops": "작물 추가 드롭 사용",
   "config.advancednetherite.common.additional_drops.enable_additional_ore_drops": "광석 추가 드롭 사용",
   "config.advancednetherite.common.additional_drops.enable_additional_mob_drops": "생물 추가 드롭 사용",
-
   "config.advancednetherite.server": "서버 설정",
   "config.advancednetherite.server.tool_properties": "도구 속성",
   "config.advancednetherite.server.tool_properties.breaking_speed_multipliers": "채굴 속도 배율",
@@ -127,12 +107,10 @@
   "config.advancednetherite.server.additional_drops.ores.emerald_drop_chance": "에메랄드 추가 드롭 확률",
   "config.advancednetherite.server.additional_drops.ores.diamond_drop_chance": "다이아몬드 추가 드롭 확률",
   "config.advancednetherite.server.additional_drops.ores.gold_nugget_drop_chance": "금 조각 추가 드롭 확률",
-
   "config.advancednetherite.screen.description.top": "%s 모드를 설치하여 게임 내에서 %s이(가) 추가한 구성을 편집하세요.",
   "config.advancednetherite.screen.description.bottom": "설명서를 보려면 위키 페이지를 참조하세요.",
   "config.advancednetherite.screen.button.install_configured": "%s 설치",
   "config.advancednetherite.screen.button.instructions": "설명서",
-
   "item.advancednetherite.bitcoin": "비트코인",
   "item.advancednetherite.random_box_i": "랜덤 상자 I",
   "item.advancednetherite.random_box_ii": "랜덤 상자 II",
@@ -144,7 +122,6 @@
   "item.advancednetherite.reward_key_iv": "보상 열쇠 IV",
   "item.advancednetherite.enhancement_shard": "강화 조각",
   "item.advancednetherite.enhancement_gem": "강화 원석",
-
   "item.advancednetherite.job_select_ticket": "직업 선택권",
   "item.advancednetherite.death_item_protection_scroll": "사망 시 아이템 보존권",
   "item.advancednetherite.enhance_protection_scroll": "강화 파괴 방지권",
@@ -152,9 +129,9 @@
   "item.advancednetherite.enhance_success_scroll_5": "강화 성공률 증가 주문서 +5%",
   "item.advancednetherite.enhance_success_scroll_7": "강화 성공률 증가 주문서 +7%",
   "item.advancednetherite.enhance_success_scroll_10": "강화 성공률 증가 주문서 +10%",
-
   "item.advancednetherite.nomal_petbox": "일반 펫 상자",
   "item.advancednetherite.rare_petbox": "희귀 펫 상자",
   "item.advancednetherite.legend_petbox": "전설 펫 상자",
-  "entity.advancednetherite.dialga_pet": "디아루가 펫"
+  "entity.advancednetherite.dialga_pet": "디아루가 펫",
+  "item.advancednetherite.chunk_claim_map": "청크 구매 지도서"
 }
