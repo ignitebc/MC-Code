@@ -16,6 +16,7 @@ import com.daqem.arc.networking.ClientboundSyncPlayerActionHoldersPacket;
 import com.daqem.arc.player.BlockPosCache;
 import com.daqem.arc.player.stat.StatData;
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.Codec;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -43,6 +44,8 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -101,6 +104,10 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     public float arc$horseRidingDistance = 0;
     @Unique
     public BlockPosCache arc$blockPosCache = new BlockPosCache();
+    @Unique
+    private static final String arc$BLOCK_POS_CACHE_TAG = "ArcBlockPosCache";
+    @Unique
+    private static final Codec<List<Long>> arc$BLOCK_POS_CACHE_CODEC = Codec.LONG.listOf();
 
     public MixinServerPlayer(Level level, GameProfile gameProfile) {
         super(level, gameProfile);
@@ -503,7 +510,27 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
             this.arc$elytraFlyingDistance = arcServerPlayer.arc$getElytraFlyingDistance();
             this.arc$isGrinding = arcServerPlayer.arc$isGrinding();
             this.arc$isHorseRiding = arcServerPlayer.arc$isHorseRiding();
+            this.arc$blockPosCache = arcServerPlayer.arc$getBlockPosCache();
         }
+    }
+
+    @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
+    private void arc$saveBlockPosCache(ValueOutput valueOutput, CallbackInfo ci) {
+        List<Long> packedPositions = this.arc$blockPosCache.getPositions().stream()
+                .map(pos -> BlockPos.asLong(pos.getX(), pos.getY(), pos.getZ()))
+                .toList();
+        if (!packedPositions.isEmpty()) {
+            valueOutput.store(arc$BLOCK_POS_CACHE_TAG, arc$BLOCK_POS_CACHE_CODEC, packedPositions);
+        }
+    }
+
+    @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
+    private void arc$loadBlockPosCache(ValueInput valueInput, CallbackInfo ci) {
+        List<Long> packedPositions = valueInput.read(arc$BLOCK_POS_CACHE_TAG, arc$BLOCK_POS_CACHE_CODEC)
+                .orElse(List.of());
+        this.arc$blockPosCache.restore(packedPositions.stream()
+                .map(BlockPos::of)
+                .toList());
     }
 
     @Inject(at = @At("TAIL"), method = "<init>")
