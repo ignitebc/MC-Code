@@ -7,11 +7,13 @@ import com.daqem.arc.api.reward.AbstractReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
+import com.daqem.arc.player.PlayerItemDelivery;
 import com.google.gson.JsonObject;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 
@@ -33,8 +35,11 @@ public class ItemReward extends AbstractReward {
 
     @Override
     public ActionResult apply(ActionData actionData) {
-        ArcPlayer player = actionData.getPlayer();
-        player.arc$getPlayer().addItem(itemStack.copy());
+        ArcPlayer arcPlayer = actionData.getPlayer();
+        if (arcPlayer.arc$getPlayer() instanceof ServerPlayer serverPlayer) {
+            ItemStack reward = itemStack.copy();
+            PlayerItemDelivery.giveOrDrop(serverPlayer, reward);
+        }
         return new ActionResult();
     }
 

@@ -10,6 +10,7 @@ import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
 import com.daqem.jobsplus.player.JobsServerPlayer;
+import com.daqem.jobsplus.player.PlayerItemDelivery;
 import com.google.gson.JsonObject;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -79,13 +80,7 @@ public class JobBitcoinReward extends AbstractReward
         // 지급할 ItemStack 생성
         ItemStack stack = new ItemStack(bitcoinItem, this.amount);
 
-        // 인벤토리에 추가 시도
-        boolean added = serverPlayer.addItem(stack);
-        if (!added)
-        {
-            // 인벤토리가 가득 차면 바닥에 드랍
-            serverPlayer.drop(stack, false);
-        }
+        PlayerItemDelivery.giveOrDrop(serverPlayer, stack);
 
         // 2) 서버 전체 브로드캐스트 메시지
         if (serverPlayer.level().getServer() != null)

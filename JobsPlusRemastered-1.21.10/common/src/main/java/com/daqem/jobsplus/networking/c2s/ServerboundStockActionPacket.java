@@ -11,6 +11,7 @@ import com.daqem.jobsplus.networking.s2c.ClientboundStockSnapshotPacket;
 import com.daqem.jobsplus.stock.SnapshotStatus;
 import com.daqem.jobsplus.stock.StockCatalog;
 import com.daqem.jobsplus.player.JobsServerPlayer;
+import com.daqem.jobsplus.player.PlayerItemDelivery;
 import com.daqem.jobsplus.player.stock.StockAccount;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.core.Holder;
@@ -145,7 +146,8 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                             "0.2% 소득세를 포함한 보유 자산이 부족하여 출금할 수 없습니다."));
                     return;
                 }
-                player.getInventory().placeItemBackInInventory(new ItemStack(bitcoinItem, packet.amount), true);
+                ItemStack withdrawnBitcoin = new ItemStack(bitcoinItem, packet.amount);
+                PlayerItemDelivery.giveOrDrop(player, withdrawnBitcoin);
                 account = account.withdraw(packet.amount, taxAmount);
                 completedMessage = packet.amount + "개가 출금되었습니다.";
             }

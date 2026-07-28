@@ -4,6 +4,7 @@ import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
+import com.daqem.jobsplus.player.PlayerItemDelivery;
 import com.daqem.jobsplus.shop.ShopOffer;
 import com.daqem.jobsplus.shop.ShopOffers;
 import dev.architectury.networking.NetworkManager;
@@ -29,9 +30,7 @@ import java.util.stream.Stream;
  * - 인벤토리가 가득 찬 경우 바닥에 드랍한다.
  * - 1.21.x 레지스트리/인벤토리 API 변경 대응(Optional<Holder.Reference<Item>>).
  *
- * 핵심 수정:
- * - inv.add(outStack) -> inv.placeItemBackInInventory(outStack, true)
- *   (전용 서버에서 클라 인벤에 안 보이는/가끔 보이는 문제 해결)
+ * 출력 아이템은 서버에서 인벤토리에 넣고, 들어가지 않은 수량은 바닥에 드롭한다.
  */
 public class ServerboundSellItemPacket implements CustomPacketPayload {
 
@@ -141,9 +140,6 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
             return;
         }
 
-        // 지급 전 스냅샷(기존 로직 유지: diff 계산은 하지만 출력은 하지 않음)
-        ItemStack[] before = snapshotMainInventory(inv);
-
         // 입력 아이템 제거
         int remainingToRemove = packet.inputAmount;
         for (int i = 0; i < inv.getContainerSize() && remainingToRemove > 0; i++) {
@@ -164,16 +160,11 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
         // 출력 아이템 지급(핵심 수정)
         ItemStack outStack = new ItemStack(outputItem, packet.outputAmount);
 
-        // 1.21.10 정석: 슬롯 업데이트 패킷까지 고려한 지급
-        inv.placeItemBackInInventory(outStack, true);
+        PlayerItemDelivery.giveOrDrop(player, outStack);
 
         // 추가 동기화(안정성 강화)
         inv.setChanged();
         player.containerMenu.broadcastChanges();
-
-        // 기존 로직 유지: 호출은 하되, 내부에서 로그를 찍지 않게 처리(현재 클래스에서는 로그 자체가 없음)
-        int nowHasOutput = countItem(inv, outputItem);
-        dumpInventoryDiff(inv, before, outputItem);
 
         // 화면 업데이트 (maxJobs 포함)
         NetworkManager.sendToPlayer(
@@ -193,43 +184,4 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
                 packet.outputAmount));
     }
 
-    private static ItemStack[] snapshotMainInventory(Inventory inv) {
-        int size = Math.min(inv.getContainerSize(), 36);
-        ItemStack[] snap = new ItemStack[size];
-        for (int i = 0; i < size; i++) {
-            snap[i] = inv.getItem(i).copy();
-        }
-        return snap;
-    }
-
-    private static void dumpInventoryDiff(Inventory inv, ItemStack[] before, Item targetItem) {
-        int size = Math.min(inv.getContainerSize(), 36);
-
-        for (int i = 0; i < size; i++) {
-            ItemStack after = inv.getItem(i);
-            ItemStack b = (before != null && i < before.length) ? before[i] : ItemStack.EMPTY;
-
-            boolean changed = !ItemStack.matches(after, b);
-            if (changed) {
-                // 로그 제거 요청에 따라 출력하지 않음
-            }
-
-            // targetItemFound 여부도 로그 제거 요청에 따라 출력하지 않음
-            if (!after.isEmpty() && after.getItem() == targetItem) {
-                // no-op
-            }
-        }
-    }
-
-    private static int countItem(Inventory inv, Item item) {
-        int total = 0;
-        int size = inv.getContainerSize();
-        for (int i = 0; i < size; i++) {
-            ItemStack stack = inv.getItem(i);
-            if (!stack.isEmpty() && stack.getItem() == item) {
-                total += stack.getCount();
-            }
-        }
-        return total;
-    }
 }

@@ -8,6 +8,7 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
 import com.daqem.jobsplus.player.JobsPlayer;
+import com.daqem.jobsplus.player.PlayerItemDelivery;
 import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
 import com.google.gson.JsonObject;
@@ -131,11 +132,9 @@ public class SpecialItemReward extends AbstractReward
 
     private static void giveToPlayer(ArcPlayer arcPlayer, ItemStack reward)
     {
-        boolean added = arcPlayer.arc$getPlayer().addItem(reward);
-        if (!added && arcPlayer.arc$getPlayer() instanceof ServerPlayer serverPlayer)
+        if (arcPlayer.arc$getPlayer() instanceof ServerPlayer serverPlayer)
         {
-            // 인벤토리가 가득 차면 바닥에 떨어뜨려 보상이 사라지지 않게 한다.
-            serverPlayer.drop(reward, false);
+            PlayerItemDelivery.giveOrDrop(serverPlayer, reward);
         }
     }
 

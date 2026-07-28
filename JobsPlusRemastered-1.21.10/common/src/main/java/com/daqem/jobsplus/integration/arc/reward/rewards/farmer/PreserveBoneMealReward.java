@@ -6,6 +6,7 @@ import com.daqem.arc.api.reward.AbstractReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
+import com.daqem.jobsplus.player.PlayerItemDelivery;
 import com.google.gson.JsonObject;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,10 +34,7 @@ public class PreserveBoneMealReward extends AbstractReward
                 && !serverPlayer.hasInfiniteMaterials())
         {
             ItemStack refundedBoneMeal = new ItemStack(Items.BONE_MEAL);
-            if (!serverPlayer.getInventory().add(refundedBoneMeal))
-            {
-                serverPlayer.drop(refundedBoneMeal, false);
-            }
+            PlayerItemDelivery.giveOrDrop(serverPlayer, refundedBoneMeal);
         }
         return new ActionResult();
     }
