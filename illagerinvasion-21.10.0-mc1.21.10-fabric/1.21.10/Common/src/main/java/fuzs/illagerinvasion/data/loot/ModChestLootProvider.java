@@ -1,6 +1,5 @@
 package fuzs.illagerinvasion.data.loot;
 
-import fuzs.illagerinvasion.init.ModItems;
 import fuzs.illagerinvasion.init.ModLootTables;
 import fuzs.puzzleslib.api.data.v2.AbstractLootProvider;
 import fuzs.puzzleslib.api.data.v2.core.DataProviderContext;
@@ -16,15 +15,20 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCon
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
-/*
- * 참고: Advanced Netherite의 강화 조각, 강화 원석, 랜덤상자 열쇠는 이 모듈에서 클래스를 참조할 수 없어
- * 생성된 전리품 JSON에 직접 관리한다. 데이터 생성기를 다시 실행하면 해당 항목이 사라지므로
- * 재실행 후에는 JSON을 다시 확인해야 한다.
- */
 public class ModChestLootProvider extends AbstractLootProvider.Simple {
 
     public ModChestLootProvider(DataProviderContext context) {
         super(LootContextParamSets.CHEST, context);
+        // 중첩 테이블은 main 리소스에 있어 데이터 생성기의 임시 전리품 레지스트리에는 포함되지 않는다.
+        this.skipValidation(ModLootTables.ILLAGER_FORT_TOWER);
+        this.skipValidation(ModLootTables.ILLAGER_FORT_GROUND);
+        this.skipValidation(ModLootTables.ILLUSIONER_TOWER_STAIRS);
+        this.skipValidation(ModLootTables.ILLUSIONER_TOWER_ENTRANCE);
+        this.skipValidation(ModLootTables.LABYRINTH);
+        this.skipValidation(ModLootTables.LABYRINTH_MAP);
+        this.skipValidation(ModLootTables.SORCERER_HUT);
+        this.skipValidation(ModLootTables.LABYRINTH_COMMON);
+        this.skipValidation(ModLootTables.FIRECALLER_HUT);
     }
 
     @Override
@@ -114,7 +118,15 @@ public class ModChestLootProvider extends AbstractLootProvider.Simple {
                                 .setRolls(ConstantValue.exactly(1.0F))
                                 .add(LootItem.lootTableItem(Items.IRON_INGOT)
                                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 4.0F)))
-                                        .when(LootItemRandomChanceCondition.randomChance(0.6F)))));
+                                        .when(LootItemRandomChanceCondition.randomChance(0.6F))))
+                        .withPool(ExternalLootItems.randomCountPool(ExternalLootItems.ENHANCEMENT_SHARD,
+                                UniformGenerator.between(1.0F, 3.0F),
+                                0.45F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.ENHANCEMENT_GEM, 0.12F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_I, 0.2F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_II, 0.1F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_III, 0.05F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_IV, 0.03F)));
         this.add(ModLootTables.ILLAGER_FORT_GROUND,
                 LootTable.lootTable()
                         .withPool(LootPool.lootPool()
@@ -166,7 +178,15 @@ public class ModChestLootProvider extends AbstractLootProvider.Simple {
                         .withPool(LootPool.lootPool()
                                 .setRolls(ConstantValue.exactly(1.0F))
                                 .add(LootItem.lootTableItem(Items.STICK)
-                                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 3.0F))))));
+                                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 3.0F)))))
+                        .withPool(ExternalLootItems.randomCountPool(ExternalLootItems.ENHANCEMENT_SHARD,
+                                UniformGenerator.between(1.0F, 2.0F),
+                                0.4F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.ENHANCEMENT_GEM, 0.08F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_I, 0.2F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_II, 0.1F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_III, 0.05F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_IV, 0.03F)));
         this.add(ModLootTables.ILLUSIONER_TOWER_STAIRS,
                 LootTable.lootTable()
                         .withPool(LootPool.lootPool()
@@ -226,7 +246,15 @@ public class ModChestLootProvider extends AbstractLootProvider.Simple {
                         .withPool(LootPool.lootPool()
                                 .setRolls(ConstantValue.exactly(1.0F))
                                 .add(LootItem.lootTableItem(Items.LAPIS_LAZULI)
-                                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 6.0F))))));
+                                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 6.0F)))))
+                        .withPool(ExternalLootItems.randomCountPool(ExternalLootItems.ENHANCEMENT_SHARD,
+                                UniformGenerator.between(1.0F, 3.0F),
+                                0.45F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.ENHANCEMENT_GEM, 0.12F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_I, 0.2F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_II, 0.1F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_III, 0.05F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_IV, 0.03F)));
         this.add(ModLootTables.ILLUSIONER_TOWER_ENTRANCE,
                 LootTable.lootTable()
                         .withPool(LootPool.lootPool()
@@ -271,7 +299,15 @@ public class ModChestLootProvider extends AbstractLootProvider.Simple {
                         .withPool(LootPool.lootPool()
                                 .setRolls(ConstantValue.exactly(1.0F))
                                 .add(LootItem.lootTableItem(Items.GUNPOWDER)
-                                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 3.0F))))));
+                                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 3.0F)))))
+                        .withPool(ExternalLootItems.randomCountPool(ExternalLootItems.ENHANCEMENT_SHARD,
+                                UniformGenerator.between(1.0F, 2.0F),
+                                0.4F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.ENHANCEMENT_GEM, 0.08F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_I, 0.2F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_II, 0.1F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_III, 0.05F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_IV, 0.03F)));
         this.add(ModLootTables.LABYRINTH,
                 LootTable.lootTable()
                         .withPool(LootPool.lootPool()
@@ -326,7 +362,15 @@ public class ModChestLootProvider extends AbstractLootProvider.Simple {
                         .withPool(LootPool.lootPool()
                                 .setRolls(ConstantValue.exactly(1.0F))
                                 .add(LootItem.lootTableItem(Items.STRING)
-                                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 5.0F))))));
+                                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 5.0F)))))
+                        .withPool(ExternalLootItems.randomCountPool(ExternalLootItems.ENHANCEMENT_SHARD,
+                                UniformGenerator.between(2.0F, 5.0F),
+                                0.55F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.ENHANCEMENT_GEM, 0.2F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_I, 0.25F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_II, 0.14F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_III, 0.08F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_IV, 0.05F)));
         this.add(ModLootTables.LABYRINTH_MAP,
                 LootTable.lootTable()
                         .withPool(LootPool.lootPool()
@@ -342,7 +386,15 @@ public class ModChestLootProvider extends AbstractLootProvider.Simple {
                                         .setWeight(10))
                                 .add(LootItem.lootTableItem(Items.BOOK)
                                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 5.0F)))
-                                        .setWeight(5))));
+                                        .setWeight(5)))
+                        .withPool(ExternalLootItems.randomCountPool(ExternalLootItems.ENHANCEMENT_SHARD,
+                                UniformGenerator.between(2.0F, 5.0F),
+                                0.55F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.ENHANCEMENT_GEM, 0.2F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_I, 0.25F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_II, 0.14F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_III, 0.08F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_IV, 0.05F)));
         this.add(ModLootTables.SORCERER_HUT,
                 LootTable.lootTable()
                         .withPool(LootPool.lootPool()
@@ -377,7 +429,15 @@ public class ModChestLootProvider extends AbstractLootProvider.Simple {
                         .withPool(LootPool.lootPool()
                                 .setRolls(ConstantValue.exactly(1.0F))
                                 .add(LootItem.lootTableItem(Items.ENCHANTED_GOLDEN_APPLE)
-                                        .when(LootItemRandomChanceCondition.randomChance(0.05F)))));
+                                        .when(LootItemRandomChanceCondition.randomChance(0.05F))))
+                        .withPool(ExternalLootItems.randomCountPool(ExternalLootItems.ENHANCEMENT_SHARD,
+                                UniformGenerator.between(1.0F, 2.0F),
+                                0.4F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.ENHANCEMENT_GEM, 0.08F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_I, 0.2F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_II, 0.1F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_III, 0.05F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_IV, 0.03F)));
         this.add(ModLootTables.LABYRINTH_COMMON,
                 LootTable.lootTable()
                         .withPool(LootPool.lootPool()
@@ -409,7 +469,9 @@ public class ModChestLootProvider extends AbstractLootProvider.Simple {
                                 .setRolls(ConstantValue.exactly(1.0F))
                                 .add(LootItem.lootTableItem(Items.EMERALD)
                                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 2.0F)))
-                                        .when(LootItemRandomChanceCondition.randomChance(0.25F)))));
+                                        .when(LootItemRandomChanceCondition.randomChance(0.25F))))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.ENHANCEMENT_SHARD, 0.15F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_I, 0.05F)));
         this.add(ModLootTables.FIRECALLER_HUT,
                 LootTable.lootTable()
                         .withPool(LootPool.lootPool()
@@ -440,6 +502,14 @@ public class ModChestLootProvider extends AbstractLootProvider.Simple {
                         .withPool(LootPool.lootPool()
                                 .setRolls(ConstantValue.exactly(1.0F))
                                 .add(LootItem.lootTableItem(Items.NAME_TAG)
-                                        .when(LootItemRandomChanceCondition.randomChance(0.4F)))));
+                                        .when(LootItemRandomChanceCondition.randomChance(0.4F))))
+                        .withPool(ExternalLootItems.randomCountPool(ExternalLootItems.ENHANCEMENT_SHARD,
+                                UniformGenerator.between(1.0F, 2.0F),
+                                0.4F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.ENHANCEMENT_GEM, 0.08F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_I, 0.2F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_II, 0.1F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_III, 0.05F))
+                        .withPool(ExternalLootItems.randomPool(ExternalLootItems.REWARD_KEY_IV, 0.03F)));
     }
 }
