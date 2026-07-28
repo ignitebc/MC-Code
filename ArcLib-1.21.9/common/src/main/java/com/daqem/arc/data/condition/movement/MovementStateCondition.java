@@ -59,7 +59,7 @@ public class MovementStateCondition extends AbstractCondition
             return false;
         }
 
-        return switch (this.state)
+        boolean isInState = switch (this.state)
         {
             case WALKING -> serverPlayer.arc$isWalking();
             case SPRINTING -> serverPlayer.arc$isSprinting();
@@ -68,6 +68,8 @@ public class MovementStateCondition extends AbstractCondition
             case ELYTRA_FLYING -> serverPlayer.arc$isElytraFlying();
             case HORSE_RIDING -> serverPlayer.arc$isHorseRiding();
         };
+
+        return isInverted() != isInState;
     }
 
     @Override
