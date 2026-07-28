@@ -5,7 +5,7 @@ import com.daqem.jobsplus.stock.StockMarketService;
 import com.daqem.jobsplus.stock.StockMarketSnapshot;
 import com.daqem.jobsplus.stock.StockQuote;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
-import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
+import com.daqem.jobsplus.networking.StockScreenSync;
 import com.daqem.jobsplus.networking.s2c.ClientboundStockAlertPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundStockSnapshotPacket;
 import com.daqem.jobsplus.stock.SnapshotStatus;
@@ -13,6 +13,8 @@ import com.daqem.jobsplus.stock.StockCatalog;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.PlayerItemDelivery;
 import com.daqem.jobsplus.player.stock.StockAccount;
+import com.daqem.jobsplus.player.stock.StockPosition;
+import com.daqem.jobsplus.player.stock.StockPositionSide;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -28,7 +30,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class ServerboundStockActionPacket implements CustomPacketPayload
 {
@@ -39,12 +40,11 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
     /** 종목 ID는 카탈로그에 정의된 짧은 문자열뿐이다. 조작된 패킷이 긴 문자열을 보내지 못하게 막는다. */
     private static final int MAX_STOCK_ID_LENGTH = 16;
 
-    /** 계좌 검사 전에 비정상적으로 큰 수량을 걸러 낸다. */
-    private static final int MAX_TRANSACTION_AMOUNT = 99_999_999;
-
     private final Action action;
     private final String stockId;
     private final int amount;
+    private final StockPositionSide positionSide;
+    private final int leverage;
 
     /**
      * 클라이언트가 화면에서 보고 있던 시세 스냅샷 번호.
@@ -68,15 +68,25 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                     buffer.writeUtf(packet.stockId);
                     buffer.writeInt(packet.amount);
                     buffer.writeLong(packet.snapshotVersion);
+                    buffer.writeEnum(packet.positionSide);
+                    buffer.writeVarInt(packet.leverage);
                 }
             };
 
     public ServerboundStockActionPacket(Action action, String stockId, int amount, long snapshotVersion)
     {
+        this(action, stockId, amount, snapshotVersion, StockPositionSide.LONG, StockPosition.MIN_LEVERAGE);
+    }
+
+    public ServerboundStockActionPacket(Action action, String stockId, int amount, long snapshotVersion,
+                                        StockPositionSide positionSide, int leverage)
+    {
         this.action = action;
         this.stockId = stockId;
         this.amount = amount;
         this.snapshotVersion = snapshotVersion;
+        this.positionSide = positionSide;
+        this.leverage = leverage;
     }
 
     public ServerboundStockActionPacket(RegistryFriendlyByteBuf buffer)
@@ -85,6 +95,8 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         this.stockId = buffer.readUtf(MAX_STOCK_ID_LENGTH);
         this.amount = buffer.readInt();
         this.snapshotVersion = buffer.readLong();
+        this.positionSide = buffer.readEnum(StockPositionSide.class);
+        this.leverage = buffer.readVarInt();
     }
 
     @Override
@@ -99,7 +111,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         {
             return;
         }
-        if (packet.amount <= 0 || packet.amount > MAX_TRANSACTION_AMOUNT)
+        if (packet.amount <= 0)
         {
             return;
         }
@@ -152,19 +164,48 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                 completedMessage = packet.amount + "개가 출금되었습니다.";
             }
             case BUY -> {
+                if (packet.leverage < StockPosition.MIN_LEVERAGE
+                        || packet.leverage > StockPosition.MAX_LEVERAGE)
+                {
+                    NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                            "지원하지 않는 주식 배율입니다."));
+                    return;
+                }
                 StockQuote quote = resolveTradableQuote(player, packet);
                 if (quote == null)
                 {
                     return;
                 }
+                if (StockMarketTicker.liquidatePositionIfNeeded(jobsServerPlayer, quote))
+                {
+                    return;
+                }
+                account = jobsServerPlayer.jobsplus$getStockAccount();
                 if (account.balance() + 0.00000001 < packet.amount)
                 {
                     NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
                             "충전된 비트코인이 부족하여 구매할 수 없습니다.\n입출금 탭에서 비트코인을 충전해 주세요."));
                     return;
                 }
-                account = account.buy(packet.stockId, packet.amount, quote.priceKrw());
-                completedMessage = quote.name() + "를 구매했습니다.";
+                StockPosition existingPosition = account.getPosition(packet.stockId);
+                if (existingPosition != null
+                        && (existingPosition.side() != packet.positionSide
+                        || existingPosition.leverage() != packet.leverage))
+                {
+                    NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                            "같은 종목에는 하나의 포지션만 보유할 수 있습니다.\n"
+                                    + "기존 포지션을 모두 판매한 후 변경해 주세요."));
+                    return;
+                }
+                account = account.buy(
+                        packet.stockId,
+                        packet.amount,
+                        quote.priceKrw(),
+                        packet.positionSide,
+                        packet.leverage
+                );
+                completedMessage = quote.name() + " " + packet.positionSide.getDisplayName()
+                        + " " + packet.leverage + "x 포지션을 구매했습니다.";
             }
             case SELL -> {
                 StockQuote quote = resolveTradableQuote(player, packet);
@@ -172,6 +213,11 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                 {
                     return;
                 }
+                if (StockMarketTicker.liquidatePositionIfNeeded(jobsServerPlayer, quote))
+                {
+                    return;
+                }
+                account = jobsServerPlayer.jobsplus$getStockAccount();
                 if (account.getPosition(packet.stockId) == null
                         || account.getPosition(packet.stockId).investedAmount() + 0.00000001 < packet.amount)
                 {
@@ -186,7 +232,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         jobsServerPlayer.jobsplus$setStockAccount(account);
         player.getInventory().setChanged();
         player.containerMenu.broadcastChanges();
-        syncScreen(jobsServerPlayer);
+        StockScreenSync.send(jobsServerPlayer);
         if (completedMessage != null)
         {
             NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(completedMessage, "확인"));
@@ -298,20 +344,6 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                 remaining -= removed;
             }
         }
-    }
-
-    private static void syncScreen(JobsServerPlayer player)
-    {
-        NetworkManager.sendToPlayer(
-                player.jobsplus$getServerPlayer(),
-                new ClientboundOpenJobsScreenPacket(
-                        Stream.concat(player.jobsplus$getJobs().stream(), player.jobsplus$getInactiveJobs().stream())
-                                .toList(),
-                        player.jobsplus$getCoins(),
-                        player.jobsplus$getEffectiveMaxJobs(),
-                        player.jobsplus$getStockAccount()
-                )
-        );
     }
 
     public enum Action

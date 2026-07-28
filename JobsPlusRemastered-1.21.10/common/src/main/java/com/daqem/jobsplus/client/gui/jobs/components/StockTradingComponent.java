@@ -16,6 +16,7 @@ import com.daqem.jobsplus.networking.c2s.ServerboundStockActionPacket;
 import com.daqem.jobsplus.player.stock.StockAccount;
 import com.daqem.jobsplus.player.stock.StockDecimal;
 import com.daqem.jobsplus.player.stock.StockPosition;
+import com.daqem.jobsplus.player.stock.StockPositionSide;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import com.daqem.uilib.gui.widget.CustomButtonWidget;
 import com.daqem.uilib.gui.widget.EditBoxWidget;
@@ -46,7 +47,9 @@ public class StockTradingComponent extends EmptyComponent
     private final StockHoldingsScrollWidget sellHoldingsScrollWidget;
     private final StockHistoryScrollWidget historyScrollWidget;
     private final StyledButton sellButton;
+    private final StyledButton leverageButton;
     private final List<StyledButton> styledButtons = new ArrayList<>();
+    private boolean leverageDropdownOpen;
 
     public StockTradingComponent(JobsScreenState state)
     {
@@ -66,6 +69,7 @@ public class StockTradingComponent extends EmptyComponent
                     () -> true,
                     () -> {
                         this.state.setStockPanelMode(mode);
+                        this.leverageDropdownOpen = false;
                         if (mode == StockPanelMode.SELL)
                         {
                             this.state.setSelectedHoldingStockId(null);
@@ -76,23 +80,53 @@ public class StockTradingComponent extends EmptyComponent
             modeButtonX += modeButtonWidth + 2;
         }
 
-        this.buyAmountInput = createAmountInput(12, 96, 1);
+        this.buyAmountInput = createAmountInput(12, 112, 1);
         this.sellAmountInput = createAmountInput(12, 149, 1);
         this.transferAmountInput = createAmountInput(12, 96, 10);
         this.addWidget(this.buyAmountInput);
         this.addWidget(this.sellAmountInput);
         this.addWidget(this.transferAmountInput);
 
-        this.addStyledButton(new StyledButton(76, 96, 17, 16, Component.literal("-"),
+        this.addStyledButton(new StyledButton(6, 79, 30, 16, Component.literal("롱"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.BUY,
+                () -> this.selectPositionSide(StockPositionSide.LONG),
+                () -> this.state.getSelectedStockPositionSide() == StockPositionSide.LONG));
+        this.addStyledButton(new StyledButton(39, 79, 30, 16, Component.literal("숏"),
+                () -> this.state.getStockPanelMode() == StockPanelMode.BUY,
+                () -> this.selectPositionSide(StockPositionSide.SHORT),
+                () -> this.state.getSelectedStockPositionSide() == StockPositionSide.SHORT));
+        this.leverageButton = new StyledButton(72, 79, 79, 16, Component.empty(),
+                () -> this.state.getStockPanelMode() == StockPanelMode.BUY,
+                () -> this.leverageDropdownOpen = !this.leverageDropdownOpen,
+                () -> this.leverageDropdownOpen);
+        this.addStyledButton(this.leverageButton);
+
+        this.addStyledButton(new StyledButton(76, 112, 17, 16, Component.literal("-"),
+                () -> this.state.getStockPanelMode() == StockPanelMode.BUY && !this.leverageDropdownOpen,
                 () -> changeAmount(this.buyAmountInput, -1), () -> false));
-        this.addStyledButton(new StyledButton(98, 96, 17, 16, Component.literal("+"),
-                () -> this.state.getStockPanelMode() == StockPanelMode.BUY,
+        this.addStyledButton(new StyledButton(98, 112, 17, 16, Component.literal("+"),
+                () -> this.state.getStockPanelMode() == StockPanelMode.BUY && !this.leverageDropdownOpen,
                 () -> changeAmount(this.buyAmountInput, 1), () -> false));
 
-        this.addStyledButton(new StyledButton(124, 96, 27, 16, Component.literal("구매"),
-                () -> this.state.getStockPanelMode() == StockPanelMode.BUY,
+        this.addStyledButton(new StyledButton(124, 112, 27, 16, Component.literal("구매"),
+                () -> this.state.getStockPanelMode() == StockPanelMode.BUY && !this.leverageDropdownOpen,
                 this::sendBuyAction, () -> false));
+
+        for (int leverage = StockPosition.MIN_LEVERAGE; leverage <= StockPosition.MAX_LEVERAGE; leverage++)
+        {
+            int selectedLeverage = leverage;
+            int optionY = 96 + (leverage - StockPosition.MIN_LEVERAGE) * 17;
+            this.addStyledButton(new StyledButton(
+                    72,
+                    optionY,
+                    79,
+                    16,
+                    Component.literal(getLeverageOptionName(leverage)),
+                    () -> this.state.getStockPanelMode() == StockPanelMode.BUY && this.leverageDropdownOpen,
+                    () -> this.selectLeverage(selectedLeverage),
+                    () -> this.state.getSelectedStockLeverage() == selectedLeverage
+            ));
+        }
 
         this.addStyledButton(new StyledButton(76, 149, 17, 16, Component.literal("-"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.SELL,
@@ -120,13 +154,13 @@ public class StockTradingComponent extends EmptyComponent
                 () -> showTransferConfirmation(ServerboundStockActionPacket.Action.WITHDRAW),
                 () -> false));
 
-        EmptyComponent buyHoldingsComponent = new EmptyComponent(5, 119, CONTENT_WIDTH, 49);
-        this.buyHoldingsScrollWidget = createHoldingsScrollWidget();
+        EmptyComponent buyHoldingsComponent = new EmptyComponent(5, 135, CONTENT_WIDTH, 33);
+        this.buyHoldingsScrollWidget = createHoldingsScrollWidget(33);
         buyHoldingsComponent.addWidget(this.buyHoldingsScrollWidget);
         this.addComponent(buyHoldingsComponent);
 
         EmptyComponent sellHoldingsComponent = new EmptyComponent(5, 52, CONTENT_WIDTH, 49);
-        this.sellHoldingsScrollWidget = createHoldingsScrollWidget();
+        this.sellHoldingsScrollWidget = createHoldingsScrollWidget(49);
         sellHoldingsComponent.addWidget(this.sellHoldingsScrollWidget);
         this.addComponent(sellHoldingsComponent);
 
@@ -140,9 +174,16 @@ public class StockTradingComponent extends EmptyComponent
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth,
                        int parentHeight)
     {
-        this.styledButtons.forEach(StyledButton::updateVisibility);
         StockPanelMode panelMode = this.state.getStockPanelMode();
-        this.buyAmountInput.visible = panelMode == StockPanelMode.BUY;
+        if (panelMode != StockPanelMode.BUY)
+        {
+            this.leverageDropdownOpen = false;
+        }
+        this.styledButtons.forEach(StyledButton::updateVisibility);
+        this.leverageButton.setMessage(Component.literal(
+                getLeverageOptionName(this.state.getSelectedStockLeverage()) + " ▼"
+        ));
+        this.buyAmountInput.visible = panelMode == StockPanelMode.BUY && !this.leverageDropdownOpen;
         this.sellAmountInput.visible = panelMode == StockPanelMode.SELL;
         this.transferAmountInput.visible = panelMode == StockPanelMode.TRANSFER;
         this.buyHoldingsScrollWidget.visible = panelMode == StockPanelMode.BUY;
@@ -209,12 +250,12 @@ public class StockTradingComponent extends EmptyComponent
             return;
         }
 
-        drawBox(guiGraphics, x + 5, y + 52, CONTENT_WIDTH, 27);
+        drawBox(guiGraphics, x + 5, y + 52, CONTENT_WIDTH, 24);
         drawCenteredScaled(guiGraphics, "선택 종목: " + selectedName, x + getWidth() / 2, y + 56);
-        drawCenteredScaled(guiGraphics, currentPrice, x + getWidth() / 2, y + 67);
-        drawBox(guiGraphics, x + 5, y + 82, CONTENT_WIDTH, 34);
-        drawCentered(guiGraphics, "투자할 금액 (비트코인 1개 단위)", x + getWidth() / 2, y + 85);
-        drawBox(guiGraphics, x + 5, y + 119, CONTENT_WIDTH, 49);
+        drawCenteredScaled(guiGraphics, currentPrice, x + getWidth() / 2, y + 66);
+        drawBox(guiGraphics, x + 5, y + 98, CONTENT_WIDTH, 34);
+        drawCentered(guiGraphics, "투자할 금액 (비트코인 1개 단위)", x + getWidth() / 2, y + 101);
+        drawBox(guiGraphics, x + 5, y + 135, CONTENT_WIDTH, 33);
     }
 
     /**
@@ -279,15 +320,36 @@ public class StockTradingComponent extends EmptyComponent
         EditBoxWidget amountInput = new EditBoxWidget(
                 Minecraft.getInstance().font, x, y, 54, 16, Component.literal("금액"));
         amountInput.setValue(Integer.toString(defaultValue));
-        amountInput.setMaxLength(8);
-        amountInput.setFilter(value -> value.isEmpty() || value.chars().allMatch(Character::isDigit));
+        amountInput.setMaxLength(10);
+        amountInput.setFilter(StockTradingComponent::isValidAmountInput);
         return amountInput;
     }
 
-    private StockHoldingsScrollWidget createHoldingsScrollWidget()
+    private static boolean isValidAmountInput(String value)
+    {
+        if (value.isEmpty())
+        {
+            return true;
+        }
+        if (!value.chars().allMatch(Character::isDigit))
+        {
+            return false;
+        }
+
+        try
+        {
+            return Long.parseLong(value) <= Integer.MAX_VALUE;
+        }
+        catch (NumberFormatException ignored)
+        {
+            return false;
+        }
+    }
+
+    private StockHoldingsScrollWidget createHoldingsScrollWidget(int height)
     {
         StockHoldingsScrollWidget holdingsScrollWidget =
-                new StockHoldingsScrollWidget(CONTENT_WIDTH, 49, this.state);
+                new StockHoldingsScrollWidget(CONTENT_WIDTH, height, this.state);
         return holdingsScrollWidget;
     }
 
@@ -300,7 +362,9 @@ public class StockTradingComponent extends EmptyComponent
     private void changeAmount(EditBoxWidget amountInput, int delta)
     {
         int amount = getAmount(amountInput);
-        amountInput.setValue(Integer.toString(Math.max(0, amount + delta)));
+        long changedAmount = (long) amount + delta;
+        changedAmount = Math.max(0, Math.min(Integer.MAX_VALUE, changedAmount));
+        amountInput.setValue(Long.toString(changedAmount));
     }
 
     /**
@@ -387,12 +451,24 @@ public class StockTradingComponent extends EmptyComponent
         }
 
         String stockName = StockCatalog.getStockName(selectedStockId);
+        StockPositionSide positionSide = this.state.getSelectedStockPositionSide();
+        int leverage = this.state.getSelectedStockLeverage();
+        StockPosition existingPosition = this.state.getStockAccount().getPosition(selectedStockId);
+        if (existingPosition != null
+                && (existingPosition.side() != positionSide || existingPosition.leverage() != leverage))
+        {
+            showAlert("같은 종목에는 하나의 포지션만 보유할 수 있습니다.\n"
+                    + "기존 포지션을 모두 판매한 후 변경해 주세요.");
+            return;
+        }
+
         long snapshotVersion = snapshot.version();
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.setScreen(new ConfirmationScreen(
                 minecraft.screen,
                 new ConfirmationScreenState(
-                        Component.literal(stockName + "에 비트코인 " + amount + "개를 투자 하시겠습니까?"),
+                        Component.literal(stockName + " " + positionSide.getDisplayName() + " " + leverage
+                                + "x 포지션에 비트코인 " + amount + "개를 투자 하시겠습니까?"),
                         Component.literal("구매"),
                         Component.literal("취소"),
                         () -> {
@@ -402,10 +478,31 @@ public class StockTradingComponent extends EmptyComponent
                             }
                             NetworkManager.sendToServer(new ServerboundStockActionPacket(
                                     ServerboundStockActionPacket.Action.BUY, selectedStockId, amount,
-                                    snapshotVersion));
+                                    snapshotVersion, positionSide, leverage));
                         }
                 )
         ));
+    }
+
+    private void selectPositionSide(StockPositionSide positionSide)
+    {
+        this.state.setSelectedStockPositionSide(positionSide);
+        this.leverageDropdownOpen = false;
+    }
+
+    private void selectLeverage(int leverage)
+    {
+        this.state.setSelectedStockLeverage(leverage);
+        this.leverageDropdownOpen = false;
+    }
+
+    private static String getLeverageOptionName(int leverage)
+    {
+        if (leverage == StockPosition.MIN_LEVERAGE)
+        {
+            return "일반 1x";
+        }
+        return "인버스 " + leverage + "x";
     }
 
     /**

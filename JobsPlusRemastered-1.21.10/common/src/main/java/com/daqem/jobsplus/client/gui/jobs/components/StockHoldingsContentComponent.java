@@ -21,9 +21,10 @@ public class StockHoldingsContentComponent extends EmptyComponent
 {
     private static final int ROW_HEIGHT = 10;
     private static final int TABLE_WIDTH = 146;
-    private static final int NAME_COLUMN_END = 48;
-    private static final int AVERAGE_PRICE_COLUMN_END = 88;
-    private static final int QUANTITY_COLUMN_END = 111;
+    private static final int NAME_COLUMN_END = 37;
+    private static final int POSITION_COLUMN_END = 58;
+    private static final int AVERAGE_PRICE_COLUMN_END = 92;
+    private static final int QUANTITY_COLUMN_END = 113;
     private static final int TEXT_COLOR = 0xFF1E1410;
     private static final int GRID_COLOR = 0xFFD8BF96;
     private static final NumberFormat PRICE_FORMAT = NumberFormat.getIntegerInstance(Locale.KOREA);
@@ -46,6 +47,8 @@ public class StockHoldingsContentComponent extends EmptyComponent
                     () -> {
                         this.state.setSelectedHoldingStockId(stockId);
                         this.state.setSelectedStockId(stockId);
+                        this.state.setSelectedStockPositionSide(position.side());
+                        this.state.setSelectedStockLeverage(position.leverage());
                     }
             ));
             index++;
@@ -61,7 +64,10 @@ public class StockHoldingsContentComponent extends EmptyComponent
         int right = x + getWidth();
         int bottom = y + getHeight();
         drawScaledCentered(guiGraphics, "주식명", x + NAME_COLUMN_END / 2, y + 2, TEXT_COLOR);
-        drawScaledCentered(guiGraphics, "평단가", x + (NAME_COLUMN_END + AVERAGE_PRICE_COLUMN_END) / 2, y + 2, TEXT_COLOR);
+        drawScaledCentered(guiGraphics, "포지션", x + (NAME_COLUMN_END + POSITION_COLUMN_END) / 2, y + 2,
+                TEXT_COLOR);
+        drawScaledCentered(guiGraphics, "평단가", x + (POSITION_COLUMN_END + AVERAGE_PRICE_COLUMN_END) / 2,
+                y + 2, TEXT_COLOR);
         drawScaledCentered(guiGraphics, "투자금", x + (AVERAGE_PRICE_COLUMN_END + QUANTITY_COLUMN_END) / 2, y + 2, TEXT_COLOR);
         // 전일 대비가 아니라 평단가 대비 손익이므로 "수익률"이 맞다.
         drawScaledCentered(guiGraphics, "수익률(%)", x + (QUANTITY_COLUMN_END + TABLE_WIDTH) / 2, y + 2, TEXT_COLOR);
@@ -79,6 +85,7 @@ public class StockHoldingsContentComponent extends EmptyComponent
             }
             StockQuote quote = snapshot.getQuote(position.stockId());
             String name = StockCatalog.getStockName(position.stockId());
+            String positionName = position.side().getDisplayName() + position.leverage() + "x";
             String averagePrice = PRICE_FORMAT.format(Math.round(position.getAverageEntryPrice()));
             String investedAmount = formatAmount(position.investedAmount());
             // 시세를 못 받은 상태와 해당 종목만 실패한 상태를 구분해서 알린다.
@@ -86,13 +93,23 @@ public class StockHoldingsContentComponent extends EmptyComponent
             int returnColor = TEXT_COLOR;
             if (quote != null && quote.hasValidPrice() && position.getAverageEntryPrice() > 0)
             {
-                double rate = (quote.priceKrw() / position.getAverageEntryPrice() - 1) * 100;
+                double rate = position.getReturnRate(quote.priceKrw());
+                rate = Math.max(-100, rate);
                 returnRate = String.format(Locale.ROOT, "%+.2f%%", rate);
-                returnColor = rate > 0 ? 0xFFE53935 : rate < 0 ? 0xFF1976D2 : TEXT_COLOR;
+                if (rate > 0)
+                {
+                    returnColor = 0xFFE53935;
+                }
+                else if (rate < 0)
+                {
+                    returnColor = 0xFF1976D2;
+                }
             }
 
             drawScaled(guiGraphics, selected ? "▶" : "", x + 1, rowY + 2, TEXT_COLOR);
             drawScaled(guiGraphics, name, x + 6, rowY + 2, TEXT_COLOR);
+            drawScaledCentered(guiGraphics, positionName, x + (NAME_COLUMN_END + POSITION_COLUMN_END) / 2,
+                    rowY + 2, TEXT_COLOR);
             drawScaledRight(guiGraphics, averagePrice, x + AVERAGE_PRICE_COLUMN_END - 2, rowY + 2, TEXT_COLOR);
             drawScaledRight(guiGraphics, investedAmount, x + QUANTITY_COLUMN_END - 2, rowY + 2, TEXT_COLOR);
             drawScaledRight(guiGraphics, returnRate, right - 2, rowY + 2, returnColor);
@@ -101,6 +118,7 @@ public class StockHoldingsContentComponent extends EmptyComponent
         }
 
         guiGraphics.fill(x + NAME_COLUMN_END, y, x + NAME_COLUMN_END + 1, bottom, GRID_COLOR);
+        guiGraphics.fill(x + POSITION_COLUMN_END, y, x + POSITION_COLUMN_END + 1, bottom, GRID_COLOR);
         guiGraphics.fill(x + AVERAGE_PRICE_COLUMN_END, y, x + AVERAGE_PRICE_COLUMN_END + 1, bottom, GRID_COLOR);
         guiGraphics.fill(x + QUANTITY_COLUMN_END, y, x + QUANTITY_COLUMN_END + 1, bottom, GRID_COLOR);
     }

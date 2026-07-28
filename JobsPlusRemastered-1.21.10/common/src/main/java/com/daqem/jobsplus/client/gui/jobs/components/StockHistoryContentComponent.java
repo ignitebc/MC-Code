@@ -80,7 +80,7 @@ public class StockHistoryContentComponent extends EmptyComponent
 
     private static String formatReturnRate(StockTransaction transaction)
     {
-        if (!transaction.type().equals("SELL") || !transaction.returnRateRecorded())
+        if (!transaction.returnRateRecorded())
         {
             return "-";
         }
@@ -89,13 +89,19 @@ public class StockHistoryContentComponent extends EmptyComponent
 
     private static int getReturnRateColor(StockTransaction transaction)
     {
-        if (!transaction.type().equals("SELL") || !transaction.returnRateRecorded())
+        if (!transaction.returnRateRecorded())
         {
             return TEXT_COLOR;
         }
-        return transaction.returnRate() > 0
-                ? 0xFFE53935
-                : transaction.returnRate() < 0 ? 0xFF1976D2 : TEXT_COLOR;
+        if (transaction.returnRate() > 0)
+        {
+            return 0xFFE53935;
+        }
+        if (transaction.returnRate() < 0)
+        {
+            return 0xFF1976D2;
+        }
+        return TEXT_COLOR;
     }
 
     private static String getStockName(String stockId)
@@ -115,6 +121,7 @@ public class StockHistoryContentComponent extends EmptyComponent
             case "WITHDRAW" -> "출금";
             case "BUY" -> "구매";
             case "SELL" -> "판매";
+            case "LIQUIDATION" -> "청산";
             default -> type;
         };
     }

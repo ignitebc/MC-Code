@@ -9,14 +9,20 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
  * - investedAmount: 투자한 비트코인 원금 (구 세이브의 "quantity" 키를 그대로 사용)
  * - costBasis: 남아 있는 매수 원가 합계
  * - averageEntryPrice: 평균 매수 단가 (KRW)
+ * - side: 가격 상승에 투자하는 롱 또는 가격 하락에 투자하는 숏
+ * - leverage: 기초 종목 변동률에 적용할 배율 (1x~3x)
  * - units: 구버전 세이브 마이그레이션 전용 필드. averageEntryPrice가 없던 시절의
  *   세이브를 읽을 때 평단가를 복원하는 데만 쓰이며, 새 데이터에서는 항상 0이다.
  * <p>
- * 실제 보유 주식 수는 저장하지 않고 {@link #getUnits()}로 역산한다.
+ * 실제 보유 주식 수는 저장하지 않고 {@link #getUnits()}로 역산한다. 평가금액은
+ * 투자 원금에 (기초 수익률 × 방향 × 배율)을 적용하며 0 아래로 내려가지 않는다.
  */
 public record StockPosition(String stockId, double units, double costBasis, double investedAmount,
-                            double averageEntryPrice)
+                            double averageEntryPrice, StockPositionSide side, int leverage)
 {
+    public static final int MIN_LEVERAGE = 1;
+    public static final int MAX_LEVERAGE = 3;
+
     public static final Codec<StockPosition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.fieldOf("stock_id").forGetter(StockPosition::stockId),
             Codec.DOUBLE.fieldOf("units").forGetter(StockPosition::units),
@@ -24,7 +30,11 @@ public record StockPosition(String stockId, double units, double costBasis, doub
             // 세이브 호환을 위해 직렬화 키는 기존 "quantity"를 유지한다.
             Codec.DOUBLE.optionalFieldOf("quantity", -1D).forGetter(StockPosition::investedAmount),
             Codec.DOUBLE.optionalFieldOf("average_entry_price", -1D)
-                    .forGetter(StockPosition::averageEntryPrice)
+                    .forGetter(StockPosition::averageEntryPrice),
+            Codec.STRING.xmap(StockPositionSide::fromSerializedName, StockPositionSide::getSerializedName)
+                    .optionalFieldOf("side", StockPositionSide.LONG)
+                    .forGetter(StockPosition::side),
+            Codec.INT.optionalFieldOf("leverage", MIN_LEVERAGE).forGetter(StockPosition::leverage)
     ).apply(instance, StockPosition::new));
 
     public StockPosition
@@ -37,6 +47,17 @@ public record StockPosition(String stockId, double units, double costBasis, doub
         {
             averageEntryPrice = units <= 0 ? 0 : costBasis / units;
         }
+        if (side == null)
+        {
+            side = StockPositionSide.LONG;
+        }
+        leverage = Math.max(MIN_LEVERAGE, Math.min(MAX_LEVERAGE, leverage));
+    }
+
+    public StockPosition(String stockId, double units, double costBasis, double investedAmount,
+                         double averageEntryPrice)
+    {
+        this(stockId, units, costBasis, investedAmount, averageEntryPrice, StockPositionSide.LONG, MIN_LEVERAGE);
     }
 
     public double getAverageEntryPrice()
@@ -54,6 +75,40 @@ public record StockPosition(String stockId, double units, double costBasis, doub
 
     public double getCurrentValue(double currentPrice)
     {
-        return this.getUnits() * currentPrice;
+        if (this.costBasis <= 0 || this.averageEntryPrice <= 0 || !Double.isFinite(currentPrice)
+                || currentPrice <= 0)
+        {
+            return 0;
+        }
+
+        double leveragedReturnRate = this.getReturnRate(currentPrice) / 100;
+        double currentValue = this.costBasis * (1 + leveragedReturnRate);
+        if (currentValue <= 0)
+        {
+            return 0;
+        }
+        return currentValue;
+    }
+
+    public double getReturnRate(double currentPrice)
+    {
+        if (this.averageEntryPrice <= 0 || !Double.isFinite(currentPrice) || currentPrice <= 0)
+        {
+            return 0;
+        }
+
+        double underlyingReturnRate = currentPrice / this.averageEntryPrice - 1;
+        double positionReturnRate = underlyingReturnRate * this.side.getReturnDirection() * this.leverage;
+        return positionReturnRate * 100;
+    }
+
+    public boolean isLiquidated(double currentPrice)
+    {
+        return this.getReturnRate(currentPrice) <= -100;
+    }
+
+    public String getPositionName()
+    {
+        return this.side.getDisplayName() + " " + this.leverage + "x";
     }
 }

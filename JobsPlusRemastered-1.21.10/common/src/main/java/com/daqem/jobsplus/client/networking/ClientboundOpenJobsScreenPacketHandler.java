@@ -38,6 +38,8 @@ public class ClientboundOpenJobsScreenPacketHandler {
             String keepStockId = oldState.getSelectedStockId();
             String keepHoldingStockId = oldState.getSelectedHoldingStockId();
             var keepStockPanelMode = oldState.getStockPanelMode();
+            var keepStockPositionSide = oldState.getSelectedStockPositionSide();
+            int keepStockLeverage = oldState.getSelectedStockLeverage();
 
             JobsScreenState newState = new JobsScreenState(
                     jobs, coins, maxJobs, keepJob, keepTab, packet.getStockAccount());
@@ -45,6 +47,8 @@ public class ClientboundOpenJobsScreenPacketHandler {
             newState.setSelectedStockId(keepStockId);
             newState.setSelectedHoldingStockId(keepHoldingStockId);
             newState.setStockPanelMode(keepStockPanelMode);
+            newState.setSelectedStockPositionSide(keepStockPositionSide);
+            newState.setSelectedStockLeverage(keepStockLeverage);
 
             mc.setScreen(new JobsScreen(newState, previousScreen));
             return;

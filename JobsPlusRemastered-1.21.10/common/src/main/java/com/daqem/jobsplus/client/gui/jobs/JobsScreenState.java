@@ -5,6 +5,8 @@ import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.shop.ShopOffer;
 import com.daqem.jobsplus.player.job.Job;
 import com.daqem.jobsplus.player.stock.StockAccount;
+import com.daqem.jobsplus.player.stock.StockPosition;
+import com.daqem.jobsplus.player.stock.StockPositionSide;
 import com.daqem.jobsplus.client.gui.jobs.stock.StockPanelMode;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +33,8 @@ public class JobsScreenState {
     private String selectedStockId;
     private @Nullable String selectedHoldingStockId;
     private StockPanelMode stockPanelMode;
+    private StockPositionSide selectedStockPositionSide;
+    private int selectedStockLeverage;
 
     // 호환: 기존 시그니처 유지(서버가 maxJobs를 보내지 않는 경우)
     public JobsScreenState(List<Job> jobs, int coins) {
@@ -69,6 +73,8 @@ public class JobsScreenState {
         this.selectedStockId = "AAPL";
         this.selectedHoldingStockId = null;
         this.stockPanelMode = StockPanelMode.BUY;
+        this.selectedStockPositionSide = StockPositionSide.LONG;
+        this.selectedStockLeverage = StockPosition.MIN_LEVERAGE;
     }
 
     public List<Job> getJobs() {
@@ -149,6 +155,25 @@ public class JobsScreenState {
 
     public void setStockPanelMode(StockPanelMode stockPanelMode) {
         this.stockPanelMode = stockPanelMode;
+    }
+
+    public StockPositionSide getSelectedStockPositionSide() {
+        return selectedStockPositionSide;
+    }
+
+    public void setSelectedStockPositionSide(StockPositionSide selectedStockPositionSide) {
+        this.selectedStockPositionSide = selectedStockPositionSide;
+    }
+
+    public int getSelectedStockLeverage() {
+        return selectedStockLeverage;
+    }
+
+    public void setSelectedStockLeverage(int selectedStockLeverage) {
+        this.selectedStockLeverage = Math.max(
+                StockPosition.MIN_LEVERAGE,
+                Math.min(StockPosition.MAX_LEVERAGE, selectedStockLeverage)
+        );
     }
 
     public int getActiveJobCount() {

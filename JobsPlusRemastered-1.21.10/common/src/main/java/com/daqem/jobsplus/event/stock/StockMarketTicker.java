@@ -1,8 +1,15 @@
 package com.daqem.jobsplus.event.stock;
 
+import com.daqem.jobsplus.networking.StockScreenSync;
 import com.daqem.jobsplus.networking.s2c.ClientboundStockSnapshotPacket;
+import com.daqem.jobsplus.player.JobsServerPlayer;
+import com.daqem.jobsplus.player.stock.StockAccount;
+import com.daqem.jobsplus.player.stock.StockPosition;
+import com.daqem.jobsplus.stock.SnapshotStatus;
+import com.daqem.jobsplus.stock.StockCatalog;
 import com.daqem.jobsplus.stock.StockMarketService;
 import com.daqem.jobsplus.stock.StockMarketSnapshot;
+import com.daqem.jobsplus.stock.StockQuote;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
@@ -98,6 +105,34 @@ public final class StockMarketTicker
                 StockMarketService.getInstance().getSnapshot()));
     }
 
+    /**
+     * 거래 패킷과 시세 확정 틱의 처리 순서가 겹쳐도 청산 대상 포지션에 추가 매수하거나
+     * 수동 매도할 수 없도록, 거래 직전에 한 종목을 다시 검사한다.
+     */
+    public static boolean liquidatePositionIfNeeded(JobsServerPlayer jobsServerPlayer, StockQuote quote)
+    {
+        StockPosition position = jobsServerPlayer.jobsplus$getStockAccount().getPosition(quote.id());
+        if (position == null || !position.isLiquidated(quote.priceKrw()))
+        {
+            return false;
+        }
+
+        StockAccount account = jobsServerPlayer.jobsplus$getStockAccount().liquidate(position.stockId());
+        jobsServerPlayer.jobsplus$setStockAccount(account);
+
+        ServerPlayer player = jobsServerPlayer.jobsplus$getServerPlayer();
+        MinecraftServer server = player.level().getServer();
+        if (server != null)
+        {
+            broadcastLiquidation(server, player, position);
+        }
+        if (isViewing(player))
+        {
+            StockScreenSync.send(jobsServerPlayer);
+        }
+        return true;
+    }
+
     private static void resetSession()
     {
         ACTIVE_VIEWERS.clear();
@@ -132,6 +167,7 @@ public final class StockMarketTicker
         }
 
         lastBroadcastVersion = snapshot.version();
+        liquidateExpiredPositions(server, snapshot);
         ClientboundStockSnapshotPacket packet = new ClientboundStockSnapshotPacket(snapshot);
         for (UUID viewerId : ACTIVE_VIEWERS)
         {
@@ -141,5 +177,59 @@ public final class StockMarketTicker
                 NetworkManager.sendToPlayer(viewer, packet);
             }
         }
+    }
+
+    /**
+     * 확정된 시세에서 손실률이 -100%에 도달한 포지션을 즉시 제거한다.
+     * 조회 중 또는 전체 조회 실패 스냅샷은 가격 근거가 없으므로 청산에 사용하지 않는다.
+     */
+    private static void liquidateExpiredPositions(MinecraftServer server, StockMarketSnapshot snapshot)
+    {
+        if (snapshot.status() != SnapshotStatus.READY)
+        {
+            return;
+        }
+
+        for (ServerPlayer player : server.getPlayerList().getPlayers())
+        {
+            if (!(player instanceof JobsServerPlayer jobsServerPlayer))
+            {
+                continue;
+            }
+
+            StockAccount account = jobsServerPlayer.jobsplus$getStockAccount();
+            boolean accountChanged = false;
+            for (StockPosition position : account.positions())
+            {
+                StockQuote quote = snapshot.getQuote(position.stockId());
+                if (quote == null || !quote.hasValidPrice() || !position.isLiquidated(quote.priceKrw()))
+                {
+                    continue;
+                }
+
+                account = account.liquidate(position.stockId());
+                accountChanged = true;
+                broadcastLiquidation(server, player, position);
+            }
+
+            if (!accountChanged)
+            {
+                continue;
+            }
+
+            jobsServerPlayer.jobsplus$setStockAccount(account);
+            if (isViewing(player))
+            {
+                StockScreenSync.send(jobsServerPlayer);
+            }
+        }
+    }
+
+    private static void broadcastLiquidation(MinecraftServer server, ServerPlayer player, StockPosition position)
+    {
+        String stockName = StockCatalog.getStockName(position.stockId());
+        String message = "[주식] " + player.getName().getString() + "님의 " + stockName + " "
+                + position.getPositionName() + " 포지션이 수익률 -100%에 도달하여 청산되었습니다.";
+        server.getPlayerList().broadcastSystemMessage(net.minecraft.network.chat.Component.literal(message), false);
     }
 }

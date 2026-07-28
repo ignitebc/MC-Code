@@ -6,6 +6,7 @@ import com.daqem.jobsplus.stock.SnapshotStatus;
 import com.daqem.jobsplus.stock.StockCatalog;
 import com.daqem.jobsplus.stock.StockMarketSnapshot;
 import com.daqem.jobsplus.stock.StockQuote;
+import com.daqem.jobsplus.player.stock.StockPosition;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import com.daqem.uilib.gui.widget.CustomButtonWidget;
 import net.minecraft.client.Minecraft;
@@ -42,9 +43,21 @@ public class StockTableRowsContentComponent extends EmptyComponent
                     index * StockTableComponent.ROW_HEIGHT,
                     getWidth(),
                     StockTableComponent.ROW_HEIGHT,
-                    () -> this.state.setSelectedStockId(stockId)
+                    () -> this.selectStock(stockId)
             ));
         }
+    }
+
+    private void selectStock(String stockId)
+    {
+        this.state.setSelectedStockId(stockId);
+        StockPosition position = this.state.getStockAccount().getPosition(stockId);
+        if (position == null)
+        {
+            return;
+        }
+        this.state.setSelectedStockPositionSide(position.side());
+        this.state.setSelectedStockLeverage(position.leverage());
     }
 
     @Override

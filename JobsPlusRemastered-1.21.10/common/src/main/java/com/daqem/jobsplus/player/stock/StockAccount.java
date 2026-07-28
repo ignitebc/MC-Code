@@ -25,7 +25,9 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
                         0,
                         StockDecimal.truncate(position.costBasis()),
                         StockDecimal.truncate(position.investedAmount()),
-                        StockDecimal.truncate(position.getAverageEntryPrice())
+                        StockDecimal.truncate(position.getAverageEntryPrice()),
+                        position.side(),
+                        position.leverage()
                 ))
                 .toList();
         transactions = transactions.stream()
@@ -59,29 +61,39 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
                 addTransaction("WITHDRAW", "", amount));
     }
 
-    public StockAccount buy(String stockId, double amount, double currentPrice)
+    public StockAccount buy(String stockId, double amount, double currentPrice, StockPositionSide side, int leverage)
     {
         List<StockPosition> updatedPositions = new ArrayList<>(this.positions);
         StockPosition oldPosition = getPosition(stockId);
         if (oldPosition == null)
         {
-            updatedPositions.add(new StockPosition(stockId, 0, amount, amount, currentPrice));
+            updatedPositions.add(new StockPosition(stockId, 0, amount, amount, currentPrice, side, leverage));
         }
         else
         {
+            if (oldPosition.side() != side || oldPosition.leverage() != leverage)
+            {
+                return this;
+            }
+
             double oldUnits = oldPosition.getUnits();
             double addedUnits = amount / currentPrice;
             double updatedCostBasis = oldPosition.costBasis() + amount;
-            double updatedAverageEntryPrice = oldUnits + addedUnits <= 0
-                    ? 0
-                    : updatedCostBasis / (oldUnits + addedUnits);
+            double totalUnits = oldUnits + addedUnits;
+            double updatedAverageEntryPrice = 0;
+            if (totalUnits > 0)
+            {
+                updatedAverageEntryPrice = updatedCostBasis / totalUnits;
+            }
             updatedPositions.remove(oldPosition);
             updatedPositions.add(new StockPosition(
                     stockId,
                     0,
                     updatedCostBasis,
                     oldPosition.investedAmount() + amount,
-                    updatedAverageEntryPrice
+                    updatedAverageEntryPrice,
+                    side,
+                    leverage
             ));
         }
         return new StockAccount(this.balance - amount, List.copyOf(updatedPositions),
@@ -96,27 +108,54 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
             return this;
         }
 
-        double soldRatio = oldPosition.investedAmount() <= 0 ? 1 : amount / oldPosition.investedAmount();
+        if (oldPosition.isLiquidated(currentPrice))
+        {
+            return this;
+        }
+
+        double soldRatio = 1;
+        if (oldPosition.investedAmount() > 0)
+        {
+            soldRatio = amount / oldPosition.investedAmount();
+        }
         double soldCostBasis = Math.max(0, oldPosition.costBasis() * soldRatio);
-        double saleAmount = oldPosition.getAverageEntryPrice() <= 0
-                ? 0
-                : soldCostBasis / oldPosition.getAverageEntryPrice() * currentPrice;
-        double feeAmount = StockDecimal.truncate(saleAmount * feeRate);
+        double saleAmount = oldPosition.getCurrentValue(currentPrice) * soldRatio;
+        double leveragedFeeRate = feeRate * oldPosition.leverage();
+        double feeAmount = StockDecimal.truncate(saleAmount * leveragedFeeRate);
         double remainingInvestedAmount = Math.max(0, oldPosition.investedAmount() - amount);
         double remainingCostBasis = Math.max(0, oldPosition.costBasis() - soldCostBasis);
-        double returnRate = soldCostBasis <= 0
-                ? 0
-                : ((saleAmount - feeAmount) / soldCostBasis - 1) * 100;
+        double returnRate = 0;
+        if (soldCostBasis > 0)
+        {
+            returnRate = ((saleAmount - feeAmount) / soldCostBasis - 1) * 100;
+        }
         List<StockPosition> updatedPositions = new ArrayList<>(this.positions);
         updatedPositions.remove(oldPosition);
         if (remainingInvestedAmount > 0.00000001)
         {
             updatedPositions.add(new StockPosition(
                     stockId, 0, remainingCostBasis, remainingInvestedAmount,
-                    oldPosition.getAverageEntryPrice()));
+                    oldPosition.getAverageEntryPrice(), oldPosition.side(), oldPosition.leverage()));
         }
         return new StockAccount(this.balance + saleAmount - feeAmount, List.copyOf(updatedPositions),
                 addTransaction("SELL", stockId, amount, returnRate, true));
+    }
+
+    public StockAccount liquidate(String stockId)
+    {
+        StockPosition liquidatedPosition = getPosition(stockId);
+        if (liquidatedPosition == null)
+        {
+            return this;
+        }
+
+        List<StockPosition> updatedPositions = new ArrayList<>(this.positions);
+        updatedPositions.remove(liquidatedPosition);
+        return new StockAccount(
+                this.balance,
+                List.copyOf(updatedPositions),
+                addTransaction("LIQUIDATION", stockId, liquidatedPosition.investedAmount(), -100, true)
+        );
     }
 
     private List<StockTransaction> addTransaction(String type, String stockId, double amount)
@@ -147,6 +186,8 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
             buf.writeDouble(position.costBasis());
             buf.writeDouble(position.investedAmount());
             buf.writeDouble(position.getAverageEntryPrice());
+            buf.writeEnum(position.side());
+            buf.writeVarInt(position.leverage());
         });
         buffer.writeCollection(this.transactions, (buf, transaction) -> {
             buf.writeUtf(transaction.type());
@@ -166,7 +207,9 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
                 buf.readDouble(),
                 buf.readDouble(),
                 buf.readDouble(),
-                buf.readDouble()
+                buf.readDouble(),
+                buf.readEnum(StockPositionSide.class),
+                buf.readVarInt()
         ));
         List<StockTransaction> transactions = buffer.readList(buf -> new StockTransaction(
                 buf.readUtf(),
