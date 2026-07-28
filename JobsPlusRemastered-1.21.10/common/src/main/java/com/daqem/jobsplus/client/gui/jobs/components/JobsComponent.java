@@ -93,7 +93,7 @@ public class JobsComponent extends AbstractComponent
 
     /**
      * 주식 탭에 들어오고 나가는 것을 서버에 알린다.
-     * 서버는 실제로 보고 있는 사람이 있을 때만 시세를 조회한다.
+     * 시청자가 없어도 미결제 포지션이나 예약 주문이 있으면 서버는 시세 감시를 계속한다.
      */
     private void updateStockViewState(RightTab previousTab, RightTab currentTab)
     {
