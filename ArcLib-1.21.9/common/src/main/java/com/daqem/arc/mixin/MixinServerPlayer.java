@@ -14,6 +14,7 @@ import com.daqem.arc.event.triggers.StatEvents;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.networking.ClientboundSyncPlayerActionHoldersPacket;
 import com.daqem.arc.player.BlockPosCache;
+import com.daqem.arc.player.CachedBlockPos;
 import com.daqem.arc.player.stat.StatData;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
@@ -105,9 +106,13 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     @Unique
     public BlockPosCache arc$blockPosCache = new BlockPosCache();
     @Unique
-    private static final String arc$BLOCK_POS_CACHE_TAG = "ArcBlockPosCache";
+    private static final String arc$BLOCK_POS_CACHE_TAG = "ArcBlockPosCacheByDimension";
     @Unique
-    private static final Codec<List<Long>> arc$BLOCK_POS_CACHE_CODEC = Codec.LONG.listOf();
+    private static final String arc$LEGACY_BLOCK_POS_CACHE_TAG = "ArcBlockPosCache";
+    @Unique
+    private static final Codec<List<CachedBlockPos>> arc$BLOCK_POS_CACHE_CODEC = CachedBlockPos.CODEC.listOf();
+    @Unique
+    private static final Codec<List<Long>> arc$LEGACY_BLOCK_POS_CACHE_CODEC = Codec.LONG.listOf();
 
     public MixinServerPlayer(Level level, GameProfile gameProfile) {
         super(level, gameProfile);
@@ -516,21 +521,28 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
 
     @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
     private void arc$saveBlockPosCache(ValueOutput valueOutput, CallbackInfo ci) {
-        List<Long> packedPositions = this.arc$blockPosCache.getPositions().stream()
-                .map(pos -> BlockPos.asLong(pos.getX(), pos.getY(), pos.getZ()))
-                .toList();
-        if (!packedPositions.isEmpty()) {
-            valueOutput.store(arc$BLOCK_POS_CACHE_TAG, arc$BLOCK_POS_CACHE_CODEC, packedPositions);
+        List<CachedBlockPos> positions = this.arc$blockPosCache.getPositions();
+        if (!positions.isEmpty()) {
+            valueOutput.store(arc$BLOCK_POS_CACHE_TAG, arc$BLOCK_POS_CACHE_CODEC, positions);
         }
     }
 
     @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
     private void arc$loadBlockPosCache(ValueInput valueInput, CallbackInfo ci) {
-        List<Long> packedPositions = valueInput.read(arc$BLOCK_POS_CACHE_TAG, arc$BLOCK_POS_CACHE_CODEC)
-                .orElse(List.of());
-        this.arc$blockPosCache.restore(packedPositions.stream()
+        Optional<List<CachedBlockPos>> positions = valueInput.read(arc$BLOCK_POS_CACHE_TAG,
+                arc$BLOCK_POS_CACHE_CODEC);
+        if (positions.isPresent()) {
+            this.arc$blockPosCache.restore(positions.get());
+            return;
+        }
+
+        List<Long> legacyPositions = valueInput.read(arc$LEGACY_BLOCK_POS_CACHE_TAG,
+                arc$LEGACY_BLOCK_POS_CACHE_CODEC).orElse(List.of());
+        List<CachedBlockPos> migratedPositions = legacyPositions.stream()
                 .map(BlockPos::of)
-                .toList());
+                .map(pos -> CachedBlockPos.of(this.level(), pos))
+                .toList();
+        this.arc$blockPosCache.restore(migratedPositions);
     }
 
     @Inject(at = @At("TAIL"), method = "<init>")

@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 public class NotInBlockPosCacheCondition  extends AbstractCondition {
 
@@ -24,9 +25,10 @@ public class NotInBlockPosCacheCondition  extends AbstractCondition {
     public boolean isMet(ActionData actionData) {
         if (actionData.getPlayer() instanceof ArcServerPlayer serverPlayer) {
             BlockPos blockPos = actionData.getData(ActionDataType.BLOCK_POSITION);
-            if (blockPos != null) {
+            Level level = actionData.getData(ActionDataType.WORLD);
+            if (blockPos != null && level != null) {
                 BlockPosCache blockPosCache = serverPlayer.arc$getBlockPosCache();
-                return !blockPosCache.contains(blockPos);
+                return !blockPosCache.contains(level, blockPos);
             }
         }
         return true;

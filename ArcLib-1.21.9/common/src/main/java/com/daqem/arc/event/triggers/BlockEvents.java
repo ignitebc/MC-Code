@@ -39,7 +39,7 @@ public class BlockEvents {
                     }
                 }
 
-                arcServerPlayer.arc$getBlockPosCache().add(pos);
+                arcServerPlayer.arc$getBlockPosCache().add(level, pos);
             }
             return EventResult.pass();
         });
