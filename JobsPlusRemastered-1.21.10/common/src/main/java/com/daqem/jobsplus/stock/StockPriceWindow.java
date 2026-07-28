@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @param fromExclusiveMinute 마지막으로 검사를 마친 분
  * @param checkedThroughMinute 이번 조회로 검사를 마친 마지막 분
- * @param candles 거래가 발생해 가격이 존재하는 분봉 목록
+ * @param candles 거래가 발생해 시가·저가·고가가 존재하는 분봉 목록
  */
 public record StockPriceWindow(String stockId, long fromExclusiveMinute, long checkedThroughMinute,
                                List<StockPriceCandle> candles)
@@ -40,13 +40,29 @@ public record StockPriceWindow(String stockId, long fromExclusiveMinute, long ch
         return false;
     }
 
-    public record StockPriceCandle(long marketMinute, double lowPrice, double highPrice)
+    public StockPriceCandle getCandle(long marketMinute)
+    {
+        for (StockPriceCandle candle : this.candles)
+        {
+            if (candle.marketMinute() == marketMinute)
+            {
+                return candle;
+            }
+        }
+        return null;
+    }
+
+    public record StockPriceCandle(long marketMinute, double openPrice, double lowPrice, double highPrice)
     {
         public boolean hasValidRange()
         {
-            return Double.isFinite(this.lowPrice)
+            return Double.isFinite(this.openPrice)
+                    && Double.isFinite(this.lowPrice)
                     && Double.isFinite(this.highPrice)
+                    && this.openPrice > 0
                     && this.lowPrice > 0
+                    && this.openPrice >= this.lowPrice
+                    && this.openPrice <= this.highPrice
                     && this.highPrice >= this.lowPrice;
         }
     }

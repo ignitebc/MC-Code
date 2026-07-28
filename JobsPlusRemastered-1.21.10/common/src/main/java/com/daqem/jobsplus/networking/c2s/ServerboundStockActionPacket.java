@@ -201,7 +201,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                 if (account.balance() + 0.00000001 < packet.amount)
                 {
                     NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
-                            "충전된 비트코인이 부족하여 구매할 수 없습니다.\n입출금 탭에서 비트코인을 충전해 주세요."));
+                            "주식 계좌의 비트코인이 부족합니다.\n입출금 메뉴에서 먼저 입금해 주세요."));
                     return;
                 }
                 StockPosition existingPosition = account.getPosition(packet.stockId);
@@ -214,16 +214,28 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                                     + "기존 포지션을 모두 판매한 후 변경해 주세요."));
                     return;
                 }
-                account = account.buy(
+                boolean queued = StockMarketTicker.queueBuyOrder(
+                        player,
+                        account,
                         packet.stockId,
                         packet.amount,
                         quote.priceKrw(),
                         packet.positionSide,
                         packet.leverage
                 );
+                if (!queued)
+                {
+                    NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                            "이 종목은 이미 구매 예약을 확인하고 있습니다.\n"
+                                    + "예약 결과가 나온 뒤 다시 거래해 주세요."));
+                    return;
+                }
+                account = account.reserveBuy(packet.amount);
                 completedMessage = quote.name() + " " + packet.positionSide.getDisplayName()
                         + " " + StockPosition.getLeverageDisplayName(packet.leverage)
-                        + " 포지션을 구매했습니다.";
+                        + " 구매가 예약되었습니다.\n"
+                        + "투자금 " + packet.amount + "개가 계좌에서 차감되었습니다.\n"
+                        + "다음 분의 진입 가격과 가격 변동을 확인한 뒤 결과를 알려드립니다.";
             }
             case SELL -> {
                 StockQuote quote = resolveTradableQuote(player, packet);
@@ -247,7 +259,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
             }
         }
 
-        if (packet.action == Action.BUY || packet.action == Action.SELL)
+        if (packet.action == Action.SELL)
         {
             StockMarketTicker.onStockAccountChanged(player, account);
         }
@@ -262,10 +274,11 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
     }
 
     /**
-     * 체결에 사용할 시세를 서버 스냅샷에서 가져온다.
+     * 거래 요청을 검증할 현재 시세를 서버 스냅샷에서 가져온다.
      * <p>
-     * 시세 API를 다시 조회하지 않는다. 조회는 비동기라서 즉시 반영되지 않고, 무엇보다 클라이언트 표가
-     * 보여 준 가격과 다른 가격으로 체결될 수 있기 때문이다. 대신 아래를 모두 확인한다.
+     * 판매는 이 가격으로 체결하고, 구매는 이 가격을 확인한 뒤 다음 분 시작가 예약을 생성한다.
+     * 시세 API를 다시 조회하지 않는다. 조회는 비동기라서 즉시 반영되지 않으며, 클라이언트가 본 상태와
+     * 다른 시세를 기준으로 요청을 승인할 수 있기 때문이다. 대신 아래를 모두 확인한다.
      * <ul>
      *   <li>클라이언트가 보고 있던 스냅샷 번호가 서버 스냅샷과 같은지</li>
      *   <li>그 스냅샷이 현재 서버 분의 가격인지 (이전 분 가격으로 체결 금지)</li>
@@ -273,11 +286,11 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
      *   <li>해당 종목의 가격이 유한한 양수인지</li>
      * </ul>
      *
-     * @return 체결 가능한 시세. 불가능하면 {@code null}이며 사유는 플레이어에게 전달된다.
+     * @return 거래 요청에 사용할 수 있는 시세. 불가능하면 {@code null}이며 사유는 플레이어에게 전달된다.
      */
     private static StockQuote resolveTradableQuote(ServerPlayer player, ServerboundStockActionPacket packet)
     {
-        // 주식 탭을 열어야만 서버가 시세를 갱신하므로, 탭을 열지 않은 요청은 조작된 패킷이다.
+        // 시청 상태와 무관하게 조작된 패킷으로 거래하지 못하도록 실제 주식 탭 진입 여부를 확인한다.
         if (!StockMarketTicker.isViewing(player))
         {
             NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
@@ -286,6 +299,14 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         }
 
         StockMarketSnapshot snapshot = StockMarketService.getInstance().getSnapshot();
+
+        if (StockMarketTicker.hasPendingBuyOrder(player, packet.stockId))
+        {
+            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                    "이 종목의 구매 예약을 안전하게 확인하고 있습니다.\n"
+                            + "확인이 끝날 때까지 추가 구매와 판매는 잠시 기다려 주세요."));
+            return null;
+        }
 
         if (packet.snapshotVersion != snapshot.version())
         {
@@ -302,10 +323,10 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
 
         if (snapshot.status() != SnapshotStatus.READY)
         {
-            String reason = "시세를 불러오지 못했습니다.\n다음 갱신을 기다려 주세요.";
+            String reason = "시세를 불러오지 못했습니다.\n다음 시세 갱신 후 다시 시도해 주세요.";
             if (snapshot.status() == SnapshotStatus.REFRESHING)
             {
-                reason = "시세를 갱신하는 중입니다.\n잠시 후 다시 시도해 주세요.";
+                reason = "최신 시세를 불러오고 있습니다.\n잠시 후 다시 시도해 주세요.";
             }
             rejectAndResync(player, snapshot, reason);
             return null;
@@ -326,14 +347,14 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         if (!quote.hasValidPrice())
         {
             rejectAndResync(player, snapshot,
-                    quote.name() + " 시세를 불러오지 못했습니다.\n다음 갱신을 기다려 주세요.");
+                    quote.name() + " 시세를 불러오지 못했습니다.\n다음 시세 갱신 후 다시 시도해 주세요.");
             return null;
         }
         if (!StockMarketTicker.isPositionCaughtUp(player, packet.stockId, snapshot.marketMinute()))
         {
             NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
-                    "누락된 기간의 분봉 시세를 확인하는 중입니다.\n"
-                            + "청산 검사가 완료된 후 다시 거래해 주세요."));
+                    "안전한 정산을 위해 아직 확인하지 못한 가격 변동을 점검하고 있습니다.\n"
+                            + "점검이 끝나면 다시 거래할 수 있습니다."));
             return null;
         }
         return quote;

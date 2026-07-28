@@ -108,7 +108,7 @@ public class StockTradingComponent extends EmptyComponent
                 () -> this.state.getStockPanelMode() == StockPanelMode.BUY && !this.leverageDropdownOpen,
                 () -> changeAmount(this.buyAmountInput, 1), () -> false));
 
-        this.addStyledButton(new StyledButton(124, 112, 27, 16, Component.literal("구매"),
+        this.addStyledButton(new StyledButton(124, 112, 27, 16, Component.literal("예약"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.BUY && !this.leverageDropdownOpen,
                 this::sendBuyAction, () -> false));
 
@@ -230,7 +230,7 @@ public class StockTradingComponent extends EmptyComponent
         drawCenteredScaled(guiGraphics, "보유 자산: " + formatAmount(this.state.getStockAccount().balance()),
                 x + getWidth() / 2, y + 26);
 
-        drawCenteredScaled(guiGraphics, "내 주식 평가: " + formatTotalStockValue(snapshot),
+        drawCenteredScaled(guiGraphics, "내 포지션 평가: " + formatTotalStockValue(snapshot),
                 x + getWidth() / 2, y + 37);
 
         if (panelMode == StockPanelMode.TRANSFER)
@@ -240,7 +240,12 @@ public class StockTradingComponent extends EmptyComponent
             return;
         }
 
-        String currentPrice = formatCurrentPrice(snapshot, selectedQuote);
+        String priceLabel = "현재가격";
+        if (panelMode == StockPanelMode.BUY)
+        {
+            priceLabel = "예약 확인가";
+        }
+        String currentPrice = formatPrice(snapshot, selectedQuote, priceLabel);
 
         if (panelMode == StockPanelMode.SELL)
         {
@@ -258,28 +263,28 @@ public class StockTradingComponent extends EmptyComponent
         drawCenteredScaled(guiGraphics, "선택 종목: " + selectedName, x + getWidth() / 2, y + 56);
         drawCenteredScaled(guiGraphics, currentPrice, x + getWidth() / 2, y + 66);
         drawBox(guiGraphics, x + 5, y + 98, CONTENT_WIDTH, 34);
-        drawCentered(guiGraphics, "투자할 금액 (1개 단위·최대 1,000)", x + getWidth() / 2, y + 101);
+        drawCentered(guiGraphics, "예약 투자금 (1개 단위·최대 1,000)", x + getWidth() / 2, y + 101);
         drawBox(guiGraphics, x + 5, y + 135, CONTENT_WIDTH, 33);
     }
 
     /**
      * 표에 보이는 가격 문구. 거래가 막힌 상태는 원인을 구분해서 알린다.
      */
-    private static String formatCurrentPrice(StockMarketSnapshot snapshot, StockQuote quote)
+    private static String formatPrice(StockMarketSnapshot snapshot, StockQuote quote, String priceLabel)
     {
         if (snapshot.status() == SnapshotStatus.REFRESHING)
         {
-            return "현재가격: 갱신 중";
+            return priceLabel + ": 갱신 중";
         }
         if (quote == null || !quote.hasValidPrice())
         {
-            return "현재가격: 조회 실패";
+            return priceLabel + ": 조회 실패";
         }
-        return "현재가격: " + NUMBER_FORMAT.format(Math.round(quote.priceKrw()));
+        return priceLabel + ": " + NUMBER_FORMAT.format(Math.round(quote.priceKrw()));
     }
 
     /**
-     * 보유 주식 평가금액 문구.
+     * 보유 포지션 평가금액 문구.
      * <p>
      * 시세를 못 받은 상태에서 0으로 표시하면 자산이 사라진 것처럼 보이므로 상태를 그대로 알린다.
      */
@@ -417,7 +422,7 @@ public class StockTradingComponent extends EmptyComponent
         minecraft.setScreen(new ConfirmationScreen(
                 minecraft.screen,
                 new ConfirmationScreenState(
-                        Component.literal(stockName + " 투자원금 " + amount + "개를 판매 하시겠습니까?"),
+                        Component.literal(stockName + " 투자원금 " + amount + "개를 판매하시겠습니까?"),
                         Component.literal("판매"),
                         Component.literal("취소"),
                         () -> {
@@ -443,7 +448,7 @@ public class StockTradingComponent extends EmptyComponent
         }
         if (this.state.getStockAccount().balance() + 0.00000001 < amount)
         {
-            showAlert("충전된 비트코인이 부족하여 구매할 수 없습니다.\n입출금 탭에서 비트코인을 충전해 주세요.");
+            showAlert("주식 계좌의 비트코인이 부족합니다.\n입출금 메뉴에서 먼저 입금해 주세요.");
             return;
         }
 
@@ -473,8 +478,10 @@ public class StockTradingComponent extends EmptyComponent
                 new ConfirmationScreenState(
                         Component.literal(stockName + " " + positionSide.getDisplayName() + " "
                                 + getLeverageOptionName(leverage)
-                                + " 포지션에 비트코인 " + amount + "개를 투자 하시겠습니까?"),
-                        Component.literal("구매"),
+                                + " 구매를 예약하시겠습니까?\n"
+                                + "투자금 " + amount + "개는 지금 차감됩니다.\n"
+                                + "다음 분 시작가로 진입하며, 거래 기록이 없으면 예약 확인가를 사용합니다."),
+                        Component.literal("예약"),
                         Component.literal("취소"),
                         () -> {
                             if (minecraft.screen instanceof ConfirmationScreen confirmationScreen)
@@ -516,12 +523,12 @@ public class StockTradingComponent extends EmptyComponent
     {
         if (snapshot.status() == SnapshotStatus.REFRESHING)
         {
-            showAlert("시세를 갱신하는 중입니다.\n잠시 후 다시 시도해 주세요.");
+            showAlert("최신 시세를 불러오고 있습니다.\n잠시 후 다시 시도해 주세요.");
             return false;
         }
         if (snapshot.status() == SnapshotStatus.FAILED)
         {
-            showAlert("시세를 불러오지 못했습니다.\n다음 갱신을 기다려 주세요.");
+            showAlert("시세를 불러오지 못했습니다.\n다음 시세 갱신 후 다시 시도해 주세요.");
             return false;
         }
 
@@ -529,7 +536,7 @@ public class StockTradingComponent extends EmptyComponent
         if (quote == null || !quote.hasValidPrice())
         {
             String stockName = stockId == null ? "해당 종목" : StockCatalog.getStockName(stockId);
-            showAlert(stockName + " 시세를 불러오지 못했습니다.\n다음 갱신을 기다려 주세요.");
+            showAlert(stockName + " 시세를 불러오지 못했습니다.\n다음 시세 갱신 후 다시 시도해 주세요.");
             return false;
         }
         return true;

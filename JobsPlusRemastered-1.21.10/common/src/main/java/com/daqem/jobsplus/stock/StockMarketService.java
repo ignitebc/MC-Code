@@ -72,7 +72,8 @@ public final class StockMarketService
     private final AtomicLong versionCounter = new AtomicLong();
 
     /**
-     * 시세 세션 번호. 시청자와 미결제 포지션이 모두 없어 세션이 끝나거나 새로 시작되면 값이 올라간다.
+     * 시세 세션 번호. 시청자·미결제 포지션·예약 주문이 모두 없어 세션이 끝나거나 새로 시작되면
+     * 값이 올라간다.
      * 조회를 시작할 때의 번호와 끝났을 때의 번호가 다르면 그 결과는 버린다.
      */
     private final AtomicLong sessionGeneration = new AtomicLong();
@@ -109,7 +110,7 @@ public final class StockMarketService
     }
 
     /**
-     * 현재 확정된 스냅샷. 매수·매도는 반드시 이 값만 사용해야 한다.
+     * 현재 확정된 스냅샷. 판매 체결과 구매 예약 검증은 반드시 이 값만 사용해야 한다.
      */
     public StockMarketSnapshot getSnapshot()
     {
@@ -122,7 +123,7 @@ public final class StockMarketService
     }
 
     /**
-     * 첫 시청자가 들어오거나 첫 미결제 포지션이 생겼을 때 시세 조회를 시작한다.
+     * 첫 시청자가 들어오거나 첫 미결제 포지션·예약 주문이 생겼을 때 시세 조회를 시작한다.
      * <p>
      * 새 세션 번호를 부여해서, 이전 세션에서 돌고 있던 조회가 뒤늦게 끝나도 반영되지 않게 한다.
      */
@@ -142,7 +143,7 @@ public final class StockMarketService
     }
 
     /**
-     * 시청자와 미결제 포지션이 모두 없어졌거나 서버가 멈출 때 호출한다.
+     * 시청자·미결제 포지션·예약 주문이 모두 없어졌거나 서버가 멈출 때 호출한다.
      * 진행 중인 조회 결과는 세션 번호가 어긋나므로 자동으로 폐기된다.
      */
     public void stopSession()
@@ -443,6 +444,7 @@ public final class StockMarketService
                     continue;
                 }
 
+                double openExchangeRate = fallbackExchangeRate;
                 double lowExchangeRate = fallbackExchangeRate;
                 double highExchangeRate = fallbackExchangeRate;
                 StockPriceWindow.StockPriceCandle exchangeRateCandle =
@@ -453,10 +455,12 @@ public final class StockMarketService
                 }
                 if (exchangeRateCandle != null)
                 {
+                    openExchangeRate = exchangeRateCandle.openPrice();
                     lowExchangeRate = exchangeRateCandle.lowPrice();
                     highExchangeRate = exchangeRateCandle.highPrice();
                 }
-                if (!Double.isFinite(lowExchangeRate) || lowExchangeRate <= 0
+                if (!Double.isFinite(openExchangeRate) || openExchangeRate <= 0
+                        || !Double.isFinite(lowExchangeRate) || lowExchangeRate <= 0
                         || !Double.isFinite(highExchangeRate) || highExchangeRate <= 0)
                 {
                     return null;
@@ -464,6 +468,7 @@ public final class StockMarketService
 
                 StockPriceWindow.StockPriceCandle convertedCandle = new StockPriceWindow.StockPriceCandle(
                         nativeCandle.marketMinute(),
+                        nativeCandle.openPrice() * openExchangeRate,
                         nativeCandle.lowPrice() * lowExchangeRate,
                         nativeCandle.highPrice() * highExchangeRate
                 );
@@ -520,13 +525,16 @@ public final class StockMarketService
         }
 
         JsonObject quote = quoteResults.get(0).getAsJsonObject();
+        JsonArray opens = quote.getAsJsonArray("open");
         JsonArray lows = quote.getAsJsonArray("low");
         JsonArray highs = quote.getAsJsonArray("high");
-        if (lows == null || highs == null)
+        if (opens == null || lows == null || highs == null)
         {
             return null;
         }
-        if (timestamps.size() != lows.size() || timestamps.size() != highs.size())
+        if (timestamps.size() != opens.size()
+                || timestamps.size() != lows.size()
+                || timestamps.size() != highs.size())
         {
             return null;
         }
@@ -535,9 +543,11 @@ public final class StockMarketService
         for (int index = 0; index < timestamps.size(); index++)
         {
             JsonElement timestampElement = timestamps.get(index);
+            JsonElement openElement = opens.get(index);
             JsonElement lowElement = lows.get(index);
             JsonElement highElement = highs.get(index);
-            if (timestampElement.isJsonNull() || lowElement.isJsonNull() || highElement.isJsonNull())
+            if (timestampElement.isJsonNull() || openElement.isJsonNull()
+                    || lowElement.isJsonNull() || highElement.isJsonNull())
             {
                 return null;
             }
@@ -550,6 +560,7 @@ public final class StockMarketService
 
             StockPriceWindow.StockPriceCandle candle = new StockPriceWindow.StockPriceCandle(
                     candleMinute,
+                    openElement.getAsDouble(),
                     lowElement.getAsDouble(),
                     highElement.getAsDouble()
             );
@@ -580,10 +591,16 @@ public final class StockMarketService
                     continue;
                 }
 
+                double candleOpen = candle.get("opening_price").getAsDouble();
                 double candleLow = candle.get("low_price").getAsDouble();
                 double candleHigh = candle.get("high_price").getAsDouble();
                 StockPriceWindow.StockPriceCandle priceCandle =
-                        new StockPriceWindow.StockPriceCandle(candleMinute, candleLow, candleHigh);
+                        new StockPriceWindow.StockPriceCandle(
+                                candleMinute,
+                                candleOpen,
+                                candleLow,
+                                candleHigh
+                        );
                 if (!priceCandle.hasValidRange())
                 {
                     return null;

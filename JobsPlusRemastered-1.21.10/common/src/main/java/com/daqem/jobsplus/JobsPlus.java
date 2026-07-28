@@ -47,7 +47,7 @@ public class JobsPlus
         EventJobSelectTicketUse.registerEvent(); // 추가
         EventKillElytraDuringRaidOrWither.registerEvent(); // 레이드/위더 활성 시 겉날개 즉사
         CropReplantManager.registerEvent();
-        StockMarketTicker.registerEvent(); // 주식 시청자 또는 미결제 포지션이 있으면 매분 시세 갱신
+        StockMarketTicker.registerEvent(); // 주식 시청자·미결제 포지션·예약 주문이 있으면 매분 시세 갱신
         EventDeleteRandomItemOnDeath.registerEvent(); // 사망 시 소지품 한 칸을 무작위로 삭제
     }
 

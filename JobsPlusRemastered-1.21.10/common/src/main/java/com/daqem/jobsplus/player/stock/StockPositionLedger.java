@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -24,13 +25,19 @@ import java.util.UUID;
 public final class StockPositionLedger extends SavedData
 {
     private static final String FILE_ID = "jobsplus_stock_positions";
+    private static final Codec<StockPositionSide> POSITION_SIDE_CODEC = Codec.STRING.xmap(
+            StockPositionSide::fromSerializedName,
+            StockPositionSide::getSerializedName
+    );
 
     public static final Codec<TrackedPosition> TRACKED_POSITION_CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     UUIDUtil.STRING_CODEC.fieldOf("player_id").forGetter(TrackedPosition::playerId),
                     Codec.STRING.fieldOf("player_name").forGetter(TrackedPosition::playerName),
                     StockPosition.CODEC.fieldOf("position").forGetter(TrackedPosition::position),
-                    Codec.LONG.fieldOf("last_checked_minute").forGetter(TrackedPosition::lastCheckedMinute)
+                    Codec.LONG.fieldOf("last_checked_minute").forGetter(TrackedPosition::lastCheckedMinute),
+                    Codec.LONG.optionalFieldOf("trade_blocked_through_minute", Long.MIN_VALUE)
+                            .forGetter(TrackedPosition::tradeBlockedThroughMinute)
             ).apply(instance, TrackedPosition::new));
 
     public static final Codec<PendingLiquidation> PENDING_LIQUIDATION_CODEC = RecordCodecBuilder.create(instance ->
@@ -40,13 +47,44 @@ public final class StockPositionLedger extends SavedData
                     Codec.LONG.fieldOf("liquidated_at").forGetter(PendingLiquidation::liquidatedAt)
             ).apply(instance, PendingLiquidation::new));
 
+    public static final Codec<PendingBuyOrder> PENDING_BUY_ORDER_CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                    UUIDUtil.STRING_CODEC.fieldOf("player_id").forGetter(PendingBuyOrder::playerId),
+                    Codec.STRING.fieldOf("player_name").forGetter(PendingBuyOrder::playerName),
+                    Codec.STRING.fieldOf("stock_id").forGetter(PendingBuyOrder::stockId),
+                    Codec.DOUBLE.fieldOf("amount").forGetter(PendingBuyOrder::amount),
+                    Codec.DOUBLE.fieldOf("requested_price").forGetter(PendingBuyOrder::requestedPrice),
+                    POSITION_SIDE_CODEC.fieldOf("side").forGetter(PendingBuyOrder::side),
+                    Codec.INT.fieldOf("leverage").forGetter(PendingBuyOrder::leverage),
+                    Codec.LONG.fieldOf("activation_minute").forGetter(PendingBuyOrder::activationMinute),
+                    StockPosition.CODEC.optionalFieldOf("base_position").forGetter(PendingBuyOrder::basePosition)
+            ).apply(instance, PendingBuyOrder::new));
+
+    public static final Codec<PendingBuyResult> PENDING_BUY_RESULT_CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                    UUIDUtil.STRING_CODEC.fieldOf("player_id").forGetter(PendingBuyResult::playerId),
+                    Codec.STRING.fieldOf("stock_id").forGetter(PendingBuyResult::stockId),
+                    Codec.DOUBLE.fieldOf("amount").forGetter(PendingBuyResult::amount),
+                    Codec.DOUBLE.optionalFieldOf("fill_price", 0D).forGetter(PendingBuyResult::fillPrice),
+                    POSITION_SIDE_CODEC.fieldOf("side").forGetter(PendingBuyResult::side),
+                    Codec.INT.fieldOf("leverage").forGetter(PendingBuyResult::leverage),
+                    Codec.BOOL.fieldOf("filled").forGetter(PendingBuyResult::filled),
+                    Codec.LONG.fieldOf("resolved_at").forGetter(PendingBuyResult::resolvedAt)
+            ).apply(instance, PendingBuyResult::new));
+
     public static final Codec<StockPositionLedger> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             TRACKED_POSITION_CODEC.listOf()
                     .optionalFieldOf("positions", List.of())
                     .forGetter(StockPositionLedger::getTrackedPositions),
             PENDING_LIQUIDATION_CODEC.listOf()
                     .optionalFieldOf("pending_liquidations", List.of())
-                    .forGetter(StockPositionLedger::getPendingLiquidations)
+                    .forGetter(StockPositionLedger::getPendingLiquidations),
+            PENDING_BUY_ORDER_CODEC.listOf()
+                    .optionalFieldOf("pending_buy_orders", List.of())
+                    .forGetter(StockPositionLedger::getPendingBuyOrders),
+            PENDING_BUY_RESULT_CODEC.listOf()
+                    .optionalFieldOf("pending_buy_results", List.of())
+                    .forGetter(StockPositionLedger::getPendingBuyResults)
     ).apply(instance, StockPositionLedger::new));
 
     public static final SavedDataType<StockPositionLedger> TYPE = new SavedDataType<>(
@@ -58,12 +96,17 @@ public final class StockPositionLedger extends SavedData
 
     private final Map<PositionKey, TrackedPosition> positions = new LinkedHashMap<>();
     private final Map<PositionKey, PendingLiquidation> pendingLiquidations = new LinkedHashMap<>();
+    private final Map<PositionKey, PendingBuyOrder> pendingBuyOrders = new LinkedHashMap<>();
+    private final Map<PositionKey, PendingBuyResult> pendingBuyResults = new LinkedHashMap<>();
 
     public StockPositionLedger()
     {
     }
 
-    private StockPositionLedger(List<TrackedPosition> positions, List<PendingLiquidation> pendingLiquidations)
+    private StockPositionLedger(List<TrackedPosition> positions,
+                                List<PendingLiquidation> pendingLiquidations,
+                                List<PendingBuyOrder> pendingBuyOrders,
+                                List<PendingBuyResult> pendingBuyResults)
     {
         for (TrackedPosition position : positions)
         {
@@ -76,6 +119,14 @@ public final class StockPositionLedger extends SavedData
                     liquidation
             );
         }
+        for (PendingBuyOrder order : pendingBuyOrders)
+        {
+            this.pendingBuyOrders.put(PositionKey.of(order.playerId(), order.stockId()), order);
+        }
+        for (PendingBuyResult result : pendingBuyResults)
+        {
+            this.pendingBuyResults.put(PositionKey.of(result.playerId(), result.stockId()), result);
+        }
     }
 
     public static StockPositionLedger get(MinecraftServer server)
@@ -83,9 +134,17 @@ public final class StockPositionLedger extends SavedData
         return server.overworld().getDataStorage().computeIfAbsent(TYPE);
     }
 
-    public boolean hasOpenPositions()
+    public boolean hasMarketWork()
     {
-        return !this.positions.isEmpty();
+        if (!this.positions.isEmpty())
+        {
+            return true;
+        }
+        if (!this.pendingBuyOrders.isEmpty())
+        {
+            return true;
+        }
+        return false;
     }
 
     public List<TrackedPosition> getTrackedPositions()
@@ -103,10 +162,20 @@ public final class StockPositionLedger extends SavedData
         return List.copyOf(this.pendingLiquidations.values());
     }
 
+    public List<PendingBuyOrder> getPendingBuyOrders()
+    {
+        return List.copyOf(this.pendingBuyOrders.values());
+    }
+
+    private List<PendingBuyResult> getPendingBuyResults()
+    {
+        return List.copyOf(this.pendingBuyResults.values());
+    }
+
     /**
      * 플레이어 계좌의 현재 포지션을 중앙 인덱스와 맞춘다.
-     * 기존 포지션의 검사 시각은 유지한다. 새 포지션은 진입 전 가격으로 오청산하지 않도록
-     * 진입한 현재 분을 검사 완료 시각으로 기록하고 다음 완료 분부터 분봉을 검사한다.
+     * 기존 포지션의 검사 시각과 거래 잠금은 유지한다. 중앙 원장에 없던 포지션은 현재 분을
+     * 확인하기 전까지 거래를 잠가, 검사되지 않은 분을 완료 처리하는 일이 없게 한다.
      */
     public void syncPlayerPositions(ServerPlayer player, StockAccount account, long currentMinute)
     {
@@ -116,15 +185,23 @@ public final class StockPositionLedger extends SavedData
         {
             PositionKey key = PositionKey.of(playerId, position.stockId());
             TrackedPosition oldPosition = this.positions.get(key);
-            long lastCheckedMinute = currentMinute;
+            long lastCheckedMinute = currentMinute - 1;
+            long tradeBlockedThroughMinute = currentMinute;
             if (oldPosition != null)
             {
                 lastCheckedMinute = oldPosition.lastCheckedMinute();
+                tradeBlockedThroughMinute = oldPosition.tradeBlockedThroughMinute();
             }
 
             synchronizedPositions.put(
                     key,
-                    new TrackedPosition(playerId, player.getName().getString(), position, lastCheckedMinute)
+                    new TrackedPosition(
+                            playerId,
+                            player.getName().getString(),
+                            position,
+                            lastCheckedMinute,
+                            tradeBlockedThroughMinute
+                    )
             );
         }
 
@@ -152,6 +229,15 @@ public final class StockPositionLedger extends SavedData
                 earliestMinutes.put(stockId, trackedPosition.lastCheckedMinute());
             }
         }
+        for (PendingBuyOrder order : this.pendingBuyOrders.values())
+        {
+            long orderCheckedMinute = order.activationMinute() - 1;
+            Long oldMinute = earliestMinutes.get(order.stockId());
+            if (oldMinute == null || orderCheckedMinute < oldMinute)
+            {
+                earliestMinutes.put(order.stockId(), orderCheckedMinute);
+            }
+        }
         return Map.copyOf(earliestMinutes);
     }
 
@@ -165,6 +251,10 @@ public final class StockPositionLedger extends SavedData
 
         long lastCompletedMinute = currentMinute - 1;
         if (position.lastCheckedMinute() < lastCompletedMinute)
+        {
+            return false;
+        }
+        if (position.lastCheckedMinute() < position.tradeBlockedThroughMinute())
         {
             return false;
         }
@@ -190,7 +280,8 @@ public final class StockPositionLedger extends SavedData
                             trackedPosition.playerId(),
                             trackedPosition.playerName(),
                             trackedPosition.position(),
-                            checkedThroughMinute
+                            checkedThroughMinute,
+                            trackedPosition.tradeBlockedThroughMinute()
                     )
             );
             changed = true;
@@ -199,6 +290,211 @@ public final class StockPositionLedger extends SavedData
         {
             this.setDirty();
         }
+    }
+
+    public boolean hasPendingBuyOrder(UUID playerId, String stockId)
+    {
+        PositionKey key = PositionKey.of(playerId, stockId);
+        if (this.pendingBuyOrders.containsKey(key))
+        {
+            return true;
+        }
+        if (this.pendingBuyResults.containsKey(key))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean queueBuyOrder(ServerPlayer player, StockAccount account, String stockId, double amount,
+                                 double requestedPrice, StockPositionSide side, int leverage,
+                                 long activationMinute)
+    {
+        if (!Double.isFinite(amount) || amount <= 0)
+        {
+            return false;
+        }
+        if (!Double.isFinite(requestedPrice) || requestedPrice <= 0)
+        {
+            return false;
+        }
+        if (!StockPosition.isAllowedLeverage(leverage))
+        {
+            return false;
+        }
+
+        PositionKey key = PositionKey.of(player.getUUID(), stockId);
+        if (this.pendingBuyOrders.containsKey(key) || this.pendingBuyResults.containsKey(key))
+        {
+            return false;
+        }
+
+        StockPosition basePosition = account.getPosition(stockId);
+        this.pendingBuyOrders.put(
+                key,
+                new PendingBuyOrder(
+                        player.getUUID(),
+                        player.getName().getString(),
+                        stockId,
+                        amount,
+                        requestedPrice,
+                        side,
+                        leverage,
+                        activationMinute,
+                        Optional.ofNullable(basePosition)
+                )
+        );
+        this.setDirty();
+        return true;
+    }
+
+    public PendingBuyResult fillPendingBuyOrder(PendingBuyOrder order, double fillPrice,
+                                                long entryMinute, long filledAt)
+    {
+        PositionKey key = PositionKey.of(order.playerId(), order.stockId());
+        PendingBuyOrder storedOrder = this.pendingBuyOrders.get(key);
+        if (!order.equals(storedOrder))
+        {
+            return null;
+        }
+
+        TrackedPosition currentTrackedPosition = this.positions.get(key);
+        if (!doesBasePositionMatch(order, currentTrackedPosition))
+        {
+            return this.cancelPendingBuyOrder(order, filledAt);
+        }
+
+        StockPosition filledPosition;
+        long lastCheckedMinute = entryMinute - 1;
+        if (currentTrackedPosition == null)
+        {
+            filledPosition = new StockPosition(
+                    order.stockId(),
+                    0,
+                    order.amount(),
+                    order.amount(),
+                    StockDecimal.truncate(fillPrice),
+                    order.side(),
+                    order.leverage()
+            );
+        }
+        else
+        {
+            filledPosition = currentTrackedPosition.position().addInvestment(order.amount(), fillPrice);
+            lastCheckedMinute = Math.min(
+                    currentTrackedPosition.lastCheckedMinute(),
+                    lastCheckedMinute
+            );
+        }
+
+        this.positions.put(
+                key,
+                new TrackedPosition(
+                        order.playerId(),
+                        order.playerName(),
+                        filledPosition,
+                        lastCheckedMinute,
+                        entryMinute
+                )
+        );
+        PendingBuyResult result = new PendingBuyResult(
+                order.playerId(),
+                order.stockId(),
+                order.amount(),
+                fillPrice,
+                order.side(),
+                order.leverage(),
+                true,
+                filledAt
+        );
+        this.pendingBuyOrders.remove(key);
+        this.pendingBuyResults.put(key, result);
+        this.setDirty();
+        return result;
+    }
+
+    public PendingBuyResult cancelPendingBuyOrder(PendingBuyOrder order, long cancelledAt)
+    {
+        PositionKey key = PositionKey.of(order.playerId(), order.stockId());
+        PendingBuyOrder storedOrder = this.pendingBuyOrders.get(key);
+        if (!order.equals(storedOrder))
+        {
+            return null;
+        }
+
+        PendingBuyResult result = new PendingBuyResult(
+                order.playerId(),
+                order.stockId(),
+                order.amount(),
+                0,
+                order.side(),
+                order.leverage(),
+                false,
+                cancelledAt
+        );
+        this.pendingBuyOrders.remove(key);
+        this.pendingBuyResults.put(key, result);
+        this.setDirty();
+        return result;
+    }
+
+    public StockAccount applyPendingBuyResults(UUID playerId, StockAccount account)
+    {
+        List<Map.Entry<PositionKey, PendingBuyResult>> entries =
+                new ArrayList<>(this.pendingBuyResults.entrySet());
+        boolean changed = false;
+        for (Map.Entry<PositionKey, PendingBuyResult> entry : entries)
+        {
+            PendingBuyResult result = entry.getValue();
+            if (!result.playerId().equals(playerId))
+            {
+                continue;
+            }
+
+            if (result.filled())
+            {
+                account = account.fillReservedBuy(
+                        result.stockId(),
+                        result.amount(),
+                        result.fillPrice(),
+                        result.side(),
+                        result.leverage(),
+                        result.resolvedAt()
+                );
+            }
+            else
+            {
+                account = account.cancelReservedBuy(result.amount());
+            }
+            this.pendingBuyResults.remove(entry.getKey());
+            changed = true;
+        }
+        if (changed)
+        {
+            this.setDirty();
+        }
+        return account;
+    }
+
+    private static boolean doesBasePositionMatch(PendingBuyOrder order, TrackedPosition currentTrackedPosition)
+    {
+        if (order.basePosition().isEmpty())
+        {
+            if (currentTrackedPosition == null)
+            {
+                return true;
+            }
+            return false;
+        }
+        if (currentTrackedPosition == null)
+        {
+            return false;
+        }
+        if (!order.basePosition().get().equals(currentTrackedPosition.position()))
+        {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -245,7 +541,19 @@ public final class StockPositionLedger extends SavedData
         return account;
     }
 
-    public record TrackedPosition(UUID playerId, String playerName, StockPosition position, long lastCheckedMinute)
+    public record TrackedPosition(UUID playerId, String playerName, StockPosition position,
+                                  long lastCheckedMinute, long tradeBlockedThroughMinute)
+    {
+    }
+
+    public record PendingBuyOrder(UUID playerId, String playerName, String stockId, double amount,
+                                  double requestedPrice, StockPositionSide side, int leverage, long activationMinute,
+                                  Optional<StockPosition> basePosition)
+    {
+    }
+
+    public record PendingBuyResult(UUID playerId, String stockId, double amount, double fillPrice,
+                                   StockPositionSide side, int leverage, boolean filled, long resolvedAt)
     {
     }
 

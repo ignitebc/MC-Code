@@ -23,7 +23,7 @@ public interface JobsPlusNetworking
         CustomPacketPayload.Type<ServerboundOpenJobsScreenPacket> SERVERBOUND_OPEN_JOBS_SCREEN = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_open_jobs_screen"));
         CustomPacketPayload.Type<ServerboundOpenPowerupsScreenPacket> SERVERBOUND_OPEN_POWERUPS_SCREEN = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_open_powerups_screen"));
         CustomPacketPayload.Type<ServerboundStockActionPacket> SERVERBOUND_STOCK_ACTION = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_stock_action"));
-        // 주식 탭 시청자를 추적한다. 미결제 포지션이 있으면 시청자가 없어도 시세 갱신은 유지된다.
+        // 주식 탭 시청자를 추적한다. 포지션이나 예약 주문이 있으면 시청자가 없어도 갱신을 유지한다.
         CustomPacketPayload.Type<ServerboundStockViewStatePacket> SERVERBOUND_STOCK_VIEW_STATE = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_stock_view_state"));
 
         CustomPacketPayload.Type<ClientboundUnlockItemRestrictionPacket> CLIENTBOUND_UNLOCK_ITEM_RESTRICTION = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_unlock_item_restriction"));

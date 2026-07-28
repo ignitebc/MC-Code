@@ -7,6 +7,7 @@ import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.stock.StockAccount;
 import com.daqem.jobsplus.player.stock.StockPosition;
 import com.daqem.jobsplus.player.stock.StockPositionLedger;
+import com.daqem.jobsplus.player.stock.StockPositionSide;
 import com.daqem.jobsplus.stock.SnapshotStatus;
 import com.daqem.jobsplus.stock.StockCatalog;
 import com.daqem.jobsplus.stock.StockMarketService;
@@ -29,8 +30,9 @@ import java.util.UUID;
 /**
  * 주식 시세 갱신과 미결제 포지션 청산을 담당한다.
  * <p>
- * 주식 탭 시청자가 있거나 중앙 원장에 미결제 포지션이 하나라도 있으면 시세 세션을 유지한다.
- * 플레이어가 로그아웃해도 포지션은 월드 저장 데이터에 남으므로 분봉 청산 검사가 계속된다.
+ * 주식 탭 시청자, 미결제 포지션 또는 예약 주문이 있으면 시세 세션을 유지한다.
+ * 플레이어가 로그아웃해도 포지션과 예약 주문은 월드 저장 데이터에 남으므로 체결과 청산 검사가
+ * 계속된다.
  */
 public final class StockMarketTicker
 {
@@ -119,6 +121,46 @@ public final class StockMarketTicker
         return StockPositionLedger.get(server).isCaughtUp(player.getUUID(), stockId, currentMinute);
     }
 
+    public static boolean hasPendingBuyOrder(ServerPlayer player, String stockId)
+    {
+        MinecraftServer server = player.level().getServer();
+        if (server == null)
+        {
+            return false;
+        }
+        return StockPositionLedger.get(server).hasPendingBuyOrder(player.getUUID(), stockId);
+    }
+
+    public static boolean queueBuyOrder(ServerPlayer player, StockAccount account, String stockId,
+                                        double amount, double requestedPrice,
+                                        StockPositionSide side, int leverage)
+    {
+        MinecraftServer server = player.level().getServer();
+        if (server == null)
+        {
+            return false;
+        }
+
+        long currentMinute = StockMarketSnapshot.currentMarketMinute();
+        StockPositionLedger ledger = StockPositionLedger.get(server);
+        ledger.syncPlayerPositions(player, account, currentMinute);
+        boolean queued = ledger.queueBuyOrder(
+                player,
+                account,
+                stockId,
+                amount,
+                requestedPrice,
+                side,
+                leverage,
+                currentMinute + 1
+        );
+        if (queued)
+        {
+            ensureMarketSession(server);
+        }
+        return queued;
+    }
+
     /**
      * 거래 패킷과 시세 확정 틱이 같은 틱에 겹친 경우에도 청산 대상 포지션을 거래하지 못하게 한다.
      */
@@ -193,10 +235,11 @@ public final class StockMarketTicker
         }
 
         StockPositionLedger ledger = StockPositionLedger.get(server);
-        StockAccount account = ledger.applyPendingLiquidations(
+        StockAccount account = ledger.applyPendingBuyResults(
                 player.getUUID(),
                 jobsServerPlayer.jobsplus$getStockAccount()
         );
+        account = ledger.applyPendingLiquidations(player.getUUID(), account);
         jobsServerPlayer.jobsplus$setStockAccount(account);
         ledger.syncPlayerPositions(
                 player,
@@ -221,7 +264,7 @@ public final class StockMarketTicker
     private static void ensureMarketSession(MinecraftServer server)
     {
         StockPositionLedger ledger = StockPositionLedger.get(server);
-        boolean sessionRequired = !ACTIVE_VIEWERS.isEmpty() || ledger.hasOpenPositions();
+        boolean sessionRequired = !ACTIVE_VIEWERS.isEmpty() || ledger.hasMarketWork();
         if (sessionRequired && !marketSessionActive)
         {
             long currentMinute = StockMarketSnapshot.currentMarketMinute();
@@ -277,6 +320,7 @@ public final class StockMarketTicker
         lastBroadcastVersion = snapshot.version();
         processCurrentQuotes(server, snapshot);
         processPriceWindows(server, marketService.getPriceWindows(), snapshot.updatedAt());
+        processPendingBuyOrders(server, snapshot, marketService.getPriceWindows());
         broadcastSnapshot(snapshot, server);
         ensureMarketSession(server);
     }
@@ -334,6 +378,132 @@ public final class StockMarketTicker
                 }
             }
             ledger.markCheckedThrough(priceWindow.stockId(), priceWindow.checkedThroughMinute());
+        }
+    }
+
+    private static void processPendingBuyOrders(MinecraftServer server, StockMarketSnapshot snapshot,
+                                                Map<String, StockPriceWindow> priceWindows)
+    {
+        if (snapshot.status() == SnapshotStatus.REFRESHING)
+        {
+            return;
+        }
+
+        StockPositionLedger ledger = StockPositionLedger.get(server);
+        for (StockPositionLedger.PendingBuyOrder order : ledger.getPendingBuyOrders())
+        {
+            if (order.activationMinute() >= snapshot.marketMinute())
+            {
+                continue;
+            }
+
+            StockPriceWindow priceWindow = priceWindows.get(order.stockId());
+            if (priceWindow == null
+                    || priceWindow.fromExclusiveMinute() >= order.activationMinute()
+                    || priceWindow.checkedThroughMinute() < order.activationMinute())
+            {
+                continue;
+            }
+
+            StockPriceWindow.StockPriceCandle entryCandle =
+                    priceWindow.getCandle(order.activationMinute());
+            double fillPrice = order.requestedPrice();
+            if (entryCandle != null)
+            {
+                fillPrice = entryCandle.openPrice();
+            }
+
+            StockPositionLedger.PendingBuyResult result = ledger.fillPendingBuyOrder(
+                    order,
+                    fillPrice,
+                    order.activationMinute(),
+                    Math.multiplyExact(order.activationMinute(), 60_000L)
+            );
+            if (result != null)
+            {
+                applyPendingBuyResultToOnlinePlayer(server, ledger, result);
+                processFilledPositionPrices(server, ledger, result, priceWindow, snapshot);
+            }
+        }
+    }
+
+    private static void processFilledPositionPrices(MinecraftServer server,
+                                                    StockPositionLedger ledger,
+                                                    StockPositionLedger.PendingBuyResult result,
+                                                    StockPriceWindow priceWindow,
+                                                    StockMarketSnapshot snapshot)
+    {
+        if (!result.filled())
+        {
+            return;
+        }
+
+        StockPositionLedger.TrackedPosition trackedPosition =
+                ledger.getTrackedPosition(result.playerId(), result.stockId());
+        if (trackedPosition == null)
+        {
+            return;
+        }
+
+        if (priceWindow.crossesLiquidationPrice(
+                trackedPosition.position(),
+                trackedPosition.lastCheckedMinute()
+        ))
+        {
+            liquidatePosition(server, ledger, trackedPosition, snapshot.updatedAt());
+            return;
+        }
+
+        StockQuote currentQuote = snapshot.getQuote(result.stockId());
+        if (currentQuote != null
+                && currentQuote.hasValidPrice()
+                && trackedPosition.position().isLiquidated(currentQuote.priceKrw()))
+        {
+            liquidatePosition(server, ledger, trackedPosition, snapshot.updatedAt());
+            return;
+        }
+        ledger.markCheckedThrough(result.stockId(), priceWindow.checkedThroughMinute());
+    }
+
+    private static void applyPendingBuyResultToOnlinePlayer(MinecraftServer server,
+                                                             StockPositionLedger ledger,
+                                                             StockPositionLedger.PendingBuyResult result)
+    {
+        ServerPlayer player = server.getPlayerList().getPlayer(result.playerId());
+        if (!(player instanceof JobsServerPlayer jobsServerPlayer))
+        {
+            return;
+        }
+
+        StockAccount account = ledger.applyPendingBuyResults(
+                result.playerId(),
+                jobsServerPlayer.jobsplus$getStockAccount()
+        );
+        jobsServerPlayer.jobsplus$setStockAccount(account);
+        ledger.syncPlayerPositions(
+                player,
+                account,
+                StockMarketSnapshot.currentMarketMinute()
+        );
+        if (isViewing(player))
+        {
+            StockScreenSync.send(jobsServerPlayer);
+        }
+
+        String stockName = StockCatalog.getStockName(result.stockId());
+        if (result.filled())
+        {
+            player.sendSystemMessage(Component.literal(
+                    "[주식] " + stockName + " " + result.side().getDisplayName() + " "
+                            + StockPosition.getLeverageDisplayName(result.leverage())
+                            + " 구매 예약의 진입 가격이 확정되었습니다."
+            ));
+        }
+        else
+        {
+            player.sendSystemMessage(Component.literal(
+                    "[주식] " + stockName + " 구매 예약이 취소되었습니다. 투자금은 계좌로 반환되었습니다."
+            ));
         }
     }
 

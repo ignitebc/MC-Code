@@ -61,43 +61,36 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
                 addTransaction("WITHDRAW", "", amount));
     }
 
-    public StockAccount buy(String stockId, double amount, double currentPrice, StockPositionSide side, int leverage)
+    public StockAccount reserveBuy(double amount)
     {
-        List<StockPosition> updatedPositions = new ArrayList<>(this.positions);
-        StockPosition oldPosition = getPosition(stockId);
-        if (oldPosition == null)
-        {
-            updatedPositions.add(new StockPosition(stockId, 0, amount, amount, currentPrice, side, leverage));
-        }
-        else
-        {
-            if (oldPosition.side() != side || oldPosition.leverage() != leverage)
-            {
-                return this;
-            }
+        return new StockAccount(this.balance - amount, this.positions, this.transactions);
+    }
 
-            double oldUnits = oldPosition.getUnits();
-            double addedUnits = amount / currentPrice;
-            double updatedCostBasis = oldPosition.costBasis() + amount;
-            double totalUnits = oldUnits + addedUnits;
-            double updatedAverageEntryPrice = 0;
-            if (totalUnits > 0)
-            {
-                updatedAverageEntryPrice = updatedCostBasis / totalUnits;
-            }
-            updatedPositions.remove(oldPosition);
-            updatedPositions.add(new StockPosition(
-                    stockId,
-                    0,
-                    updatedCostBasis,
-                    oldPosition.investedAmount() + amount,
-                    updatedAverageEntryPrice,
-                    side,
-                    leverage
-            ));
+    public StockAccount fillReservedBuy(String stockId, double amount, double currentPrice,
+                                        StockPositionSide side, int leverage, long filledAt)
+    {
+        List<StockPosition> updatedPositions = this.addInvestment(
+                stockId,
+                amount,
+                currentPrice,
+                side,
+                leverage
+        );
+        if (updatedPositions == null)
+        {
+            return this.cancelReservedBuy(amount);
         }
-        return new StockAccount(this.balance - amount, List.copyOf(updatedPositions),
-                addTransaction("BUY", stockId, amount));
+
+        return new StockAccount(
+                this.balance,
+                updatedPositions,
+                addTransaction("BUY", stockId, amount, 0, false, filledAt)
+        );
+    }
+
+    public StockAccount cancelReservedBuy(double amount)
+    {
+        return new StockAccount(this.balance + amount, this.positions, this.transactions);
     }
 
     public StockAccount sell(String stockId, double amount, double currentPrice, double feeRate)
@@ -193,6 +186,26 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
             updatedTransactions = new ArrayList<>(updatedTransactions.subList(0, 50));
         }
         return List.copyOf(updatedTransactions);
+    }
+
+    private List<StockPosition> addInvestment(String stockId, double amount, double currentPrice,
+                                              StockPositionSide side, int leverage)
+    {
+        List<StockPosition> updatedPositions = new ArrayList<>(this.positions);
+        StockPosition oldPosition = getPosition(stockId);
+        if (oldPosition == null)
+        {
+            updatedPositions.add(new StockPosition(stockId, 0, amount, amount, currentPrice, side, leverage));
+            return List.copyOf(updatedPositions);
+        }
+        if (oldPosition.side() != side || oldPosition.leverage() != leverage)
+        {
+            return null;
+        }
+
+        updatedPositions.remove(oldPosition);
+        updatedPositions.add(oldPosition.addInvestment(amount, currentPrice));
+        return List.copyOf(updatedPositions);
     }
 
     public void toNetwork(RegistryFriendlyByteBuf buffer)

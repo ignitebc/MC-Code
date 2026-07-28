@@ -106,6 +106,29 @@ public record StockPosition(String stockId, double units, double costBasis, doub
         return this.averageEntryPrice <= 0 ? 0 : this.costBasis / this.averageEntryPrice;
     }
 
+    public StockPosition addInvestment(double amount, double currentPrice)
+    {
+        double oldUnits = this.getUnits();
+        double addedUnits = amount / currentPrice;
+        double updatedCostBasis = StockDecimal.truncate(this.costBasis + amount);
+        double totalUnits = oldUnits + addedUnits;
+        double updatedAverageEntryPrice = 0;
+        if (totalUnits > 0)
+        {
+            updatedAverageEntryPrice = StockDecimal.truncate(updatedCostBasis / totalUnits);
+        }
+
+        return new StockPosition(
+                this.stockId,
+                0,
+                updatedCostBasis,
+                StockDecimal.truncate(this.investedAmount + amount),
+                updatedAverageEntryPrice,
+                this.side,
+                this.leverage
+        );
+    }
+
     public double getCurrentValue(double currentPrice)
     {
         if (this.costBasis <= 0 || this.averageEntryPrice <= 0 || !Double.isFinite(currentPrice)
