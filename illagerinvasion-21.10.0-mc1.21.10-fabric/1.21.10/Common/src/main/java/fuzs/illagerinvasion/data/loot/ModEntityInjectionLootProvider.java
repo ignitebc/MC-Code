@@ -16,6 +16,11 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWit
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
+/*
+ * 참고: Advanced Netherite의 강화 조각, 강화 원석, 랜덤상자 열쇠는 이 모듈에서 클래스를 참조할 수 없어
+ * 생성된 전리품 JSON에 직접 관리한다. 데이터 생성기를 다시 실행하면 해당 항목이 사라지므로
+ * 재실행 후에는 JSON을 다시 확인해야 한다.
+ */
 public class ModEntityInjectionLootProvider extends AbstractLootProvider.Simple {
 
     public ModEntityInjectionLootProvider(DataProviderContext context) {
@@ -39,23 +44,9 @@ public class ModEntityInjectionLootProvider extends AbstractLootProvider.Simple 
                                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 2.0F)))
                                         .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries(),
                                                 UniformGenerator.between(0.0F, 1.0F)))))
-                        .withPool(LootPool.lootPool()
-                                .setRolls(ConstantValue.exactly(1.0F))
-                                .add(LootItem.lootTableItem(ModItems.ILLUSIONARY_DUST_ITEM.value()))
-                                .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries(),
-                                        0.4F,
-                                        0.2F))
-                                .when(LootItemKilledByPlayerCondition.killedByPlayer())));
+);
         this.add(ModLootTables.PILLAGER_INJECTION,
                 LootTable.lootTable()
-                        .withPool(LootPool.lootPool()
-                                .setRolls(ConstantValue.exactly(1.0F))
-                                .add(LootItem.lootTableItem(ModItems.PLATINUM_CHUNK_ITEM.value())
-                                        .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(
-                                                this.registries(),
-                                                0.5F,
-                                                0.0625F))
-                                        .when(LootItemKilledByPlayerCondition.killedByPlayer())))
                         .withPool(LootPool.lootPool()
                                 .setRolls(ConstantValue.exactly(1.0F))
                                 .add(LootItem.lootTableItem(Items.EMERALD)
@@ -65,13 +56,6 @@ public class ModEntityInjectionLootProvider extends AbstractLootProvider.Simple 
                                         .when(LootItemKilledByPlayerCondition.killedByPlayer()))));
         this.add(ModLootTables.RAVAGER_INJECTION,
                 LootTable.lootTable()
-                        .withPool(LootPool.lootPool()
-                                .setRolls(ConstantValue.exactly(1.0F))
-                                .add(LootItem.lootTableItem(ModItems.PLATINUM_CHUNK_ITEM.value())
-                                        .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(
-                                                this.registries(),
-                                                0.5F,
-                                                0.0625F))
-                                        .when(LootItemKilledByPlayerCondition.killedByPlayer()))));
+);
     }
 }

@@ -16,6 +16,11 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCon
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
+/*
+ * 참고: Advanced Netherite의 강화 조각, 강화 원석, 랜덤상자 열쇠는 이 모듈에서 클래스를 참조할 수 없어
+ * 생성된 전리품 JSON에 직접 관리한다. 데이터 생성기를 다시 실행하면 해당 항목이 사라지므로
+ * 재실행 후에는 JSON을 다시 확인해야 한다.
+ */
 public class ModChestLootProvider extends AbstractLootProvider.Simple {
 
     public ModChestLootProvider(DataProviderContext context) {
@@ -209,10 +214,6 @@ public class ModChestLootProvider extends AbstractLootProvider.Simple {
                                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 3.0F)))))
                         .withPool(LootPool.lootPool()
                                 .setRolls(ConstantValue.exactly(1.0F))
-                                .add(LootItem.lootTableItem(ModItems.ILLUSIONARY_DUST_ITEM.value())
-                                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 3.0F)))))
-                        .withPool(LootPool.lootPool()
-                                .setRolls(ConstantValue.exactly(1.0F))
                                 .add(LootItem.lootTableItem(Items.GOLDEN_APPLE)
                                         .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1.0F)))
                                         .when(LootItemRandomChanceCondition.randomChance(0.5F))))
@@ -333,7 +334,6 @@ public class ModChestLootProvider extends AbstractLootProvider.Simple {
                                 .add(LootItem.lootTableItem(Items.COMPASS))
                                 .add(LootItem.lootTableItem(Items.MAP))
                                 .add(LootItem.lootTableItem(Items.CLOCK))
-                                .add(LootItem.lootTableItem(ModItems.LOST_CANDLE_ITEM.value()))
                                 .add(LootItem.lootTableItem(Items.PAPER)
                                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 10.0F)))
                                         .setWeight(20))
@@ -362,10 +362,6 @@ public class ModChestLootProvider extends AbstractLootProvider.Simple {
                                 .setRolls(ConstantValue.exactly(1.0F))
                                 .add(LootItem.lootTableItem(Items.DARK_OAK_SAPLING)
                                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0F, 4.0F)))))
-                        .withPool(LootPool.lootPool()
-                                .setRolls(ConstantValue.exactly(1.0F))
-                                .add(LootItem.lootTableItem(ModItems.UNUSUAL_DUST_ITEM.value())
-                                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 1.0F)))))
                         .withPool(LootPool.lootPool()
                                 .setRolls(ConstantValue.exactly(1.0F))
                                 .add(LootItem.lootTableItem(Items.EMERALD)
