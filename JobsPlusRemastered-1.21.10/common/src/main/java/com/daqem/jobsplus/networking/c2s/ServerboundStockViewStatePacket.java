@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * 주식 탭을 보고 있는지 서버에 알린다.
  * <p>
- * 시세 조회는 외부 API를 호출하므로, 아무도 보고 있지 않을 때까지 매분 돌릴 이유가 없다.
- * 서버는 이 패킷으로 실제 시청자를 추적해서 한 명이라도 있을 때만 갱신한다.
+ * 서버는 이 패킷으로 실제 시청자를 추적한다. 시청자가 없어도 미결제 포지션이 있으면
+ * 강제청산 감시를 위해 시세 갱신은 계속된다.
  */
 public class ServerboundStockViewStatePacket implements CustomPacketPayload
 {

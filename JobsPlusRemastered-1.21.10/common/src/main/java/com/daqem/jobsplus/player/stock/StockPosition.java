@@ -107,6 +107,19 @@ public record StockPosition(String stockId, double units, double costBasis, doub
         return this.getReturnRate(currentPrice) <= -100;
     }
 
+    /**
+     * 한 분 동안 기록된 저가·고가 중 청산선을 통과했는지 확인한다.
+     * 롱은 저가, 숏은 고가를 사용해야 분봉 종가가 회복된 뒤에도 청산을 회피할 수 없다.
+     */
+    public boolean isLiquidatedBetween(double lowPrice, double highPrice)
+    {
+        if (this.side == StockPositionSide.LONG)
+        {
+            return this.isLiquidated(lowPrice);
+        }
+        return this.isLiquidated(highPrice);
+    }
+
     public String getPositionName()
     {
         return this.side.getDisplayName() + " " + this.leverage + "x";

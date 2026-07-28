@@ -143,6 +143,11 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
 
     public StockAccount liquidate(String stockId)
     {
+        return this.liquidate(stockId, System.currentTimeMillis());
+    }
+
+    public StockAccount liquidate(String stockId, long liquidatedAt)
+    {
         StockPosition liquidatedPosition = getPosition(stockId);
         if (liquidatedPosition == null)
         {
@@ -154,7 +159,14 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
         return new StockAccount(
                 this.balance,
                 List.copyOf(updatedPositions),
-                addTransaction("LIQUIDATION", stockId, liquidatedPosition.investedAmount(), -100, true)
+                addTransaction(
+                        "LIQUIDATION",
+                        stockId,
+                        liquidatedPosition.investedAmount(),
+                        -100,
+                        true,
+                        liquidatedAt
+                )
         );
     }
 
@@ -166,10 +178,16 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
     private List<StockTransaction> addTransaction(String type, String stockId, double amount, double returnRate,
                                                   boolean returnRateRecorded)
     {
+        return addTransaction(type, stockId, amount, returnRate, returnRateRecorded, System.currentTimeMillis());
+    }
+
+    private List<StockTransaction> addTransaction(String type, String stockId, double amount, double returnRate,
+                                                  boolean returnRateRecorded, long timestamp)
+    {
         List<StockTransaction> updatedTransactions = new ArrayList<>(this.transactions);
         updatedTransactions.add(0,
                 new StockTransaction(type, stockId, amount, returnRate, returnRateRecorded,
-                        System.currentTimeMillis()));
+                        timestamp));
         if (updatedTransactions.size() > 50)
         {
             updatedTransactions = new ArrayList<>(updatedTransactions.subList(0, 50));

@@ -229,6 +229,10 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
             }
         }
 
+        if (packet.action == Action.BUY || packet.action == Action.SELL)
+        {
+            StockMarketTicker.onStockAccountChanged(player, account);
+        }
         jobsServerPlayer.jobsplus$setStockAccount(account);
         player.getInventory().setChanged();
         player.containerMenu.broadcastChanges();
@@ -280,17 +284,21 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
 
         if (snapshot.status() != SnapshotStatus.READY)
         {
-            String reason = snapshot.status() == SnapshotStatus.REFRESHING
-                    ? "시세를 갱신하는 중입니다.\n잠시 후 다시 시도해 주세요."
-                    : "시세를 불러오지 못했습니다.\n다음 갱신을 기다려 주세요.";
+            String reason = "시세를 불러오지 못했습니다.\n다음 갱신을 기다려 주세요.";
+            if (snapshot.status() == SnapshotStatus.REFRESHING)
+            {
+                reason = "시세를 갱신하는 중입니다.\n잠시 후 다시 시도해 주세요.";
+            }
             rejectAndResync(player, snapshot, reason);
             return null;
         }
 
         // 스냅샷에 없는 종목은 물론, 카탈로그에 없는 ID도 거절한다.
-        StockQuote quote = StockCatalog.getStock(packet.stockId) == null
-                ? null
-                : snapshot.getQuote(packet.stockId);
+        StockQuote quote = null;
+        if (StockCatalog.getStock(packet.stockId) != null)
+        {
+            quote = snapshot.getQuote(packet.stockId);
+        }
         if (quote == null)
         {
             NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket("거래할 수 없는 종목입니다."));
@@ -301,6 +309,13 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         {
             rejectAndResync(player, snapshot,
                     quote.name() + " 시세를 불러오지 못했습니다.\n다음 갱신을 기다려 주세요.");
+            return null;
+        }
+        if (!StockMarketTicker.isPositionCaughtUp(player, packet.stockId, snapshot.marketMinute()))
+        {
+            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                    "누락된 기간의 분봉 시세를 확인하는 중입니다.\n"
+                            + "청산 검사가 완료된 후 다시 거래해 주세요."));
             return null;
         }
         return quote;
