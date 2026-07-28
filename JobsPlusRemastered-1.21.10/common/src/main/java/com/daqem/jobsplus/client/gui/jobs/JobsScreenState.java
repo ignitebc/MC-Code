@@ -74,7 +74,7 @@ public class JobsScreenState {
         this.selectedHoldingStockId = null;
         this.stockPanelMode = StockPanelMode.BUY;
         this.selectedStockPositionSide = StockPositionSide.LONG;
-        this.selectedStockLeverage = StockPosition.MIN_LEVERAGE;
+        this.selectedStockLeverage = StockPosition.DEFAULT_LEVERAGE;
     }
 
     public List<Job> getJobs() {
@@ -170,10 +170,7 @@ public class JobsScreenState {
     }
 
     public void setSelectedStockLeverage(int selectedStockLeverage) {
-        this.selectedStockLeverage = Math.max(
-                StockPosition.MIN_LEVERAGE,
-                Math.min(StockPosition.MAX_LEVERAGE, selectedStockLeverage)
-        );
+        this.selectedStockLeverage = StockPosition.normalizeLeverage(selectedStockLeverage);
     }
 
     public int getActiveJobCount() {

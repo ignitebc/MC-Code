@@ -112,16 +112,19 @@ public class StockTradingComponent extends EmptyComponent
                 () -> this.state.getStockPanelMode() == StockPanelMode.BUY && !this.leverageDropdownOpen,
                 this::sendBuyAction, () -> false));
 
-        for (int leverage = StockPosition.MIN_LEVERAGE; leverage <= StockPosition.MAX_LEVERAGE; leverage++)
+        for (int optionIndex = 0; optionIndex < StockPosition.ALLOWED_LEVERAGES.size(); optionIndex++)
         {
-            int selectedLeverage = leverage;
-            int optionY = 96 + (leverage - StockPosition.MIN_LEVERAGE) * 17;
+            int selectedLeverage = StockPosition.ALLOWED_LEVERAGES.get(optionIndex);
+            int optionColumn = optionIndex % 2;
+            int optionRow = optionIndex / 2;
+            int optionX = 72 + optionColumn * 40;
+            int optionY = 96 + optionRow * 17;
             this.addStyledButton(new StyledButton(
-                    72,
+                    optionX,
                     optionY,
-                    79,
+                    39,
                     16,
-                    Component.literal(getLeverageOptionName(leverage)),
+                    Component.literal(getLeverageOptionName(selectedLeverage)),
                     () -> this.state.getStockPanelMode() == StockPanelMode.BUY && this.leverageDropdownOpen,
                     () -> this.selectLeverage(selectedLeverage),
                     () -> this.state.getSelectedStockLeverage() == selectedLeverage
@@ -181,12 +184,13 @@ public class StockTradingComponent extends EmptyComponent
         }
         this.styledButtons.forEach(StyledButton::updateVisibility);
         this.leverageButton.setMessage(Component.literal(
-                getLeverageOptionName(this.state.getSelectedStockLeverage()) + " ▼"
+                "배율 " + getLeverageOptionName(this.state.getSelectedStockLeverage()) + " ▼"
         ));
         this.buyAmountInput.visible = panelMode == StockPanelMode.BUY && !this.leverageDropdownOpen;
         this.sellAmountInput.visible = panelMode == StockPanelMode.SELL;
         this.transferAmountInput.visible = panelMode == StockPanelMode.TRANSFER;
-        this.buyHoldingsScrollWidget.visible = panelMode == StockPanelMode.BUY;
+        this.buyHoldingsScrollWidget.visible =
+                panelMode == StockPanelMode.BUY && !this.leverageDropdownOpen;
         this.sellHoldingsScrollWidget.visible = panelMode == StockPanelMode.SELL;
         this.historyScrollWidget.visible = panelMode == StockPanelMode.HISTORY;
 
@@ -467,8 +471,9 @@ public class StockTradingComponent extends EmptyComponent
         minecraft.setScreen(new ConfirmationScreen(
                 minecraft.screen,
                 new ConfirmationScreenState(
-                        Component.literal(stockName + " " + positionSide.getDisplayName() + " " + leverage
-                                + "x 포지션에 비트코인 " + amount + "개를 투자 하시겠습니까?"),
+                        Component.literal(stockName + " " + positionSide.getDisplayName() + " "
+                                + getLeverageOptionName(leverage)
+                                + " 포지션에 비트코인 " + amount + "개를 투자 하시겠습니까?"),
                         Component.literal("구매"),
                         Component.literal("취소"),
                         () -> {
@@ -498,11 +503,7 @@ public class StockTradingComponent extends EmptyComponent
 
     private static String getLeverageOptionName(int leverage)
     {
-        if (leverage == StockPosition.MIN_LEVERAGE)
-        {
-            return "일반 1x";
-        }
-        return "인버스 " + leverage + "x";
+        return StockPosition.getLeverageDisplayName(leverage);
     }
 
     /**

@@ -78,7 +78,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
 
     public ServerboundStockActionPacket(Action action, String stockId, int amount, long snapshotVersion)
     {
-        this(action, stockId, amount, snapshotVersion, StockPositionSide.LONG, StockPosition.MIN_LEVERAGE);
+        this(action, stockId, amount, snapshotVersion, StockPositionSide.LONG, StockPosition.DEFAULT_LEVERAGE);
     }
 
     public ServerboundStockActionPacket(Action action, String stockId, int amount, long snapshotVersion,
@@ -182,11 +182,10 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                 completedMessage = packet.amount + "개가 출금되었습니다.";
             }
             case BUY -> {
-                if (packet.leverage < StockPosition.MIN_LEVERAGE
-                        || packet.leverage > StockPosition.MAX_LEVERAGE)
+                if (!StockPosition.isAllowedLeverage(packet.leverage))
                 {
                     NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
-                            "지원하지 않는 주식 배율입니다."));
+                            "주식 배율은 기본, X2, X3, X5, X10, X15, X20만 선택할 수 있습니다."));
                     return;
                 }
                 StockQuote quote = resolveTradableQuote(player, packet);
@@ -223,7 +222,8 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                         packet.leverage
                 );
                 completedMessage = quote.name() + " " + packet.positionSide.getDisplayName()
-                        + " " + packet.leverage + "x 포지션을 구매했습니다.";
+                        + " " + StockPosition.getLeverageDisplayName(packet.leverage)
+                        + " 포지션을 구매했습니다.";
             }
             case SELL -> {
                 StockQuote quote = resolveTradableQuote(player, packet);

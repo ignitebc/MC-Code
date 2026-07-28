@@ -85,7 +85,8 @@ public class StockHoldingsContentComponent extends EmptyComponent
             }
             StockQuote quote = snapshot.getQuote(position.stockId());
             String name = StockCatalog.getStockName(position.stockId());
-            String positionName = position.side().getDisplayName() + position.leverage() + "x";
+            String positionName = position.side().getDisplayName() + " "
+                    + StockPosition.getLeverageDisplayName(position.leverage());
             String averagePrice = PRICE_FORMAT.format(Math.round(position.getAverageEntryPrice()));
             String investedAmount = formatAmount(position.investedAmount());
             // 시세를 못 받은 상태와 해당 종목만 실패한 상태를 구분해서 알린다.

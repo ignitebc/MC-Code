@@ -3,6 +3,8 @@ package com.daqem.jobsplus.player.stock;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import java.util.List;
+
 /**
  * 주식 보유 정보.
  * <p>
@@ -10,7 +12,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
  * - costBasis: 남아 있는 매수 원가 합계
  * - averageEntryPrice: 평균 매수 단가 (KRW)
  * - side: 가격 상승에 투자하는 롱 또는 가격 하락에 투자하는 숏
- * - leverage: 기초 종목 변동률에 적용할 배율 (1x~3x)
+ * - leverage: 기초 종목 변동률에 적용할 배율 (기본 X1, X2, X3, X5, X10, X15, X20)
  * - units: 구버전 세이브 마이그레이션 전용 필드. averageEntryPrice가 없던 시절의
  *   세이브를 읽을 때 평단가를 복원하는 데만 쓰이며, 새 데이터에서는 항상 0이다.
  * <p>
@@ -20,8 +22,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 public record StockPosition(String stockId, double units, double costBasis, double investedAmount,
                             double averageEntryPrice, StockPositionSide side, int leverage)
 {
-    public static final int MIN_LEVERAGE = 1;
-    public static final int MAX_LEVERAGE = 3;
+    public static final int DEFAULT_LEVERAGE = 1;
+    public static final List<Integer> ALLOWED_LEVERAGES = List.of(DEFAULT_LEVERAGE, 2, 3, 5, 10, 15, 20);
 
     public static final Codec<StockPosition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.fieldOf("stock_id").forGetter(StockPosition::stockId),
@@ -34,7 +36,7 @@ public record StockPosition(String stockId, double units, double costBasis, doub
             Codec.STRING.xmap(StockPositionSide::fromSerializedName, StockPositionSide::getSerializedName)
                     .optionalFieldOf("side", StockPositionSide.LONG)
                     .forGetter(StockPosition::side),
-            Codec.INT.optionalFieldOf("leverage", MIN_LEVERAGE).forGetter(StockPosition::leverage)
+            Codec.INT.optionalFieldOf("leverage", DEFAULT_LEVERAGE).forGetter(StockPosition::leverage)
     ).apply(instance, StockPosition::new));
 
     public StockPosition
@@ -51,13 +53,44 @@ public record StockPosition(String stockId, double units, double costBasis, doub
         {
             side = StockPositionSide.LONG;
         }
-        leverage = Math.max(MIN_LEVERAGE, Math.min(MAX_LEVERAGE, leverage));
+        leverage = normalizeLeverage(leverage);
     }
 
     public StockPosition(String stockId, double units, double costBasis, double investedAmount,
                          double averageEntryPrice)
     {
-        this(stockId, units, costBasis, investedAmount, averageEntryPrice, StockPositionSide.LONG, MIN_LEVERAGE);
+        this(stockId, units, costBasis, investedAmount, averageEntryPrice,
+                StockPositionSide.LONG, DEFAULT_LEVERAGE);
+    }
+
+    public static boolean isAllowedLeverage(int leverage)
+    {
+        for (int allowedLeverage : ALLOWED_LEVERAGES)
+        {
+            if (allowedLeverage == leverage)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int normalizeLeverage(int leverage)
+    {
+        if (isAllowedLeverage(leverage))
+        {
+            return leverage;
+        }
+        return DEFAULT_LEVERAGE;
+    }
+
+    public static String getLeverageDisplayName(int leverage)
+    {
+        if (leverage == DEFAULT_LEVERAGE)
+        {
+            return "기본";
+        }
+        return "X" + leverage;
     }
 
     public double getAverageEntryPrice()
@@ -122,6 +155,6 @@ public record StockPosition(String stockId, double units, double costBasis, doub
 
     public String getPositionName()
     {
-        return this.side.getDisplayName() + " " + this.leverage + "x";
+        return this.side.getDisplayName() + " " + getLeverageDisplayName(this.leverage);
     }
 }
