@@ -119,7 +119,7 @@ public class StockHistoryContentComponent extends EmptyComponent
         {
             case "DEPOSIT" -> "입금";
             case "WITHDRAW" -> "출금";
-            case "BUY" -> "구매";
+            case "BUY" -> "체결";
             case "SELL" -> "판매";
             case "LIQUIDATION" -> "청산";
             default -> type;

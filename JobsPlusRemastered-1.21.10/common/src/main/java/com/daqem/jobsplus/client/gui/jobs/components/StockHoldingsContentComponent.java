@@ -63,7 +63,7 @@ public class StockHoldingsContentComponent extends EmptyComponent
         int y = getTotalY();
         int right = x + getWidth();
         int bottom = y + getHeight();
-        drawScaledCentered(guiGraphics, "주식명", x + NAME_COLUMN_END / 2, y + 2, TEXT_COLOR);
+        drawScaledCentered(guiGraphics, "종목명", x + NAME_COLUMN_END / 2, y + 2, TEXT_COLOR);
         drawScaledCentered(guiGraphics, "포지션", x + (NAME_COLUMN_END + POSITION_COLUMN_END) / 2, y + 2,
                 TEXT_COLOR);
         drawScaledCentered(guiGraphics, "평단가", x + (POSITION_COLUMN_END + AVERAGE_PRICE_COLUMN_END) / 2,

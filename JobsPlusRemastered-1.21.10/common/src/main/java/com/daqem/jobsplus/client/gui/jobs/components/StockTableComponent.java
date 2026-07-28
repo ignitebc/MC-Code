@@ -42,7 +42,7 @@ public class StockTableComponent extends EmptyComponent
         guiGraphics.fill(right - 1, y, right, y + HEADER_HEIGHT, GRID_COLOR);
 
         StockTableRowsContentComponent.drawScaledStringCentered(
-                guiGraphics, "주식명", x + NAME_COLUMN_WIDTH / 2, y + 3, TEXT_COLOR);
+                guiGraphics, "종목명", x + NAME_COLUMN_WIDTH / 2, y + 3, TEXT_COLOR);
         StockTableRowsContentComponent.drawScaledStringCentered(
                 guiGraphics, "가격(원)", x + (NAME_COLUMN_WIDTH + PRICE_COLUMN_WIDTH) / 2, y + 3, TEXT_COLOR);
         StockTableRowsContentComponent.drawScaledStringCentered(

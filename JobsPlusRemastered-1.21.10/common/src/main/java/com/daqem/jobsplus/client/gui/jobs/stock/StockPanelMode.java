@@ -2,7 +2,7 @@ package com.daqem.jobsplus.client.gui.jobs.stock;
 
 public enum StockPanelMode
 {
-    BUY("구매"),
+    BUY("예약 구매"),
     SELL("판매"),
     TRANSFER("입출금"),
     HISTORY("거래내역");
