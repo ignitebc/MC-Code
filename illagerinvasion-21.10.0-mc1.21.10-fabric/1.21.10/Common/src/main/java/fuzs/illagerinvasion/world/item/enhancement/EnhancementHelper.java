@@ -41,10 +41,16 @@ public final class EnhancementHelper {
     public static final double ATTACK_DAMAGE_PER_LEVEL = 1.0D;
     /** 방어구 한 단계당 오르는 최대 체력. 하트 반 칸이 1이다. */
     public static final double MAX_HEALTH_PER_LEVEL = 1.0D;
-    /** 채굴 속도 보너스를 계산할 때 기준으로 삼는 효율 마법 레벨 */
-    public static final int REFERENCE_EFFICIENCY_LEVEL = 5;
-    /** 강화로 붙는 속성 수정자를 구분하는 식별자 */
+    /** 도구 한 단계당 오르는 채굴 효율 */
+    public static final double MINING_EFFICIENCY_PER_LEVEL = 0.1D;
+    /** 무기와 도구에 붙는 강화 속성 수정자 식별자 */
     public static final ResourceLocation ENHANCEMENT_MODIFIER_ID = IllagerInvasion.id("enhancement");
+    /** 방어구 부위별 강화 속성 수정자 식별자 */
+    public static final ResourceLocation HELMET_ENHANCEMENT_MODIFIER_ID = IllagerInvasion.id("enhancement_helmet");
+    public static final ResourceLocation CHESTPLATE_ENHANCEMENT_MODIFIER_ID = IllagerInvasion.id(
+            "enhancement_chestplate");
+    public static final ResourceLocation LEGGINGS_ENHANCEMENT_MODIFIER_ID = IllagerInvasion.id("enhancement_leggings");
+    public static final ResourceLocation BOOTS_ENHANCEMENT_MODIFIER_ID = IllagerInvasion.id("enhancement_boots");
     /** 강화 대상 장비를 데이터로 조정할 수 있도록 태그로 관리한다. */
     public static final TagKey<Item> ENHANCEABLE_EQUIPMENT = TagKey.create(Registries.ITEM,
             IllagerInvasion.id("enhanceable_equipment"));
@@ -97,7 +103,7 @@ public final class EnhancementHelper {
 
         ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
         for (ItemAttributeModifiers.Entry entry : current.modifiers()) {
-            if (!ENHANCEMENT_MODIFIER_ID.equals(entry.modifier().id())) {
+            if (!isEnhancementModifier(entry.modifier().id())) {
                 builder.add(entry.attribute(), entry.modifier(), entry.slot());
             }
         }
@@ -105,6 +111,7 @@ public final class EnhancementHelper {
         if (enhancementLevel > 0) {
             Holder<Attribute> attribute = null;
             EquipmentSlotGroup slotGroup = null;
+            ResourceLocation modifierId = ENHANCEMENT_MODIFIER_ID;
             double amount = 0.0D;
 
             if (itemStack.is(ItemTags.SWORDS)) {
@@ -117,13 +124,14 @@ public final class EnhancementHelper {
                 amount = getMiningEfficiencyBonus(enhancementLevel);
             } else if (isEnhanceableArmor(itemStack)) {
                 attribute = Attributes.MAX_HEALTH;
-                slotGroup = EquipmentSlotGroup.ARMOR;
+                slotGroup = getArmorSlotGroup(itemStack);
+                modifierId = getArmorModifierId(itemStack);
                 amount = MAX_HEALTH_PER_LEVEL * enhancementLevel;
             }
 
             if (attribute != null) {
                 builder.add(attribute,
-                        new AttributeModifier(ENHANCEMENT_MODIFIER_ID, amount, AttributeModifier.Operation.ADD_VALUE),
+                        new AttributeModifier(modifierId, amount, AttributeModifier.Operation.ADD_VALUE),
                         slotGroup);
             }
         }
@@ -141,14 +149,42 @@ public final class EnhancementHelper {
                 || itemStack.is(ItemTags.LEG_ARMOR) || itemStack.is(ItemTags.FOOT_ARMOR);
     }
 
-    /**
-     * 효율 마법은 채굴 속도에 {@code 레벨 제곱 + 1}을 더한다. 강화 단계만큼 효율 레벨이 오른 것과
-     * 같은 속도가 되도록, 효율 V 도구를 기준으로 늘어나는 차이만큼을 준다.
-     */
     public static double getMiningEfficiencyBonus(int enhancementLevel) {
-        int base = REFERENCE_EFFICIENCY_LEVEL;
-        int enhanced = base + enhancementLevel;
-        return (double) (enhanced * enhanced - base * base);
+        return MINING_EFFICIENCY_PER_LEVEL * enhancementLevel;
+    }
+
+    private static boolean isEnhancementModifier(ResourceLocation modifierId) {
+        return ENHANCEMENT_MODIFIER_ID.equals(modifierId)
+                || HELMET_ENHANCEMENT_MODIFIER_ID.equals(modifierId)
+                || CHESTPLATE_ENHANCEMENT_MODIFIER_ID.equals(modifierId)
+                || LEGGINGS_ENHANCEMENT_MODIFIER_ID.equals(modifierId)
+                || BOOTS_ENHANCEMENT_MODIFIER_ID.equals(modifierId);
+    }
+
+    private static EquipmentSlotGroup getArmorSlotGroup(ItemStack itemStack) {
+        if (itemStack.is(ItemTags.HEAD_ARMOR)) {
+            return EquipmentSlotGroup.HEAD;
+        }
+        if (itemStack.is(ItemTags.CHEST_ARMOR)) {
+            return EquipmentSlotGroup.CHEST;
+        }
+        if (itemStack.is(ItemTags.LEG_ARMOR)) {
+            return EquipmentSlotGroup.LEGS;
+        }
+        return EquipmentSlotGroup.FEET;
+    }
+
+    private static ResourceLocation getArmorModifierId(ItemStack itemStack) {
+        if (itemStack.is(ItemTags.HEAD_ARMOR)) {
+            return HELMET_ENHANCEMENT_MODIFIER_ID;
+        }
+        if (itemStack.is(ItemTags.CHEST_ARMOR)) {
+            return CHESTPLATE_ENHANCEMENT_MODIFIER_ID;
+        }
+        if (itemStack.is(ItemTags.LEG_ARMOR)) {
+            return LEGGINGS_ENHANCEMENT_MODIFIER_ID;
+        }
+        return BOOTS_ENHANCEMENT_MODIFIER_ID;
     }
 
     public static boolean isEnhanceableEquipment(ItemStack itemStack) {
