@@ -33,6 +33,9 @@ import java.util.Optional;
 
 public class ServerboundStockActionPacket implements CustomPacketPayload
 {
+    public static final int MAX_TRANSFER_AMOUNT = 1_000;
+    public static final int MAX_TRADE_AMOUNT = 1_000;
+
     private static final ResourceLocation BITCOIN_ID = ResourceLocation.parse("advancednetherite:bitcoin");
     private static final double SELL_FEE_RATE = 0.00015D;
     private static final double WITHDRAW_TAX_RATE = 0.002D;
@@ -111,12 +114,27 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         {
             return;
         }
+        ServerPlayer player = jobsServerPlayer.jobsplus$getServerPlayer();
         if (packet.amount <= 0)
         {
             return;
         }
+        if (!StockTransactionRateLimiter.tryAcquire(player))
+        {
+            return;
+        }
+        if (packet.amount > getMaximumAmount(packet.action))
+        {
+            String amountType = "매수·매도";
+            if (isTransferAction(packet.action))
+            {
+                amountType = "입출금";
+            }
+            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                    "단일 " + amountType + " 수량은 최대 1,000개입니다."));
+            return;
+        }
 
-        ServerPlayer player = jobsServerPlayer.jobsplus$getServerPlayer();
         StockAccount account = jobsServerPlayer.jobsplus$getStockAccount();
         Optional<Holder.Reference<Item>> bitcoinHolder = BuiltInRegistries.ITEM.get(BITCOIN_ID);
         if (bitcoinHolder.isEmpty())
@@ -330,6 +348,20 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
     private static boolean isValidTransferAmount(int amount)
     {
         return amount >= 10 && amount % 10 == 0;
+    }
+
+    private static int getMaximumAmount(Action action)
+    {
+        if (isTransferAction(action))
+        {
+            return MAX_TRANSFER_AMOUNT;
+        }
+        return MAX_TRADE_AMOUNT;
+    }
+
+    private static boolean isTransferAction(Action action)
+    {
+        return action == Action.DEPOSIT || action == Action.WITHDRAW;
     }
 
     private static int countItem(Inventory inventory, Item item)

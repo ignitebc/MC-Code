@@ -232,7 +232,7 @@ public class StockTradingComponent extends EmptyComponent
         if (panelMode == StockPanelMode.TRANSFER)
         {
             drawBox(guiGraphics, x + 5, y + 82, CONTENT_WIDTH, 34);
-            drawCentered(guiGraphics, "입출금 수량 (10개 단위)", x + getWidth() / 2, y + 85);
+            drawCentered(guiGraphics, "입출금 수량 (10개 단위·최대 1,000)", x + getWidth() / 2, y + 85);
             return;
         }
 
@@ -246,7 +246,7 @@ public class StockTradingComponent extends EmptyComponent
             drawCenteredScaled(guiGraphics, currentPrice, x + getWidth() / 2, y + 119);
             drawBox(guiGraphics, x + 5, y + 134, CONTENT_WIDTH, 34);
             // 입력값은 평가금액이 아니라 처분할 투자원금이다.
-            drawCentered(guiGraphics, "판매할 투자원금 (비트코인 1개 단위)", x + getWidth() / 2, y + 137);
+            drawCentered(guiGraphics, "판매할 투자원금 (1개 단위·최대 1,000)", x + getWidth() / 2, y + 137);
             return;
         }
 
@@ -254,7 +254,7 @@ public class StockTradingComponent extends EmptyComponent
         drawCenteredScaled(guiGraphics, "선택 종목: " + selectedName, x + getWidth() / 2, y + 56);
         drawCenteredScaled(guiGraphics, currentPrice, x + getWidth() / 2, y + 66);
         drawBox(guiGraphics, x + 5, y + 98, CONTENT_WIDTH, 34);
-        drawCentered(guiGraphics, "투자할 금액 (비트코인 1개 단위)", x + getWidth() / 2, y + 101);
+        drawCentered(guiGraphics, "투자할 금액 (1개 단위·최대 1,000)", x + getWidth() / 2, y + 101);
         drawBox(guiGraphics, x + 5, y + 135, CONTENT_WIDTH, 33);
     }
 
@@ -338,7 +338,7 @@ public class StockTradingComponent extends EmptyComponent
 
         try
         {
-            return Long.parseLong(value) <= Integer.MAX_VALUE;
+            return Long.parseLong(value) <= ServerboundStockActionPacket.MAX_TRADE_AMOUNT;
         }
         catch (NumberFormatException ignored)
         {
@@ -363,7 +363,7 @@ public class StockTradingComponent extends EmptyComponent
     {
         int amount = getAmount(amountInput);
         long changedAmount = (long) amount + delta;
-        changedAmount = Math.max(0, Math.min(Integer.MAX_VALUE, changedAmount));
+        changedAmount = Math.max(0, Math.min(ServerboundStockActionPacket.MAX_TRADE_AMOUNT, changedAmount));
         amountInput.setValue(Long.toString(changedAmount));
     }
 
