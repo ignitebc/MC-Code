@@ -29,8 +29,13 @@ public class ModLootTables {
             "chests/labyrinth");
     public static final ResourceKey<LootTable> LABYRINTH_MAP = ModRegistry.REGISTRIES.makeResourceKey(Registries.LOOT_TABLE,
             "chests/labyrinth_map");
+    /** 미궁 곳곳에 흩어진 잡템 상자. 빈 상자가 생기지 않도록 최소한의 보상을 담는다. */
+    public static final ResourceKey<LootTable> LABYRINTH_COMMON = ModRegistry.REGISTRIES.makeResourceKey(Registries.LOOT_TABLE,
+            "chests/labyrinth_common");
     public static final ResourceKey<LootTable> SORCERER_HUT = ModRegistry.REGISTRIES.makeResourceKey(Registries.LOOT_TABLE,
             "chests/sorcerer_hut");
+    public static final ResourceKey<LootTable> FIRECALLER_HUT = ModRegistry.REGISTRIES.makeResourceKey(Registries.LOOT_TABLE,
+            "chests/firecaller_hut");
     public static final ResourceKey<LootTable> ILLUSIONER_INJECTION = registerLootTableInjection(EntityType.ILLUSIONER.getDefaultLootTable()
             .orElseThrow());
     public static final ResourceKey<LootTable> PILLAGER_INJECTION = registerLootTableInjection(EntityType.PILLAGER.getDefaultLootTable()
