@@ -1,0 +1,41 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "advancednetherite:netherite_diamond_sword",
+      "required": false
+    },
+    {
+      "id": "advancednetherite:netherite_diamond_axe",
+      "required": false
+    },
+    {
+      "id": "advancednetherite:netherite_diamond_pickaxe",
+      "required": false
+    },
+    {
+      "id": "advancednetherite:netherite_diamond_shovel",
+      "required": false
+    },
+    {
+      "id": "advancednetherite:netherite_diamond_hoe",
+      "required": false
+    },
+    {
+      "id": "advancednetherite:netherite_diamond_helmet",
+      "required": false
+    },
+    {
+      "id": "advancednetherite:netherite_diamond_chestplate",
+      "required": false
+    },
+    {
+      "id": "advancednetherite:netherite_diamond_leggings",
+      "required": false
+    },
+    {
+      "id": "advancednetherite:netherite_diamond_boots",
+      "required": false
+    }
+  ]
+}

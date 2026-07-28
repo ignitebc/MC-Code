@@ -19,13 +19,19 @@ public class ModLanguageProvider extends AbstractLanguageProvider {
     @Override
     public void addTranslations(TranslationBuilder builder) {
         builder.addCreativeModeTab(ModRegistry.CREATIVE_MODE_TAB, "일리저 침공");
-        builder.add(ImbuingTableBlock.CONTAINER_IMBUE, "주입");
-        builder.add(ImbuingMenu.ImbuingState.ENCHANTED_BOOK_MISSING.getComponent(), "%s(이)가 없습니다!");
-        builder.add(ImbuingMenu.ImbuingState.HALLOWED_GEM_MISSING.getComponent(), "%s(이)가 없습니다!");
-        builder.add(ImbuingMenu.ImbuingState.TOO_MANY_ENCHANTMENTS.getComponent(), "책에 마법이 너무 많습니다!");
-        builder.add(ImbuingMenu.ImbuingState.INVALID_ENCHANTMENT.getComponent(), "책의 마법은 주입할 수 없습니다!");
-        builder.add(ImbuingMenu.ImbuingState.ENCHANTMENTS_NOT_MATCHING.getComponent(), "마법이 일치하지 않습니다!");
-        builder.add(ImbuingMenu.ImbuingState.LEVELS_NOT_EQUAL.getComponent(), "마법 레벨이 동일하지 않습니다!");
+        builder.add(ImbuingTableBlock.CONTAINER_IMBUE, "장비 강화");
+        builder.add("container.imbue.enhance", "강화하기");
+        builder.add("container.imbue.successChance", "성공률 : %s%%");
+        builder.add("container.imbue.destroyChance", "파괴확률 : %s%%");
+        builder.add("container.imbue.slot.equipment", "장비");
+        builder.add("container.imbue.slot.enhancementGem", "원석");
+        builder.add("container.imbue.slot.successScroll", "확률권");
+        builder.add("container.imbue.slot.protectionScroll", "방지권");
+        builder.add(ImbuingMenu.EnhanceState.EQUIPMENT_MISSING.getComponent(), "강화할 장비를 넣어 주세요.");
+        builder.add(ImbuingMenu.EnhanceState.EQUIPMENT_NOT_SUPPORTED.getComponent(),
+                "네더라이트-다이아 장비만 강화할 수 있습니다.");
+        builder.add(ImbuingMenu.EnhanceState.ENHANCEMENT_GEM_MISSING.getComponent(), "강화 원석이 필요합니다.");
+        builder.add(ImbuingMenu.EnhanceState.MAX_LEVEL_REACHED.getComponent(), "이미 최대 강화 단계입니다.");
         builder.add(ModItems.LOST_CANDLE_ITEM.value().getDescriptionId() + ".foundNearby", "근처에서 %s 발견");
         builder.add(ResourceKeyHelper.getTranslationKey(ModRegistry.REVEAL_INSTRUMENT), "탐지");
         builder.add(ResourceKeyHelper.getTranslationKey(ModRegistry.PLATINUM_TRIM_MATERIAL), "백금 재료");

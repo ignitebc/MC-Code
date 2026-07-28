@@ -3,72 +3,80 @@ package fuzs.illagerinvasion.client.gui.screens.inventory;
 import fuzs.illagerinvasion.IllagerInvasion;
 import fuzs.illagerinvasion.world.inventory.ImbuingMenu;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.CyclingSlotBackground;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-import java.util.List;
-
 public class ImbuingScreen extends AbstractContainerScreen<ImbuingMenu> {
+
     private static final ResourceLocation TEXTURE_LOCATION = IllagerInvasion.id(
             "textures/gui/container/imbuing_table.png");
-    private static final ResourceLocation EMPTY_SLOT_HELMET = ResourceLocation.withDefaultNamespace(
-            "container/slot/helmet");
-    private static final ResourceLocation EMPTY_SLOT_CHESTPLATE = ResourceLocation.withDefaultNamespace(
-            "container/slot/chestplate");
-    private static final ResourceLocation EMPTY_SLOT_LEGGINGS = ResourceLocation.withDefaultNamespace(
-            "container/slot/leggings");
-    private static final ResourceLocation EMPTY_SLOT_BOOTS = ResourceLocation.withDefaultNamespace(
-            "container/slot/boots");
-    private static final ResourceLocation EMPTY_SLOT_HOE = ResourceLocation.withDefaultNamespace("container/slot/hoe");
-    private static final ResourceLocation EMPTY_SLOT_AXE = ResourceLocation.withDefaultNamespace("container/slot/axe");
-    private static final ResourceLocation EMPTY_SLOT_SWORD = ResourceLocation.withDefaultNamespace(
-            "container/slot/sword");
-    private static final ResourceLocation EMPTY_SLOT_SHOVEL = ResourceLocation.withDefaultNamespace(
-            "container/slot/shovel");
-    private static final ResourceLocation EMPTY_SLOT_PICKAXE = ResourceLocation.withDefaultNamespace(
-            "container/slot/pickaxe");
-    private static final ResourceLocation EMPTY_SLOT_BOOK = IllagerInvasion.id("container/slot/book");
-    private static final ResourceLocation EMPTY_SLOT_GEM = IllagerInvasion.id("container/slot/ruby");
-    private static final List<ResourceLocation> EMPTY_SLOT_BOOK_ICONS = List.of(EMPTY_SLOT_BOOK);
-    private static final List<ResourceLocation> EMPTY_SLOT_TOOL_ICONS = List.of(EMPTY_SLOT_HELMET,
-            EMPTY_SLOT_CHESTPLATE,
-            EMPTY_SLOT_LEGGINGS,
-            EMPTY_SLOT_BOOTS,
-            EMPTY_SLOT_HOE,
-            EMPTY_SLOT_AXE,
-            EMPTY_SLOT_SWORD,
-            EMPTY_SLOT_SHOVEL,
-            EMPTY_SLOT_PICKAXE);
-    private static final List<ResourceLocation> EMPTY_SLOT_GEM_ICONS = List.of(EMPTY_SLOT_GEM);
 
-    private final CyclingSlotBackground bookIcon = new CyclingSlotBackground(0);
-    private final CyclingSlotBackground toolIcon = new CyclingSlotBackground(1);
-    private final CyclingSlotBackground gemIcon = new CyclingSlotBackground(2);
+    private static final int CHANCE_TEXT_Y = 20;
+    private static final int SLOT_LABEL_Y = 30;
+    private static final int SEPARATOR_Y = 42;
+    private static final int BUTTON_X = 52;
+    private static final int BUTTON_Y = 62;
+    private static final int BUTTON_WIDTH = 72;
+    private static final int BUTTON_HEIGHT = 18;
+    private static final int LABEL_COLOR = 0xFF404040;
+    private static final int SUCCESS_COLOR = 0xFF1B7A2F;
+    private static final int DESTROY_COLOR = 0xFFB22222;
 
-    public ImbuingScreen(ImbuingMenu handler, Inventory inventory, Component title) {
-        super(handler, inventory, title);
+    /** 네 슬롯의 가로 중심 좌표 */
+    private static final int[] SLOT_CENTER_X = {34, 70, 106, 142};
+    private static final String[] SLOT_LABEL_KEYS = {"container.imbue.slot.equipment",
+            "container.imbue.slot.enhancementGem",
+            "container.imbue.slot.successScroll",
+            "container.imbue.slot.protectionScroll"};
+    /** 필수 재료는 +로, 선택 재료는 /로 구분한다. */
+    private static final int[] SEPARATOR_X = {52, 88, 124};
+    private static final String[] SEPARATOR_TEXT = {"+", "/", "/"};
+
+    private Button enhanceButton;
+
+    public ImbuingScreen(ImbuingMenu menu, Inventory inventory, Component title) {
+        super(menu, inventory, title);
+        this.imageWidth = 176;
+        this.imageHeight = 186;
+        this.inventoryLabelY = 91;
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        this.enhanceButton = Button.builder(Component.translatable("container.imbue.enhance"),
+                        (Button button) -> this.onEnhanceButtonPressed())
+                .bounds(this.leftPos + BUTTON_X, this.topPos + BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT)
+                .build();
+        this.addRenderableWidget(this.enhanceButton);
+    }
+
+    private void onEnhanceButtonPressed() {
+        if (this.minecraft == null || this.minecraft.gameMode == null) {
+            return;
+        }
+        this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, ImbuingMenu.ENHANCE_BUTTON_ID);
     }
 
     @Override
     protected void containerTick() {
         super.containerTick();
-        this.bookIcon.tick(EMPTY_SLOT_BOOK_ICONS);
-        this.toolIcon.tick(EMPTY_SLOT_TOOL_ICONS);
-        this.gemIcon.tick(EMPTY_SLOT_GEM_ICONS);
+        this.enhanceButton.active = this.menu.getEnhanceState().canEnhance();
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        super.render(guiGraphics, mouseX, mouseY, delta);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
-        if (this.menu.getImbuingState().showTooltip()) {
-            if (this.isHovering(74, 32, 28, 20, mouseX, mouseY)) {
-                guiGraphics.setTooltipForNextFrame(this.menu.getImbuingState().getComponent(), mouseX, mouseY);
-            }
+
+        ImbuingMenu.EnhanceState state = this.menu.getEnhanceState();
+        boolean hoveringButton = this.enhanceButton.isMouseOver(mouseX, mouseY);
+        if (!state.canEnhance() && hoveringButton) {
+            guiGraphics.setTooltipForNextFrame(state.getComponent(), mouseX, mouseY);
         }
     }
 
@@ -84,20 +92,45 @@ public class ImbuingScreen extends AbstractContainerScreen<ImbuingMenu> {
                 this.imageHeight,
                 256,
                 256);
-        this.bookIcon.render(this.menu, guiGraphics, partialTick, this.leftPos, this.topPos);
-        this.toolIcon.render(this.menu, guiGraphics, partialTick, this.leftPos, this.topPos);
-        this.gemIcon.render(this.menu, guiGraphics, partialTick, this.leftPos, this.topPos);
-        if (this.menu.getImbuingState().showTooltip()) {
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED,
-                    TEXTURE_LOCATION,
-                    this.leftPos + 74,
-                    this.topPos + 32,
-                    176,
-                    0,
-                    28,
-                    20,
-                    256,
-                    256);
+        for (int index = 0; index < SEPARATOR_X.length; ++index) {
+            this.drawCentered(guiGraphics,
+                    Component.literal(SEPARATOR_TEXT[index]),
+                    SEPARATOR_X[index],
+                    SEPARATOR_Y,
+                    LABEL_COLOR);
         }
+        for (int index = 0; index < SLOT_CENTER_X.length; ++index) {
+            this.drawCentered(guiGraphics,
+                    Component.translatable(SLOT_LABEL_KEYS[index]),
+                    SLOT_CENTER_X[index],
+                    SLOT_LABEL_Y,
+                    LABEL_COLOR);
+        }
+    }
+
+    @Override
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        super.renderLabels(guiGraphics, mouseX, mouseY);
+
+        Component successText = Component.translatable("container.imbue.successChance", this.menu.getSuccessChance());
+        Component destroyText = Component.translatable("container.imbue.destroyChance", this.menu.getDestroyChance());
+        Component separator = Component.literal(" , ");
+
+        int totalWidth = this.font.width(successText) + this.font.width(separator) + this.font.width(destroyText);
+        int textX = (this.imageWidth - totalWidth) / 2;
+
+        guiGraphics.drawString(this.font, successText, textX, CHANCE_TEXT_Y, SUCCESS_COLOR, false);
+        textX += this.font.width(successText);
+        guiGraphics.drawString(this.font, separator, textX, CHANCE_TEXT_Y, LABEL_COLOR, false);
+        textX += this.font.width(separator);
+        guiGraphics.drawString(this.font, destroyText, textX, CHANCE_TEXT_Y, DESTROY_COLOR, false);
+    }
+
+    /**
+     * renderBg는 화면 원점을 기준으로 그리므로 GUI 좌상단 좌표를 더해 준다.
+     */
+    private void drawCentered(GuiGraphics guiGraphics, Component text, int centerX, int y, int color) {
+        int textX = this.leftPos + centerX - this.font.width(text) / 2;
+        guiGraphics.drawString(this.font, text, textX, this.topPos + y, color, false);
     }
 }
