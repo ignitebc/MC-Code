@@ -2,8 +2,11 @@ package fuzs.illagerinvasion.client.gui.screens.inventory;
 
 import fuzs.illagerinvasion.IllagerInvasion;
 import fuzs.illagerinvasion.world.inventory.ImbuingMenu;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.AlertScreen;
+import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -37,6 +40,7 @@ public class ImbuingScreen extends AbstractContainerScreen<ImbuingMenu> {
     private static final String[] SEPARATOR_TEXT = {"+", "/", "/"};
 
     private Button enhanceButton;
+    private int handledEnhanceResultSequence;
 
     public ImbuingScreen(ImbuingMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -56,9 +60,26 @@ public class ImbuingScreen extends AbstractContainerScreen<ImbuingMenu> {
     }
 
     private void onEnhanceButtonPressed() {
-        if (this.minecraft == null || this.minecraft.gameMode == null) {
+        if (this.minecraft == null) {
             return;
         }
+        this.minecraft.setScreen(new ConfirmScreen(this::onEnhanceConfirmation,
+                Component.translatable("container.imbue.confirm.title"),
+                Component.translatable("container.imbue.confirm.message"),
+                Component.translatable("container.imbue.confirm.enhance"),
+                Component.translatable("container.imbue.confirm.no")));
+    }
+
+    private void onEnhanceConfirmation(boolean confirmed) {
+        if (this.minecraft == null) {
+            return;
+        }
+
+        this.minecraft.setScreen(this);
+        if (!confirmed || this.minecraft.gameMode == null) {
+            return;
+        }
+
         this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, ImbuingMenu.ENHANCE_BUTTON_ID);
     }
 
@@ -66,6 +87,42 @@ public class ImbuingScreen extends AbstractContainerScreen<ImbuingMenu> {
     protected void containerTick() {
         super.containerTick();
         this.enhanceButton.active = this.menu.getEnhanceState().canEnhance();
+        this.showEnhanceResult();
+    }
+
+    private void showEnhanceResult() {
+        int resultSequence = this.menu.getEnhanceResultSequence();
+        if (resultSequence == this.handledEnhanceResultSequence) {
+            return;
+        }
+
+        this.handledEnhanceResultSequence = resultSequence;
+        Component resultMessage = this.createEnhanceResultMessage();
+        if (resultMessage == null || this.minecraft == null) {
+            return;
+        }
+
+        this.minecraft.setScreen(new AlertScreen(() -> this.minecraft.setScreen(this),
+                Component.translatable("container.imbue.result.title"),
+                resultMessage,
+                Component.translatable("container.imbue.result.confirm"),
+                false));
+    }
+
+    private Component createEnhanceResultMessage() {
+        ImbuingMenu.EnhanceResult result = this.menu.getEnhanceResult();
+        int enhancementLevel = this.menu.getEnhanceResultLevel();
+
+        if (result == ImbuingMenu.EnhanceResult.SUCCESS) {
+            return Component.translatable("container.imbue.result.success", enhancementLevel);
+        }
+        if (result == ImbuingMenu.EnhanceResult.FAILURE) {
+            return Component.translatable("container.imbue.result.failure", enhancementLevel);
+        }
+        if (result == ImbuingMenu.EnhanceResult.DESTROYED) {
+            return Component.translatable("container.imbue.result.destroyed").withStyle(ChatFormatting.RED);
+        }
+        return null;
     }
 
     @Override

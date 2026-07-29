@@ -6,6 +6,7 @@
   "mixins": [
     "IllusionerMixin",
     "ItemEntityMixin",
+    "ItemStackMixin",
     "PatrolSpawnerMixin",
     "WoodlandMansionPieceMixin"
   ],

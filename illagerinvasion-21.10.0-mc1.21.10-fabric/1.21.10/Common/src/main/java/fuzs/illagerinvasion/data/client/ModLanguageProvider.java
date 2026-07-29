@@ -21,6 +21,18 @@ public class ModLanguageProvider extends AbstractLanguageProvider {
         builder.addCreativeModeTab(ModRegistry.CREATIVE_MODE_TAB, "일리저 침공");
         builder.add(ImbuingTableBlock.CONTAINER_IMBUE, "장비 강화");
         builder.add("container.imbue.enhance", "강화하기");
+        builder.add("container.imbue.confirm.title", "장비 강화");
+        builder.add("container.imbue.confirm.message", "정말 강화하시겠습니까?");
+        builder.add("container.imbue.confirm.enhance", "강화");
+        builder.add("container.imbue.confirm.no", "아니오");
+        builder.add("container.imbue.broadcast.success", "%s님의 %s가 강화에 성공하여 +%s강이 되었습니다.");
+        builder.add("container.imbue.broadcast.failure", "%s님의 %s가 강화에 실패하여 +%s강이 되었습니다.");
+        builder.add("container.imbue.broadcast.destroyed", "%s님의 %s가 강화에 실패하여 파괴되었습니다!!!");
+        builder.add("container.imbue.result.title", "강화 결과");
+        builder.add("container.imbue.result.success", "강화를 성공하여 +%s강이 되었습니다.");
+        builder.add("container.imbue.result.failure", "강화가 실패하여 +%s강이 되었습니다.");
+        builder.add("container.imbue.result.destroyed", "강화가 실패하여 아이템이 파괴되었습니다.");
+        builder.add("container.imbue.result.confirm", "확인");
         builder.add("container.imbue.successChance", "성공률 : %s%%");
         builder.add("container.imbue.destroyChance", "파괴확률 : %s%%");
         builder.add("container.imbue.slot.equipment", "장비");

@@ -4,9 +4,11 @@ import fuzs.illagerinvasion.init.ModRegistry;
 import fuzs.illagerinvasion.init.ModSoundEvents;
 import fuzs.illagerinvasion.world.item.enhancement.EnhancementHelper;
 import fuzs.puzzleslib.api.container.v1.QuickMoveRuleSet;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -38,6 +40,9 @@ public class ImbuingMenu extends AbstractContainerMenu {
     private final DataSlot successChance = DataSlot.standalone();
     private final DataSlot destroyChance = DataSlot.standalone();
     private final DataSlot enhanceState = DataSlot.standalone();
+    private final DataSlot enhanceResult = DataSlot.standalone();
+    private final DataSlot enhanceResultLevel = DataSlot.standalone();
+    private final DataSlot enhanceResultSequence = DataSlot.standalone();
 
     public ImbuingMenu(int containerId, Inventory inventory) {
         this(containerId, inventory, ContainerLevelAccess.NULL);
@@ -49,6 +54,9 @@ public class ImbuingMenu extends AbstractContainerMenu {
         this.addDataSlot(this.successChance);
         this.addDataSlot(this.destroyChance);
         this.addDataSlot(this.enhanceState);
+        this.addDataSlot(this.enhanceResult);
+        this.addDataSlot(this.enhanceResultLevel);
+        this.addDataSlot(this.enhanceResultSequence);
         this.input = new SimpleContainer(INPUT_SLOT_COUNT) {
 
             @Override
@@ -173,6 +181,7 @@ public class ImbuingMenu extends AbstractContainerMenu {
         ItemStack equipment = this.input.getItem(EQUIPMENT_SLOT);
         ItemStack successScroll = this.input.getItem(SUCCESS_SCROLL_SLOT);
         ItemStack protectionScroll = this.input.getItem(PROTECTION_SCROLL_SLOT);
+        Component equipmentName = this.getEquipmentName(equipment);
 
         int currentLevel = EnhancementHelper.getEnhancementLevel(equipment);
         int attemptLevel = currentLevel + 1;
@@ -190,21 +199,75 @@ public class ImbuingMenu extends AbstractContainerMenu {
         if (roll < successChance) {
             EnhancementHelper.setEnhancementLevel(equipment, attemptLevel);
             this.input.setItem(EQUIPMENT_SLOT, equipment);
+            this.setEnhanceResult(EnhanceResult.SUCCESS, attemptLevel);
+            this.broadcastEnhanceResult(player, level, equipmentName, EnhanceResult.SUCCESS, attemptLevel);
             player.playSound(ModSoundEvents.SORCERER_COMPLETE_CAST_SOUND_EVENT.value(), 1.0f, 1.0f);
         } else if (roll < successChance + destroyChance && !protectionPresent) {
             this.input.setItem(EQUIPMENT_SLOT, ItemStack.EMPTY);
+            this.setEnhanceResult(EnhanceResult.DESTROYED, 0);
+            this.broadcastEnhanceResult(player, level, equipmentName, EnhanceResult.DESTROYED, 0);
             player.playSound(SoundEvents.ITEM_BREAK.value(), 1.0f, 1.0f);
         } else {
             if (roll < successChance + destroyChance) {
                 this.input.removeItem(PROTECTION_SCROLL_SLOT, 1);
             }
-            EnhancementHelper.setEnhancementLevel(equipment, Math.max(0, currentLevel - 1));
+            int failedLevel = Math.max(0, currentLevel - 1);
+            EnhancementHelper.setEnhancementLevel(equipment, failedLevel);
             this.input.setItem(EQUIPMENT_SLOT, equipment);
+            this.setEnhanceResult(EnhanceResult.FAILURE, failedLevel);
+            this.broadcastEnhanceResult(player, level, equipmentName, EnhanceResult.FAILURE, failedLevel);
             player.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0f, 1.0f);
         }
 
         this.updateEnhanceInfo();
         this.broadcastChanges();
+    }
+
+    private Component getEquipmentName(ItemStack equipment) {
+        Component customName = equipment.getCustomName();
+        if (customName != null) {
+            return customName;
+        }
+        return equipment.getItemName();
+    }
+
+    private void broadcastEnhanceResult(Player player,
+                                        Level level,
+                                        Component equipmentName,
+                                        EnhanceResult result,
+                                        int enhancementLevel) {
+        MinecraftServer server = level.getServer();
+        if (server == null) {
+            return;
+        }
+
+        Component message;
+        if (result == EnhanceResult.SUCCESS) {
+            message = Component.translatable("container.imbue.broadcast.success",
+                    player.getDisplayName(),
+                    equipmentName,
+                    enhancementLevel);
+        } else if (result == EnhanceResult.FAILURE) {
+            message = Component.translatable("container.imbue.broadcast.failure",
+                    player.getDisplayName(),
+                    equipmentName,
+                    enhancementLevel);
+        } else if (result == EnhanceResult.DESTROYED) {
+            message = Component.translatable("container.imbue.broadcast.destroyed",
+                            player.getDisplayName(),
+                            equipmentName)
+                    .withStyle(ChatFormatting.RED);
+        } else {
+            return;
+        }
+
+        server.getPlayerList().broadcastSystemMessage(message, false);
+    }
+
+    private void setEnhanceResult(EnhanceResult result, int enhancementLevel) {
+        this.enhanceResult.set(result.ordinal());
+        this.enhanceResultLevel.set(enhancementLevel);
+        this.enhanceResultSequence.set(this.enhanceResultSequence.get() + 1);
     }
 
     public EnhanceState getEnhanceState() {
@@ -217,6 +280,18 @@ public class ImbuingMenu extends AbstractContainerMenu {
 
     public int getDestroyChance() {
         return this.destroyChance.get();
+    }
+
+    public EnhanceResult getEnhanceResult() {
+        return EnhanceResult.values()[this.enhanceResult.get()];
+    }
+
+    public int getEnhanceResultLevel() {
+        return this.enhanceResultLevel.get();
+    }
+
+    public int getEnhanceResultSequence() {
+        return this.enhanceResultSequence.get();
     }
 
     @Override
@@ -255,5 +330,12 @@ public class ImbuingMenu extends AbstractContainerMenu {
         public boolean canEnhance() {
             return this == READY;
         }
+    }
+
+    public enum EnhanceResult {
+        NONE,
+        SUCCESS,
+        FAILURE,
+        DESTROYED
     }
 }
