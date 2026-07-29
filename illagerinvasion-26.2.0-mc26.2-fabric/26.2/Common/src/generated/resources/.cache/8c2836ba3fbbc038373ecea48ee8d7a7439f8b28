@@ -1,4 +1,4 @@
-// 1.21.10	2025-10-09T13:20:35.858285	Mod Entity Injection Loot Provider
-5016a866e9ec629b8570b73019a48ac4d12eb0bf data/illagerinvasion/loot_table/inject/entities/illusioner.json
-e5324ebcb578403592a7598002a5ef3ba0abd627 data/illagerinvasion/loot_table/inject/entities/pillager.json
-37369a2b9f0dda08bccf20c167166e43425fc0fd data/illagerinvasion/loot_table/inject/entities/ravager.json
+// 26.2	2026-07-29T13:51:26.2478978	Mod Entity Injection Loot Provider
+b35c973bb18b344c8ff7f3a86506ab6feafa8aeb data/illagerinvasion/loot_table/inject/entities/illusioner.json
+f4cf3881e36e36b9e811583cf8bd217ff2807f7e data/illagerinvasion/loot_table/inject/entities/pillager.json
+a6ce629ed93025ec12de3025934e095c36091068 data/illagerinvasion/loot_table/inject/entities/ravager.json

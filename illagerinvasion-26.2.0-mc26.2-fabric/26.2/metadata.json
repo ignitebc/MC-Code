@@ -16,13 +16,6 @@
     },
     "dependencies": [
         {
-            "name": "multiloaderdataextensions",
-            "type": "embedded",
-            "platforms": [
-                "fabric"
-            ]
-        },
-        {
             "name": "fabricapi",
             "type": "required",
             "platforms": [
@@ -32,6 +25,13 @@
         {
             "name": "forgeconfigapiport",
             "type": "required",
+            "platforms": [
+                "fabric"
+            ]
+        },
+        {
+            "name": "multiloaderdataextensions",
+            "type": "embedded",
             "platforms": [
                 "fabric"
             ]

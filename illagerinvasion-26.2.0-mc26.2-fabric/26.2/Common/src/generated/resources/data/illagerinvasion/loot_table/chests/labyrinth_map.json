@@ -2,7 +2,6 @@
   "type": "minecraft:chest",
   "pools": [
     {
-      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
@@ -20,7 +19,6 @@
           "type": "minecraft:item",
           "functions": [
             {
-              "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "max": 10.0,
@@ -36,7 +34,6 @@
           "type": "minecraft:item",
           "functions": [
             {
-              "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "max": 5.0,
@@ -52,7 +49,6 @@
           "type": "minecraft:item",
           "functions": [
             {
-              "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "max": 5.0,
@@ -68,199 +64,134 @@
       "rolls": 3.0
     },
     {
-      "bonus_rolls": 0.0,
-      "rolls": 1.0,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "advancednetherite:enhancement_shard",
+          "type": "minecraft:loot_table",
           "conditions": [
             {
-              "condition": "minecraft:random_chance",
-              "chance": 0.55
+              "chance": 0.55,
+              "condition": "minecraft:random_chance"
             }
           ],
           "functions": [
             {
-              "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "min": 2.0,
-                "max": 5.0
+                "max": 5.0,
+                "min": 2.0
               },
               "function": "minecraft:set_count"
             }
-          ]
+          ],
+          "value": "illagerinvasion:external_items/advancednetherite/enhancement_shard"
         }
-      ]
+      ],
+      "rolls": 1.0
     },
     {
-      "bonus_rolls": 0.0,
-      "rolls": 1.0,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "advancednetherite:enhancement_gem",
+          "type": "minecraft:loot_table",
           "conditions": [
             {
-              "condition": "minecraft:random_chance",
-              "chance": 0.2
+              "chance": 0.2,
+              "condition": "minecraft:random_chance"
             }
           ],
           "functions": [
             {
-              "add": false,
               "count": 1.0,
               "function": "minecraft:set_count"
             }
-          ]
+          ],
+          "value": "illagerinvasion:external_items/advancednetherite/enhancement_gem"
         }
-      ]
+      ],
+      "rolls": 1.0
     },
     {
-      "bonus_rolls": 0.0,
-      "rolls": 1.0,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "minecraft:diamond",
+          "type": "minecraft:loot_table",
           "conditions": [
             {
-              "condition": "minecraft:random_chance",
-              "chance": 0.45
+              "chance": 0.25,
+              "condition": "minecraft:random_chance"
             }
           ],
           "functions": [
             {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 2.0,
-                "max": 4.0
-              },
-              "function": "minecraft:set_count"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "bonus_rolls": 0.0,
-      "rolls": 1.0,
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "advancednetherite:reward_key_i",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.25
-            }
-          ],
-          "functions": [
-            {
-              "add": false,
               "count": 1.0,
               "function": "minecraft:set_count"
             }
-          ]
+          ],
+          "value": "illagerinvasion:external_items/advancednetherite/reward_key_i"
         }
-      ]
+      ],
+      "rolls": 1.0
     },
     {
-      "bonus_rolls": 0.0,
-      "rolls": 1.0,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "advancednetherite:reward_key_ii",
+          "type": "minecraft:loot_table",
           "conditions": [
             {
-              "condition": "minecraft:random_chance",
-              "chance": 0.14
+              "chance": 0.14,
+              "condition": "minecraft:random_chance"
             }
           ],
           "functions": [
             {
-              "add": false,
               "count": 1.0,
               "function": "minecraft:set_count"
             }
-          ]
+          ],
+          "value": "illagerinvasion:external_items/advancednetherite/reward_key_ii"
         }
-      ]
+      ],
+      "rolls": 1.0
     },
     {
-      "bonus_rolls": 0.0,
-      "rolls": 1.0,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "advancednetherite:reward_key_iii",
+          "type": "minecraft:loot_table",
           "conditions": [
             {
-              "condition": "minecraft:random_chance",
-              "chance": 0.08
+              "chance": 0.08,
+              "condition": "minecraft:random_chance"
             }
           ],
           "functions": [
             {
-              "add": false,
               "count": 1.0,
               "function": "minecraft:set_count"
             }
-          ]
+          ],
+          "value": "illagerinvasion:external_items/advancednetherite/reward_key_iii"
         }
-      ]
+      ],
+      "rolls": 1.0
     },
     {
-      "bonus_rolls": 0.0,
-      "rolls": 1.0,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "advancednetherite:reward_key_iv",
+          "type": "minecraft:loot_table",
           "conditions": [
             {
-              "condition": "minecraft:random_chance",
-              "chance": 0.05
+              "chance": 0.05,
+              "condition": "minecraft:random_chance"
             }
           ],
           "functions": [
             {
-              "add": false,
               "count": 1.0,
               "function": "minecraft:set_count"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "bonus_rolls": 0.0,
-      "rolls": 1.0,
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:book",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.35
             }
           ],
-          "functions": [
-            {
-              "add": false,
-              "count": 1.0,
-              "function": "minecraft:set_count"
-            },
-            {
-              "function": "minecraft:enchant_randomly"
-            }
-          ]
+          "value": "illagerinvasion:external_items/advancednetherite/reward_key_iv"
         }
-      ]
+      ],
+      "rolls": 1.0
     }
   ],
   "random_sequence": "illagerinvasion:chests/labyrinth_map"

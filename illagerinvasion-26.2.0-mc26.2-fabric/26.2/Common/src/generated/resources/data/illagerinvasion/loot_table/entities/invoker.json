@@ -2,7 +2,6 @@
   "type": "minecraft:entity",
   "pools": [
     {
-      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
@@ -13,7 +12,6 @@
           ],
           "functions": [
             {
-              "add": false,
               "count": {
                 "type": "minecraft:uniform",
                 "max": 5.0,
@@ -37,10 +35,9 @@
       "rolls": 1.0
     },
     {
-      "bonus_rolls": 0.0,
       "entries": [
         {
-          "type": "minecraft:item",
+          "type": "minecraft:loot_table",
           "conditions": [
             {
               "condition": "minecraft:killed_by_player"
@@ -48,12 +45,11 @@
           ],
           "functions": [
             {
-              "add": false,
               "count": 1.0,
               "function": "minecraft:set_count"
             }
           ],
-          "name": "advancednetherite:enhancement_shard"
+          "value": "illagerinvasion:external_items/advancednetherite/enhancement_shard"
         }
       ],
       "rolls": 1.0
