@@ -1,0 +1,16 @@
+package com.daqem.yamlconfig.client.gui.component;
+
+import com.daqem.uilib.gui.component.AbstractComponent;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+
+public class MarginComponent extends AbstractComponent {
+
+    public MarginComponent(int width, int height) {
+        super(0, 0, width, height);
+    }
+
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth, int parentHeight) {
+
+    }
+}
