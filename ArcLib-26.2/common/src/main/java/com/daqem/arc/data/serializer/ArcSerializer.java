@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -37,8 +38,27 @@ public interface ArcSerializer {
 
     default ItemStack getItemStack(JsonElement element){
         RegistryAccess registryAccess = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
-        return ItemStack.CODEC.decode(registryAccess.createSerializationContext(JsonOps.INSTANCE), element).result()
-                .orElseThrow(() -> new JsonParseException("Invalid item stack")).getFirst();
+        return ItemStack.CODEC.decode(registryAccess.createSerializationContext(JsonOps.INSTANCE), element)
+                .result()
+                .map(Pair::getFirst)
+                .orElseGet(() -> getSimpleItemStack(element));
+    }
+
+    private ItemStack getSimpleItemStack(JsonElement element) {
+        JsonObject itemStack = element.getAsJsonObject();
+        if (itemStack.has("components")) {
+            throw new JsonParseException("Invalid item stack components");
+        }
+
+        Identifier itemId = Identifier.parse(GsonHelper.getAsString(itemStack, "id"));
+        int count = GsonHelper.getAsInt(itemStack, "count", 1);
+        if (count <= 0) {
+            throw new JsonParseException("Invalid item stack count: " + count);
+        }
+
+        Holder.Reference<Item> item = BuiltInRegistries.ITEM.get(itemId)
+                .orElseThrow(() -> new JsonParseException("Unknown item: " + itemId));
+        return new ItemStack(item.value(), count);
     }
 
     default IActionHolderType<?> getHolderType(JsonObject jsonObject, String elementName){
