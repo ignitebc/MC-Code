@@ -15,6 +15,7 @@ MODULES = [
     ("JobsPlusRemastered-26.2", "fabric"),
     ("AdvancedNetherite-26.2", "Fabric"),
     ("illagerinvasion-26.2.0-mc26.2-fabric/26.2", "Fabric"),
+    ("caramelChat-26.2", "fabric"),
 ]
 
 REQUIRED_JAVA_MAJOR_VERSION = 25
@@ -37,6 +38,9 @@ FORBIDDEN_JAR_NAME_PARTS = (
 )
 
 DEPENDENCY_MANIFEST_NAME = "FABRIC_DEPENDENCIES.md"
+DATAGEN_EXCLUDED_MODULES = {
+    "AdvancedNetherite-26.2",
+}
 
 
 def workspace_root() -> Path:
@@ -173,19 +177,22 @@ def build_fabric_module(module_root: Path, fabric_dir: str, java_home: Path) -> 
             "/c",
             str(gradle_wrapper),
             f":{fabric_dir}:build",
-            "--rerun-tasks",
         ]
     else:
         gradle_wrapper = module_root / "gradlew"
         command = [
             str(gradle_wrapper),
             f":{fabric_dir}:build",
-            "--rerun-tasks",
         ]
 
     if not gradle_wrapper.is_file():
         print(f"Gradle wrapper not found: {gradle_wrapper}")
         return False
+
+    if module_root.name in DATAGEN_EXCLUDED_MODULES:
+        command.extend(["-x", f":{fabric_dir}:runDatagen"])
+
+    command.append("--rerun-tasks")
 
     build_environment = os.environ.copy()
     build_environment["JAVA_HOME"] = str(java_home)

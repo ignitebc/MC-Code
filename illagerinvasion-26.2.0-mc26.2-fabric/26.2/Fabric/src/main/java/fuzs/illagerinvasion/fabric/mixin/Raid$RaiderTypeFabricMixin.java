@@ -22,6 +22,8 @@ enum Raid$RaiderTypeFabricMixin {
     ILLAGERINVASION_INQUISITOR(ModEntityTypes.INQUISITOR_ENTITY_TYPE.value(),
             RaidWavesConfigHelper.INQUISITOR_RAID_WAVES),
     ILLAGERINVASION_ALCHEMIST(ModEntityTypes.ALCHEMIST_ENTITY_TYPE.value(), RaidWavesConfigHelper.ALCHEMIST_RAID_WAVES),
+    ILLAGERINVASION_FIRECALLER(ModEntityTypes.FIRECALLER_ENTITY_TYPE.value(),
+            RaidWavesConfigHelper.FIRECALLER_RAID_WAVES),
     ILLAGERINVASION_INVOKER(ModEntityTypes.INVOKER_ENTITY_TYPE.value(), RaidWavesConfigHelper.INVOKER_RAID_WAVES);
 
     @Shadow

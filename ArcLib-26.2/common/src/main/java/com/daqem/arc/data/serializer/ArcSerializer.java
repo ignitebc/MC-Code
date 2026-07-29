@@ -8,9 +8,9 @@ import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
@@ -36,7 +36,8 @@ public interface ArcSerializer {
     }
 
     default ItemStack getItemStack(JsonElement element){
-        return ItemStack.CODEC.decode(JsonOps.INSTANCE, element).result()
+        RegistryAccess registryAccess = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+        return ItemStack.CODEC.decode(registryAccess.createSerializationContext(JsonOps.INSTANCE), element).result()
                 .orElseThrow(() -> new JsonParseException("Invalid item stack")).getFirst();
     }
 

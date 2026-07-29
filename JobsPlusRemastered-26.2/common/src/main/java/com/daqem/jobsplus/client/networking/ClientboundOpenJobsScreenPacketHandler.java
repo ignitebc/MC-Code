@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.client.networking;
 
+import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreen;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
@@ -21,6 +22,11 @@ public class ClientboundOpenJobsScreenPacketHandler {
         List<Job> jobs = packet.getJobs();
         int coins = packet.getCoins();
         int maxJobs = packet.getMaxJobs();
+
+        if (jobs == null || jobs.isEmpty()) {
+            JobsPlus.LOGGER.error("Cannot open the jobs screen because the server sent no jobs.");
+            return;
+        }
 
         @Nullable
         Screen previousScreen = null;

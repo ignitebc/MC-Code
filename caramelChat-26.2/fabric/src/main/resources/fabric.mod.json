@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "caramelchat",
+  "version": "${version}",
+
+  "name": "caramelChat",
+  "description": "Provides an enhanced IME input experience in Minecraft.",
+  "authors": [
+    "LemonCaramel"
+  ],
+  "contributors": [
+    "Axeryok (Native Library)"
+  ],
+  "contact": {
+    "homepage": "https://caramel.moe/",
+    "sources": "https://github.com/LemonCaramel/caramelChat",
+    "issues": "https://github.com/LemonCaramel/caramelChat/issues"
+  },
+
+  "license": "GNU LGPL 3.0",
+  "icon": "icon.png",
+
+  "environment": "client",
+  "entrypoints": {
+    "client": [ "moe.caramel.chat.fabric.MainFabric" ]
+  },
+  "accessWidener": "caramelchat.accesswidener",
+  "mixins": [ "caramelchat.mixins.json" ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "26.2"
+  },
+  "breaks": {
+    "lunar": "*",
+    "feather": "*"
+  },
+
+  "custom": {
+    "modmenu": {
+      "update_checker": true
+    }
+  }
+}

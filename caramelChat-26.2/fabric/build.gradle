@@ -1,0 +1,76 @@
+plugins {
+    id "com.gradleup.shadow" version "9.4.1"
+}
+
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+
+    // for Debug
+    runs {
+        client {
+            vmArgs "-Dmixin.debug.export=true"
+        }
+    }
+}
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
+}
+
+dependencies {
+    implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+    common(project(path: ":common", configuration: "runtimeElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+}
+
+task copyCommonResources(type: Copy) {
+    from fileTree(project(":common").file("src/main/resources"))
+    into file("build/resources/main")
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier.set(null)
+}
+
+jar {
+    archiveClassifier.set("dev")
+}
+
+runClient {
+    dependsOn(copyCommonResources)
+}
+
+sourcesJar {
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
+modrinth {
+    loaders = ["fabric", "quilt"]
+}
