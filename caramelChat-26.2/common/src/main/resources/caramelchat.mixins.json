@@ -8,6 +8,7 @@
         "MixinChatScreen",
         "MixinCreativeModeInventoryScreen",
         "MixinEditBox",
+        "MixinKeyboardHandler",
         "MixinMinecraft",
         "MixinMultiLineEditBox",
         "MixinRecipeBookComponent",

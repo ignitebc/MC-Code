@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * EditBox Component Mixin
@@ -107,28 +107,11 @@ public abstract class MixinEditBox implements EditBoxController {
     private void setValueHead(final String text, final CallbackInfo ci) {
         // setStatusToNone -> forceUpdateOrigin -> onValueChange
         if (this.caramelChat$wrapper != null && this.caramelChat$wrapper.valueChanged) {
-            this.caramelChat$cacheCursorPos = 0;
-            this.caramelChat$cacheHighlightPos = 0;
+            this.caramelChat$cacheCursorPos = this.cursorPos;
+            this.caramelChat$cacheHighlightPos = this.highlightPos;
         } else {
             this.caramelChat$setStatusToNone();
         }
-    }
-
-    @Redirect(
-        method = "setValue",
-        at = @At(
-            value = "INVOKE",
-            target = "Ljava/util/function/Predicate;test(Ljava/lang/Object;)Z"
-        )
-    )
-    private boolean setValuePredicateTest(final Predicate<String> predicate, final Object value) {
-        if (this.caramelChat$wrapper != null && this.caramelChat$wrapper.valueChanged) {
-            this.caramelChat$cacheCursorPos = this.cursorPos;
-            this.caramelChat$cacheHighlightPos = this.highlightPos;
-            return true;
-        }
-
-        return predicate.test((String) value);
     }
 
     @Inject(
@@ -142,8 +125,8 @@ public abstract class MixinEditBox implements EditBoxController {
         if (this.caramelChat$wrapper != null && this.caramelChat$wrapper.valueChanged) {
             ci.cancel();
             // caxton Compatibility
-            this.cursorPos = this.caramelChat$cacheCursorPos;
-            this.highlightPos = this.caramelChat$cacheHighlightPos;
+            this.cursorPos = Mth.clamp(this.caramelChat$cacheCursorPos, 0, this.value.length());
+            this.highlightPos = Mth.clamp(this.caramelChat$cacheHighlightPos, 0, this.value.length());
             this.caramelChat$wrapper.valueChanged = false;
             return;
         }
@@ -179,7 +162,7 @@ public abstract class MixinEditBox implements EditBoxController {
         method = "deleteCharsToPos",
         at = @At(
             value = "INVOKE", shift = At.Shift.BEFORE,
-            target = "Lnet/minecraft/client/gui/components/EditBox;moveCursorTo(IZ)V"
+            target = "Lnet/minecraft/client/gui/components/EditBox;onValueChange(Ljava/lang/String;)V"
         )
     )
     private void deleteChars(final int pos, final CallbackInfo ci) {
