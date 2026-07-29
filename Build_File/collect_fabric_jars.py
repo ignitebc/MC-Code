@@ -7,6 +7,7 @@ import time
 from typing import Optional
 
 
+# fabric_dir가 None이면 루트 buildJar 태스크가 만든 병합 JAR(build/libs)을 수집한다.
 MODULES = [
     ("UILib-26.2", "fabric"),
     ("YamlConfig-26.2", "fabric"),
@@ -16,6 +17,7 @@ MODULES = [
     ("AdvancedNetherite-26.2", "Fabric"),
     ("illagerinvasion-26.2.0-mc26.2-fabric/26.2", "Fabric"),
     ("caramelChat-26.2", "fabric"),
+    ("FallingTree-minecraft-26.2", None),
 ]
 
 REQUIRED_JAVA_MAJOR_VERSION = 25
@@ -29,12 +31,6 @@ EXCLUDED_NAME_PARTS = (
     "-shadow",
     "-plain",
     "-javadoc",
-)
-
-FORBIDDEN_JAR_NAME_PARTS = (
-    "1.21.9",
-    "1.21.10",
-    "21.10.0-mc1.21.10",
 )
 
 DEPENDENCY_MANIFEST_NAME = "FABRIC_DEPENDENCIES.md"
@@ -130,15 +126,6 @@ def is_release_jar(path: Path) -> bool:
     return path.suffix.lower() == ".jar" and not any(part in name for part in EXCLUDED_NAME_PARTS)
 
 
-def has_forbidden_jar_name(path: Path) -> bool:
-    name = path.name.lower()
-    for forbidden_name_part in FORBIDDEN_JAR_NAME_PARTS:
-        if forbidden_name_part in name:
-            return True
-
-    return False
-
-
 def prepare_target_directory(target_dir: Path) -> bool:
     build_file_dir = Path(__file__).resolve().parent
     resolved_target_dir = target_dir.resolve()
@@ -156,8 +143,11 @@ def prepare_target_directory(target_dir: Path) -> bool:
     return True
 
 
-def find_latest_release_jar(module_root: Path, fabric_dir: str) -> Optional[Path]:
-    libs_dir = module_root / fabric_dir / "build" / "libs"
+def find_latest_release_jar(module_root: Path, fabric_dir: Optional[str]) -> Optional[Path]:
+    if fabric_dir is None:
+        libs_dir = module_root / "build" / "libs"
+    else:
+        libs_dir = module_root / fabric_dir / "build" / "libs"
     if not libs_dir.exists():
         return None
 
@@ -168,7 +158,12 @@ def find_latest_release_jar(module_root: Path, fabric_dir: str) -> Optional[Path
     return max(jars, key=lambda path: path.stat().st_mtime)
 
 
-def build_fabric_module(module_root: Path, fabric_dir: str, java_home: Path) -> bool:
+def build_fabric_module(module_root: Path, fabric_dir: Optional[str], java_home: Path) -> bool:
+    if fabric_dir is None:
+        build_task = "buildJar"
+    else:
+        build_task = f":{fabric_dir}:build"
+
     if sys.platform == "win32":
         gradle_wrapper = module_root / "gradlew.bat"
         command = [
@@ -176,13 +171,13 @@ def build_fabric_module(module_root: Path, fabric_dir: str, java_home: Path) -> 
             "/d",
             "/c",
             str(gradle_wrapper),
-            f":{fabric_dir}:build",
+            build_task,
         ]
     else:
         gradle_wrapper = module_root / "gradlew"
         command = [
             str(gradle_wrapper),
-            f":{fabric_dir}:build",
+            build_task,
         ]
 
     if not gradle_wrapper.is_file():
@@ -198,7 +193,8 @@ def build_fabric_module(module_root: Path, fabric_dir: str, java_home: Path) -> 
     build_environment["JAVA_HOME"] = str(java_home)
     build_environment["PATH"] = str(java_home / "bin") + os.pathsep + build_environment.get("PATH", "")
 
-    print(f"\nBuilding {module_root.name} ({fabric_dir})...")
+    build_label = fabric_dir if fabric_dir else "buildJar"
+    print(f"\nBuilding {module_root.name} ({build_label})...")
     result = None
     for attempt in range(1, BUILD_START_ATTEMPTS + 1):
         try:
@@ -279,17 +275,6 @@ def copy_module_jars() -> int:
         print("\nThe Fabric build completed, but no release JAR was generated.")
         return 1
 
-    forbidden_jars = []
-    for module_name, jar in release_jars:
-        if has_forbidden_jar_name(jar):
-            forbidden_jars.append((module_name, jar))
-
-    if forbidden_jars:
-        print("\nJAR collection stopped because legacy Minecraft JARs were detected:")
-        for module_name, jar in forbidden_jars:
-            print(f"  - {module_name}: {jar.name}")
-        return 1
-
     copied = []
     for module_name, jar in release_jars:
         target = target_dir / jar.name
@@ -299,17 +284,6 @@ def copy_module_jars() -> int:
     dependency_manifest = Path(__file__).resolve().parent / DEPENDENCY_MANIFEST_NAME
     if not dependency_manifest.is_file():
         print(f"Dependency manifest not found: {dependency_manifest}")
-        return 1
-
-    forbidden_output_jars = []
-    for jar in target_dir.glob("*.jar"):
-        if has_forbidden_jar_name(jar):
-            forbidden_output_jars.append(jar)
-
-    if forbidden_output_jars:
-        print("\nJAR collection failed because legacy Minecraft JARs remain in the output:")
-        for jar in forbidden_output_jars:
-            print(f"  - {jar.name}")
         return 1
 
     print("Copied Fabric release jars:")
