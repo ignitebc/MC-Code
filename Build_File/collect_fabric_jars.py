@@ -7,13 +7,13 @@ from typing import Optional
 
 
 MODULES = [
-    ("AdvancedNetherite-main", "Fabric"),
-    ("ArcLib-1.21.9", "fabric"),
-    ("illagerinvasion-21.10.0-mc1.21.10-fabric/1.21.10", "Fabric"),
-    ("ItemRestrictions-1.21.9", "fabric"),
-    ("UILib-1.21.9", "fabric"),
-    ("YamlConfig-1.21.9", "fabric"),
-    ("JobsPlusRemastered-1.21.10", "fabric"),
+    ("UILib-26.2", "fabric"),
+    ("YamlConfig-26.2", "fabric"),
+    ("ArcLib-26.2", "fabric"),
+    ("ItemRestrictions-26.2", "fabric"),
+    ("JobsPlusRemastered-26.2", "fabric"),
+    ("AdvancedNetherite-26.2", "Fabric"),
+    ("illagerinvasion-26.2.0-mc26.2-fabric/26.2", "Fabric"),
 ]
 
 EXCLUDED_NAME_PARTS = (

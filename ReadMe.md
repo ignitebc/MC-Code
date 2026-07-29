@@ -17,13 +17,13 @@ Jobs+는 Minecraft에 직업, 레벨, 스킬, 보상, 아이템 제한, 상점 �
 
 | 항목 | 값 |
 | --- | --- |
-| 모드 버전 | 1.6.4-1.21.10 |
-| Minecraft | 1.21.10 |
+| 모드 버전 | 1.6.4-26.2 |
+| Minecraft | 26.2 |
 | 모드 로더 | Fabric |
-| Fabric Loader | 0.17.0 이상 |
-| Fabric API | 0.134.1+1.21.10 이상 |
-| Java | 21 |
-| Architectury API | 18.0.3 이상 |
+| Fabric Loader | 0.19.3 이상 |
+| Fabric API | 0.154.2+26.2 이상 |
+| Java | 25 |
+| Architectury API | 21.0.6 이상 |
 | 라이선스 | Apache-2.0 |
 
 > [!NOTE]
@@ -98,12 +98,12 @@ Jobs+를 실행하려면 다음 모드가 필요합니다.
 
 | 라이브러리 | 버전 |
 | --- | --- |
-| Fabric API | 0.134.1+1.21.10 이상 |
-| Architectury API | 18.0.3 |
-| YAML Config | 1.3.2-1.21.9 |
-| UI Lib | 2.1.3-1.21.9 |
-| Arc | 1.9.6-1.21.9 |
-| Item Restrictions | 1.3.3-1.21.9 |
+| Fabric API | 0.154.2+26.2 이상 |
+| Architectury API | 21.0.6 |
+| YAML Config | 1.3.2-26.2 |
+| UI Lib | 2.1.4-26.2 |
+| Arc | 1.9.7-26.2 |
+| Item Restrictions | 1.3.4-26.2 |
 | Advanced Netherite | 필수 런타임 의존성 |
 
 > [!WARNING]
@@ -111,8 +111,8 @@ Jobs+를 실행하려면 다음 모드가 필요합니다.
 
 ## 설치 방법
 
-1. Minecraft 1.21.10용 Fabric Loader를 설치합니다.
-2. Java 21을 사용하도록 실행 환경을 설정합니다.
+1. Minecraft 26.2용 Fabric Loader를 설치합니다.
+2. Java 25를 사용하도록 실행 환경을 설정합니다.
 3. 필수 모드와 Jobs+ Fabric JAR 파일을 `mods` 폴더에 넣습니다.
 
    ```text
@@ -142,7 +142,7 @@ gradlew.bat :fabric:build
 빌드 결과는 `fabric/build/libs/`에 생성되며, 배포에 사용하는 파일은 다음과 같습니다.
 
 ```text
-jobsplus-1.6.4-1.21.10-fabric.jar
+jobsplus-1.6.4-26.2-fabric.jar
 ```
 
 자세한 내용은 [buildMe.md](buildMe.md)를 참고하십시오.
@@ -150,7 +150,7 @@ jobsplus-1.6.4-1.21.10-fabric.jar
 ## 프로젝트 구조
 
 ```text
-JobsPlusRemastered
+JobsPlusRemastered-26.2
 ├─ common              공통 게임 로직, 직업, 스킬, 데이터, 네트워크 및 UI 연동
 ├─ fabric              Fabric 초기화 및 Fabric 배포 JAR 생성
 ├─ neoforge            NeoForge 관련 소스

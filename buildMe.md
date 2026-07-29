@@ -17,10 +17,10 @@
 
 | 항목 | 버전 |
 | --- | --- |
-| Minecraft | 1.21.10 |
+| Minecraft | 26.2 |
 | Java | 21 |
 | Fabric Loader | 0.17.0 |
-| Fabric API | 0.134.1+1.21.10 |
+| Fabric API | 0.154.2+26.2 |
 | Gradle 메모리 | 최대 4GB |
 
 > [!NOTE]
@@ -106,7 +106,7 @@ gradlew.bat :fabric:clean :fabric:build
 
 | 파일 | 용도 |
 | --- | --- |
-| `jobsplus-1.6.4-1.21.10-fabric.jar` | **배포용.** 서버와 클라이언트에 설치 |
+| `jobsplus-1.6.4-26.2-fabric.jar` | **배포용.** 서버와 클라이언트에 설치 |
 | `*-fabric-sources.jar` | 소스 첨부용. 설치하지 않음 |
 | `*-fabric-dev-shadow.jar` | 개발 환경 전용. 설치하지 않음 |
 
