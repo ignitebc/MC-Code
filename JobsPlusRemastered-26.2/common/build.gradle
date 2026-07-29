@@ -1,0 +1,29 @@
+//file:noinspection GroovyAssignabilityCheck
+architectury {
+    //noinspection GrUnresolvedAccess
+    common(rootProject.enabled_platforms.split(","))
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/jobsplus.accesswidener")
+}
+
+dependencies {
+    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
+    // Do NOT use other classes from fabric loader
+    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    modApi "dev.architectury:architectury:${project.architectury_version}"
+
+    modImplementation files(rootProject.file("../YamlConfig-26.2/fabric/build/libs/yamlconfig-1.3.2-26.2-fabric.jar"))
+    modImplementation files(rootProject.file("../ArcLib-26.2/fabric/build/libs/arc-1.9.7-26.2-fabric.jar"))
+    modImplementation files(rootProject.file("../ItemRestrictions-26.2/fabric/build/libs/itemrestrictions-1.3.4-26.2-fabric.jar"))
+    modImplementation files(rootProject.file("../UILib-26.2/fabric/build/libs/uilib-2.1.4-26.2-fabric.jar"))
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${project.jUnitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${project.jUnitVersion}"
+
+}
+
+test {
+    useJUnitPlatform()
+}
