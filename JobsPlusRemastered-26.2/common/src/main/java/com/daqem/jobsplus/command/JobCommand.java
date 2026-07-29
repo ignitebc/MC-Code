@@ -18,6 +18,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permissions;
 import com.daqem.jobsplus.config.JobsPlusConfig;
 
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ public class JobCommand
 
         public static void registerCommand(CommandDispatcher<CommandSourceStack> dispatcher)
         {
-                dispatcher.register(Commands.literal("job").requires(commandSourceStack -> commandSourceStack.hasPermission(2)).then(Commands.literal("debug").then(Commands.argument("target_player", EntityArgument.player()).executes(context -> debug(context.getSource(), EntityArgument.getPlayer(context, "target_player")))).executes(context -> debug(context.getSource(), context.getSource().getPlayer())))
+                dispatcher.register(Commands.literal("job").requires(commandSourceStack -> commandSourceStack.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)).then(Commands.literal("debug").then(Commands.argument("target_player", EntityArgument.player()).executes(context -> debug(context.getSource(), EntityArgument.getPlayer(context, "target_player")))).executes(context -> debug(context.getSource(), context.getSource().getPlayer())))
                                 .then(Commands.literal("set").then(Commands.literal("level").then(Commands.argument("target_player", EntityArgument.player()).then(Commands.argument("job", JobArgument.job()).then(Commands.argument("level", IntegerArgumentType.integer(0, Integer.MAX_VALUE)).executes(context -> setLevel(context.getSource(), EntityArgument.getPlayer(context, "target_player"), JobArgument.getJob(context, "job"), IntegerArgumentType.getInteger(context, "level")))))))
                                                 .then(Commands.literal("experience").then(Commands.argument("target_player", EntityArgument.player()).then(Commands.argument("job", JobArgument.job()).then(Commands.argument("experience", IntegerArgumentType.integer(0, Integer.MAX_VALUE)).executes(context -> setExperience(context.getSource(), EntityArgument.getPlayer(context, "target_player"), JobArgument.getJob(context, "job"), IntegerArgumentType.getInteger(context, "experience")))))))
                                                 .then(Commands.literal("coins").then(Commands.argument("target_player", EntityArgument.player()).then(Commands.argument("coins", IntegerArgumentType.integer(0, Integer.MAX_VALUE)).executes(context -> setCoins(context.getSource(), EntityArgument.getPlayer(context, "target_player"), IntegerArgumentType.getInteger(context, "coins"))))))
@@ -37,7 +38,7 @@ public class JobCommand
                                         ServerPlayer serverPlayer = context.getSource().getPlayer();
                                         if (serverPlayer != null)
                                         {
-                                                serverPlayer.sendSystemMessage(JobsPlus.literal(serverPlayer.getMainHandItem().getTags().map(itemTagKey -> itemTagKey.location().toString()).collect(Collectors.joining(", "))));
+                                                serverPlayer.sendSystemMessage(JobsPlus.literal(serverPlayer.getMainHandItem().typeHolder().tags().map(itemTagKey -> itemTagKey.location().toString()).collect(Collectors.joining(", "))));
                                         }
                                         return 0;
                                 })).then(Commands.literal("attributes").executes(context ->

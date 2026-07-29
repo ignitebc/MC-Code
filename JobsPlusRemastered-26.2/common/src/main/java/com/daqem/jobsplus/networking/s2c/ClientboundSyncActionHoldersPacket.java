@@ -24,7 +24,7 @@ public class ClientboundSyncActionHoldersPacket implements CustomPacketPayload
             List<Identifier> list = new ArrayList<>(Math.max(0, size));
             for (int i = 0; i < size; i++)
             {
-                list.add(buf.readResourceLocation());
+                list.add(buf.readIdentifier());
             }
             return new ClientboundSyncActionHoldersPacket(list);
         }
@@ -36,7 +36,7 @@ public class ClientboundSyncActionHoldersPacket implements CustomPacketPayload
             buf.writeVarInt(list.size());
             for (Identifier id : list)
             {
-                buf.writeResourceLocation(id);
+                buf.writeIdentifier(id);
             }
         }
     };

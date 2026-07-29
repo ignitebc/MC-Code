@@ -11,6 +11,6 @@ public class ClientboundUnlockItemRestrictionPacketHandler
 
     public static void handleClientSide(ClientboundUnlockItemRestrictionPacket packet, NetworkManager.PacketContext context)
     {
-        ItemRestrictionUnlockedToast.addOrUpdate(Minecraft.getInstance().getToastManager(), ItemRestrictionManager.getInstance().getItemRestriction(packet.getItemRestrictionLocation()));
+        ItemRestrictionUnlockedToast.addOrUpdate(Minecraft.getInstance().gui.toastManager(), ItemRestrictionManager.getInstance().getItemRestriction(packet.getItemRestrictionLocation()));
     }
 }

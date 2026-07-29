@@ -146,18 +146,18 @@ public class PowerupInstance extends AbstractActionHolder
         @Override
         public PowerupInstance fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, Identifier resourceLocation)
         {
-            return new PowerupInstance(friendlyByteBuf.readResourceLocation(), friendlyByteBuf.readResourceLocation(), friendlyByteBuf.readBoolean() ? friendlyByteBuf.readResourceLocation() : null, ItemStack.STREAM_CODEC.decode(friendlyByteBuf), friendlyByteBuf.readInt(), friendlyByteBuf.readInt(), friendlyByteBuf.readEnum(PowerupType.class));
+            return new PowerupInstance(friendlyByteBuf.readIdentifier(), friendlyByteBuf.readIdentifier(), friendlyByteBuf.readBoolean() ? friendlyByteBuf.readIdentifier() : null, ItemStack.STREAM_CODEC.decode(friendlyByteBuf), friendlyByteBuf.readInt(), friendlyByteBuf.readInt(), friendlyByteBuf.readEnum(PowerupType.class));
         }
 
         @Override
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, PowerupInstance powerupInstance)
         {
-            friendlyByteBuf.writeResourceLocation(powerupInstance.getLocation());
-            friendlyByteBuf.writeResourceLocation(powerupInstance.getJobLocation());
+            friendlyByteBuf.writeIdentifier(powerupInstance.getLocation());
+            friendlyByteBuf.writeIdentifier(powerupInstance.getJobLocation());
             friendlyByteBuf.writeBoolean(powerupInstance.getParentLocation() != null);
             if (powerupInstance.getParentLocation() != null)
             {
-                friendlyByteBuf.writeResourceLocation(powerupInstance.getParentLocation());
+                friendlyByteBuf.writeIdentifier(powerupInstance.getParentLocation());
             }
             ItemStack.STREAM_CODEC.encode(friendlyByteBuf, powerupInstance.getIcon());
             friendlyByteBuf.writeInt(powerupInstance.getPrice());

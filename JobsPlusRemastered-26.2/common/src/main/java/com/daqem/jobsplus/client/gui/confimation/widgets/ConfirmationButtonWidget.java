@@ -17,8 +17,17 @@ public class ConfirmationButtonWidget extends CustomButtonWidget
     }
 
     @Override
-    public void renderString(GuiGraphicsExtractor guiGraphics, Font font, int i)
+    protected void extractLabel(GuiGraphicsExtractor guiGraphics)
     {
-        guiGraphics.text(Minecraft.getInstance().font, this.getMessage(), this.getX() + (this.getWidth() - font.width(this.getMessage())) / 2 + 1, this.getY() + (this.getHeight() - 6) / 2, this.isHovered() ? 0xFFFFFFFF : 0xFFEAF0FF, false);
+        Font font = Minecraft.getInstance().font;
+        int textColor = 0xFFEAF0FF;
+        if (this.isHovered())
+        {
+            textColor = 0xFFFFFFFF;
+        }
+
+        int textX = this.getX() + (this.getWidth() - font.width(this.getMessage())) / 2 + 1;
+        int textY = this.getY() + (this.getHeight() - 6) / 2;
+        guiGraphics.text(font, this.getMessage(), textX, textY, textColor, false);
     }
 }

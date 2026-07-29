@@ -93,14 +93,14 @@ public class HasJobCondition extends AbstractCondition implements IJobCondition
         @Override
         public HasJobCondition fromNetwork(Identifier location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted)
         {
-            return new HasJobCondition(inverted, friendlyByteBuf.readResourceLocation());
+            return new HasJobCondition(inverted, friendlyByteBuf.readIdentifier());
         }
 
         @Override
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, HasJobCondition type)
         {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
-            friendlyByteBuf.writeResourceLocation(type.jobLocation);
+            friendlyByteBuf.writeIdentifier(type.jobLocation);
         }
     }
 }

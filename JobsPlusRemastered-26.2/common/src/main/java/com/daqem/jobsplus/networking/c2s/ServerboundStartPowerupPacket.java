@@ -25,8 +25,8 @@ public class ServerboundStartPowerupPacket implements CustomPacketPayload {
 
         @Override
         public void encode(RegistryFriendlyByteBuf buf, ServerboundStartPowerupPacket packet) {
-            buf.writeResourceLocation(packet.jobLocation);
-            buf.writeResourceLocation(packet.powerupLocation);
+            buf.writeIdentifier(packet.jobLocation);
+            buf.writeIdentifier(packet.powerupLocation);
         }
     };
 
@@ -36,8 +36,8 @@ public class ServerboundStartPowerupPacket implements CustomPacketPayload {
     }
 
     public ServerboundStartPowerupPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
-        this.jobLocation = friendlyByteBuf.readResourceLocation();
-        this.powerupLocation = friendlyByteBuf.readResourceLocation();
+        this.jobLocation = friendlyByteBuf.readIdentifier();
+        this.powerupLocation = friendlyByteBuf.readIdentifier();
     }
 
     @Override

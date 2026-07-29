@@ -107,14 +107,14 @@ public class JobExpMultiplierReward extends AbstractReward
         @Override
         public JobExpMultiplierReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority)
         {
-            return new JobExpMultiplierReward(chance, priority, friendlyByteBuf.readResourceLocation(), friendlyByteBuf.readDouble());
+            return new JobExpMultiplierReward(chance, priority, friendlyByteBuf.readIdentifier(), friendlyByteBuf.readDouble());
         }
 
         @Override
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobExpMultiplierReward type)
         {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
-            friendlyByteBuf.writeResourceLocation(type.jobLocation);
+            friendlyByteBuf.writeIdentifier(type.jobLocation);
             friendlyByteBuf.writeDouble(type.multiplier);
         }
     }

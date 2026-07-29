@@ -121,12 +121,12 @@ public class JobInstance extends AbstractActionHolder
 
         public JobInstance fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, Identifier resourceLocation)
         {
-            return new JobInstance(friendlyByteBuf.readResourceLocation(), friendlyByteBuf.readVarInt(), friendlyByteBuf.readUtf(), ItemStack.STREAM_CODEC.decode(friendlyByteBuf), friendlyByteBuf.readBoolean());
+            return new JobInstance(friendlyByteBuf.readIdentifier(), friendlyByteBuf.readVarInt(), friendlyByteBuf.readUtf(), ItemStack.STREAM_CODEC.decode(friendlyByteBuf), friendlyByteBuf.readBoolean());
         }
 
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobInstance jobInstance)
         {
-            friendlyByteBuf.writeResourceLocation(jobInstance.location);
+            friendlyByteBuf.writeIdentifier(jobInstance.location);
             friendlyByteBuf.writeVarInt(jobInstance.price);
             friendlyByteBuf.writeUtf(jobInstance.color);
             ItemStack.STREAM_CODEC.encode(friendlyByteBuf, jobInstance.iconItem);

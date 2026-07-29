@@ -28,7 +28,7 @@ public class ClientboundUnlockItemRestrictionPacket implements CustomPacketPaylo
         @Override
         public void encode(RegistryFriendlyByteBuf buf, ClientboundUnlockItemRestrictionPacket packet)
         {
-            buf.writeResourceLocation(packet.itemRestrictionLocation);
+            buf.writeIdentifier(packet.itemRestrictionLocation);
         }
     };
 
@@ -40,7 +40,7 @@ public class ClientboundUnlockItemRestrictionPacket implements CustomPacketPaylo
 
     public ClientboundUnlockItemRestrictionPacket(RegistryFriendlyByteBuf friendlyByteBuf)
     {
-        this.itemRestrictionLocation = friendlyByteBuf.readResourceLocation();
+        this.itemRestrictionLocation = friendlyByteBuf.readIdentifier();
     }
 
     @Override

@@ -32,7 +32,7 @@ public abstract class AbstractScrollWidget extends ScrollContainerWidget
     @Override
     public boolean updateScrolling(MouseButtonEvent event)
     {
-        ((AbstractScrollAreaAccessor) this).jobsplus$setScrolling(this.scrollbarVisible() && this.isValidClickButton(event.buttonInfo()) && event.x() >= this.scrollBarX() && event.x() <= this.scrollBarX() + SCROLL_HANDLE_WIDTH && event.y() >= this.getY() && event.y() < this.getBottom());
+        ((AbstractScrollAreaAccessor) this).jobsplus$setScrolling(this.scrollable() && this.isValidClickButton(event.buttonInfo()) && event.x() >= this.scrollBarX() && event.x() <= this.scrollBarX() + SCROLL_HANDLE_WIDTH && event.y() >= this.getY() && event.y() < this.getBottom());
         return ((AbstractScrollAreaAccessor) this).jobsplus$getScrolling();
     }
 
@@ -41,7 +41,8 @@ public abstract class AbstractScrollWidget extends ScrollContainerWidget
         return this.getRight() - SCROLL_HANDLE_WIDTH;
     }
 
-    protected int scrollBarY()
+    @Override
+    public int scrollBarY()
     {
         int availableHeight = this.height - this.scrollerHeight() - 8;
         int baseY = (int) (this.scrollAmount() * availableHeight / this.maxScrollAmount()) + this.getY() + 4;
@@ -51,7 +52,7 @@ public abstract class AbstractScrollWidget extends ScrollContainerWidget
     @Override
     protected void extractScrollbar(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY)
     {
-        if (this.scrollbarVisible())
+        if (this.scrollable())
         {
             int scrollBarX = this.scrollBarX();
             int scrollerHeight = this.scrollerHeight();

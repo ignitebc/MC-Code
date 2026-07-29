@@ -249,7 +249,7 @@ public class Job
 
         public static Job fromNetwork(FriendlyByteBuf friendlyByteBuf, JobsPlayer player)
         {
-            Identifier jobInstanceLocation = friendlyByteBuf.readResourceLocation();
+            Identifier jobInstanceLocation = friendlyByteBuf.readIdentifier();
             int level = friendlyByteBuf.readInt();
             int experience = friendlyByteBuf.readInt();
             double experienceRemainder = friendlyByteBuf.readDouble();
@@ -257,7 +257,7 @@ public class Job
             List<Powerup> powerups = new ArrayList<>();
             for (int i = 0; i < powerupCount; i++)
             {
-                Identifier powerupLocation = friendlyByteBuf.readResourceLocation();
+                Identifier powerupLocation = friendlyByteBuf.readIdentifier();
                 PowerupState state = friendlyByteBuf.readEnum(PowerupState.class);
                 powerups.add(new Powerup(powerupLocation, state));
             }
@@ -266,14 +266,14 @@ public class Job
 
         public static void toNetwork(FriendlyByteBuf friendlyByteBuf, Job job)
         {
-            friendlyByteBuf.writeResourceLocation(job.getJobInstance().getLocation());
+            friendlyByteBuf.writeIdentifier(job.getJobInstance().getLocation());
             friendlyByteBuf.writeInt(job.getLevel());
             friendlyByteBuf.writeInt(job.getExperience());
             friendlyByteBuf.writeDouble(job.getExperienceRemainder());
             friendlyByteBuf.writeVarInt(job.getPowerupManager().getAllPowerups().size());
             for (Powerup powerup : job.getPowerupManager().getAllPowerups())
             {
-                friendlyByteBuf.writeResourceLocation(powerup.getPowerupLocation());
+                friendlyByteBuf.writeIdentifier(powerup.getPowerupLocation());
                 friendlyByteBuf.writeEnum(powerup.getState());
             }
         }

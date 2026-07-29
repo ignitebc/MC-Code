@@ -1,8 +1,10 @@
 package com.daqem.jobsplus.player.stock;
 
+import com.daqem.jobsplus.JobsPlus;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.datafix.DataFixTypes;
@@ -24,7 +26,7 @@ import java.util.UUID;
  */
 public final class StockPositionLedger extends SavedData
 {
-    private static final String FILE_ID = "jobsplus_stock_positions";
+    private static final Identifier FILE_ID = JobsPlus.getId("stock_positions");
     private static final Codec<StockPositionSide> POSITION_SIDE_CODEC = Codec.STRING.xmap(
             StockPositionSide::fromSerializedName,
             StockPositionSide::getSerializedName

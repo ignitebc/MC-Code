@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 public class StockTradingComponent extends EmptyComponent
 {
@@ -330,7 +331,7 @@ public class StockTradingComponent extends EmptyComponent
                 Minecraft.getInstance().font, x, y, 54, 16, Component.literal("금액"));
         amountInput.setValue(Integer.toString(defaultValue));
         amountInput.setMaxLength(10);
-        amountInput.setFilter(StockTradingComponent::isValidAmountInput);
+        amountInput.setResponder(new AmountInputFilter(amountInput));
         return amountInput;
     }
 
@@ -612,6 +613,37 @@ public class StockTradingComponent extends EmptyComponent
         guiGraphics.fill(x, y + height - 1, x + width, y + height, BORDER_COLOR);
         guiGraphics.fill(x, y, x + 1, y + height, BORDER_COLOR);
         guiGraphics.fill(x + width - 1, y, x + width, y + height, BORDER_COLOR);
+    }
+
+    private static class AmountInputFilter implements Consumer<String>
+    {
+        private final EditBoxWidget amountInput;
+        private String lastValidValue;
+        private boolean restoringValue;
+
+        private AmountInputFilter(EditBoxWidget amountInput)
+        {
+            this.amountInput = amountInput;
+            this.lastValidValue = amountInput.getValue();
+        }
+
+        @Override
+        public void accept(String value)
+        {
+            if (this.restoringValue)
+            {
+                return;
+            }
+            if (isValidAmountInput(value))
+            {
+                this.lastValidValue = value;
+                return;
+            }
+
+            this.restoringValue = true;
+            this.amountInput.setValue(this.lastValidValue);
+            this.restoringValue = false;
+        }
     }
 
     private static class StyledButton extends CustomButtonWidget

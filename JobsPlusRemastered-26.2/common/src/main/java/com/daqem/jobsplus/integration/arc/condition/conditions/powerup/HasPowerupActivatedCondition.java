@@ -65,14 +65,14 @@ public class HasPowerupActivatedCondition extends AbstractCondition
         @Override
         public HasPowerupActivatedCondition fromNetwork(Identifier location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted)
         {
-            return new HasPowerupActivatedCondition(inverted, friendlyByteBuf.readResourceLocation());
+            return new HasPowerupActivatedCondition(inverted, friendlyByteBuf.readIdentifier());
         }
 
         @Override
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, HasPowerupActivatedCondition type)
         {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
-            friendlyByteBuf.writeResourceLocation(type.powerupLocation);
+            friendlyByteBuf.writeIdentifier(type.powerupLocation);
         }
     }
 }

@@ -176,7 +176,7 @@ public class SpecialItemReward extends AbstractReward
             Identifier bonusPowerupLine = null;
             if (friendlyByteBuf.readBoolean())
             {
-                bonusPowerupLine = friendlyByteBuf.readResourceLocation();
+                bonusPowerupLine = friendlyByteBuf.readIdentifier();
             }
             double bonusChancePerTier = friendlyByteBuf.readDouble();
             return new SpecialItemReward(chance, priority, itemStack, amount, bonusPowerupLine, bonusChancePerTier);
@@ -191,7 +191,7 @@ public class SpecialItemReward extends AbstractReward
             friendlyByteBuf.writeBoolean(type.bonusPowerupLine != null);
             if (type.bonusPowerupLine != null)
             {
-                friendlyByteBuf.writeResourceLocation(type.bonusPowerupLine);
+                friendlyByteBuf.writeIdentifier(type.bonusPowerupLine);
             }
             friendlyByteBuf.writeDouble(type.bonusChancePerTier);
         }

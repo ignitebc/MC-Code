@@ -29,7 +29,7 @@ public class ClientboundLevelUpJobPacket implements CustomPacketPayload
         @Override
         public void encode(RegistryFriendlyByteBuf buf, ClientboundLevelUpJobPacket packet)
         {
-            buf.writeResourceLocation(packet.jobLocation);
+            buf.writeIdentifier(packet.jobLocation);
             buf.writeInt(packet.level);
         }
     };
@@ -43,7 +43,7 @@ public class ClientboundLevelUpJobPacket implements CustomPacketPayload
 
     public ClientboundLevelUpJobPacket(RegistryFriendlyByteBuf friendlyByteBuf)
     {
-        this.jobLocation = friendlyByteBuf.readResourceLocation();
+        this.jobLocation = friendlyByteBuf.readIdentifier();
         this.level = friendlyByteBuf.readInt();
     }
 

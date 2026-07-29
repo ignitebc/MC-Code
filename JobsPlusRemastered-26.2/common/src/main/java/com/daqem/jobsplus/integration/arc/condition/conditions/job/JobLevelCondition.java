@@ -105,14 +105,14 @@ public class JobLevelCondition extends AbstractCondition implements IJobConditio
         @Override
         public JobLevelCondition fromNetwork(Identifier location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted)
         {
-            return new JobLevelCondition(inverted, friendlyByteBuf.readResourceLocation(), friendlyByteBuf.readInt());
+            return new JobLevelCondition(inverted, friendlyByteBuf.readIdentifier(), friendlyByteBuf.readInt());
         }
 
         @Override
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobLevelCondition type)
         {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
-            friendlyByteBuf.writeResourceLocation(type.jobLocation);
+            friendlyByteBuf.writeIdentifier(type.jobLocation);
             friendlyByteBuf.writeInt(type.level);
         }
     }

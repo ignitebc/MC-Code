@@ -23,7 +23,7 @@ public class ServerboundOpenPowerupsScreenPacket implements CustomPacketPayload 
 
         @Override
         public void encode(RegistryFriendlyByteBuf buf, ServerboundOpenPowerupsScreenPacket packet) {
-            buf.writeResourceLocation(packet.jobLocation);
+            buf.writeIdentifier(packet.jobLocation);
         }
     };
 
@@ -32,7 +32,7 @@ public class ServerboundOpenPowerupsScreenPacket implements CustomPacketPayload 
     }
 
     public ServerboundOpenPowerupsScreenPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
-        this.jobLocation = friendlyByteBuf.readResourceLocation();
+        this.jobLocation = friendlyByteBuf.readIdentifier();
     }
 
     @Override

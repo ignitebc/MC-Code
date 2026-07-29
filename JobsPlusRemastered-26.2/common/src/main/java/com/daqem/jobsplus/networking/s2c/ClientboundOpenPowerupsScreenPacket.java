@@ -27,7 +27,7 @@ public class ClientboundOpenPowerupsScreenPacket implements CustomPacketPayload 
             buf.writeCollection(packet.jobs, Job.Serializer::toNetwork);
             buf.writeInt(packet.coins);
             buf.writeInt(packet.maxJobs);
-            buf.writeResourceLocation(packet.jobLocation);
+            buf.writeIdentifier(packet.jobLocation);
         }
     };
 
@@ -47,7 +47,7 @@ public class ClientboundOpenPowerupsScreenPacket implements CustomPacketPayload 
         this.jobs = friendlyByteBuf.readList(b -> Job.Serializer.fromNetwork(b, null));
         this.coins = friendlyByteBuf.readInt();
         this.maxJobs = friendlyByteBuf.readableBytes() > 0 ? Math.max(0, friendlyByteBuf.readInt()) : 0;
-        this.jobLocation = friendlyByteBuf.readResourceLocation();
+        this.jobLocation = friendlyByteBuf.readIdentifier();
     }
 
     @Override

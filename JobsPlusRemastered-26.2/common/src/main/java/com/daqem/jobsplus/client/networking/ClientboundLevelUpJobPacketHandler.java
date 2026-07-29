@@ -11,6 +11,6 @@ public class ClientboundLevelUpJobPacketHandler
 
     public static void handleClientSide(ClientboundLevelUpJobPacket packet, NetworkManager.PacketContext context)
     {
-        LevelUpJobToast.addOrUpdate(Minecraft.getInstance().getToastManager(), JobInstance.of(packet.getJobLocation()), packet.getLevel());
+        LevelUpJobToast.addOrUpdate(Minecraft.getInstance().gui.toastManager(), JobInstance.of(packet.getJobLocation()), packet.getLevel());
     }
 }

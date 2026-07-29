@@ -26,7 +26,7 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
 
         @Override
         public void encode(RegistryFriendlyByteBuf buf, ServerboundStartJobPacket packet) {
-            buf.writeResourceLocation(packet.jobLocation);
+            buf.writeIdentifier(packet.jobLocation);
         }
     };
 
@@ -35,7 +35,7 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
     }
 
     public ServerboundStartJobPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
-        this.jobLocation = friendlyByteBuf.readResourceLocation();
+        this.jobLocation = friendlyByteBuf.readIdentifier();
     }
 
     @Override

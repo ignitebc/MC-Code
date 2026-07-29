@@ -47,9 +47,9 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
 
         @Override
         public void encode(RegistryFriendlyByteBuf buf, ServerboundSellItemPacket packet) {
-            buf.writeResourceLocation(packet.inputItemId);
+            buf.writeIdentifier(packet.inputItemId);
             buf.writeInt(packet.inputAmount);
-            buf.writeResourceLocation(packet.outputItemId);
+            buf.writeIdentifier(packet.outputItemId);
             buf.writeInt(packet.outputAmount);
         }
     };
@@ -66,9 +66,9 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
     }
 
     public ServerboundSellItemPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
-        this.inputItemId = friendlyByteBuf.readResourceLocation();
+        this.inputItemId = friendlyByteBuf.readIdentifier();
         this.inputAmount = friendlyByteBuf.readInt();
-        this.outputItemId = friendlyByteBuf.readResourceLocation();
+        this.outputItemId = friendlyByteBuf.readIdentifier();
         this.outputAmount = friendlyByteBuf.readInt();
     }
 

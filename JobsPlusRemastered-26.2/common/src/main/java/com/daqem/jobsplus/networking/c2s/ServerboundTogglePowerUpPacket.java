@@ -23,8 +23,8 @@ public class ServerboundTogglePowerUpPacket implements CustomPacketPayload {
 
         @Override
         public void encode(RegistryFriendlyByteBuf buf, ServerboundTogglePowerUpPacket packet) {
-            buf.writeResourceLocation(packet.jobLocation);
-            buf.writeResourceLocation(packet.powerupLocation);
+            buf.writeIdentifier(packet.jobLocation);
+            buf.writeIdentifier(packet.powerupLocation);
         }
     };
 
@@ -34,8 +34,8 @@ public class ServerboundTogglePowerUpPacket implements CustomPacketPayload {
     }
 
     public ServerboundTogglePowerUpPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
-        this.jobLocation = friendlyByteBuf.readResourceLocation();
-        this.powerupLocation = friendlyByteBuf.readResourceLocation();
+        this.jobLocation = friendlyByteBuf.readIdentifier();
+        this.powerupLocation = friendlyByteBuf.readIdentifier();
     }
 
     @Override
