@@ -18,9 +18,11 @@
 | 항목 | 버전 |
 | --- | --- |
 | Minecraft | 26.2 |
-| Java | 21 |
-| Fabric Loader | 0.17.0 |
+| Java | 25 |
+| Fabric Loader | 0.19.3 이상 |
 | Fabric API | 0.154.2+26.2 |
+| Gradle | 9.5.1 |
+| Loom | 1.17 |
 | Gradle 메모리 | 최대 4GB |
 
 > [!NOTE]
@@ -29,13 +31,16 @@
 
 ## 사전 준비
 
-Java 21이 설치되어 있어야 합니다.
+Java 25가 설치되어 있어야 합니다.
 
 ```bash
 java -version
 ```
 
-출력 결과에서 Java 버전이 21인지 확인합니다.
+출력 결과에서 Java 버전이 25인지 확인합니다.
+
+여러 모드를 한 번에 빌드하는 수집 스크립트는 설치된 Java 25를 자동으로 찾습니다.
+자동 탐색이 불가능한 환경에서는 `JAVA_25_HOME`에 JDK 25 설치 경로를 지정합니다.
 
 최초 빌드 시 Fabric, Architectury, CurseMaven 의존성을 내려받으므로 인터넷 연결이 필요합니다.
 
@@ -119,6 +124,11 @@ python Build_File/collect_fabric_jars.py
 ```
 
 수집된 JAR은 `Build_File/build_files/`에 저장됩니다.
+수집을 시작할 때 이 폴더의 기존 내용은 삭제되므로, 1.21.x 결과물이 26.2 결과물과 섞이지 않습니다.
+
+수집 스크립트는 프로젝트에서 직접 빌드하는 JAR만 모읍니다. Fabric API, Architectury API,
+Puzzles Lib, Forge Config API Port 같은 외부 필수 모드는 별도로 준비해야 합니다.
+전체 목록은 `Build_File/FABRIC_DEPENDENCIES.md`를 확인하십시오.
 
 ## 프로젝트 빌드 구조
 
@@ -142,7 +152,7 @@ fabric
 
 ### Java 버전 오류
 
-Java 21이 아닌 환경에서는 컴파일이 실패할 수 있습니다.
+Java 25가 아닌 환경에서는 컴파일이 실패할 수 있습니다.
 
 ```bash
 java -version
