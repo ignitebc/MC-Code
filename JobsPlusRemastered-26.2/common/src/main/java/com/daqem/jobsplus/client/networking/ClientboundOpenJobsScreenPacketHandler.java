@@ -1,15 +1,20 @@
 package com.daqem.jobsplus.client.networking;
 
 import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreen;
+import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreenState;
+import com.daqem.jobsplus.client.gui.confimation.PendingJobSelectionAlert;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreen;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
 import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.player.job.Job;
 import com.daqem.jobsplus.shop.ShopOffer;
+import com.daqem.jobsplus.util.KoreanJosa;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,12 +62,27 @@ public class ClientboundOpenJobsScreenPacketHandler {
             newState.setSelectedStockLeverage(keepStockLeverage);
 
             mc.gui.setScreen(new JobsScreen(newState, previousScreen));
+            showPendingSelectionAlert(mc);
             return;
         }
 
         mc.gui.setScreen(new JobsScreen(
                 new JobsScreenState(jobs, coins, maxJobs, null, RightTab.EXPERIENCE, packet.getStockAccount()),
                 previousScreen));
+        showPendingSelectionAlert(mc);
+    }
+
+    private static void showPendingSelectionAlert(Minecraft mc) {
+        String jobName = PendingJobSelectionAlert.consume();
+        if (jobName == null) {
+            return;
+        }
+
+        Component message = JobsPlus.translatable(
+                "gui.confirmation.job_selected", jobName, KoreanJosa.eulReul(jobName));
+        mc.gui.setScreen(new ConfirmationScreen(
+                mc.gui.screen(),
+                ConfirmationScreenState.alert(message, JobsPlus.translatable("gui.confirmation.ok"))));
     }
 
     private static Job findSameJobOrFirst(List<Job> newJobs, @Nullable Job oldSelected) {

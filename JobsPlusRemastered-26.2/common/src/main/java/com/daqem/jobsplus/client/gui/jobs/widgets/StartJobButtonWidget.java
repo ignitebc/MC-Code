@@ -3,11 +3,12 @@ package com.daqem.jobsplus.client.gui.jobs.widgets;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreen;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreenState;
+import com.daqem.jobsplus.client.gui.confimation.PendingJobSelectionAlert;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
-import com.daqem.jobsplus.networking.c2s.ServerboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.networking.c2s.ServerboundStartJobPacket;
 import com.daqem.jobsplus.player.job.Job;
+import com.daqem.jobsplus.util.KoreanJosa;
 import com.daqem.uilib.gui.widget.CustomButtonWidget;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
@@ -44,35 +45,28 @@ public class StartJobButtonWidget extends CustomButtonWidget {
                     }
 
                     JobInstance jobInstance = selectedJob.getJobInstance();
+                    String jobName = jobInstance.getName().getString();
 
-                    // 본 서버 정책: 티켓으로 늘린 슬롯까지 "무료 선택"으로 취급
-                    // -> 클라이언트 확인창도 유료/무료를 amount_of_free_jobs(=2)로 판단하면 안 됨
-                    int jobAmount = activeJobCount;
-
-                    Component freeJobMessage = JobsPlus.translatable(
-                            "gui.confirmation.purchase_job.free",
-                            jobInstance.getName());
-
-                    Component paidJobMessage = JobsPlus.translatable(
-                            "gui.confirmation.purchase_job.paid",
-                            jobInstance.getName(),
-                            jobInstance.getPrice());
+                    Component confirmMessage = JobsPlus.translatable(
+                            "gui.confirmation.select_job",
+                            jobName,
+                            KoreanJosa.eulReul(jobName));
 
                     if (selectedJob.getLevel() == 0) {
                         Minecraft.getInstance().gui.setScreen(
                                 new ConfirmationScreen(
                                         Minecraft.getInstance().gui.screen(),
                                         new ConfirmationScreenState(
-                                                // 수정: 티켓 슬롯도 무료이므로, 유료 판단을 state.getMaxJobs() 기준으로
-                                                jobAmount >= state.getMaxJobs()
-                                                        ? paidJobMessage
-                                                        : freeJobMessage,
+                                                confirmMessage,
+                                                JobsPlus.translatable("gui.confirmation.select"),
+                                                JobsPlus.translatable("gui.confirmation.cancel"),
                                                 () -> {
+                                                    // 완료 알림은 서버가 화면을 갱신한 뒤에 띄운다
+                                                    // (여기서 바로 띄우면 갱신 패킷이 알림 화면을 덮어씀)
+                                                    PendingJobSelectionAlert.set(jobName);
                                                     NetworkManager.sendToServer(
                                                             new ServerboundStartJobPacket(
-                                                                    selectedJob.getJobInstance().getLocation()));
-                                                    NetworkManager.sendToServer(
-                                                            new ServerboundOpenJobsScreenPacket());
+                                                                    jobInstance.getLocation()));
                                                 })));
                     }
                 });

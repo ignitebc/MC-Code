@@ -5,8 +5,12 @@ import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
+import com.daqem.jobsplus.util.KoreanJosa;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
@@ -78,6 +82,8 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
 
         serverPlayer.jobsplus$addNewJob(jobInstance);
 
+        broadcastJobSelection(serverPlayer, jobInstance);
+
         // 3) UI 갱신: maxJobs는 "유효 최대 직업 수"로 전송
         NetworkManager.sendToPlayer(
                 serverPlayer.jobsplus$getServerPlayer(),
@@ -91,5 +97,21 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
                         serverPlayer.jobsplus$getStockAccount()
                 )
         );
+    }
+
+    private static void broadcastJobSelection(JobsServerPlayer serverPlayer, JobInstance jobInstance) {
+        ServerPlayer player = serverPlayer.jobsplus$getServerPlayer();
+        MinecraftServer server = player.level().getServer();
+        if (server == null) {
+            return;
+        }
+
+        String jobName = jobInstance.getName().getString();
+        Component message = JobsPlus.translatable(
+                "job.selected.broadcast",
+                player.getDisplayName(),
+                jobName,
+                KoreanJosa.eulReul(jobName));
+        server.getPlayerList().broadcastSystemMessage(message, false);
     }
 }
