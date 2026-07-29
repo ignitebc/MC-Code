@@ -1,0 +1,114 @@
+plugins {
+    id("idea")
+}
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: "idea"
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8"
+        options.compilerArgs = ["-Xlint:deprecation"]
+        options.deprecation = true
+        options.release.set(25)
+
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
+    }
+
+    dependencies {
+        implementation(libs.jspecify)
+        compileOnly(libs.lombok)
+        annotationProcessor(libs.lombok)
+    }
+
+    repositories {
+        maven {
+            url "https://libraries.minecraft.net"
+            content {
+                includeModule("org.lwjgl", "lwjgl-freetype")
+            }
+        }
+        mavenCentral()
+        maven {
+            name = "Minecraft Libraries"
+            url = uri("https://libraries.minecraft.net")
+        }
+        maven {
+            name = 'CurseForge'
+            url = 'https://minecraft.curseforge.com/api/maven'
+        }
+        maven {
+            name = "Cloth Config"
+            url = "https://maven.shedaniel.me/"
+        }
+        maven {
+            name = "GnomeCraft"
+            url = "https://maven.gnomecraft.net/releases"
+        }
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = "Sponge"
+                    url = "https://repo.spongepowered.org/repository/maven-public"
+                }
+            }
+            filter {
+                includeGroupAndSubgroups("org.spongepowered")
+            }
+        }
+    }
+
+    idea {
+        module {
+            for (fileName in ["run", "out", "logs"]) {
+                excludeDirs.add(file(fileName))
+            }
+        }
+    }
+
+    pluginManager.withPlugin("idea") {
+        if (tasks.findByName("idePostSync") == null) {
+            tasks.register("idePostSync")
+        }
+    }
+}
+
+def minecraftVersion = libs.versions.minecraftVersion.get()
+group = "fr.rakambda"
+
+base {
+    archivesName = "${project.modName}-${minecraftVersion}"
+}
+
+tasks.register('buildJar', Jar) {
+    group("Modding")
+    dependsOn(assemble)
+    dependsOn(":common:build")
+    if (project.includeFabric.toBoolean()) {
+        dependsOn(":fabric:build")
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        zipTree("common/build/libs/common-${project.version}.jar")
+    }
+    if (project.includeFabric.toBoolean()) {
+        from {
+            zipTree("fabric/build/libs/fabric-${project.version}.jar")
+        }
+    }
+
+    manifest {
+        attributes([
+                "Specification-Title"     : project.modId,
+                "Specification-Vendor"    : "Rakambda",
+                "Specification-Version"   : project.version,
+                "Implementation-Title"    : project.modName,
+                "Implementation-Version"  : "${project.version}",
+                "Implementation-Vendor"   : "Rakambda",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+assemble.finalizedBy("buildJar")

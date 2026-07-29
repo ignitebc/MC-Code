@@ -1,0 +1,28 @@
+package fr.rakambda.fallingtree.common.network;
+
+import fr.rakambda.fallingtree.common.FallingTreeCommon;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.jspecify.annotations.NonNull;
+
+@Log4j2
+@RequiredArgsConstructor
+public class PacketUtils{
+	private final FallingTreeCommon<?> mod;
+	
+	public void onClientConfigurationPacket(@NonNull ConfigurationPacket packet){
+		if(!packet.isDedicated()){
+			log.info("Received FT configuration packet from own server, skipping");
+			return;	
+		}
+		log.info("Received FT configuration packet from server, setting up proxy config values");
+		mod.getProxyConfiguration().getTools().setSpeedMultiplicand(packet.getSpeedMultiplicand());
+		mod.getProxyConfiguration().getTools().setForceToolUsage(packet.isForceToolUsage());
+		mod.getProxyConfiguration().getTrees().setBreakMode(packet.getBreakMode());
+	}
+	
+	public void onClientDisconnect(){
+		log.info("Disconnected from server, resetting proxy config values");
+		mod.getProxyConfiguration().reset();
+	}
+}
