@@ -13,6 +13,7 @@ import com.daqem.jobsplus.networking.s2c.ClientboundUnlockItemRestrictionPacket;
 import com.daqem.jobsplus.player.JobsPlayer;
 import com.daqem.jobsplus.player.job.Job;
 import dev.architectury.networking.NetworkManager;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -26,7 +27,12 @@ import java.util.concurrent.TimeUnit;
 public class JobEvents
 {
 
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor(runnable ->
+    {
+        Thread thread = new Thread(runnable, "JobsPlus-LevelUpEffects");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     public static void onJobLevelUp(JobsPlayer player, Job job)
     {
@@ -49,7 +55,7 @@ public class JobEvents
             triggerLevelUpEffects(serverPlayer);
 
             // 플레이어 코인 얻는 이벤트
-            player.jobsplus$addCoins(JobsPlusConfig.coinsPerLevelUp.get());
+            player.jobsplus$addCoins(JobsPlusConfig.COINS_PER_LEVEL_UP);
             JobInstance jobInstance = job.getJobInstance();
             serverPlayer.level().getServer().getPlayerList().broadcastSystemMessage(JobsPlus.translatable("job.level_up", serverPlayer.getName().copy().withStyle(style -> style.withColor(jobInstance.getColorDecimal())), JobsPlus.literal(String.valueOf(job.getLevel())).withStyle(style -> style.withColor(jobInstance.getColorDecimal())), jobInstance.getName().getString()), false);
         }
@@ -63,30 +69,42 @@ public class JobEvents
         }
     }
 
-    private static void schedule(Runnable task, long delayInMillis)
+    private static void schedule(ServerPlayer player, Runnable task, long delayInMillis)
     {
-        scheduler.schedule(task, delayInMillis, TimeUnit.MILLISECONDS);
+        MinecraftServer server = player.level().getServer();
+        if (server == null)
+        {
+            return;
+        }
+
+        SCHEDULER.schedule(() ->
+        {
+            if (server.isRunning())
+            {
+                server.execute(task);
+            }
+        }, delayInMillis, TimeUnit.MILLISECONDS);
     }
 
     public static void triggerLevelUpEffects(ServerPlayer player)
     {
 
         // Play first sound after 250 ms (5 ticks)
-        schedule(() ->
+        schedule(player, () ->
         {
             playLevelUpSound(player, 0.5F, 2F);
             playEXPOrbPickupSound(player);
         }, 250);
 
         // Play second sound after 450 ms (9 ticks)
-        schedule(() ->
+        schedule(player, () ->
         {
             playLevelUpSound(player, 1F, 2F);
             playEXPOrbPickupSound(player);
         }, 450);
 
         // Play final sound after 550 ms (11 ticks)
-        schedule(() ->
+        schedule(player, () ->
         {
             playLevelUpSound(player, 0.5F, 1.5F);
             playEXPOrbPickupSound(player);
