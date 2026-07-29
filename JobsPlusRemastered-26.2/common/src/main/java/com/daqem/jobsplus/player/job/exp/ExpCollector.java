@@ -5,21 +5,21 @@ import com.daqem.jobsplus.JobsPlus;
 public class ExpCollector
 {
 
-    private int jobExp = 0;
+    private double jobExp = 0.0D;
 
-    public void addExp(int exp)
+    public void addExp(double exp)
     {
         JobsPlus.debug("Adding {} experience to the job.", exp);
         jobExp += exp;
     }
 
-    public int getExp()
+    public double getExp()
     {
         return jobExp;
     }
 
     public void clear()
     {
-        jobExp = 0;
+        jobExp = 0.0D;
     }
 }

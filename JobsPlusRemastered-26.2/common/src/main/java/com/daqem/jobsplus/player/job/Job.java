@@ -105,7 +105,6 @@ public class Job
     public void setExperience(int experience, boolean triggerEvent)
     {
         int change = experience - this.experience;
-        expCollector.addExp(change);
         this.experience = experience;
         checkForLevelUp();
         if (triggerEvent)
@@ -143,6 +142,9 @@ public class Job
         {
             return;
         }
+
+        // 화면 표기는 정수 반영분이 아닌 실제 획득량을 기준으로 한다
+        expCollector.addExp(experience);
 
         double accumulatedExperience = this.experienceRemainder + experience;
         int wholeExperience = (int) Math.floor(accumulatedExperience + 1.0E-9D);

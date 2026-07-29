@@ -37,6 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -329,16 +330,26 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     public void tickTail(CallbackInfo ci) {
         jobsplus$jobs.forEach((job) -> {
             ExpCollector expCollector = job.getExpCollector();
-            int exp = expCollector.getExp();
-            if (exp > 0) {
+            double exp = expCollector.getExp();
+            double roundedExp = Math.round(exp * 10.0D) / 10.0D;
+            if (roundedExp > 0.0D) {
                 JobInstance jobInstance = job.getJobInstance();
                 MutableComponent component = JobsPlus
-                        .translatable("job.exp.gain", exp, jobInstance.getName().getString())
+                        .translatable("job.exp.gain", jobsplus$formatExp(roundedExp), jobInstance.getName().getString())
                         .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(jobInstance.getColorDecimal())))
                         .withStyle(ChatFormatting.BOLD);
                 jobsplus$getServerPlayer().sendSystemMessage(component, true);
             }
             expCollector.clear();
         });
+    }
+
+    @Unique
+    private static String jobsplus$formatExp(double exp) {
+        boolean isWholeNumber = exp == Math.rint(exp);
+        if (isWholeNumber) {
+            return String.valueOf((long) exp);
+        }
+        return String.format(Locale.ROOT, "%.1f", exp);
     }
 }
