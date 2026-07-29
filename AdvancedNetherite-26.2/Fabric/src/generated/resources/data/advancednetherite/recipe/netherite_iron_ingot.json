@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "category": "misc",
   "ingredients": [
     "#advancednetherite:ingot/upgrade_to_netherite_iron",
     "minecraft:iron_ingot",
@@ -9,7 +8,6 @@
     "minecraft:iron_ingot"
   ],
   "result": {
-    "count": 1,
     "id": "advancednetherite:netherite_iron_ingot"
   }
 }

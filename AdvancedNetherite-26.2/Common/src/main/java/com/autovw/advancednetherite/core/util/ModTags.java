@@ -121,6 +121,16 @@ public final class ModTags
     public static final TagKey<Item> SHOVEL_UPGRADE_TO_NETHERITE_GOLD = modItemTag("shovel/upgrade_to_netherite_gold");
     public static final TagKey<Item> SHOVEL_UPGRADE_TO_NETHERITE_IRON = modItemTag("shovel/upgrade_to_netherite_iron");
 
+    public static final TagKey<Item> SPEAR_NETHERITE_DIAMOND = modItemTag("spear/netherite_diamond");
+    public static final TagKey<Item> SPEAR_NETHERITE_EMERALD = modItemTag("spear/netherite_emerald");
+    public static final TagKey<Item> SPEAR_NETHERITE_GOLD = modItemTag("spear/netherite_gold");
+    public static final TagKey<Item> SPEAR_NETHERITE_IRON = modItemTag("spear/netherite_iron");
+    public static final TagKey<Item> SPEAR_NETHERITE = modItemTag("spear/netherite");
+    public static final TagKey<Item> SPEAR_UPGRADE_TO_NETHERITE_DIAMOND = modItemTag("spear/upgrade_to_netherite_diamond");
+    public static final TagKey<Item> SPEAR_UPGRADE_TO_NETHERITE_EMERALD = modItemTag("spear/upgrade_to_netherite_emerald");
+    public static final TagKey<Item> SPEAR_UPGRADE_TO_NETHERITE_GOLD = modItemTag("spear/upgrade_to_netherite_gold");
+    public static final TagKey<Item> SPEAR_UPGRADE_TO_NETHERITE_IRON = modItemTag("spear/upgrade_to_netherite_iron");
+
     public static final TagKey<Item> SWORD_NETHERITE_DIAMOND = modItemTag("sword/netherite_diamond");
     public static final TagKey<Item> SWORD_NETHERITE_EMERALD = modItemTag("sword/netherite_emerald");
     public static final TagKey<Item> SWORD_NETHERITE_GOLD = modItemTag("sword/netherite_gold");

@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "category": "misc",
   "ingredients": [
     "#advancednetherite:ingot/upgrade_to_netherite_gold",
     "minecraft:gold_ingot",
@@ -9,7 +8,6 @@
     "minecraft:gold_ingot"
   ],
   "result": {
-    "count": 1,
     "id": "advancednetherite:netherite_gold_ingot"
   }
 }

@@ -1,12 +1,15 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'fabric-loom' version '1.17-SNAPSHOT'
+    id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT'
 }
 
 group = "com.autovw.advancednetherite"
 version = "${mod_version}-${minecraft_version}"
-archivesBaseName = "advancednetherite-fabric"
+
+base {
+    archivesName = "advancednetherite-fabric"
+}
 
 sourceSets.main.resources { srcDir 'src/generated/resources' } // src directory for data generator output
 
@@ -39,13 +42,12 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
-    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+    implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     //modImplementation "curse.maven:detailab-506898:${detailab_fabric_version}"
     //modRuntimeOnly "curse.maven:catalogue-667377:${catalogue_fabric_version}"
     //modRuntimeOnly "curse.maven:configured-457570:${configured_fabric_version}"
     //modRuntimeOnly "curse.maven:jei-238222:${jei_fabric_version}"
-    implementation project(":Common")
 }
 
 processResources {
@@ -57,7 +59,7 @@ processResources {
     }
 }
 
-tasks.withType(JavaCompile) {
+tasks.named("compileJava", JavaCompile) {
     source(project(":Common").sourceSets.main.allSource)
 }
 

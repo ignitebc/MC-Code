@@ -6,7 +6,10 @@ plugins {
 
 group = 'com.autovw.advancednetherite'
 version = "${mod_version}-${minecraft_version}"
-archivesBaseName = 'advancednetherite-common'
+
+base {
+    archivesName = 'advancednetherite-common'
+}
 
 minecraft {
     version(minecraft_version)

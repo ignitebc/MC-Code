@@ -20,6 +20,34 @@ public final class ModItemRegistry
         Registry.register(BuiltInRegistries.ITEM, id("netherite_emerald_ingot"), ModItems.NETHERITE_EMERALD_INGOT);
         Registry.register(BuiltInRegistries.ITEM, id("netherite_diamond_ingot"), ModItems.NETHERITE_DIAMOND_INGOT);
 
+        Registry.register(BuiltInRegistries.ITEM, id("bitcoin"), ModItems.BITCOIN);
+
+        Registry.register(BuiltInRegistries.ITEM, id("random_box_i"), ModItems.RANDOM_BOX_I);
+        Registry.register(BuiltInRegistries.ITEM, id("random_box_ii"), ModItems.RANDOM_BOX_II);
+        Registry.register(BuiltInRegistries.ITEM, id("random_box_iii"), ModItems.RANDOM_BOX_III);
+        Registry.register(BuiltInRegistries.ITEM, id("random_box_iv"), ModItems.RANDOM_BOX_IV);
+
+        Registry.register(BuiltInRegistries.ITEM, id("reward_key_i"), ModItems.REWARD_KEY_I);
+        Registry.register(BuiltInRegistries.ITEM, id("reward_key_ii"), ModItems.REWARD_KEY_II);
+        Registry.register(BuiltInRegistries.ITEM, id("reward_key_iii"), ModItems.REWARD_KEY_III);
+        Registry.register(BuiltInRegistries.ITEM, id("reward_key_iv"), ModItems.REWARD_KEY_IV);
+
+        Registry.register(BuiltInRegistries.ITEM, id("enhancement_shard"), ModItems.ENHANCEMENT_SHARD);
+        Registry.register(BuiltInRegistries.ITEM, id("enhancement_gem"), ModItems.ENHANCEMENT_GEM);
+
+        Registry.register(BuiltInRegistries.ITEM, id("job_select_ticket"), ModItems.JOB_SELECT_TICKET);
+        Registry.register(BuiltInRegistries.ITEM, id("death_item_protection_scroll"), ModItems.DEATH_ITEM_PROTECTION_SCROLL);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_protection_scroll"), ModItems.ENHANCE_PROTECTION_SCROLL);
+        Registry.register(BuiltInRegistries.ITEM, id("chunk_claim_map"), ModItems.CHUNK_CLAIM_MAP);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_3"), ModItems.ENHANCE_SUCCESS_SCROLL_3);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_5"), ModItems.ENHANCE_SUCCESS_SCROLL_5);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_7"), ModItems.ENHANCE_SUCCESS_SCROLL_7);
+        Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_10"), ModItems.ENHANCE_SUCCESS_SCROLL_10);
+
+        Registry.register(BuiltInRegistries.ITEM, id("nomal_petbox"), ModItems.NOMAL_PETBOX);
+        Registry.register(BuiltInRegistries.ITEM, id("rare_petbox"), ModItems.RARE_PETBOX);
+        Registry.register(BuiltInRegistries.ITEM, id("legend_petbox"), ModItems.LEGEND_PETBOX);
+
         Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_helmet"), ModItems.NETHERITE_IRON_HELMET);
         Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_chestplate"), ModItems.NETHERITE_IRON_CHESTPLATE);
         Registry.register(BuiltInRegistries.ITEM, id("netherite_iron_leggings"), ModItems.NETHERITE_IRON_LEGGINGS);

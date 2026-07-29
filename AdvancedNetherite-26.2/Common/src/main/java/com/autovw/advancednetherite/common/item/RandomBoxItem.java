@@ -53,7 +53,7 @@ public class RandomBoxItem extends AdvancedItem {
 
         RandomBoxConfig config = RandomBoxConfigManager.get(server, configId);
         if (config == null) {
-            player.displayClientMessage(Component.literal("상자 설정(JSON)을 찾지 못했습니다: " + configId), true);
+            player.sendOverlayMessage(Component.literal("상자 설정(JSON)을 찾지 못했습니다: " + configId));
             return InteractionResult.FAIL;
         }
 
@@ -61,13 +61,13 @@ public class RandomBoxItem extends AdvancedItem {
         int consumeKey = (config.consume != null && config.consume.key > 0) ? config.consume.key : 1;
 
         if (config.required_key == null) {
-            player.displayClientMessage(Component.literal("required_key가 설정되지 않았습니다: " + configId), true);
+            player.sendOverlayMessage(Component.literal("required_key가 설정되지 않았습니다: " + configId));
             return InteractionResult.FAIL;
         }
 
         Item keyItem = getItemOrNull(config.required_key);
         if (keyItem == null) {
-            player.displayClientMessage(Component.literal("열쇠 아이템을 찾지 못했습니다: " + config.required_key), true);
+            player.sendOverlayMessage(Component.literal("열쇠 아이템을 찾지 못했습니다: " + config.required_key));
             return InteractionResult.FAIL;
         }
 
@@ -75,12 +75,12 @@ public class RandomBoxItem extends AdvancedItem {
 
         int keyHave = countItem(inv, keyItem);
         if (keyHave < consumeKey) {
-            player.displayClientMessage(Component.literal("열쇠가 부족합니다."), true);
+            player.sendOverlayMessage(Component.literal("열쇠가 부족합니다."));
             return InteractionResult.FAIL;
         }
 
         if (boxStack.getCount() < consumeBox) {
-            player.displayClientMessage(Component.literal("상자 수량이 부족합니다."), true);
+            player.sendOverlayMessage(Component.literal("상자 수량이 부족합니다."));
             return InteractionResult.FAIL;
         }
 
@@ -101,7 +101,7 @@ public class RandomBoxItem extends AdvancedItem {
 
         List<RandomBoxConfig.Reward> rewards = config.rewards;
         if (rewards == null || rewards.isEmpty()) {
-            player.displayClientMessage(Component.literal("보상 항목이 없습니다."), true);
+            player.sendOverlayMessage(Component.literal("보상 항목이 없습니다."));
             return InteractionResult.CONSUME;
         }
 
