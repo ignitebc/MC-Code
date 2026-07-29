@@ -9,7 +9,6 @@ import dev.architectury.event.events.common.ExplosionEvent;
 import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import dev.architectury.utils.value.IntValue;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -20,6 +19,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
@@ -37,7 +37,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
-import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.phys.BlockHitResult;
@@ -69,17 +68,17 @@ public class ChunkProtectionEvents {
         // 지도서를 들고 우클릭하면 서 있는 청크를 구매한다.
         InteractionEvent.RIGHT_CLICK_ITEM.register((Player player, InteractionHand hand) -> {
             if (player.level().isClientSide() || hand != InteractionHand.MAIN_HAND) {
-                return InteractionResult.PASS;
+                return EventResult.pass();
             }
             ItemStack itemStack = player.getItemInHand(hand);
             if (!isChunkClaimMap(itemStack)) {
-                return InteractionResult.PASS;
+                return EventResult.pass();
             }
-            return claimChunk(player, itemStack);
+            return EventResult.fromMinecraft(claimChunk(player, itemStack));
         });
 
         BlockEvent.BREAK.register((Level level, BlockPos pos, BlockState state,
-                                   ServerPlayer player, IntValue experience) -> {
+                                   ServerPlayer player) -> {
             if (ChunkProtection.denyAndNotify(level, pos, player)) {
                 return EventResult.interruptFalse();
             }
@@ -106,7 +105,7 @@ public class ChunkProtectionEvents {
                 return EventResult.interruptFalse();
             }
             // 폭발물은 터진 뒤에 막을 수 없으므로 피해 반경이 남의 땅에 닿는지 미리 재서 설치를 막는다.
-            int blastRadius = getBlastRadius(level, state);
+            int blastRadius = getBlastRadius(level, pos, state);
             if (blastRadius > 0
                     && ChunkProtection.denyReachAndNotify(level, pos, blastRadius, player, "chunk.blast_too_close")) {
                 return EventResult.interruptFalse();
@@ -119,24 +118,24 @@ public class ChunkProtectionEvents {
                                                     Direction direction) -> {
             Level level = player.level();
             if (ChunkProtection.denyAndNotify(level, pos, player)) {
-                return InteractionResult.FAIL;
+                return EventResult.interruptFalse();
             }
 
             BlockState blockState = level.getBlockState(pos);
             BlockPos connectedBlockPos = getConnectedBlockPos(pos, blockState);
             if (connectedBlockPos != null
                     && ChunkProtection.denyAndNotify(level, connectedBlockPos, player)) {
-                return InteractionResult.FAIL;
+                return EventResult.interruptFalse();
             }
 
-            int activationBlastRadius = getBlastRadius(level, blockState);
+            int activationBlastRadius = getBlastRadius(level, pos, blockState);
             if (activationBlastRadius > 0
                     && ChunkProtection.denyReachAndNotify(level,
                     pos,
                     activationBlastRadius,
                     player,
                     "chunk.blast_too_close")) {
-                return InteractionResult.FAIL;
+                return EventResult.interruptFalse();
             }
 
             ItemStack itemStack = player.getItemInHand(hand);
@@ -146,7 +145,7 @@ public class ChunkProtectionEvents {
                     10,
                     player,
                     "chunk.blast_too_close")) {
-                return InteractionResult.FAIL;
+                return EventResult.interruptFalse();
             }
             if (isFilledBucket(itemStack)
                     && ChunkProtection.denyReachAndNotify(level,
@@ -154,9 +153,9 @@ public class ChunkProtectionEvents {
                     1,
                     player,
                     "chunk.fluid_too_close")) {
-                return InteractionResult.FAIL;
+                return EventResult.interruptFalse();
             }
-            return InteractionResult.PASS;
+            return EventResult.pass();
         });
 
         // 아이템 액자, 방어구 거치대, 동물 상호작용을 막는다. 전투는 별개라 공격은 막지 않는다.
@@ -176,9 +175,9 @@ public class ChunkProtectionEvents {
                 player = tramplingPlayer;
             }
             if (!ChunkProtection.canModify(level, pos, player)) {
-                return InteractionResult.FAIL;
+                return EventResult.interruptFalse();
             }
-            return InteractionResult.PASS;
+            return EventResult.pass();
         });
 
         // 액자, 갑옷 거치대, 보트, 광산 수레처럼 공격으로 파괴되는 비전투 엔티티를 보호한다.
@@ -204,12 +203,12 @@ public class ChunkProtectionEvents {
         // 버킷 채우기는 플랫폼에 따라 블록 우클릭 이벤트와 별도로 호출될 수 있어 함께 검사한다.
         PlayerEvent.FILL_BUCKET.register((Player player, Level level, ItemStack itemStack, HitResult target) -> {
             if (!(target instanceof BlockHitResult blockHitResult)) {
-                return InteractionResult.PASS;
+                return EventResult.pass();
             }
             if (ChunkProtection.denyAndNotify(level, blockHitResult.getBlockPos(), player)) {
-                return InteractionResult.FAIL;
+                return EventResult.interruptFalse();
             }
-            return InteractionResult.PASS;
+            return EventResult.pass();
         });
 
         // 플레이어가 일으켰거나 주인을 추적할 수 없는 폭발물이 소유 청크에 닿으면 폭발 자체를 취소한다.
@@ -235,15 +234,24 @@ public class ChunkProtectionEvents {
     /**
      * 플레이어가 직접 놓아 터뜨릴 수 있는 블록의 파괴 반경이다. 몹이 일으키는 폭발은 대상이 아니다.
      */
-    private static int getBlastRadius(Level level, BlockState state) {
+    private static int getBlastRadius(Level level, BlockPos pos, BlockState state) {
         if (state.is(Blocks.TNT)) {
             return 8;
         }
-        if (state.is(Blocks.RESPAWN_ANCHOR) && !RespawnAnchorBlock.canSetSpawn(level)) {
-            return 10;
+        if (state.is(Blocks.RESPAWN_ANCHOR)) {
+            boolean respawnAnchorWorks = level.environmentAttributes()
+                    .getValue(EnvironmentAttributes.RESPAWN_ANCHOR_WORKS, pos);
+            if (!respawnAnchorWorks) {
+                return 10;
+            }
         }
-        if (state.is(BlockTags.BEDS) && !BedBlock.canSetSpawn(level)) {
-            return 10;
+        if (state.is(BlockTags.BEDS)) {
+            boolean bedExplodes = level.environmentAttributes()
+                    .getValue(EnvironmentAttributes.BED_RULE, pos)
+                    .explodes();
+            if (bedExplodes) {
+                return 10;
+            }
         }
         return 0;
     }
@@ -288,29 +296,32 @@ public class ChunkProtectionEvents {
      */
     private static InteractionResult claimChunk(Player player, ItemStack itemStack) {
         Level level = player.level();
-        ChunkPos chunkPos = new ChunkPos(player.blockPosition());
+        ChunkPos chunkPos = ChunkPos.containing(player.blockPosition());
         ChunkOwnership.Owner existing = ChunkOwnership.getOwner(level, chunkPos);
 
         if (existing != null) {
             boolean mine = existing.uuid().equals(player.getUUID());
             if (mine) {
-                player.displayClientMessage(ItemRestrictions.translatable("chunk.claim.already_own"), false);
+                player.sendSystemMessage(ItemRestrictions.translatable("chunk.claim.already_own"));
             } else {
-                player.displayClientMessage(ItemRestrictions.translatable("chunk.claim.already_claimed"), false);
+                player.sendSystemMessage(ItemRestrictions.translatable("chunk.claim.already_claimed"));
             }
             return InteractionResult.FAIL;
         }
 
         ChunkOwnership.Owner owner = new ChunkOwnership.Owner(player.getUUID());
         if (!ChunkOwnership.claim(level, chunkPos, owner)) {
-            player.displayClientMessage(ItemRestrictions.translatable("chunk.claim.failed"), false);
+            player.sendSystemMessage(ItemRestrictions.translatable("chunk.claim.failed"));
             return InteractionResult.FAIL;
         }
 
         if (!player.getAbilities().instabuild) {
             itemStack.shrink(1);
         }
-        player.displayClientMessage(ItemRestrictions.translatable("chunk.claim.success", chunkPos.x, chunkPos.z), false);
+        player.sendSystemMessage(ItemRestrictions.translatable(
+                "chunk.claim.success",
+                chunkPos.x(),
+                chunkPos.z()));
         return InteractionResult.SUCCESS;
     }
 }

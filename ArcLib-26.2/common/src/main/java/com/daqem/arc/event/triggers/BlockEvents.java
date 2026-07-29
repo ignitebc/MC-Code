@@ -44,7 +44,7 @@ public class BlockEvents {
             return EventResult.pass();
         });
 
-        BlockEvent.BREAK.register((level, pos, state, player, xp) -> {
+        BlockEvent.BREAK.register((level, pos, state, player) -> {
 
             if (!(player instanceof ArcServerPlayer arcServerPlayer)) {
                 return EventResult.pass();
@@ -56,7 +56,7 @@ public class BlockEvents {
 
             final BlockPos blockPos = pos.immutable();
             final BlockState originalState = state;
-            final int expDrop = (xp == null) ? 0 : xp.get();
+            final int expDrop = 0;
 
             // ★ 핵심: "캔 순간"의 도구를 반드시 캡처
             final ItemStack usedTool =

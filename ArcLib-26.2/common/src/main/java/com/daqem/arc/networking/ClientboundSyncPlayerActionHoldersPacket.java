@@ -30,7 +30,7 @@ public class ClientboundSyncPlayerActionHoldersPacket implements CustomPacketPay
         public void encode(RegistryFriendlyByteBuf buf, ClientboundSyncPlayerActionHoldersPacket packet) {
             buf.writeInt(packet.actionHolders.size());
             for (IActionHolder actionHolder : packet.actionHolders) {
-                buf.writeResourceLocation(actionHolder.getLocation());
+                buf.writeIdentifier(actionHolder.getLocation());
             }
         }
     };
@@ -43,7 +43,7 @@ public class ClientboundSyncPlayerActionHoldersPacket implements CustomPacketPay
         List<Identifier> actionHolderLocations = new ArrayList<>();
         int size = friendlyByteBuf.readInt();
         for (int i = 0; i < size; i++) {
-            actionHolderLocations.add(friendlyByteBuf.readResourceLocation());
+            actionHolderLocations.add(friendlyByteBuf.readIdentifier());
         }
         this.actionHolders = ActionHolderManager.getInstance().getActionHolders(actionHolderLocations);
     }

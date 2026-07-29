@@ -15,16 +15,16 @@ public interface IConditionSerializer<T extends ICondition> extends ArcSerialize
     T fromNetwork(Identifier location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted);
 
     static ICondition fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf) {
-        Identifier resourceLocation = friendlyByteBuf.readResourceLocation();
-        Identifier resourceLocation2 = friendlyByteBuf.readResourceLocation();
+        Identifier resourceLocation = friendlyByteBuf.readIdentifier();
+        Identifier resourceLocation2 = friendlyByteBuf.readIdentifier();
         return ArcRegistry.CONDITION.getOptional(resourceLocation).orElseThrow(
                 () -> new IllegalArgumentException("Unknown condition serializer " + resourceLocation)
         ).getSerializer().fromNetwork(resourceLocation2, friendlyByteBuf);
     }
 
     static <T extends ICondition> void toNetwork(T condition, RegistryFriendlyByteBuf friendlyByteBuf, Identifier location) {
-        friendlyByteBuf.writeResourceLocation(ArcRegistry.CONDITION.getKey(condition.getType()));
-        friendlyByteBuf.writeResourceLocation(location);
+        friendlyByteBuf.writeIdentifier(ArcRegistry.CONDITION.getKey(condition.getType()));
+        friendlyByteBuf.writeIdentifier(location);
         ((IConditionSerializer<T>)condition.getSerializer()).toNetwork(friendlyByteBuf, condition);
 
     }

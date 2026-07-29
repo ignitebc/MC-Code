@@ -46,6 +46,10 @@ public class CustomButtonWidget extends ButtonWidget {
     @Override
     protected void extractContents(@NotNull GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.sprites.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
+        this.extractLabel(guiGraphics);
+    }
+
+    protected void extractLabel(GuiGraphicsExtractor guiGraphics) {
         this.extractDefaultLabel(guiGraphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
     }
 }

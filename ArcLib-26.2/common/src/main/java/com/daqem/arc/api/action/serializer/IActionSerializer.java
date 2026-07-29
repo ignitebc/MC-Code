@@ -24,16 +24,16 @@ public interface IActionSerializer<T extends IAction> extends ArcSerializer {
     T fromNetwork(Identifier location, RegistryFriendlyByteBuf friendlyByteBuf, Identifier actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions);
 
     static IAction fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf) {
-        Identifier resourceLocation = friendlyByteBuf.readResourceLocation();
-        Identifier resourceLocation2 = friendlyByteBuf.readResourceLocation();
+        Identifier resourceLocation = friendlyByteBuf.readIdentifier();
+        Identifier resourceLocation2 = friendlyByteBuf.readIdentifier();
         return ArcRegistry.ACTION.getOptional(resourceLocation).orElseThrow(
                 () -> new IllegalArgumentException("Unknown action serializer " + resourceLocation)
         ).getSerializer().fromNetwork(resourceLocation2, friendlyByteBuf);
     }
 
     static <T extends IAction> void toNetwork(T action, RegistryFriendlyByteBuf friendlyByteBuf) {
-        friendlyByteBuf.writeResourceLocation(ArcRegistry.ACTION.getKey(action.getType()));
-        friendlyByteBuf.writeResourceLocation(action.getLocation());
+        friendlyByteBuf.writeIdentifier(ArcRegistry.ACTION.getKey(action.getType()));
+        friendlyByteBuf.writeIdentifier(action.getLocation());
         ((IActionSerializer<T>)action.getSerializer()).toNetwork(friendlyByteBuf, action);
 
     }
@@ -74,16 +74,16 @@ public interface IActionSerializer<T extends IAction> extends ArcSerializer {
 
     default T fromNetwork(Identifier location, RegistryFriendlyByteBuf friendlyByteBuf) {
         return fromNetwork(location, friendlyByteBuf,
-                friendlyByteBuf.readResourceLocation(),
-                ArcRegistry.ACTION_HOLDER.getOptional(friendlyByteBuf.readResourceLocation()).orElse(null),
+                friendlyByteBuf.readIdentifier(),
+                ArcRegistry.ACTION_HOLDER.getOptional(friendlyByteBuf.readIdentifier()).orElse(null),
                 friendlyByteBuf.readBoolean(),
                 friendlyByteBuf.readList(object -> IRewardSerializer.fromNetwork((RegistryFriendlyByteBuf) object)),
                 friendlyByteBuf.readList(object -> IConditionSerializer.fromNetwork((RegistryFriendlyByteBuf) object)));
     }
 
     default void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, T type) {
-        friendlyByteBuf.writeResourceLocation(type.getActionHolderLocation());
-        friendlyByteBuf.writeResourceLocation(type.getActionHolderType().getLocation());
+        friendlyByteBuf.writeIdentifier(type.getActionHolderLocation());
+        friendlyByteBuf.writeIdentifier(type.getActionHolderType().getLocation());
         friendlyByteBuf.writeBoolean(type.shouldPerformOnClient());
         friendlyByteBuf.writeCollection(type.getRewards(),
                 (friendlyByteBuf1, reward) -> IRewardSerializer.toNetwork(reward, (RegistryFriendlyByteBuf) friendlyByteBuf1, type.getLocation()));

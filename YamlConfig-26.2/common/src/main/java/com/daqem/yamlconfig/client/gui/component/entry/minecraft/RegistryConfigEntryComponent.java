@@ -33,7 +33,7 @@ public class RegistryConfigEntryComponent<T> extends BaseConfigEntryComponent<Re
                 List<Component> list = super.validateInput(input);
                 Identifier value = Identifier.tryParse(input);
                 if (value == null || value.getPath().isEmpty() || value.getNamespace().isEmpty() || value.getPath().contains(" ") || value.getNamespace().contains(" ")){
-                    list.add(ValidationErrors.invalidResourceLocation());
+                    list.add(ValidationErrors.invalidIdentifier());
                 } else {
                     if (!getConfigEntry().getRegistry().keySet().contains(value)) {
                         list.add(ValidationErrors.invalidRegistryValue());

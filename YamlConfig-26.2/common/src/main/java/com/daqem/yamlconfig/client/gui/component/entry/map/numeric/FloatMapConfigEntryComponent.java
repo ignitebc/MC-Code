@@ -37,8 +37,8 @@ public class FloatMapConfigEntryComponent extends BaseMapConfigEntryComponent<Fl
 
         Map<String, Float> map = this.editBoxWidgets.keySet().stream()
                 .collect(Collectors.toMap(
-                        entry -> entry.getA().getValue(),
-                        entry -> Float.parseFloat(entry.getB().getValue())
+                        entry -> entry.keyWidget().getValue(),
+                        entry -> Float.parseFloat(entry.valueWidget().getValue())
                 ));
 
         this.getConfigEntry().set(map);

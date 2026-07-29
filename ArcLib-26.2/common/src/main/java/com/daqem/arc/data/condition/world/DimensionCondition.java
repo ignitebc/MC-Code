@@ -25,7 +25,7 @@ public class DimensionCondition extends AbstractCondition {
 
     @Override
     public Component getDescription() {
-        return getDescription(dimension.location());
+        return getDescription(dimension.identifier());
     }
 
     @Override
@@ -33,7 +33,7 @@ public class DimensionCondition extends AbstractCondition {
         Level world = actionData.getData(ActionDataType.WORLD);
         if (world == null)
             world = actionData.getPlayer().arc$getLevel();
-        return world.dimension().location().equals(dimension.location());
+        return world.dimension().identifier().equals(dimension.identifier());
     }
 
     @Override

@@ -12,13 +12,15 @@ import dev.architectury.networking.NetworkManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.permissions.Permissions;
 
 import java.util.List;
 
 public class ArcCommand {
 
     public static void registerCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("arc").requires(source -> source.hasPermission(2))
+        dispatcher.register(Commands.literal("arc").requires(source ->
+                        source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                 .then(Commands.literal("screen")
                         .then(Commands.literal("action")
                                 .then(Commands.argument("action", ActionArgument.action())

@@ -35,7 +35,7 @@ public class ItemsCondition extends AbstractCondition {
 
     @Override
     public Component getDescription() {
-        return getDescription(items.stream().map(Item::getName).toArray(Component[]::new), itemTags.stream().map(TagKey::location).toArray(Identifier[]::new));
+        return getDescription(items.stream().map(item -> item.getName(item.getDefaultInstance())).toArray(Component[]::new), itemTags.stream().map(TagKey::location).toArray(Identifier[]::new));
     }
 
     @Override
@@ -110,7 +110,7 @@ public class ItemsCondition extends AbstractCondition {
             }
 
             for (int i = 0; i < tagCount; i++) {
-                itemTags.add(TagKey.create(BuiltInRegistries.ITEM.key(), friendlyByteBuf.readResourceLocation()));
+                itemTags.add(TagKey.create(BuiltInRegistries.ITEM.key(), friendlyByteBuf.readIdentifier()));
             }
 
 
@@ -126,7 +126,7 @@ public class ItemsCondition extends AbstractCondition {
             friendlyByteBuf.writeVarInt(type.items.size());
             friendlyByteBuf.writeVarInt(type.itemTags.size());
             type.items.forEach(item -> ByteBufCodecs.registry(Registries.ITEM).encode(friendlyByteBuf, item));
-            type.itemTags.forEach(tag -> friendlyByteBuf.writeResourceLocation(tag.location()));
+            type.itemTags.forEach(tag -> friendlyByteBuf.writeIdentifier(tag.location()));
         }
     }
 }

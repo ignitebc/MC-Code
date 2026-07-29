@@ -9,6 +9,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permissions;
 import org.jetbrains.annotations.NotNull;
 
 public class ServerboundOpenConfigScreenPacket implements CustomPacketPayload {
@@ -45,7 +46,7 @@ public class ServerboundOpenConfigScreenPacket implements CustomPacketPayload {
 
     public void handleServerSide(NetworkManager.PacketContext packetContext) {
 
-        if (packetContext.getPlayer().hasPermissions(2)) {
+        if (packetContext.getPlayer().permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
             NetworkManager.sendToPlayer(
                     (ServerPlayer) packetContext.getPlayer(),
                     new ClientboundOpenConfigScreenPacket(this.config)

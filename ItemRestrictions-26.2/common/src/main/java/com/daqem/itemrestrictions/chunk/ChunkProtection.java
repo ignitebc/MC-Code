@@ -75,7 +75,7 @@ public final class ChunkProtection {
             return;
         }
         LAST_MESSAGE_TIME.put(player.getUUID(), now);
-        player.displayClientMessage(message, true);
+        player.sendOverlayMessage(message);
     }
 
     /**
@@ -163,10 +163,10 @@ public final class ChunkProtection {
         if (!ChunkOwnership.isAvailable()) {
             return true;
         }
-        ChunkPos min = new ChunkPos(origin.offset(-radius, 0, -radius));
-        ChunkPos max = new ChunkPos(origin.offset(radius, 0, radius));
-        for (int chunkX = min.x; chunkX <= max.x; chunkX++) {
-            for (int chunkZ = min.z; chunkZ <= max.z; chunkZ++) {
+        ChunkPos min = ChunkPos.containing(origin.offset(-radius, 0, -radius));
+        ChunkPos max = ChunkPos.containing(origin.offset(radius, 0, radius));
+        for (int chunkX = min.x(); chunkX <= max.x(); chunkX++) {
+            for (int chunkZ = min.z(); chunkZ <= max.z(); chunkZ++) {
                 ChunkOwnership.Owner owner = ChunkOwnership.getOwner(level, new ChunkPos(chunkX, chunkZ));
                 if (owner == null) {
                     continue;
@@ -192,7 +192,7 @@ public final class ChunkProtection {
             Long last = LAST_MESSAGE_TIME.get(player.getUUID());
             if (last == null || now - last >= MESSAGE_COOLDOWN_MILLIS) {
                 LAST_MESSAGE_TIME.put(player.getUUID(), now);
-                player.displayClientMessage(ItemRestrictions.translatable(translationKey), true);
+                player.sendOverlayMessage(ItemRestrictions.translatable(translationKey));
             }
         }
         return true;

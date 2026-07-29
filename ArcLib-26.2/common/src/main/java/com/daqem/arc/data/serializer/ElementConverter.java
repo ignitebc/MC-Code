@@ -58,7 +58,7 @@ public class ElementConverter<T> {
         // If not found in the registry, it will return the default value for the type.
         // This checks if the element is actually in the registry.
         else if (type == registry.get(Identifier.parse("x")) || type == null) {
-            throw new IllegalArgumentException(element + " could not be found in registry " + registry.key().location());
+            throw new IllegalArgumentException(element + " could not be found in registry " + registry.key().identifier());
         }
 
         return type;
@@ -67,7 +67,7 @@ public class ElementConverter<T> {
     private Function<String, T> convertToElement() {
         return elementLoc -> registry.get(
                 Identifier.parse(elementLoc)).map(Holder.Reference::value).orElseThrow(
-                () -> new IllegalArgumentException(elementLoc + " could not be found in registry " + registry.key().location()));
+                () -> new IllegalArgumentException(elementLoc + " could not be found in registry " + registry.key().identifier()));
     }
 
     private Function<String, TagKey<T>> replaceHashAndConvertToTag() {

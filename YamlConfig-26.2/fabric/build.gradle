@@ -20,16 +20,16 @@ configurations {
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
-    modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    implementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    api "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     // Remove the next line if you don't want to depend on the API
-    modApi "dev.architectury:architectury-fabric:${project.architectury_version}"
+    api "dev.architectury:architectury-fabric:${project.architectury_version}"
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    common(project(path: ":common", configuration: "runtimeElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
     shadowCommon "org.snakeyaml:snakeyaml-engine:2.7"
-    modImplementation files(rootProject.file("../UILib-26.2/fabric/build/libs/uilib-2.1.4-26.2-fabric.jar"))
+    implementation files(rootProject.file("../UILib-26.2/fabric/build/libs/uilib-2.1.4-26.2-fabric.jar"))
 }
 
 processResources {
@@ -43,7 +43,10 @@ processResources {
             "mod_website": project.mod_website,
             "mod_repository": project.mod_repository,
 
+            "fabric_loader_version": project.fabric_loader_version,
+            "fabric_api_version": project.fabric_api_version,
             "minecraft_version": project.minecraft_version,
+            "java_version": project.java_version,
             "architectury_version": project.architectury_version,
             "ui_library_version": project.ui_library_version
     ]

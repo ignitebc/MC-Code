@@ -2,7 +2,6 @@ package com.daqem.yamlconfig.client.gui.component;
 
 import com.daqem.uilib.gui.widget.ButtonWidget;
 import com.daqem.yamlconfig.YamlConfig;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -24,7 +23,6 @@ public class CrossButtonComponent extends ButtonWidget {
 
     @Override
     protected void extractContents(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
-        Minecraft minecraft = Minecraft.getInstance();
         guiGraphics.blitSprite(
                 RenderPipelines.GUI_TEXTURED,
                 DEFAULT_SPRITES.get(this.active, this.isHoveredOrFocused()),
@@ -34,7 +32,5 @@ public class CrossButtonComponent extends ButtonWidget {
                 this.getHeight(),
                 ARGB.white(this.alpha)
         );
-        int k = ARGB.color(this.alpha, this.active ? -1 : -6250336);
-        this.renderString(guiGraphics, minecraft.font, k);
     }
 }

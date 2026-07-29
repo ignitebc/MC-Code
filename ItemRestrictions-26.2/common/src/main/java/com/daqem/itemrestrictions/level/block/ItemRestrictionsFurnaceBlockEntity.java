@@ -27,7 +27,7 @@ public interface ItemRestrictionsFurnaceBlockEntity {
 
     AbstractFurnaceBlockEntity itemrestrictions$getAbstractFurnaceBlockEntity();
 
-    RecipeHolder<?> itemrestrictions$getRecipe();
+    RecipeHolder<? extends AbstractCookingRecipe> itemrestrictions$getRecipe();
 
     boolean itemrestrictions$isRestricted();
 

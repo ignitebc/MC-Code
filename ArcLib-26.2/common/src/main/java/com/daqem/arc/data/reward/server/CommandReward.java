@@ -47,7 +47,7 @@ public class CommandReward extends AbstractReward {
             String command = this.command
                     .replace("%player%", serverPlayer.getGameProfile().name())
                     .replace("%uuid%", serverPlayer.getGameProfile().id().toString())
-                    .replace("%world%", serverPlayer.level().dimension().location().toString())
+                    .replace("%world%", serverPlayer.level().dimension().identifier().toString())
                     .replace("%player_location%", serverPlayer.blockPosition().getX() + " " + serverPlayer.blockPosition().getY() + " " + serverPlayer.blockPosition().getZ());
 
             BlockPos blockPos = actionData.getData(ActionDataType.BLOCK_POSITION);

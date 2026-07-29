@@ -11,7 +11,7 @@ import dev.architectury.networking.NetworkManager;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permissions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -43,7 +43,7 @@ public class ServerboundSaveConfigPacket implements CustomPacketPayload {
     }
 
     public void handleServerSide(NetworkManager.PacketContext packetContext) {
-        if (packetContext.getPlayer().hasPermissions(2)) {
+        if (packetContext.getPlayer().permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
             IConfig existingConfig = YamlConfig.CONFIG_MANAGER.getConfig(config.getModId(), config.getName());
             existingConfig.updateEntries(config.getEntries());
             existingConfig.save();

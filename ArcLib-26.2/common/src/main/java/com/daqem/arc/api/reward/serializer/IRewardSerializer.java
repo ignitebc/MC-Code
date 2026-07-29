@@ -15,16 +15,16 @@ public interface IRewardSerializer<T extends IReward> extends ArcSerializer {
     T fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority);
 
     static IReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf) {
-        Identifier resourceLocation = friendlyByteBuf.readResourceLocation();
-        Identifier resourceLocation2 = friendlyByteBuf.readResourceLocation();
+        Identifier resourceLocation = friendlyByteBuf.readIdentifier();
+        Identifier resourceLocation2 = friendlyByteBuf.readIdentifier();
         return ArcRegistry.REWARD.getOptional(resourceLocation).orElseThrow(
                 () -> new IllegalArgumentException("Unknown reward serializer " + resourceLocation)
         ).getSerializer().fromNetwork(resourceLocation2, friendlyByteBuf);
     }
 
     static <T extends IReward> void toNetwork(T reward, RegistryFriendlyByteBuf friendlyByteBuf, Identifier location) {
-        friendlyByteBuf.writeResourceLocation(ArcRegistry.REWARD.getKey(reward.getType()));
-        friendlyByteBuf.writeResourceLocation(location);
+        friendlyByteBuf.writeIdentifier(ArcRegistry.REWARD.getKey(reward.getType()));
+        friendlyByteBuf.writeIdentifier(location);
         ((IRewardSerializer<T>)reward.getSerializer()).toNetwork(friendlyByteBuf, reward);
 
     }

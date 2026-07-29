@@ -91,14 +91,14 @@ public class ItemRestriction {
         }
 
         public static void toNetwork(RegistryFriendlyByteBuf buf, ItemRestriction itemRestriction) {
-            buf.writeResourceLocation(itemRestriction.location);
+            buf.writeIdentifier(itemRestriction.location);
             ItemStack.STREAM_CODEC.encode(buf, itemRestriction.icon);
             buf.writeCollection(itemRestriction.restrictionTypes, (byteBuf, restrictionType) -> byteBuf.writeUtf(restrictionType.name()));
             buf.writeCollection(itemRestriction.conditions, (byteBuf, condition) -> IConditionSerializer.toNetwork(condition, (RegistryFriendlyByteBuf) byteBuf, itemRestriction.getLocation()));
         }
 
         public static ItemRestriction fromNetwork(RegistryFriendlyByteBuf buf) {
-            Identifier location = buf.readResourceLocation();
+            Identifier location = buf.readIdentifier();
             ItemStack icon = ItemStack.STREAM_CODEC.decode(buf);
             List<String> restrictionTypeStrings = buf.readList(FriendlyByteBuf::readUtf);
             List<RestrictionType> restrictionTypes = new ArrayList<>();

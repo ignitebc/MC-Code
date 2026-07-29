@@ -79,19 +79,19 @@ public class IdentifierConfigEntry extends BaseConfigEntry<Identifier> implement
 
         @Override
         public void valueToNetwork(RegistryFriendlyByteBuf buf, IIdentifierConfigEntry configEntry, Identifier value) {
-            buf.writeResourceLocation(value);
+            buf.writeIdentifier(value);
         }
 
         @Override
         public Identifier valueFromNetwork(RegistryFriendlyByteBuf buf) {
-            return buf.readResourceLocation();
+            return buf.readIdentifier();
         }
 
         @Override
         public void toNetwork(RegistryFriendlyByteBuf buf, IIdentifierConfigEntry configEntry) {
             buf.writeUtf(configEntry.getKey());
-            buf.writeResourceLocation(configEntry.get());
-            buf.writeResourceLocation(configEntry.getDefaultValue());
+            buf.writeIdentifier(configEntry.get());
+            buf.writeIdentifier(configEntry.getDefaultValue());
             buf.writeUtf(configEntry.getPattern() == null ? "" : configEntry.getPattern());
             buf.writeCollection(configEntry.getComments().getComments(false), FriendlyByteBuf::writeUtf);
         }
@@ -99,8 +99,8 @@ public class IdentifierConfigEntry extends BaseConfigEntry<Identifier> implement
         @Override
         public IIdentifierConfigEntry fromNetwork(RegistryFriendlyByteBuf buf) {
             String key = buf.readUtf();
-            Identifier value = buf.readResourceLocation();
-            Identifier defaultValue = buf.readResourceLocation();
+            Identifier value = buf.readIdentifier();
+            Identifier defaultValue = buf.readIdentifier();
             String pattern = buf.readUtf();
             IdentifierConfigEntry configEntry = new IdentifierConfigEntry(key, defaultValue, pattern.isEmpty() ? null : pattern);
             configEntry.set(value);

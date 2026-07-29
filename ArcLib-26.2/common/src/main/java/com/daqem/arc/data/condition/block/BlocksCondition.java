@@ -91,7 +91,7 @@ public class BlocksCondition extends AbstractCondition {
             }
 
             for (int i = 0; i < tagCount; i++) {
-                blockTags.add(TagKey.create(BuiltInRegistries.BLOCK.key(), friendlyByteBuf.readResourceLocation()));
+                blockTags.add(TagKey.create(BuiltInRegistries.BLOCK.key(), friendlyByteBuf.readIdentifier()));
             }
 
 
@@ -107,7 +107,7 @@ public class BlocksCondition extends AbstractCondition {
             friendlyByteBuf.writeVarInt(type.blocks.size());
             friendlyByteBuf.writeVarInt(type.blockTags.size());
             type.blocks.forEach(block -> friendlyByteBuf.writeVarInt(BuiltInRegistries.BLOCK.getId(block)));
-            type.blockTags.forEach(tag -> friendlyByteBuf.writeResourceLocation(tag.location()));
+            type.blockTags.forEach(tag -> friendlyByteBuf.writeIdentifier(tag.location()));
         }
     }
 }

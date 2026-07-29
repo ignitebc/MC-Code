@@ -38,7 +38,7 @@ public final class ChunkOwnership {
     private static final String FILE_NAME = "chunk_owners.json";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    /** 차원별 청크 소유자. 키는 {@link ChunkPos#toLong(int, int)} 값이다. */
+    /** 차원별 청크 소유자. 키는 {@link ChunkPos#pack(int, int)} 값이다. */
     private static final Map<Identifier, Map<Long, Owner>> OWNERS = new ConcurrentHashMap<>();
     @Nullable
     private static Path savePath;
@@ -142,16 +142,16 @@ public final class ChunkOwnership {
 
     @Nullable
     public static Owner getOwner(Level level, ChunkPos chunkPos) {
-        Map<Long, Owner> chunks = OWNERS.get(level.dimension().location());
+        Map<Long, Owner> chunks = OWNERS.get(level.dimension().identifier());
         if (chunks == null) {
             return null;
         }
-        return chunks.get(chunkPos.toLong());
+        return chunks.get(chunkPos.pack());
     }
 
     @Nullable
     public static Owner getOwner(Level level, BlockPos blockPos) {
-        return getOwner(level, new ChunkPos(blockPos));
+        return getOwner(level, ChunkPos.containing(blockPos));
     }
 
     /**
@@ -162,10 +162,10 @@ public final class ChunkOwnership {
             return false;
         }
 
-        Identifier dimension = level.dimension().location();
+        Identifier dimension = level.dimension().identifier();
         Map<Long, Owner> chunks = OWNERS.computeIfAbsent(dimension,
                 (Identifier key) -> new ConcurrentHashMap<>());
-        long chunkKey = chunkPos.toLong();
+        long chunkKey = chunkPos.pack();
         if (chunks.putIfAbsent(chunkKey, owner) != null) {
             return false;
         }

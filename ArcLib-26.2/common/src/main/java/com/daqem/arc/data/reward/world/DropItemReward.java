@@ -70,7 +70,7 @@ public class DropItemReward extends AbstractReward {
                                         .withParameter(LootContextParams.THIS_ENTITY, actionData.getPlayer().arc$getPlayer())
                         );
                         for (int i = 0; i < itemStack.getCount(); i++) {
-                            ItemStack randomDrop = drops.get(serverLevel.random.nextInt(drops.size()));
+                            ItemStack randomDrop = drops.get(serverLevel.getRandom().nextInt(drops.size()));
                             ItemEntity entity = new ItemEntity(
                                     serverLevel,
                                     pos.getX(),

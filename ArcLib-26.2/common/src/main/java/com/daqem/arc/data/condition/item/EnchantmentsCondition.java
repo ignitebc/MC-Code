@@ -147,7 +147,7 @@ public class EnchantmentsCondition extends AbstractCondition {
             Map<Identifier, IntRange> map = new HashMap<>();
 
             for (int i = 0; i < size; i++) {
-                Identifier enchId = friendlyByteBuf.readResourceLocation();
+                Identifier enchId = friendlyByteBuf.readIdentifier();
                 int min = friendlyByteBuf.readVarInt();
                 boolean hasMax = friendlyByteBuf.readBoolean();
                 Integer max = hasMax ? friendlyByteBuf.readVarInt() : null;
@@ -162,7 +162,7 @@ public class EnchantmentsCondition extends AbstractCondition {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeVarInt(type.enchantments.size());
             type.enchantments.forEach((enchId, range) -> {
-                friendlyByteBuf.writeResourceLocation(enchId);
+                friendlyByteBuf.writeIdentifier(enchId);
                 friendlyByteBuf.writeVarInt(range.min());
                 friendlyByteBuf.writeBoolean(range.max() != null);
                 if (range.max() != null) {

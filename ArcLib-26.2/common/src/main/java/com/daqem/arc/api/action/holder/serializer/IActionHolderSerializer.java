@@ -18,16 +18,16 @@ public interface IActionHolderSerializer<T extends IActionHolder> extends ArcSer
     T fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, Identifier location);
 
     static IActionHolder fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf) {
-        Identifier resourceLocation = friendlyByteBuf.readResourceLocation();
-        Identifier resourceLocation2 = friendlyByteBuf.readResourceLocation();
+        Identifier resourceLocation = friendlyByteBuf.readIdentifier();
+        Identifier resourceLocation2 = friendlyByteBuf.readIdentifier();
         return ArcRegistry.ACTION_HOLDER.getOptional(resourceLocation).orElseThrow(
                 () -> new IllegalArgumentException("Unknown action holder serializer " + resourceLocation)
         ).getSerializer().fromNetwork(resourceLocation2, friendlyByteBuf);
     }
 
     static <T extends IActionHolder> void toNetwork(T actionHolder, RegistryFriendlyByteBuf friendlyByteBuf) {
-        friendlyByteBuf.writeResourceLocation(ArcRegistry.ACTION_HOLDER.getKey(actionHolder.getType()));
-        friendlyByteBuf.writeResourceLocation(actionHolder.getLocation());
+        friendlyByteBuf.writeIdentifier(ArcRegistry.ACTION_HOLDER.getKey(actionHolder.getType()));
+        friendlyByteBuf.writeIdentifier(actionHolder.getLocation());
         ((IActionHolderSerializer<T>)actionHolder.getSerializer()).toNetwork(friendlyByteBuf, actionHolder);
 
     }

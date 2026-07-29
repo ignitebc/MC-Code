@@ -101,16 +101,19 @@ public abstract class MixinAbstractFurnaceBlockEntity extends BaseContainerBlock
             if (block.itemrestrictions$getPlayer() != null && !abstractFurnaceBlockEntity.getItem(0).isEmpty()) {
                 if (!abstractFurnaceBlockEntity.getItem(1).isEmpty()) {
 
-                    RecipeHolder<?> recipeHolder = block.itemrestrictions$getRecipe();
+                    RecipeHolder<? extends AbstractCookingRecipe> recipeHolder = block.itemrestrictions$getRecipe();
                     if (recipeHolder != null) {
-                        Recipe<?> recipe = recipeHolder.value();
+                        AbstractCookingRecipe recipe = recipeHolder.value();
+                        SingleRecipeInput recipeInput =
+                                new SingleRecipeInput(abstractFurnaceBlockEntity.getItem(0));
+                        ItemStack recipeResult = recipe.assemble(recipeInput);
                         RestrictionResult result = new RestrictionResult();
 
                         if (block.itemrestrictions$getPlayer() instanceof ItemRestrictionsServerPlayer player) {
                             if (player instanceof ArcPlayer arcPlayer) {
                                 result = player.itemrestrictions$isRestricted(
                                         new ActionDataBuilder(arcPlayer, null)
-                                                .withData(ActionDataType.ITEM_STACK, recipe.assemble(null, ((ServerPlayer) player).level().getServer().registryAccess()))
+                                                .withData(ActionDataType.ITEM_STACK, recipeResult)
                                                 .build());
                             }
                         }
@@ -201,7 +204,7 @@ public abstract class MixinAbstractFurnaceBlockEntity extends BaseContainerBlock
 
     @Override
     @Nullable
-    public RecipeHolder<?> itemrestrictions$getRecipe() {
+    public RecipeHolder<? extends AbstractCookingRecipe> itemrestrictions$getRecipe() {
         if (getLevel() == null || getLevel().isClientSide()) return null;
         if (getItem(0).isEmpty()) return null;
         if (getItem(1).isEmpty()) return null;

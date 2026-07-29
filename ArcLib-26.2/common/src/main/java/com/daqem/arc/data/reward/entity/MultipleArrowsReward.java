@@ -15,7 +15,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
@@ -93,7 +93,7 @@ public class MultipleArrowsReward extends AbstractReward {
     private void shootProjectile(AbstractArrow shotArrow, Level level, LivingEntity livingEntity, ItemStack bow, ItemStack arrow,
                                  float shotPitch, float power, float pitch) {
         if (livingEntity instanceof Player player) {
-            AbstractArrow projectile = new AbstractArrow(EntityType.ARROW, livingEntity, level, arrow, bow) {
+            AbstractArrow projectile = new AbstractArrow(EntityTypes.ARROW, livingEntity, level, arrow, bow) {
 
                 @Override
                 protected @NotNull ItemStack getDefaultPickupItem() {
