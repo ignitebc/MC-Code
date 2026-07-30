@@ -1,24 +1,30 @@
+import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import sys
 import time
+import zipfile
 from typing import Optional
 
 
+# (모듈 폴더, fabric 하위 폴더, 기대하는 mod ID)
 # fabric_dir가 None이면 루트 buildJar 태스크가 만든 병합 JAR(build/libs)을 수집한다.
 MODULES = [
-    ("UILib-26.2", "fabric"),
-    ("YamlConfig-26.2", "fabric"),
-    ("ArcLib-26.2", "fabric"),
-    ("ItemRestrictions-26.2", "fabric"),
-    ("JobsPlusRemastered-26.2", "fabric"),
-    ("AdvancedNetherite-26.2", "Fabric"),
-    ("illagerinvasion-26.2.0-mc26.2-fabric/26.2", "Fabric"),
-    ("caramelChat-26.2", "fabric"),
-    ("FallingTree-minecraft-26.2", None),
+    ("UILib-26.2", "fabric", "uilib"),
+    ("YamlConfig-26.2", "fabric", "yamlconfig"),
+    ("ArcLib-26.2", "fabric", "arc"),
+    ("ItemRestrictions-26.2", "fabric", "itemrestrictions"),
+    ("JobsPlusRemastered-26.2", "fabric", "jobsplus"),
+    ("AdvancedNetherite-26.2", "Fabric", "advancednetherite"),
+    ("illagerinvasion-26.2.0-mc26.2-fabric/26.2", "Fabric", "illagerinvasion"),
+    ("caramelChat-26.2", "fabric", "caramelchat"),
+    ("FallingTree-minecraft-26.2", None, "fallingtree"),
 ]
+
+EXPECTED_MINECRAFT_VERSION = "26.2"
+OUTDATED_NAME_PARTS = ("1.21.9", "1.21.10")
 
 REQUIRED_JAVA_MAJOR_VERSION = 25
 BUILD_START_ATTEMPTS = 3
@@ -158,6 +164,73 @@ def find_latest_release_jar(module_root: Path, fabric_dir: Optional[str]) -> Opt
     return max(jars, key=lambda path: path.stat().st_mtime)
 
 
+def read_fabric_mod_metadata(jar_path: Path) -> Optional[dict]:
+    try:
+        with zipfile.ZipFile(jar_path) as jar:
+            with jar.open("fabric.mod.json") as manifest:
+                return json.loads(manifest.read().decode("utf-8"))
+    except (OSError, KeyError, ValueError, zipfile.BadZipFile):
+        return None
+
+
+def references_expected_minecraft(dependency) -> bool:
+    if dependency is None:
+        # 의존성 선언이 없으면 버전을 판별할 수 없으므로 통과시키고 이름 검사에 맡긴다.
+        return True
+    if isinstance(dependency, str):
+        return EXPECTED_MINECRAFT_VERSION in dependency
+    if isinstance(dependency, list):
+        return any(EXPECTED_MINECRAFT_VERSION in str(entry) for entry in dependency)
+    return False
+
+
+def validate_release_jar(module_name: str, expected_mod_id: str, jar_path: Path,
+                         seen_mod_ids: dict) -> bool:
+    jar_name = jar_path.name.lower()
+    for outdated_part in OUTDATED_NAME_PARTS:
+        if outdated_part in jar_name:
+            print(f"Outdated jar selected for {module_name}: {jar_path.name}")
+            return False
+
+    metadata = read_fabric_mod_metadata(jar_path)
+    if metadata is None:
+        print(f"fabric.mod.json is missing or invalid in {module_name}: {jar_path.name}")
+        return False
+
+    mod_id = metadata.get("id")
+    if mod_id != expected_mod_id:
+        print(f"Unexpected mod id in {module_name}: expected '{expected_mod_id}', found '{mod_id}'")
+        return False
+
+    if mod_id in seen_mod_ids:
+        print(f"Duplicate mod id '{mod_id}' from {module_name} and {seen_mod_ids[mod_id]}")
+        return False
+    seen_mod_ids[mod_id] = module_name
+
+    depends = metadata.get("depends", {})
+    if not references_expected_minecraft(depends.get("minecraft")):
+        print(
+            f"Jar for {module_name} does not target Minecraft {EXPECTED_MINECRAFT_VERSION}: "
+            f"{jar_path.name} (minecraft: {depends.get('minecraft')})"
+        )
+        return False
+
+    return True
+
+
+def get_environment_label(jar_path: Path) -> str:
+    metadata = read_fabric_mod_metadata(jar_path)
+    if metadata is None:
+        return ""
+
+    environment = metadata.get("environment", "*")
+    if environment == "client":
+        return " [client-only]"
+    if environment == "server":
+        return " [server-only]"
+    return ""
+
+
 def build_fabric_module(module_root: Path, fabric_dir: Optional[str], java_home: Path) -> bool:
     if fabric_dir is None:
         build_task = "buildJar"
@@ -241,7 +314,7 @@ def copy_module_jars() -> int:
 
     print(f"Using Java {REQUIRED_JAVA_MAJOR_VERSION}: {java_home}")
 
-    for module_name, fabric_dir in MODULES:
+    for module_name, fabric_dir, expected_mod_id in MODULES:
         module_root = root / module_name
         if not module_root.is_dir():
             print(f"Module directory not found: {module_root}")
@@ -250,7 +323,7 @@ def copy_module_jars() -> int:
     if not prepare_target_directory(target_dir):
         return 1
 
-    for module_name, fabric_dir in MODULES:
+    for module_name, fabric_dir, expected_mod_id in MODULES:
         module_root = root / module_name
         if not build_fabric_module(module_root, fabric_dir, java_home):
             print("\nJAR collection stopped because a Fabric build failed.")
@@ -259,14 +332,14 @@ def copy_module_jars() -> int:
     release_jars = []
     missing = []
 
-    for module_name, fabric_dir in MODULES:
+    for module_name, fabric_dir, expected_mod_id in MODULES:
         module_root = root / module_name
         jar = find_latest_release_jar(module_root, fabric_dir)
         if jar is None:
             missing.append(module_name)
             continue
 
-        release_jars.append((module_name, jar))
+        release_jars.append((module_name, expected_mod_id, jar))
 
     if missing:
         print("\nNo release jar found for:")
@@ -275,8 +348,21 @@ def copy_module_jars() -> int:
         print("\nThe Fabric build completed, but no release JAR was generated.")
         return 1
 
+    seen_mod_ids = {}
+    invalid_modules = []
+    for module_name, expected_mod_id, jar in release_jars:
+        if not validate_release_jar(module_name, expected_mod_id, jar, seen_mod_ids):
+            invalid_modules.append(module_name)
+
+    if invalid_modules:
+        print("\nJAR validation failed for:")
+        for module_name in invalid_modules:
+            print(f"  - {module_name}")
+        print("\nNo files were copied. Fix the build outputs and run again.")
+        return 1
+
     copied = []
-    for module_name, jar in release_jars:
+    for module_name, expected_mod_id, jar in release_jars:
         target = target_dir / jar.name
         shutil.copy2(jar, target)
         copied.append((module_name, jar, target))
@@ -288,7 +374,7 @@ def copy_module_jars() -> int:
 
     print("Copied Fabric release jars:")
     for module_name, source, target in copied:
-        print(f"  - {module_name}: {source.name} -> {target}")
+        print(f"  - {module_name}: {source.name} -> {target}{get_environment_label(source)}")
 
     print(f"Dependency manifest: {dependency_manifest}")
     return 0
