@@ -6,6 +6,14 @@
 *.ipr
 *.iws
 
+# Eclipse
+.settings/
+.classpath
+.project
+.metadata/
+*.launch
+eclipse/
+
 # Python
 __pycache__/
 *.pyc
@@ -18,7 +26,14 @@ bin/
 out/
 classes/
 libs/
+output/
 remappedSrc/
+.architectury-transformer/
+.gradletasknamecache
+gradle-app.setting
+*.class
+hs_err_pid*
+*.hprof
 *.jar
 !gradle/wrapper/gradle-wrapper.jar
 !**/gradle/wrapper/gradle-wrapper.jar
@@ -28,6 +43,7 @@ run/
 runs/
 logs/
 crash-reports/
+.cache/
 
 # Fabric JAR 수집 산출물 (의존성 문서는 Build_File에 별도 보관)
 Build_File/build_files/*
@@ -38,6 +54,7 @@ mc수정한파일/
 # OS
 Thumbs.db
 desktop.ini
+.DS_Store
 
 # Misc
 *.log
