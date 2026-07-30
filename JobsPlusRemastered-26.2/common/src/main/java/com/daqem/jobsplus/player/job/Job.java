@@ -27,6 +27,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Job
 {
 
+    // 정책: 직업 최대 레벨은 200으로 고정한다. 이 상한을 넘는 레벨업·경험치 누적·코인 지급은 없다.
+    public static final int MAX_JOB_LEVEL = 200;
+
     public static final Codec<Job> CODEC = RecordCodecBuilder.create(instance -> instance.group(Identifier.CODEC.fieldOf("job_instance").forGetter(job -> job.getJobInstance().getLocation()), Codec.INT.fieldOf("level").forGetter(Job::getLevel), Codec.INT.fieldOf("experience").forGetter(Job::getExperience), Codec.DOUBLE.optionalFieldOf("experience_remainder", 0.0D).forGetter(Job::getExperienceRemainder), Codec.list(Powerup.CODEC).fieldOf("powerups").forGetter(job -> job.getPowerupManager().getAllPowerups())).apply(instance, (jobInstanceLocation, level, experience, experienceRemainder, powerups) -> new Job(null, jobInstanceLocation, level, experience, experienceRemainder, new ArrayList<>(powerups))));
 
     private final JobInstance jobInstance;
@@ -67,9 +70,19 @@ public class Job
         this.player = player;
         this.jobInstance = jobInstance;
         this.powerupManager = new JobPowerupManager(new ArrayList<>(powerups));
-        this.level = level;
-        this.experience = experience;
-        this.experienceRemainder = experienceRemainder;
+        this.level = clampLevel(level);
+        this.experience = this.level >= MAX_JOB_LEVEL ? 0 : experience;
+        this.experienceRemainder = this.level >= MAX_JOB_LEVEL ? 0.0D : experienceRemainder;
+    }
+
+    private static int clampLevel(int level)
+    {
+        return Math.max(0, Math.min(level, MAX_JOB_LEVEL));
+    }
+
+    public boolean isMaxLevel()
+    {
+        return level >= MAX_JOB_LEVEL;
     }
 
     public JobInstance getJobInstance()
@@ -89,7 +102,12 @@ public class Job
 
     public void setLevel(int level)
     {
-        this.level = level;
+        this.level = clampLevel(level);
+        if (isMaxLevel())
+        {
+            this.experience = 0;
+            this.experienceRemainder = 0.0D;
+        }
     }
 
     public int getExperience()
@@ -104,6 +122,11 @@ public class Job
 
     public void setExperience(int experience, boolean triggerEvent)
     {
+        if (isMaxLevel())
+        {
+            return;
+        }
+
         int change = experience - this.experience;
         this.experience = experience;
         checkForLevelUp();
@@ -138,7 +161,7 @@ public class Job
 
     private void addAccumulatedExperience(double experience)
     {
-        if (experience <= 0.0D)
+        if (experience <= 0.0D || isMaxLevel())
         {
             return;
         }
@@ -157,13 +180,23 @@ public class Job
 
     private void checkForLevelUp()
     {
-        int experienceToLevelUp = getExperienceToLevelUp(level);
-        if (experience >= experienceToLevelUp)
+        // 재귀 대신 반복문으로 처리하여 큰 경험치 입력에도 StackOverflow가 발생하지 않도록 한다
+        while (level < MAX_JOB_LEVEL)
         {
-            setLevel(level + 1);
-            setExperience(experience - experienceToLevelUp, false);
+            int experienceToLevelUp = getExperienceToLevelUp(level);
+            if (experience < experienceToLevelUp)
+            {
+                return;
+            }
+
+            level = level + 1;
+            experience = experience - experienceToLevelUp;
             JobEvents.onJobLevelUp(player, this);
         }
+
+        // 최대 레벨 도달 시 잔여 경험치는 더 이상 쌓지 않는다
+        experience = 0;
+        experienceRemainder = 0.0D;
     }
 
     // 다음 레벨업 총 추가 경험치
@@ -233,6 +266,10 @@ public class Job
 
     public double getExperiencePercentage()
     {
+        if (isMaxLevel())
+        {
+            return 100;
+        }
         return (double) experience / (double) getExperienceToLevelUp(level) * 100;
     }
 
