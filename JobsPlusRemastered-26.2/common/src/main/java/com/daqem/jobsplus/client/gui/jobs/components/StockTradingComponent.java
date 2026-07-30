@@ -237,7 +237,7 @@ public class StockTradingComponent extends EmptyComponent
         if (panelMode == StockPanelMode.TRANSFER)
         {
             drawBox(guiGraphics, x + 5, y + 82, CONTENT_WIDTH, 34);
-            drawCentered(guiGraphics, "입출금 수량 (10개 단위·최대 1,000)", x + getWidth() / 2, y + 85);
+            drawCenteredScaled(guiGraphics, "입출금 수량 (10개 단위·최대 1,000)", x + getWidth() / 2, y + 85);
             return;
         }
 
@@ -256,7 +256,7 @@ public class StockTradingComponent extends EmptyComponent
             drawCenteredScaled(guiGraphics, currentPrice, x + getWidth() / 2, y + 119);
             drawBox(guiGraphics, x + 5, y + 134, CONTENT_WIDTH, 34);
             // 입력값은 평가금액이 아니라 처분할 투자원금이다.
-            drawCentered(guiGraphics, "판매할 투자원금 (1개 단위·최대 1,000)", x + getWidth() / 2, y + 137);
+            drawCenteredScaled(guiGraphics, "판매할 투자원금 (1개 단위·최대 1,000)", x + getWidth() / 2, y + 137);
             return;
         }
 
