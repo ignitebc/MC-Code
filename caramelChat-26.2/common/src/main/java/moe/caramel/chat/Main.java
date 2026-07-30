@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.net.URL;
 
 /**
@@ -97,7 +98,7 @@ public final class Main {
             method.setAccessible(true);
             return (File) method.invoke(null);
         } catch (final Exception exception) {
-            return File.createTempFile("native", "temp");
+            return Files.createTempDirectory("caramelchat-native").toFile();
         }
     }
 }
