@@ -2,15 +2,13 @@ pluginManagement {
     repositories {
         maven { url "https://maven.fabricmc.net/" }
         maven { url "https://maven.architectury.dev/" }
+        // Architectury Loom 빌드 도구(mcinjector, DiffPatch) 해석에 필요. NeoForge 지원용이 아님.
         maven { url "https://maven.minecraftforge.net/" }
-        maven { url "https://maven.neoforged.net/releases/" }
         gradlePluginPortal()
     }
 }
 
 include("common")
 include("fabric")
-//include("forge")
-//include("neoforge")
 
 rootProject.name = "YAML Config 26.2"
