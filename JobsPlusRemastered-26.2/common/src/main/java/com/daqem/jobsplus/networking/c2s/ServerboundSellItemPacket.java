@@ -84,6 +84,12 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
 
         ServerPlayer player = serverPlayer.jobsplus$getServerPlayer();
 
+        // 조작된 클라이언트의 패킷 연타로 인한 서버 부하를 막는다.
+        // 실패 요청도 비용이 들기 때문에 검증 전에 먼저 제한한다.
+        if (!ShopTransactionRateLimiter.tryAcquire(player)) {
+            return;
+        }
+
         if (packet.inputAmount <= 0 || packet.outputAmount <= 0) {
             return;
         }

@@ -1,6 +1,7 @@
 package com.daqem.jobsplus.event.stock;
 
 import com.daqem.jobsplus.networking.StockScreenSync;
+import com.daqem.jobsplus.networking.c2s.ShopTransactionRateLimiter;
 import com.daqem.jobsplus.networking.c2s.StockTransactionRateLimiter;
 import com.daqem.jobsplus.networking.s2c.ClientboundStockSnapshotPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
@@ -207,6 +208,7 @@ public final class StockMarketTicker
         lastBroadcastVersion = 0;
         marketSessionActive = false;
         StockTransactionRateLimiter.reset();
+        ShopTransactionRateLimiter.reset();
         StockMarketService.getInstance().stopSession();
         ensureMarketSession(server);
     }
@@ -218,6 +220,7 @@ public final class StockMarketTicker
         lastBroadcastVersion = 0;
         marketSessionActive = false;
         StockTransactionRateLimiter.reset();
+        ShopTransactionRateLimiter.reset();
         StockMarketService.getInstance().stopSession();
     }
 
@@ -253,6 +256,7 @@ public final class StockMarketTicker
     {
         ACTIVE_VIEWERS.remove(player.getUUID());
         StockTransactionRateLimiter.forget(player.getUUID());
+        ShopTransactionRateLimiter.forget(player.getUUID());
 
         MinecraftServer server = player.level().getServer();
         if (server != null)
