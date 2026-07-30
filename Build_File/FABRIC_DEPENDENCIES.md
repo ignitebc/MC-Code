@@ -1,6 +1,6 @@
 # Fabric 26.2 배포 의존성
 
-`collect_fabric_jars.py`는 이 작업 공간에서 직접 빌드하는 8개 Fabric 모드 JAR만
+`collect_fabric_jars.py`는 이 작업 공간에서 직접 빌드하는 9개 Fabric 모드 JAR만
 `Build_File/build_files`에 수집합니다. 이 문서는 배포 산출물이 아니므로 JAR 폴더에
 복사하지 않고 `Build_File`에 별도로 보관합니다.
 
@@ -24,6 +24,7 @@
 - Jobs+는 UI Lib, Yaml Config, Arc Lib, Item Restrictions, Advanced Netherite를 사용합니다.
 - Illager Invasion은 Puzzles Lib과 Forge Config API Port를 사용합니다.
 - caramelChat은 클라이언트 전용이며 별도의 필수 모드 의존성이 없습니다.
+- FallingTree는 Fabric API만 사용하며 서버와 클라이언트 모두에 설치합니다.
 
 Illager Invasion JAR에는 MultiLoader Data Extensions가 포함되므로 별도로 설치하지
 않습니다.
