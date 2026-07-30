@@ -44,39 +44,36 @@ public class BlockEvents {
             return EventResult.pass();
         });
 
-        BlockEvent.BREAK.register((level, pos, state, player) -> {
+        // BREAK_BLOCK 보상은 파괴 전 이벤트가 아니라 파괴가 확정된 이후에 지급한다.
+        // 파괴 전 이벤트에서 지급하면 다른 모드(청크 보호 등)가 파괴를 취소해도 보상이 남고,
+        // FallingTree처럼 추가 원목마다 파괴 전 이벤트를 호출하는 모드에서 보상이 증폭된다.
+        // 플랫폼별 파괴 완료 이벤트에서 onBlockBreakComplete를 호출한다. (Fabric: PlayerBlockBreakEvents.AFTER)
+    }
 
-            if (!(player instanceof ArcServerPlayer arcServerPlayer)) {
-                return EventResult.pass();
-            }
+    /**
+     * 블록이 실제로 파괴된 뒤 호출되어 BREAK_BLOCK 액션을 실행한다.
+     */
+    public static void onBlockBreakComplete(ServerLevel serverLevel, BlockPos pos, BlockState state,
+                                            ArcServerPlayer arcServerPlayer) {
+        final BlockPos blockPos = pos.immutable();
+        final int expDrop = 0;
 
-            if (!(level instanceof ServerLevel serverLevel)) {
-                return EventResult.pass();
-            }
+        // ★ 핵심: "캔 순간"의 도구를 반드시 캡처
+        final ItemStack usedTool =
+                arcServerPlayer.arc$getServerPlayer().getMainHandItem().copy();
 
-            final BlockPos blockPos = pos.immutable();
-            final BlockState originalState = state;
-            final int expDrop = 0;
+        new ActionDataBuilder(arcServerPlayer, ActionType.BREAK_BLOCK)
+                .withData(ActionDataType.BLOCK_STATE, state)
+                .withData(ActionDataType.BLOCK_POSITION, blockPos)
+                .withData(ActionDataType.EXP_DROP, expDrop)
+                .withData(ActionDataType.WORLD, serverLevel)
+                .withData(ActionDataType.ITEM_STACK, usedTool)
+                .build()
+                .sendToAction();
 
-            // ★ 핵심: "캔 순간"의 도구를 반드시 캡처
-            final ItemStack usedTool =
-                    arcServerPlayer.arc$getServerPlayer().getMainHandItem().copy();
-
-            new ActionDataBuilder(arcServerPlayer, ActionType.BREAK_BLOCK)
-                    .withData(ActionDataType.BLOCK_STATE, originalState)
-                    .withData(ActionDataType.BLOCK_POSITION, blockPos)
-                    .withData(ActionDataType.EXP_DROP, expDrop)
-                    .withData(ActionDataType.WORLD, serverLevel)
-                    .withData(ActionDataType.ITEM_STACK, usedTool)
-                    .build()
-                    .sendToAction();
-
-            if (originalState.getBlock() instanceof CropBlock) {
-                onHarvestCrop(arcServerPlayer, originalState, blockPos, serverLevel);
-            }
-
-            return EventResult.pass();
-        });
+        if (state.getBlock() instanceof CropBlock) {
+            onHarvestCrop(arcServerPlayer, state, blockPos, serverLevel);
+        }
     }
 
     public static ActionResult onBlockInteract(
