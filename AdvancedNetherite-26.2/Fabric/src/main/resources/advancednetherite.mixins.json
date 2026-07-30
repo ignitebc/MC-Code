@@ -6,6 +6,7 @@
   "mixins": [
     "CreeperExplosionDamageMixin",
     "EnderManMixin",
+    "HungerExhaustionMixin",
     "PhantomMixin"
   ],
   "client": [
