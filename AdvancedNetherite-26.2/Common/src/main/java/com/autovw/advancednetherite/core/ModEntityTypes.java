@@ -14,6 +14,7 @@ public final class ModEntityTypes
             .of(DialgaPetEntity::new, MobCategory.CREATURE)
             .sized(0.9F, 1.0F)
             .clientTrackingRange(10)
+            .fireImmune()
             .noLootTable()
             .build(key("dialga_pet"));
 

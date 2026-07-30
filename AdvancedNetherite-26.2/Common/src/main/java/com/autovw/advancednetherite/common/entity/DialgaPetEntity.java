@@ -2,6 +2,8 @@ package com.autovw.advancednetherite.common.entity;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -107,6 +109,18 @@ public class DialgaPetEntity extends TamableAnimal
         {
             this.setTarget(this.pursuitTarget);
         }
+    }
+
+    @Override
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float amount)
+    {
+        // 펫은 전투 대상이 아니므로 모든 피해를 무시한다.
+        // /kill 명령과 공허 낙하(BYPASSES_INVULNERABILITY)만 예외로 두어 관리와 회수가 가능하게 한다.
+        if (damageSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY))
+        {
+            return super.hurtServer(serverLevel, damageSource, amount);
+        }
+        return false;
     }
 
     @Override
