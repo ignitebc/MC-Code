@@ -64,7 +64,21 @@ public final class ShopOffers
         offers.add(new ShopOffer(Identifier.parse("advancednetherite:enhancement_shard"), 3, Identifier.parse("advancednetherite:enhancement_gem"), 1));
         offers.add(new ShopOffer(Identifier.parse("advancednetherite:bitcoin"), 50, Identifier.parse("advancednetherite:chunk_claim_map"), 1));
 
-        offers.add(new ShopOffer(Identifier.parse("minecraft:cooked_chicken"), 60, Identifier.parse("minecraft:emerald"), 6));
+        // 식량·농작물 판매는 주민 거래 대비 50% 효율(필요 수량 2배)로 맞춘다.
+        // 주민 육성·탐색의 우위를 지키기 위한 의도적인 하향 기준이므로 임의로 올리지 않는다.
+        offers.add(new ShopOffer(Identifier.parse("minecraft:cooked_chicken"), 28, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:wheat"), 40, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:potato"), 52, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:carrot"), 44, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:beetroot"), 30, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:pumpkin"), 12, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:melon"), 8, Identifier.parse("minecraft:emerald"), 1));
+
+        // 물고기 판매도 어부 주민 시세 대비 50% 효율(필요 수량 2배)로 맞춘다.
+        offers.add(new ShopOffer(Identifier.parse("minecraft:cod"), 30, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:salmon"), 26, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:tropical_fish"), 12, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:pufferfish"), 8, Identifier.parse("minecraft:emerald"), 1));
         offers.add(new ShopOffer(Identifier.parse("minecraft:dirt"), 192, Identifier.parse("minecraft:emerald"), 1));
         offers.add(new ShopOffer(Identifier.parse("minecraft:netherrack"), 320, Identifier.parse("minecraft:emerald"), 1));
         return offers;
