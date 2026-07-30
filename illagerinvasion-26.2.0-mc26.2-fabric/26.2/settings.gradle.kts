@@ -9,10 +9,6 @@ pluginManagement {
             name = "Fabric"
             url = uri("https://maven.fabricmc.net/")
         }
-        maven {
-            name = "NeoForge"
-            url = uri("https://maven.neoforged.net/releases/")
-        }
         exclusiveContent {
             forRepository {
                 maven {
