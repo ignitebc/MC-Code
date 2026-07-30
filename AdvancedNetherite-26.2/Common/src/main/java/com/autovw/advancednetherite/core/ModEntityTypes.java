@@ -18,6 +18,30 @@ public final class ModEntityTypes
             .noLootTable()
             .build(key("dialga_pet"));
 
+    public static final EntityType<DialgaPetEntity> DRAGOON_PET = EntityType.Builder
+            .of(DialgaPetEntity::new, MobCategory.CREATURE)
+            .sized(1.2F, 0.8F)
+            .clientTrackingRange(10)
+            .fireImmune()
+            .noLootTable()
+            .build(key("dragoon_pet"));
+
+    public static final EntityType<DialgaPetEntity> FAIRLINS_PET = EntityType.Builder
+            .of(DialgaPetEntity::new, MobCategory.CREATURE)
+            .sized(1.0F, 0.8F)
+            .clientTrackingRange(10)
+            .fireImmune()
+            .noLootTable()
+            .build(key("fairlins_pet"));
+
+    public static final EntityType<DialgaPetEntity> DARK_DRAGON_PET = EntityType.Builder
+            .of(DialgaPetEntity::new, MobCategory.CREATURE)
+            .sized(1.3F, 1.1F)
+            .clientTrackingRange(10)
+            .fireImmune()
+            .noLootTable()
+            .build(key("dark_dragon_pet"));
+
     private ModEntityTypes()
     {
     }
