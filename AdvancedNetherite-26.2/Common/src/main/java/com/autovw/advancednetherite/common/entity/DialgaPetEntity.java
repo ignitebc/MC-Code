@@ -4,6 +4,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,6 +29,9 @@ public class DialgaPetEntity extends TamableAnimal
      * 주인을 때린 대상. 대상이 죽거나 사라질 때까지 추격을 유지하기 위해 별도로 기억한다.
      * 리스폰한 플레이어는 새 엔티티라서 이전 참조가 죽은 상태로 남으므로 자동으로 초기화된다.
      */
+    /** 주인과 이 거리(5칸)보다 멀어지면 곁으로 순간이동한다. */
+    private static final double TELEPORT_DISTANCE_SQR = 5.0 * 5.0;
+
     private LivingEntity pursuitTarget;
 
     public DialgaPetEntity(EntityType<? extends DialgaPetEntity> entityType, Level level)
@@ -64,18 +68,38 @@ public class DialgaPetEntity extends TamableAnimal
         {
             this.pursuitTarget = null;
             this.setTarget(null);
-            this.teleport(new TeleportTransition(
-                    serverPlayer.level(),
-                    serverPlayer.position().add(1.0, 0.0, 1.0),
-                    Vec3.ZERO,
-                    serverPlayer.getYRot(),
-                    0.0F,
-                    TeleportTransition.DO_NOTHING));
+            teleportToOwnerLevel(serverPlayer);
             return;
         }
 
         updatePursuit();
+
+        // 추격 중이 아닐 때 주인과 5칸 이상 벌어지면 곁으로 순간이동한다.
+        boolean isIdle = this.getTarget() == null;
+        if (isIdle && owner != null && this.distanceToSqr(owner) > TELEPORT_DISTANCE_SQR)
+        {
+            teleportBesideOwner(owner);
+        }
+
         super.customServerAiStep(serverLevel);
+    }
+
+    private void teleportToOwnerLevel(ServerPlayer serverPlayer)
+    {
+        this.teleport(new TeleportTransition(
+                serverPlayer.level(),
+                serverPlayer.position().add(1.0, 0.0, 1.0),
+                Vec3.ZERO,
+                serverPlayer.getYRot(),
+                0.0F,
+                TeleportTransition.DO_NOTHING));
+    }
+
+    private void teleportBesideOwner(LivingEntity owner)
+    {
+        this.teleportTo(owner.getX(), owner.getY(), owner.getZ());
+        this.setDeltaMovement(Vec3.ZERO);
+        this.resetFallDistance();
     }
 
     /**
@@ -114,8 +138,26 @@ public class DialgaPetEntity extends TamableAnimal
     @Override
     public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float amount)
     {
+        // 공허에 떨어져도 죽지 않고 주인 곁으로 귀환한다.
+        if (damageSource.is(DamageTypes.FELL_OUT_OF_WORLD))
+        {
+            LivingEntity owner = this.getOwner();
+            if (owner instanceof ServerPlayer serverPlayer && serverPlayer.level() != serverLevel)
+            {
+                teleportToOwnerLevel(serverPlayer);
+                return false;
+            }
+            if (owner != null)
+            {
+                teleportBesideOwner(owner);
+                return false;
+            }
+            // 주인이 오프라인이면 공허에서 영원히 떨어지지 않도록 소멸을 허용한다.
+            return super.hurtServer(serverLevel, damageSource, amount);
+        }
+
         // 펫은 전투 대상이 아니므로 모든 피해를 무시한다.
-        // /kill 명령과 공허 낙하(BYPASSES_INVULNERABILITY)만 예외로 두어 관리와 회수가 가능하게 한다.
+        // /kill 명령(BYPASSES_INVULNERABILITY)만 예외로 두어 운영 중 정리가 가능하게 한다.
         if (damageSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY))
         {
             return super.hurtServer(serverLevel, damageSource, amount);
