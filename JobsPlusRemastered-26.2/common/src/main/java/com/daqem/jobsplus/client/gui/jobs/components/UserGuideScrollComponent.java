@@ -76,8 +76,7 @@ public class UserGuideScrollComponent extends EmptyComponent
             - 가격이 갱신되기 전까지는 주식 표에 표시된 동일한 가격이 유지됩니다.
             - 구매 버튼을 누르면 즉시 체결되지 않고 다음 분 시작가로 구매가 예약됩니다.
             - 다음 분에 거래 기록이 없는 종목은 예약할 때 확인한 가격을 진입가로 사용합니다.
-            - 예약과 동시에 투자금이 계좌에서 먼저 차감되며, 다음 분이 끝난 뒤 진입 가격과 해당 분의 가격 변동을 확인하여 결과가 안내됩니다.
-            - 시세 확인이 지연되면 투자금과 예약은 안전하게 유지되며, 확인이 끝날 때까지 같은 종목을 추가 구매하거나 판매할 수 없습니다.
+            - 예약과 동시에 투자금이 계좌에서 먼저 차감되며, 다음 분이 끝난 뒤 진입 가격과 해당 분의 가격 변동을 확인하여 결과가 안내됩니다.            - 시세 확인이 지연되면 투자금과 예약은 안전하게 유지되며, 확인이 끝날 때까지 같은 종목을 추가 구매하거나 판매할 수 없습니다.
             - 예약이 취소되면 차감했던 투자금은 계좌로 자동 반환됩니다.
             - 주식 화면을 닫거나 로그아웃해도 구매 예약 처리와 보유 포지션의 강제청산 감시는 계속됩니다.
 
@@ -299,6 +298,9 @@ public class UserGuideScrollComponent extends EmptyComponent
     {
         private static final int BASE_LINE_HEIGHT = 9;
 
+        // 축소 배율(0.5)이 적용되므로 화면상 실제 행간은 절반이 된다.
+        private static final int LINE_SPACING = 2;
+
         private final float scale;
 
         public ScaledMultiLineTextComponent(
@@ -316,9 +318,9 @@ public class UserGuideScrollComponent extends EmptyComponent
 
         public int getScaledHeight()
         {
-            return (int) Math.ceil(
-                    getLines().size() * BASE_LINE_HEIGHT * this.scale
-            );
+            int rawHeight = getLines().size() * BASE_LINE_HEIGHT
+                    + Math.max(0, getLines().size() - 1) * LINE_SPACING;
+            return (int) Math.ceil(rawHeight * this.scale);
         }
 
         @Override
@@ -369,7 +371,7 @@ public class UserGuideScrollComponent extends EmptyComponent
                         getFont(),
                         getLines().get(index),
                         0,
-                        index * BASE_LINE_HEIGHT,
+                        index * (BASE_LINE_HEIGHT + LINE_SPACING),
                         getColor(),
                         isDrawShadow()
                 );

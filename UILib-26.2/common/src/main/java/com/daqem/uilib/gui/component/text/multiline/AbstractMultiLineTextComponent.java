@@ -15,6 +15,7 @@ import java.util.List;
 public abstract class AbstractMultiLineTextComponent extends AbstractTextComponent {
 
     private int maxWidth;
+    private int lineSpacing = 0;
     private List<FormattedCharSequence> lines;
 
     public AbstractMultiLineTextComponent(int x, int y, int maxWidth, Component text) {
@@ -58,10 +59,19 @@ public abstract class AbstractMultiLineTextComponent extends AbstractTextCompone
         updateSize();
     }
 
+    public int getLineSpacing() {
+        return lineSpacing;
+    }
+
+    public void setLineSpacing(int lineSpacing) {
+        this.lineSpacing = Math.max(0, lineSpacing);
+        updateSize();
+    }
+
     protected void updateSize() {
         this.lines = Language.getInstance().getVisualOrder(findOptimalLines(getFont(), getText(), maxWidth));
         setWidth(lines.stream().mapToInt(getFont()::width).max().orElse(0));
-        setHeight(getFont().lineHeight * getLines().size());
+        setHeight(getFont().lineHeight * getLines().size() + lineSpacing * Math.max(0, getLines().size() - 1));
     }
 
     protected int getUnusedSpaceX() {

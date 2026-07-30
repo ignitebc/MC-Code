@@ -14,6 +14,7 @@ public class ActionItemComponent extends EmptyComponent
     private static final int HEADER_COLOR = 0xFFB22222;
     private static final int CONTENT_COLOR = 0xFF1E1410;
     private static final int CONTENT_GAP = 2;
+    private static final int CONTENT_LINE_SPACING = 1;
 
     public ActionItemComponent(IAction action, String jobPath, int width)
     {
@@ -75,6 +76,7 @@ public class ActionItemComponent extends EmptyComponent
                 getWidth(),
                 contentText,
                 CONTENT_COLOR);
+        contentComponent.setLineSpacing(CONTENT_LINE_SPACING);
 
         this.addComponent(headerComponent);
         this.addComponent(contentComponent);

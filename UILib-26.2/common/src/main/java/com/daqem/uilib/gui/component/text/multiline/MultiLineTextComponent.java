@@ -21,7 +21,7 @@ public class MultiLineTextComponent extends AbstractMultiLineTextComponent{
                     getFont(),
                     getLines().get(i),
                     getTotalX(),
-                    getTotalY() + i * getFont().lineHeight,
+                    getTotalY() + i * (getFont().lineHeight + getLineSpacing()),
                     getColor(),
                     isDrawShadow()
             );

@@ -15,6 +15,7 @@ public class ExperienceScrollContentComponent extends EmptyComponent
 
     private static final int SECTION_GAP = 9;
     private static final int GUIDE_CONTENT_GAP = 2;
+    private static final int CONTENT_LINE_SPACING = 1;
     private static final int HEADER_COLOR = 0xFFB22222;
     private static final int CONTENT_COLOR = 0xFF1E1410;
 
@@ -40,6 +41,7 @@ public class ExperienceScrollContentComponent extends EmptyComponent
                 getWidth(),
                 JobsPlus.translatable("gui.jobs.experience.guide.description"),
                 CONTENT_COLOR);
+        guideContentComponent.setLineSpacing(CONTENT_LINE_SPACING);
         this.addComponent(guideHeaderComponent);
         this.addComponent(guideContentComponent);
 

@@ -311,12 +311,17 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
 
     private static final class ScaledMultiLineTextComponent extends MultiLineTextComponent {
 
+        // 축소 배율(0.5)이 적용되므로 화면상 실제 행간은 절반이 된다.
+        private static final int LINE_SPACING = 2;
+
         public ScaledMultiLineTextComponent(int x, int y, int maxWidth, Component text, int color) {
             super(x, y, maxWidth, text, color);
         }
 
         public int getScaledHeight() {
-            return (int) Math.ceil(getLines().size() * BASE_LINE_HEIGHT * TEXT_SCALE);
+            int rawHeight = getLines().size() * BASE_LINE_HEIGHT
+                    + Math.max(0, getLines().size() - 1) * LINE_SPACING;
+            return (int) Math.ceil(rawHeight * TEXT_SCALE);
         }
 
         @Override
@@ -331,7 +336,7 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
                         getFont(),
                         getLines().get(i),
                         0,
-                        i * BASE_LINE_HEIGHT,
+                        i * (BASE_LINE_HEIGHT + LINE_SPACING),
                         getColor(),
                         isDrawShadow()
                 );
