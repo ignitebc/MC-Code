@@ -45,6 +45,11 @@ public class ServerboundSaveConfigPacket implements CustomPacketPayload {
     public void handleServerSide(NetworkManager.PacketContext packetContext) {
         if (packetContext.getPlayer().permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
             IConfig existingConfig = YamlConfig.CONFIG_MANAGER.getConfig(config.getModId(), config.getName());
+            if (existingConfig == null) {
+                YamlConfig.LOGGER.warn("Ignored save-config request for unknown config: {}:{}",
+                        config.getModId(), config.getName());
+                return;
+            }
             existingConfig.updateEntries(config.getEntries());
             existingConfig.save();
 
