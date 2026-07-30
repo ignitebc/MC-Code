@@ -63,7 +63,7 @@ public class StartJobButtonWidget extends CustomButtonWidget {
                                                 () -> {
                                                     // 완료 알림은 서버가 화면을 갱신한 뒤에 띄운다
                                                     // (여기서 바로 띄우면 갱신 패킷이 알림 화면을 덮어씀)
-                                                    PendingJobSelectionAlert.set(jobName);
+                                                    PendingJobSelectionAlert.set(jobInstance.getLocation(), jobName);
                                                     NetworkManager.sendToServer(
                                                             new ServerboundStartJobPacket(
                                                                     jobInstance.getLocation()));

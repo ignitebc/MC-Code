@@ -62,18 +62,18 @@ public class ClientboundOpenJobsScreenPacketHandler {
             newState.setSelectedStockLeverage(keepStockLeverage);
 
             mc.gui.setScreen(new JobsScreen(newState, previousScreen));
-            showPendingSelectionAlert(mc);
+            showPendingSelectionAlert(mc, jobs);
             return;
         }
 
         mc.gui.setScreen(new JobsScreen(
                 new JobsScreenState(jobs, coins, maxJobs, null, RightTab.EXPERIENCE, packet.getStockAccount()),
                 previousScreen));
-        showPendingSelectionAlert(mc);
+        showPendingSelectionAlert(mc, jobs);
     }
 
-    private static void showPendingSelectionAlert(Minecraft mc) {
-        String jobName = PendingJobSelectionAlert.consume();
+    private static void showPendingSelectionAlert(Minecraft mc, List<Job> jobs) {
+        String jobName = PendingJobSelectionAlert.consumeIfSelected(jobs);
         if (jobName == null) {
             return;
         }
