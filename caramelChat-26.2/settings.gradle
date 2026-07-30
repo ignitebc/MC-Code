@@ -2,6 +2,7 @@ pluginManagement {
     repositories {
         maven { url = "https://maven.fabricmc.net/" }
         maven { url = "https://maven.architectury.dev/" }
+        // Architectury Loom 빌드 도구 해석에 필요. NeoForge 지원용이 아님.
         maven { url = "https://maven.minecraftforge.net/" }
         gradlePluginPortal()
     }
