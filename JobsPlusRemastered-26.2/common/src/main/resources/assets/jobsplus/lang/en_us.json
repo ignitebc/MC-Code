@@ -971,6 +971,8 @@
   "jobsplus.error.not_enough_coins": "당신은 이 작업을 수행할 충분한 코인이 없습니다.",
   "jobsplus.error.not_high_enough_level": "당신은 이 작업을 수행할 충분한 레벨이 없습니다.",
   "jobsplus.error.powerup_already_owned": "당신은 이미 스킬 '%s'을 소유하고 있습니다.",
+  "jobsplus.error.job_already_owned": "이미 보유하고 있는 직업입니다.",
+  "jobsplus.error.could_not_add_job": "직업을 추가할 수 없습니다. 잠시 후 다시 시도해 주세요.",
   "jobsplus.error.could_not_add_powerup": "스킬 '%s'을 계정에 추가할 수 없습니다. 관리자에게 문의하세요.",
   "arc.reward.job_exp": "직업 경험치",
   "arc.reward.description.job_exp": "%s와 %s 사이의 직업 경험치가 행동마다 100% 누적됩니다.",
