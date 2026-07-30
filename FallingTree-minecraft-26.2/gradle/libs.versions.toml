@@ -9,7 +9,7 @@ log4j2-version = "2.26.1"
 # Minecraft / Loaders
 minecraftVersion = "26.2"
 fabric-loader-version = "0.19.3"
-fabric-api-version = "0.152.2+"
+fabric-api-version = "0.154.2+26.2"
 
 # Mod dependencies
 modmenu-version = "20.0.1"
