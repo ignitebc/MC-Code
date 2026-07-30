@@ -15,7 +15,9 @@ import com.daqem.jobsplus.player.job.exp.ExpCollector;
 import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
 import com.daqem.jobsplus.player.stock.StockAccount;
+import com.daqem.jobsplus.player.stock.StockPositionLedger;
 import com.mojang.authlib.GameProfile;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -47,8 +49,6 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     private List<Job> jobsplus$jobs = new ArrayList<>();
     @Unique
     private int jobsplus$coins = 0;
-    @Unique
-    private StockAccount jobsplus$stockAccount = StockAccount.EMPTY;
     @Unique
     private boolean jobsplus$deathItemProtected;
 
@@ -166,14 +166,26 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
         this.jobsplus$coins = coins;
     }
 
+    /**
+     * 주식 계좌는 예약 주문과 같은 월드 저장 데이터({@link StockPositionLedger})에 보관한다.
+     * 계좌 차감과 예약 기록이 하나의 저장 객체에 함께 담겨, 강제 종료 시 한쪽만 저장되는 일이 없다.
+     */
     @Override
     public StockAccount jobsplus$getStockAccount() {
-        return this.jobsplus$stockAccount;
+        MinecraftServer server = this.level().getServer();
+        if (server == null) {
+            return StockAccount.EMPTY;
+        }
+        return StockPositionLedger.get(server).getAccount(this.getUUID());
     }
 
     @Override
     public void jobsplus$setStockAccount(StockAccount stockAccount) {
-        this.jobsplus$stockAccount = stockAccount;
+        MinecraftServer server = this.level().getServer();
+        if (server == null) {
+            return;
+        }
+        StockPositionLedger.get(server).setAccount(this.getUUID(), stockAccount);
     }
 
     @Override
@@ -286,7 +298,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
             this.jobsplus$jobs = oldJobsServerPlayer.jobsplus$getJobs();
             this.jobsplus$coins = oldJobsServerPlayer.jobsplus$getCoins();
             this.jobsplus$extraJobSlots = oldJobsServerPlayer.jobsplus$getExtraJobSlots();
-            this.jobsplus$stockAccount = oldJobsServerPlayer.jobsplus$getStockAccount();
+            // 주식 계좌는 월드 저장 데이터에 UUID 기준으로 보관되므로 복사할 필요가 없다.
 
             this.jobsplus$jobs.forEach(job -> job.setPlayer(this));
             if (oldJobsServerPlayer.jobsplus$isDeathItemProtected())
@@ -301,9 +313,10 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
 
     @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
     public void addAdditionalSaveData(ValueOutput valueOutput, CallbackInfo ci) {
+        // 주식 계좌는 월드 저장 데이터에 보관하므로 플레이어 NBT에는 더 이상 저장하지 않는다.
         valueOutput.store("JobsPlus", ServerPlayerData.CODEC,
                 new ServerPlayerData(this.jobsplus$jobs, this.jobsplus$coins, this.jobsplus$extraJobSlots,
-                        this.jobsplus$stockAccount));
+                        StockAccount.EMPTY));
     }
 
     @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
@@ -316,7 +329,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
 
             this.jobsplus$coins = serverPlayerData.coins();
             this.jobsplus$extraJobSlots = Math.max(0, serverPlayerData.extraJobSlots());
-            this.jobsplus$stockAccount = serverPlayerData.stockAccount();
+            jobsplus$migrateLegacyStockAccount(serverPlayerData.stockAccount());
 
             if (jobsplus$getServerPlayer() instanceof ArcServerPlayer arcServerPlayer) {
                 List<IActionHolder> iActionHolders = this.jobsplus$getActionHolders();
@@ -342,6 +355,26 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
             }
             expCollector.clear();
         });
+    }
+
+    /**
+     * 예전 버전이 플레이어 NBT에 저장해 둔 주식 계좌를 월드 저장 데이터로 1회 이관한다.
+     * 월드 저장 데이터에 이미 계좌가 있으면 그것을 우선한다.
+     */
+    @Unique
+    private void jobsplus$migrateLegacyStockAccount(StockAccount legacyAccount) {
+        if (legacyAccount == null || StockAccount.EMPTY.equals(legacyAccount)) {
+            return;
+        }
+        MinecraftServer server = this.level().getServer();
+        if (server == null) {
+            return;
+        }
+        StockPositionLedger ledger = StockPositionLedger.get(server);
+        if (ledger.hasAccount(this.getUUID())) {
+            return;
+        }
+        ledger.setAccount(this.getUUID(), legacyAccount);
     }
 
     @Unique

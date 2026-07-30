@@ -19,10 +19,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * 접속 여부와 관계없이 청산 대상 포지션을 추적하는 월드 저장 데이터.
+ * 접속 여부와 관계없이 주식 상태 전체를 보관하는 월드 저장 데이터.
  * <p>
- * 플레이어 NBT의 {@link StockAccount}가 실제 계좌 원장이고, 이 데이터는 시세 감시를 계속하기 위한
- * 포지션 인덱스와 오프라인 상태에서 확정된 청산 대기를 보관한다.
+ * 플레이어별 {@link StockAccount}(실제 계좌 원장), 시세 감시용 포지션 인덱스, 예약 주문·결과,
+ * 오프라인 청산 대기를 모두 하나의 저장 객체에 담는다. 계좌와 예약이 같은 파일에 함께 저장되므로
+ * 강제 종료 시 한쪽만 저장되어 어긋나는 문제가 없다.
  */
 public final class StockPositionLedger extends SavedData
 {
@@ -86,7 +87,10 @@ public final class StockPositionLedger extends SavedData
                     .forGetter(StockPositionLedger::getPendingBuyOrders),
             PENDING_BUY_RESULT_CODEC.listOf()
                     .optionalFieldOf("pending_buy_results", List.of())
-                    .forGetter(StockPositionLedger::getPendingBuyResults)
+                    .forGetter(StockPositionLedger::getPendingBuyResults),
+            Codec.unboundedMap(UUIDUtil.STRING_CODEC, StockAccount.CODEC)
+                    .optionalFieldOf("accounts", Map.of())
+                    .forGetter(StockPositionLedger::getAccounts)
     ).apply(instance, StockPositionLedger::new));
 
     public static final SavedDataType<StockPositionLedger> TYPE = new SavedDataType<>(
@@ -100,6 +104,7 @@ public final class StockPositionLedger extends SavedData
     private final Map<PositionKey, PendingLiquidation> pendingLiquidations = new LinkedHashMap<>();
     private final Map<PositionKey, PendingBuyOrder> pendingBuyOrders = new LinkedHashMap<>();
     private final Map<PositionKey, PendingBuyResult> pendingBuyResults = new LinkedHashMap<>();
+    private final Map<UUID, StockAccount> accounts = new LinkedHashMap<>();
 
     public StockPositionLedger()
     {
@@ -108,8 +113,10 @@ public final class StockPositionLedger extends SavedData
     private StockPositionLedger(List<TrackedPosition> positions,
                                 List<PendingLiquidation> pendingLiquidations,
                                 List<PendingBuyOrder> pendingBuyOrders,
-                                List<PendingBuyResult> pendingBuyResults)
+                                List<PendingBuyResult> pendingBuyResults,
+                                Map<UUID, StockAccount> accounts)
     {
+        this.accounts.putAll(accounts);
         for (TrackedPosition position : positions)
         {
             this.positions.put(PositionKey.of(position.playerId(), position.position().stockId()), position);
@@ -172,6 +179,35 @@ public final class StockPositionLedger extends SavedData
     private List<PendingBuyResult> getPendingBuyResults()
     {
         return List.copyOf(this.pendingBuyResults.values());
+    }
+
+    private Map<UUID, StockAccount> getAccounts()
+    {
+        return Map.copyOf(this.accounts);
+    }
+
+    public StockAccount getAccount(UUID playerId)
+    {
+        return this.accounts.getOrDefault(playerId, StockAccount.EMPTY);
+    }
+
+    public void setAccount(UUID playerId, StockAccount account)
+    {
+        if (account == null || StockAccount.EMPTY.equals(account))
+        {
+            if (this.accounts.remove(playerId) != null)
+            {
+                this.setDirty();
+            }
+            return;
+        }
+        this.accounts.put(playerId, account);
+        this.setDirty();
+    }
+
+    public boolean hasAccount(UUID playerId)
+    {
+        return this.accounts.containsKey(playerId);
     }
 
     /**
