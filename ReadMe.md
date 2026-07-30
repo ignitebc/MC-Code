@@ -141,13 +141,12 @@ python Build_File/collect_fabric_jars.py
 JobsPlusRemastered-26.2
 ├─ common              공통 게임 로직, 직업, 스킬, 데이터, 네트워크 및 UI 연동
 ├─ fabric              Fabric 초기화 및 Fabric 배포 JAR 생성
-├─ neoforge            NeoForge 관련 소스
 ├─ build.gradle
 ├─ settings.gradle
 └─ gradle.properties
 ```
 
-`settings.gradle`에서는 `common`과 `fabric` 모듈만 활성화되어 있습니다. NeoForge 모듈은 현재 빌드 대상에서 제외되어 있습니다.
+이 프로젝트는 Fabric 단일 플랫폼입니다. NeoForge 관련 소스와 설정은 모두 제거되었습니다.
 
 ## 프로젝트 정보
 
