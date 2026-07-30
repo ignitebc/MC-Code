@@ -28,6 +28,8 @@ public class ModLanguageProvider extends AbstractLanguageProvider {
         builder.add("container.imbue.broadcast.success", "%s님의 %s가 강화에 성공하여 +%s강이 되었습니다.");
         builder.add("container.imbue.broadcast.failure", "%s님의 %s가 강화에 실패하여 +%s강이 되었습니다.");
         builder.add("container.imbue.broadcast.destroyed", "%s님의 %s가 강화에 실패하여 파괴되었습니다!!!");
+        builder.add("container.imbue.broadcast.protected",
+                "%s님의 %s가 강화 실패로 파괴될 뻔했지만 강화 파괴 방지권이 장비를 보호했습니다. (+%s강)");
         builder.add("container.imbue.result.title", "강화 결과");
         builder.add("container.imbue.result.success", "강화를 성공하여 +%s강이 되었습니다.");
         builder.add("container.imbue.result.failure", "강화가 실패하여 +%s강이 되었습니다.");
@@ -70,7 +72,7 @@ public class ModLanguageProvider extends AbstractLanguageProvider {
         builder.add(ModItems.INVOKER_SPAWN_EGG_ITEM.value(), "찬란한 기원자 소환 알");
         builder.add(ModItems.ALCHEMIST_SPAWN_EGG_ITEM.value(), "연금술사 소환 알");
         builder.add(ModItems.FIRECALLER_SPAWN_EGG_ITEM.value(), "화염술사 소환 알");
-        builder.add(ModRegistry.IMBUING_TABLE_BLOCK.value(), "주입대");
+        builder.add(ModRegistry.IMBUING_TABLE_BLOCK.value(), "강화 제작대");
         builder.add(ModRegistry.MAGIC_FIRE_BLOCK.value(), "마법 화염");
         builder.add(ModEntityTypes.PROVOKER_ENTITY_TYPE.value(), "도발자");
         builder.add(ModEntityTypes.INVOKER_ENTITY_TYPE.value(), "찬란한 기원자");

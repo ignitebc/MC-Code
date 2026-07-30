@@ -13,6 +13,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -21,13 +23,17 @@ import java.util.List;
 public class ItemRestriction {
 
     private final Identifier location;
-    private final ItemStack icon;
+    private final @Nullable ItemStackTemplate iconTemplate;
     private final List<RestrictionType> restrictionTypes;
     private final List<ICondition> conditions;
 
     public ItemRestriction(Identifier location, ItemStack icon, List<RestrictionType> restrictionTypes, List<ICondition> conditions) {
+        this(location, icon.isEmpty() ? null : ItemStackTemplate.fromNonEmptyStack(icon), restrictionTypes, conditions);
+    }
+
+    public ItemRestriction(Identifier location, @Nullable ItemStackTemplate iconTemplate, List<RestrictionType> restrictionTypes, List<ICondition> conditions) {
         this.location = location;
-        this.icon = icon;
+        this.iconTemplate = iconTemplate;
         this.restrictionTypes = restrictionTypes;
         this.conditions = conditions;
     }
@@ -65,9 +71,9 @@ public class ItemRestriction {
             List<RestrictionType> restrictionTypes = new ArrayList<>();
             List<ICondition> conditions = new ArrayList<>();
 
-            ItemStack iconStack = ItemStack.EMPTY;
+            ItemStackTemplate iconTemplate = null;
             if (jsonObject.has("icon")) {
-                iconStack = getItemStack(jsonObject.getAsJsonObject("icon"));
+                iconTemplate = getItemStackTemplate(jsonObject.getAsJsonObject("icon"));
             }
 
             restrictionTypesArray.forEach(jsonElement -> {
@@ -87,19 +93,22 @@ public class ItemRestriction {
                 });
             });
 
-            return new ItemRestriction(location, iconStack, restrictionTypes, conditions);
+            return new ItemRestriction(location, iconTemplate, restrictionTypes, conditions);
         }
 
         public static void toNetwork(RegistryFriendlyByteBuf buf, ItemRestriction itemRestriction) {
             buf.writeIdentifier(itemRestriction.location);
-            ItemStack.STREAM_CODEC.encode(buf, itemRestriction.icon);
+            buf.writeBoolean(itemRestriction.iconTemplate != null);
+            if (itemRestriction.iconTemplate != null) {
+                ItemStackTemplate.STREAM_CODEC.encode(buf, itemRestriction.iconTemplate);
+            }
             buf.writeCollection(itemRestriction.restrictionTypes, (byteBuf, restrictionType) -> byteBuf.writeUtf(restrictionType.name()));
             buf.writeCollection(itemRestriction.conditions, (byteBuf, condition) -> IConditionSerializer.toNetwork(condition, (RegistryFriendlyByteBuf) byteBuf, itemRestriction.getLocation()));
         }
 
         public static ItemRestriction fromNetwork(RegistryFriendlyByteBuf buf) {
             Identifier location = buf.readIdentifier();
-            ItemStack icon = ItemStack.STREAM_CODEC.decode(buf);
+            ItemStackTemplate iconTemplate = buf.readBoolean() ? ItemStackTemplate.STREAM_CODEC.decode(buf) : null;
             List<String> restrictionTypeStrings = buf.readList(FriendlyByteBuf::readUtf);
             List<RestrictionType> restrictionTypes = new ArrayList<>();
             restrictionTypeStrings.forEach(restrictionTypeString -> {
@@ -111,7 +120,7 @@ public class ItemRestriction {
                 }
             });
             List<ICondition> conditions = buf.readList(object -> IConditionSerializer.fromNetwork((RegistryFriendlyByteBuf) object));
-            return new ItemRestriction(location, icon, restrictionTypes, conditions);
+            return new ItemRestriction(location, iconTemplate, restrictionTypes, conditions);
         }
     }
 
@@ -122,7 +131,7 @@ public class ItemRestriction {
 
     @SuppressWarnings("unused")
     public ItemStack getIcon() {
-        return icon;
+        return iconTemplate == null ? ItemStack.EMPTY : iconTemplate.create();
     }
 
     @SuppressWarnings("unused")

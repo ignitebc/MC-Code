@@ -16,6 +16,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
@@ -29,15 +30,15 @@ public class JobInstance extends AbstractActionHolder
 
     private final int price;
     private final String color;
-    private final ItemStack iconItem;
+    private final ItemStackTemplate iconTemplate;
     private final boolean isDefault;
 
-    public JobInstance(Identifier location, int price, String color, ItemStack iconItem, boolean isDefault)
+    public JobInstance(Identifier location, int price, String color, ItemStackTemplate iconTemplate, boolean isDefault)
     {
         super(location);
         this.price = price;
         this.color = color;
-        this.iconItem = iconItem;
+        this.iconTemplate = iconTemplate;
         this.isDefault = isDefault;
     }
 
@@ -68,7 +69,7 @@ public class JobInstance extends AbstractActionHolder
 
     public ItemStack getIconItem()
     {
-        return iconItem;
+        return iconTemplate.create();
     }
 
     public boolean isDefault()
@@ -116,12 +117,12 @@ public class JobInstance extends AbstractActionHolder
         @Override
         public JobInstance fromJson(JsonObject jsonObject, Identifier resourceLocation)
         {
-            return new JobInstance(resourceLocation, GsonHelper.getAsInt(jsonObject, "price"), GsonHelper.getAsString(jsonObject, "color"), getItemStack(GsonHelper.getAsJsonObject(jsonObject, "icon")), GsonHelper.getAsBoolean(jsonObject, "is_default", false));
+            return new JobInstance(resourceLocation, GsonHelper.getAsInt(jsonObject, "price"), GsonHelper.getAsString(jsonObject, "color"), getItemStackTemplate(GsonHelper.getAsJsonObject(jsonObject, "icon")), GsonHelper.getAsBoolean(jsonObject, "is_default", false));
         }
 
         public JobInstance fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, Identifier resourceLocation)
         {
-            return new JobInstance(friendlyByteBuf.readIdentifier(), friendlyByteBuf.readVarInt(), friendlyByteBuf.readUtf(), ItemStack.STREAM_CODEC.decode(friendlyByteBuf), friendlyByteBuf.readBoolean());
+            return new JobInstance(friendlyByteBuf.readIdentifier(), friendlyByteBuf.readVarInt(), friendlyByteBuf.readUtf(), ItemStackTemplate.STREAM_CODEC.decode(friendlyByteBuf), friendlyByteBuf.readBoolean());
         }
 
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, JobInstance jobInstance)
@@ -129,7 +130,7 @@ public class JobInstance extends AbstractActionHolder
             friendlyByteBuf.writeIdentifier(jobInstance.location);
             friendlyByteBuf.writeVarInt(jobInstance.price);
             friendlyByteBuf.writeUtf(jobInstance.color);
-            ItemStack.STREAM_CODEC.encode(friendlyByteBuf, jobInstance.iconItem);
+            ItemStackTemplate.STREAM_CODEC.encode(friendlyByteBuf, jobInstance.iconTemplate);
             friendlyByteBuf.writeBoolean(jobInstance.isDefault);
             IActionHolderSerializer.super.toNetwork(friendlyByteBuf, jobInstance);
         }

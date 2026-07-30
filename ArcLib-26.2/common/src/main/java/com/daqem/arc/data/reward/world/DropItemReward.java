@@ -17,8 +17,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -29,15 +29,16 @@ import java.util.List;
 
 public class DropItemReward extends AbstractReward {
 
-    private final ItemStack itemStack;
+    private final ItemStackTemplate itemTemplate;
 
-    public DropItemReward(double chance, int priority, ItemStack itemStack) {
+    public DropItemReward(double chance, int priority, ItemStackTemplate itemTemplate) {
         super(chance, priority);
-        this.itemStack = itemStack;
+        this.itemTemplate = itemTemplate;
     }
 
     @Override
     public Component getDescription() {
+        ItemStack itemStack = getItemStack();
         return getDescription(itemStack.getCount(), itemStack.getHoverName());
     }
 
@@ -48,6 +49,7 @@ public class DropItemReward extends AbstractReward {
             Level level = actionData.getData(ActionDataType.WORLD);
             if (level == null) level = actionData.getPlayer().arc$getLevel();
             if (level instanceof ServerLevel serverLevel) {
+                ItemStack itemStack = getItemStack();
                 if (!itemStack.isEmpty()) {
                     // 설정 수량은 스택의 count에 이미 담겨 있으므로 스택 하나만 드롭한다.
                     // 수량만큼 반복하며 전체 스택을 복사하면 수량의 제곱만큼 지급된다.
@@ -93,14 +95,14 @@ public class DropItemReward extends AbstractReward {
     }
 
     public ItemStack getItemStack() {
-        return itemStack;
+        return itemTemplate.create();
     }
 
     public static class Serializer implements IRewardSerializer<DropItemReward> {
 
         @Override
         public DropItemReward fromJson(JsonObject jsonObject, double chance, int priority) {
-            return new DropItemReward(chance, priority, getItemStack(jsonObject.get("item")));
+            return new DropItemReward(chance, priority, getItemStackTemplate(jsonObject.get("item")));
         }
 
         @Override
@@ -108,13 +110,13 @@ public class DropItemReward extends AbstractReward {
             return new DropItemReward(
                     chance,
                     priority,
-                    ItemStack.STREAM_CODEC.decode(friendlyByteBuf));
+                    ItemStackTemplate.STREAM_CODEC.decode(friendlyByteBuf));
         }
 
         @Override
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, DropItemReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
-            ItemStack.STREAM_CODEC.encode(friendlyByteBuf, type.itemStack);
+            ItemStackTemplate.STREAM_CODEC.encode(friendlyByteBuf, type.itemTemplate);
         }
     }
 }

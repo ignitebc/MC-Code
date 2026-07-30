@@ -208,14 +208,19 @@ public class ImbuingMenu extends AbstractContainerMenu {
             this.broadcastEnhanceResult(player, level, equipmentName, EnhanceResult.DESTROYED, 0);
             player.playSound(SoundEvents.ITEM_BREAK.value(), 1.0f, 1.0f);
         } else {
-            if (roll < successChance + destroyChance) {
+            boolean destructionPrevented = roll < successChance + destroyChance;
+            if (destructionPrevented) {
                 this.input.removeItem(PROTECTION_SCROLL_SLOT, 1);
             }
             int failedLevel = Math.max(0, currentLevel - 1);
             EnhancementHelper.setEnhancementLevel(equipment, failedLevel);
             this.input.setItem(EQUIPMENT_SLOT, equipment);
             this.setEnhanceResult(EnhanceResult.FAILURE, failedLevel);
-            this.broadcastEnhanceResult(player, level, equipmentName, EnhanceResult.FAILURE, failedLevel);
+            if (destructionPrevented) {
+                this.broadcastProtectionResult(player, level, equipmentName, failedLevel);
+            } else {
+                this.broadcastEnhanceResult(player, level, equipmentName, EnhanceResult.FAILURE, failedLevel);
+            }
             player.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0f, 1.0f);
         }
 
@@ -261,6 +266,23 @@ public class ImbuingMenu extends AbstractContainerMenu {
             return;
         }
 
+        server.getPlayerList().broadcastSystemMessage(message, false);
+    }
+
+    private void broadcastProtectionResult(Player player,
+                                           Level level,
+                                           Component equipmentName,
+                                           int enhancementLevel) {
+        MinecraftServer server = level.getServer();
+        if (server == null) {
+            return;
+        }
+
+        Component message = Component.translatable("container.imbue.broadcast.protected",
+                        player.getDisplayName(),
+                        equipmentName,
+                        enhancementLevel)
+                .withStyle(ChatFormatting.YELLOW);
         server.getPlayerList().broadcastSystemMessage(message, false);
     }
 

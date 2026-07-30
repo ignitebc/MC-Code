@@ -18,6 +18,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 import java.util.Optional;
 
@@ -36,16 +37,16 @@ public class SpecialItemReward extends AbstractReward
             "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "viiii", "x"
     };
 
-    private final ItemStack itemStack;
+    private final ItemStackTemplate itemTemplate;
     private final int amount;
     private final Identifier bonusPowerupLine;
     private final double bonusChancePerTier;
 
-    public SpecialItemReward(double chance, int priority, ItemStack itemStack, int amount,
+    public SpecialItemReward(double chance, int priority, ItemStackTemplate itemTemplate, int amount,
                              Identifier bonusPowerupLine, double bonusChancePerTier)
     {
         super(chance, priority);
-        this.itemStack = itemStack;
+        this.itemTemplate = itemTemplate;
         this.amount = amount;
         this.bonusPowerupLine = bonusPowerupLine;
         this.bonusChancePerTier = bonusChancePerTier;
@@ -60,7 +61,7 @@ public class SpecialItemReward extends AbstractReward
     @Override
     public Component getDescription()
     {
-        return getDescription(this.amount, this.itemStack.getHoverName());
+        return getDescription(this.amount, this.getItemStack().getHoverName());
     }
 
     @Override
@@ -78,7 +79,7 @@ public class SpecialItemReward extends AbstractReward
             grantedAmount = grantedAmount * 2;
         }
 
-        ItemStack reward = this.itemStack.copy();
+        ItemStack reward = this.itemTemplate.create();
         reward.setCount(grantedAmount);
         giveToPlayer(arcPlayer, reward);
 
@@ -140,7 +141,7 @@ public class SpecialItemReward extends AbstractReward
 
     public ItemStack getItemStack()
     {
-        return this.itemStack;
+        return this.itemTemplate.create();
     }
 
     public int getAmount()
@@ -154,9 +155,8 @@ public class SpecialItemReward extends AbstractReward
         @Override
         public SpecialItemReward fromJson(JsonObject jsonObject, double chance, int priority)
         {
-            ItemStack itemStack = getItemStack(jsonObject.get("item"));
             int amount = GsonHelper.getAsInt(jsonObject, "amount", 1);
-            itemStack.setCount(amount);
+            ItemStackTemplate itemTemplate = getItemStackTemplate(jsonObject.get("item")).withCount(amount);
 
             Identifier bonusPowerupLine = null;
             if (jsonObject.has("bonus_powerup"))
@@ -165,13 +165,13 @@ public class SpecialItemReward extends AbstractReward
             }
             double bonusChancePerTier = GsonHelper.getAsDouble(jsonObject, "bonus_chance_per_tier", 0D);
 
-            return new SpecialItemReward(chance, priority, itemStack, amount, bonusPowerupLine, bonusChancePerTier);
+            return new SpecialItemReward(chance, priority, itemTemplate, amount, bonusPowerupLine, bonusChancePerTier);
         }
 
         @Override
         public SpecialItemReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority)
         {
-            ItemStack itemStack = ItemStack.STREAM_CODEC.decode(friendlyByteBuf);
+            ItemStackTemplate itemTemplate = ItemStackTemplate.STREAM_CODEC.decode(friendlyByteBuf);
             int amount = friendlyByteBuf.readInt();
             Identifier bonusPowerupLine = null;
             if (friendlyByteBuf.readBoolean())
@@ -179,14 +179,14 @@ public class SpecialItemReward extends AbstractReward
                 bonusPowerupLine = friendlyByteBuf.readIdentifier();
             }
             double bonusChancePerTier = friendlyByteBuf.readDouble();
-            return new SpecialItemReward(chance, priority, itemStack, amount, bonusPowerupLine, bonusChancePerTier);
+            return new SpecialItemReward(chance, priority, itemTemplate, amount, bonusPowerupLine, bonusChancePerTier);
         }
 
         @Override
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, SpecialItemReward type)
         {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
-            ItemStack.STREAM_CODEC.encode(friendlyByteBuf, type.itemStack);
+            ItemStackTemplate.STREAM_CODEC.encode(friendlyByteBuf, type.itemTemplate);
             friendlyByteBuf.writeInt(type.amount);
             friendlyByteBuf.writeBoolean(type.bonusPowerupLine != null);
             if (type.bonusPowerupLine != null)

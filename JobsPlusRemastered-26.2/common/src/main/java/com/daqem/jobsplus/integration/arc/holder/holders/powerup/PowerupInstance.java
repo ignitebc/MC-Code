@@ -18,6 +18,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
@@ -28,17 +29,17 @@ public class PowerupInstance extends AbstractActionHolder
 
     private final Identifier jobLocation;
     private final @Nullable Identifier parentLocation;
-    private final ItemStack icon;
+    private final ItemStackTemplate iconTemplate;
     private final int price;
     private final int requiredLevel;
     private final PowerupType type;
 
-    public PowerupInstance(Identifier location, Identifier jobLocation, @Nullable Identifier parentLocation, ItemStack icon, int price, int requiredLevel, PowerupType type)
+    public PowerupInstance(Identifier location, Identifier jobLocation, @Nullable Identifier parentLocation, ItemStackTemplate iconTemplate, int price, int requiredLevel, PowerupType type)
     {
         super(location);
         this.jobLocation = jobLocation;
         this.parentLocation = parentLocation;
-        this.icon = icon;
+        this.iconTemplate = iconTemplate;
         this.price = price;
         this.requiredLevel = requiredLevel;
         this.type = type;
@@ -66,7 +67,12 @@ public class PowerupInstance extends AbstractActionHolder
 
     public ItemStack getIcon()
     {
-        return icon;
+        return iconTemplate.withCount(1).create();
+    }
+
+    public int getIconCount()
+    {
+        return iconTemplate.count();
     }
 
     public int getPrice()
@@ -140,13 +146,13 @@ public class PowerupInstance extends AbstractActionHolder
         public PowerupInstance fromJson(JsonObject jsonObject, Identifier resourceLocation)
         {
             String parentLocation = GsonHelper.getAsString(jsonObject, "parent", null);
-            return new PowerupInstance(resourceLocation, getResourceLocation(jsonObject, "job"), parentLocation == null ? null : Identifier.parse(parentLocation), getItemStack(GsonHelper.getAsJsonObject(jsonObject, "icon")), GsonHelper.getAsInt(jsonObject, "price"), GsonHelper.getAsInt(jsonObject, "required_level"), PowerupType.valueOf(GsonHelper.getAsString(jsonObject, "type", "basic").toUpperCase()));
+            return new PowerupInstance(resourceLocation, getResourceLocation(jsonObject, "job"), parentLocation == null ? null : Identifier.parse(parentLocation), getItemStackTemplate(GsonHelper.getAsJsonObject(jsonObject, "icon")), GsonHelper.getAsInt(jsonObject, "price"), GsonHelper.getAsInt(jsonObject, "required_level"), PowerupType.valueOf(GsonHelper.getAsString(jsonObject, "type", "basic").toUpperCase()));
         }
 
         @Override
         public PowerupInstance fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, Identifier resourceLocation)
         {
-            return new PowerupInstance(friendlyByteBuf.readIdentifier(), friendlyByteBuf.readIdentifier(), friendlyByteBuf.readBoolean() ? friendlyByteBuf.readIdentifier() : null, ItemStack.STREAM_CODEC.decode(friendlyByteBuf), friendlyByteBuf.readInt(), friendlyByteBuf.readInt(), friendlyByteBuf.readEnum(PowerupType.class));
+            return new PowerupInstance(friendlyByteBuf.readIdentifier(), friendlyByteBuf.readIdentifier(), friendlyByteBuf.readBoolean() ? friendlyByteBuf.readIdentifier() : null, ItemStackTemplate.STREAM_CODEC.decode(friendlyByteBuf), friendlyByteBuf.readInt(), friendlyByteBuf.readInt(), friendlyByteBuf.readEnum(PowerupType.class));
         }
 
         @Override
@@ -159,7 +165,7 @@ public class PowerupInstance extends AbstractActionHolder
             {
                 friendlyByteBuf.writeIdentifier(powerupInstance.getParentLocation());
             }
-            ItemStack.STREAM_CODEC.encode(friendlyByteBuf, powerupInstance.getIcon());
+            ItemStackTemplate.STREAM_CODEC.encode(friendlyByteBuf, powerupInstance.iconTemplate);
             friendlyByteBuf.writeInt(powerupInstance.getPrice());
             friendlyByteBuf.writeInt(powerupInstance.getRequiredLevel());
             friendlyByteBuf.writeEnum(powerupInstance.getPowerupType());

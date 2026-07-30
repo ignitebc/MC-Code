@@ -113,9 +113,19 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
     private void blitSlot(GuiGraphicsExtractor guiGraphics) {
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.getSprite(), this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
-        ItemStack icon = this.powerup != null ? this.powerup.getPowerupInstance().getIcon() : state.getJob().getJobInstance().getIconItem();
+        ItemStack icon;
+        String countText = null;
+        if (this.powerup != null) {
+            PowerupInstance powerupInstance = this.powerup.getPowerupInstance();
+            icon = powerupInstance.getIcon();
+            if (powerupInstance.getIconCount() > 1) {
+                countText = Integer.toString(powerupInstance.getIconCount());
+            }
+        } else {
+            icon = state.getJob().getJobInstance().getIconItem();
+        }
         guiGraphics.fakeItem(icon, this.getX() + 5, this.getY() + 5);
-        guiGraphics.itemDecorations(Minecraft.getInstance().font, icon, this.getX() + 5, this.getY() + 5);
+        guiGraphics.itemDecorations(Minecraft.getInstance().font, icon, this.getX() + 5, this.getY() + 5, countText);
     }
 
     @Override

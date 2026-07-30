@@ -9,35 +9,34 @@ import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.daqem.arc.player.PlayerItemDelivery;
 import com.google.gson.JsonObject;
-import net.minecraft.core.component.PatchedDataComponentMap;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 public class ItemReward extends AbstractReward {
 
-    private final ItemStack itemStack;
+    private final ItemStackTemplate itemTemplate;
     private final int amount;
 
-    public ItemReward(double chance, int priority, ItemStack itemStack, int amount) {
+    public ItemReward(double chance, int priority, ItemStackTemplate itemTemplate, int amount) {
         super(chance, priority);
-        this.itemStack = itemStack;
+        this.itemTemplate = itemTemplate;
         this.amount = amount;
     }
 
     @Override
     public Component getDescription() {
-        return getDescription(amount, itemStack.getHoverName());
+        return getDescription(amount, getItemStack().getHoverName());
     }
 
     @Override
     public ActionResult apply(ActionData actionData) {
         ArcPlayer arcPlayer = actionData.getPlayer();
         if (arcPlayer.arc$getPlayer() instanceof ServerPlayer serverPlayer) {
-            ItemStack reward = itemStack.copy();
+            ItemStack reward = itemTemplate.create();
             PlayerItemDelivery.giveOrDrop(serverPlayer, reward);
         }
         return new ActionResult();
@@ -49,7 +48,7 @@ public class ItemReward extends AbstractReward {
     }
 
     public ItemStack getItemStack() {
-        return itemStack;
+        return itemTemplate.create();
     }
 
     public int getAmount() {
@@ -60,21 +59,20 @@ public class ItemReward extends AbstractReward {
 
         @Override
         public ItemReward fromJson(JsonObject jsonObject, double chance, int priority) {
-            ItemStack itemStack = getItemStack(jsonObject.get("item"));
             int amount = GsonHelper.getAsInt(jsonObject, "amount", 1);
-            itemStack.setCount(amount);
-            return new ItemReward(chance, priority, itemStack, amount);
+            ItemStackTemplate itemTemplate = getItemStackTemplate(jsonObject.get("item")).withCount(amount);
+            return new ItemReward(chance, priority, itemTemplate, amount);
         }
 
         @Override
         public ItemReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
-            return new ItemReward(chance, priority, ItemStack.STREAM_CODEC.decode(friendlyByteBuf), friendlyByteBuf.readInt());
+            return new ItemReward(chance, priority, ItemStackTemplate.STREAM_CODEC.decode(friendlyByteBuf), friendlyByteBuf.readInt());
         }
 
         @Override
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, ItemReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
-            ItemStack.STREAM_CODEC.encode(friendlyByteBuf, type.itemStack);
+            ItemStackTemplate.STREAM_CODEC.encode(friendlyByteBuf, type.itemTemplate);
             friendlyByteBuf.writeInt(type.amount);
         }
     }

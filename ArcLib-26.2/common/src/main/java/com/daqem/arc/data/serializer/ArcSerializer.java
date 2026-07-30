@@ -21,7 +21,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
@@ -36,15 +36,15 @@ public interface ArcSerializer {
         return Identifier.parse(getString(jsonObject, elementName));
     }
 
-    default ItemStack getItemStack(JsonElement element){
+    default ItemStackTemplate getItemStackTemplate(JsonElement element){
         RegistryAccess registryAccess = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
-        return ItemStack.CODEC.decode(registryAccess.createSerializationContext(JsonOps.INSTANCE), element)
+        return ItemStackTemplate.CODEC.decode(registryAccess.createSerializationContext(JsonOps.INSTANCE), element)
                 .result()
                 .map(Pair::getFirst)
-                .orElseGet(() -> getSimpleItemStack(element));
+                .orElseGet(() -> getSimpleItemStackTemplate(element));
     }
 
-    private ItemStack getSimpleItemStack(JsonElement element) {
+    private ItemStackTemplate getSimpleItemStackTemplate(JsonElement element) {
         JsonObject itemStack = element.getAsJsonObject();
         if (itemStack.has("components")) {
             throw new JsonParseException("Invalid item stack components");
@@ -58,7 +58,7 @@ public interface ArcSerializer {
 
         Holder.Reference<Item> item = BuiltInRegistries.ITEM.get(itemId)
                 .orElseThrow(() -> new JsonParseException("Unknown item: " + itemId));
-        return new ItemStack(item.value(), count);
+        return new ItemStackTemplate(item.value(), count);
     }
 
     default IActionHolderType<?> getHolderType(JsonObject jsonObject, String elementName){
