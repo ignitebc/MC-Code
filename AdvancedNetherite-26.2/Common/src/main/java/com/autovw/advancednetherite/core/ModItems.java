@@ -51,9 +51,9 @@ public final class ModItems
     public static final AdvancedItem ENHANCE_SUCCESS_SCROLL_10 = new AdvancedItem(new Item.Properties().setId(key("enhance_success_scroll_10")));
 
     // petbox
-    public static final PetBoxItem NOMAL_PETBOX = new PetBoxItem(new Item.Properties().setId(key("nomal_petbox")));
-    public static final PetBoxItem RARE_PETBOX = new PetBoxItem(new Item.Properties().setId(key("rare_petbox")));
-    public static final PetBoxItem LEGEND_PETBOX = new PetBoxItem(new Item.Properties().setId(key("legend_petbox")));
+    public static final PetBoxItem NOMAL_PETBOX = new PetBoxItem(1.0, new Item.Properties().setId(key("nomal_petbox")));
+    public static final PetBoxItem RARE_PETBOX = new PetBoxItem(3.0, new Item.Properties().setId(key("rare_petbox")));
+    public static final PetBoxItem LEGEND_PETBOX = new PetBoxItem(5.0, new Item.Properties().setId(key("legend_petbox")));
 
     // ARMOR SETS
     // Netherite-Iron
