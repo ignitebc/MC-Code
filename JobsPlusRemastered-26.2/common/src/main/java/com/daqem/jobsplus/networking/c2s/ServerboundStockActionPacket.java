@@ -235,7 +235,8 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                         + " " + StockPosition.getLeverageDisplayName(packet.leverage)
                         + " 구매가 예약되었습니다.\n"
                         + "투자금 " + packet.amount + "개가 계좌에서 차감되었습니다.\n"
-                        + "다음 분의 진입 가격과 가격 변동을 확인한 뒤 결과를 알려드립니다.";
+                        + "다음 분의 진입 가격과 가격 변동을 확인한 뒤 결과를 알려드립니다.\n"
+                        + "구매 예약은 취소할 수 없으니 신중하게 결정해 주세요.";
             }
             case SELL -> {
                 StockQuote quote = resolveTradableQuote(player, packet);

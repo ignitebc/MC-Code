@@ -481,7 +481,8 @@ public class StockTradingComponent extends EmptyComponent
                                 + getLeverageOptionName(leverage)
                                 + " 구매를 예약하시겠습니까?\n"
                                 + "투자금 " + amount + "개는 지금 차감됩니다.\n"
-                                + "다음 분 시작가로 진입하며, 거래 기록이 없으면 예약 확인가를 사용합니다."),
+                                + "다음 분 시작가로 진입하며, 거래 기록이 없으면 예약 확인가를 사용합니다.\n"
+                                + "예약 후에는 취소할 수 없습니다."),
                         Component.literal("예약"),
                         Component.literal("취소"),
                         () -> {
