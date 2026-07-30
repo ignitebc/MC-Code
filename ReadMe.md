@@ -125,25 +125,13 @@ Jobs+를 실행하려면 다음 모드가 필요합니다.
 
 ## 빌드 방법
 
-Fabric 모듈은 다음 명령으로 빌드합니다.
-
-**Windows**
-
-```bat
-gradlew.bat :fabric:build
-```
-
-**Linux / macOS**
+빌드는 개별 모듈 폴더가 아니라 저장소 루트의 수집 스크립트로만 실행합니다.
 
 ```bash
-./gradlew :fabric:build
+python Build_File/collect_fabric_jars.py
 ```
 
-빌드 결과는 `fabric/build/libs/`에 생성되며, 배포에 사용하는 파일은 다음과 같습니다.
-
-```text
-jobsplus-1.6.4-26.2-fabric.jar
-```
+등록된 모든 모드가 순서대로 빌드되고, 배포용 JAR이 `Build_File/build_files/`에 모입니다.
 
 자세한 내용은 [buildMe.md](buildMe.md)를 참고하십시오.
 
