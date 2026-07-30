@@ -85,7 +85,28 @@ public class RandomBoxItem extends AdvancedItem {
         }
 
         // =========================
-        // 1) 소모 처리
+        // 1) 보상 설정 검증 (소모 전에 확인해서 설정 오류로 상자·열쇠만 사라지는 일을 막는다)
+        // =========================
+        List<RandomBoxConfig.Reward> rewards = config.rewards;
+        if (rewards == null || rewards.isEmpty()) {
+            player.sendOverlayMessage(Component.literal("보상 항목이 없습니다: " + configId));
+            return InteractionResult.FAIL;
+        }
+
+        boolean hasValidReward = false;
+        for (RandomBoxConfig.Reward reward : rewards) {
+            if (getItemOrNull(reward.item) != null) {
+                hasValidReward = true;
+                break;
+            }
+        }
+        if (!hasValidReward) {
+            player.sendOverlayMessage(Component.literal("유효한 보상 아이템이 없습니다: " + configId));
+            return InteractionResult.FAIL;
+        }
+
+        // =========================
+        // 2) 소모 처리
         // =========================
         removeItem(inv, keyItem, consumeKey);
         boxStack.shrink(consumeBox);
@@ -98,12 +119,6 @@ public class RandomBoxItem extends AdvancedItem {
         // 즉시 동기화
         inv.setChanged();
         player.containerMenu.broadcastChanges();
-
-        List<RandomBoxConfig.Reward> rewards = config.rewards;
-        if (rewards == null || rewards.isEmpty()) {
-            player.sendOverlayMessage(Component.literal("보상 항목이 없습니다."));
-            return InteractionResult.CONSUME;
-        }
 
         RandomSource rnd = player.getRandom();
         List<ItemStack> droppedRewardsForBroadcast = new ArrayList<>();
