@@ -32,7 +32,8 @@ subprojects {
         versionType = rootProject.release_channel
         uploadFile = file("build/libs/${rootProject.archives_base_name}-mc${rootProject.minecraft_version}-${project.name}-${rootProject.mod_version}.jar")
         gameVersions = versions
-        changelog = rootProject.file("CHANGELOG.md").text
+        def changelogFile = rootProject.file("CHANGELOG.md")
+        changelog = changelogFile.exists() ? changelogFile.text : ""
         detectLoaders = false
     }
 }
