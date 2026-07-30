@@ -154,11 +154,7 @@ JobsPlusRemastered-26.2
 | 항목 | 내용 |
 | --- | --- |
 | 모드 ID | `jobsplus` |
-| Maven Group | `com.daqem` |
 | Archive Name | `jobsplus` |
-| 개발자 | DAQEM |
-| 홈페이지 | DAQEM 공식 사이트 |
-| 원본 저장소 | DAQEM/JobsPlusRemastered |
 | 라이선스 | Apache-2.0 |
 
 ## 라이선스

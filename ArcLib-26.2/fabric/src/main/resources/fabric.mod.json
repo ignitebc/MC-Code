@@ -4,13 +4,6 @@
   "version": "${version}",
   "name": "Arc",
   "description": "",
-  "authors": [
-    "DAQEM"
-  ],
-  "contact": {
-    "homepage": "https://daqem.com/",
-    "sources": "https://github.com/DAQEM/Arc"
-  },
   "license": "MIT",
   "icon": "icon.png",
   "environment": "*",

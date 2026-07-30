@@ -4,13 +4,6 @@
   "version": "${version}",
   "name": "${mod_name}",
   "description": "${mod_description}",
-  "authors": [
-    "${mod_author}"
-  ],
-  "contact": {
-    "homepage": "${mod_website}",
-    "sources": "${mod_repository}"
-  },
   "license": "${mod_license}",
   "icon": "assets/yamlconfig/icon.png",
   "environment": "*",
