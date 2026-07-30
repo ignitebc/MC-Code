@@ -49,16 +49,16 @@ public class DropItemReward extends AbstractReward {
             if (level == null) level = actionData.getPlayer().arc$getLevel();
             if (level instanceof ServerLevel serverLevel) {
                 if (!itemStack.isEmpty()) {
-                    for (int i = 0; i < itemStack.getCount(); i++) {
-                        ItemEntity entity = new ItemEntity(
-                                serverLevel,
-                                pos.getX(),
-                                pos.getY(),
-                                pos.getZ(),
-                                itemStack.copy());
-                        entity.setDefaultPickUpDelay();
-                        serverLevel.addFreshEntity(entity);
-                    }
+                    // 설정 수량은 스택의 count에 이미 담겨 있으므로 스택 하나만 드롭한다.
+                    // 수량만큼 반복하며 전체 스택을 복사하면 수량의 제곱만큼 지급된다.
+                    ItemEntity entity = new ItemEntity(
+                            serverLevel,
+                            pos.getX(),
+                            pos.getY(),
+                            pos.getZ(),
+                            itemStack.copy());
+                    entity.setDefaultPickUpDelay();
+                    serverLevel.addFreshEntity(entity);
                 } else {
                     BlockState state = actionData.getData(ActionDataType.BLOCK_STATE);
                     if (state != null) {
