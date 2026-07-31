@@ -1,0 +1,39 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:farmer"
+  },
+  "type": "arc:on_break_block",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "chance": 100,
+      "min": 0.48,
+      "max": 0.48
+    },
+    {
+      "type": "jobsplus:bitcoin_reward",
+      "chance": 0.15,
+      "amount": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:blocks",
+      "blocks": [
+        "#minecraft:mineable/hoe",
+        "minecraft:melon",
+        "minecraft:pumpkin"
+      ]
+    },
+    {
+      "type": "arc:items",
+      "items": [
+        "#minecraft:hoes"
+      ]
+    },
+    {
+      "type": "arc:not_in_block_pos_cache"
+    }
+  ]
+}

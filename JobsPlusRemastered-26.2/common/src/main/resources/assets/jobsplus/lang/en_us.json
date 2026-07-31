@@ -118,7 +118,7 @@
   "key.category.jobsplus.category": "직업",
   "key.jobsplus.open_menu": "직업 창 열기",
   "jobsplus.job.exp.gain": "+%s %s",
-  "jobsplus.job.level_up": "%s는 %s 레벨에 도달했습니다!",
+  "jobsplus.job.level_up": "%1$s님의 %3$s는 레벨업하여 %2$sLV가 되었습니다!",
   "jobsplus.job.level_up.toast": "%s 레벨에 도달했습니다!",
   "jobsplus.job.item_unlocked.toast": "새로운 아이템이 해금되었습니다!",
   "jobsplus.job.jobsplus.alchemist.name": "연금술사",
