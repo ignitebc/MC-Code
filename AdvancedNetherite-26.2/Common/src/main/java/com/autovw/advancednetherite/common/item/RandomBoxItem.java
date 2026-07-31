@@ -105,6 +105,15 @@ public class RandomBoxItem extends AdvancedItem {
             return InteractionResult.FAIL;
         }
 
+        List<RandomBoxConfig.Reward> selectedRewards = selectRewards(config, rewards, player.getRandom());
+        if (selectedRewards.isEmpty()) {
+            player.sendOverlayMessage(Component.literal("지급할 수 있는 상자 보상이 없습니다: " + configId));
+            return InteractionResult.FAIL;
+        }
+
+        // 지급에 실패하면 상자와 열쇠를 포함한 인벤토리 전체를 개봉 전 상태로 되돌린다.
+        List<ItemStack> inventorySnapshot = snapshotInventory(inv);
+
         // =========================
         // 2) 소모 처리
         // =========================
@@ -120,36 +129,27 @@ public class RandomBoxItem extends AdvancedItem {
         inv.setChanged();
         player.containerMenu.broadcastChanges();
 
-        RandomSource rnd = player.getRandom();
         List<ItemStack> givenRewardsForBroadcast = new ArrayList<>();
-
-        if (config.roll_mode == RandomBoxConfig.RollMode.SINGLE) {
-            List<RandomBoxConfig.Reward> pool = new ArrayList<>(rewards);
-
-            while (!pool.isEmpty()) {
-                RandomBoxConfig.Reward chosen = pickOneRewardWeighted(pool, rnd);
-                if (chosen == null) break;
-
-                Item chosenItem = getItemOrNull(chosen.item);
-                if (chosenItem == null) {
-                    pool.remove(chosen);
-                    continue;
-                }
-
-                List<ItemStack> given = giveRewardSplit(player, chosen);
-                if (!given.isEmpty()) givenRewardsForBroadcast.addAll(given);
-                break;
-            }
-        } else {
-            for (RandomBoxConfig.Reward r : rewards) {
-                double prob = normalizeChanceToProbability(r.chance);
-                double roll = rnd.nextDouble();
-
-                if (roll <= prob) {
-                    List<ItemStack> given = giveRewardSplit(player, r);
-                    if (!given.isEmpty()) givenRewardsForBroadcast.addAll(given);
+        boolean deliverySucceeded = true;
+        try {
+            for (RandomBoxConfig.Reward reward : selectedRewards) {
+                if (!giveRewardSplit(player, reward, givenRewardsForBroadcast)) {
+                    deliverySucceeded = false;
+                    break;
                 }
             }
+        } catch (RuntimeException exception) {
+            LOGGER.error("Failed to deliver random box reward, restoring inventory: {}", configId, exception);
+            deliverySucceeded = false;
+        }
+
+        if (!deliverySucceeded) {
+            restoreInventory(inv, inventorySnapshot);
+            inv.setChanged();
+            player.containerMenu.broadcastChanges();
+            player.inventoryMenu.sendAllDataToRemote();
+            player.sendOverlayMessage(Component.literal("인벤토리 공간이 부족하여 상자를 열지 않았습니다."));
+            return InteractionResult.FAIL;
         }
 
         // 인벤토리에 들어간 보상이 바로 보이도록 다시 동기화한다.
@@ -168,7 +168,9 @@ public class RandomBoxItem extends AdvancedItem {
 
         server.getPlayerList().broadcastSystemMessage(broadcast, false);
 
-        return InteractionResult.CONSUME;
+        // 26.2의 아이템 사용 후처리는 사용 전 상자 스택을 손 슬롯에 다시 반영할 수 있다.
+        // 빈 손 슬롯에 보상이 들어간 경우 보상이 지워지지 않도록 현재 손 아이템을 최종 결과로 전달한다.
+        return InteractionResult.CONSUME.heldItemTransformedTo(player.getItemInHand(hand));
     }
 
     private static Item getItemOrNull(Identifier id) {
@@ -199,6 +201,38 @@ public class RandomBoxItem extends AdvancedItem {
         return candidates.get(candidates.size() - 1);
     }
 
+    private static List<RandomBoxConfig.Reward> selectRewards(
+            RandomBoxConfig config, List<RandomBoxConfig.Reward> rewards, RandomSource random) {
+        List<RandomBoxConfig.Reward> selected = new ArrayList<>();
+
+        if (config.roll_mode == RandomBoxConfig.RollMode.SINGLE) {
+            List<RandomBoxConfig.Reward> pool = new ArrayList<>(rewards);
+            while (!pool.isEmpty()) {
+                RandomBoxConfig.Reward chosen = pickOneRewardWeighted(pool, random);
+                if (chosen == null) {
+                    break;
+                }
+                if (getItemOrNull(chosen.item) != null) {
+                    selected.add(chosen);
+                    break;
+                }
+                pool.remove(chosen);
+            }
+            return selected;
+        }
+
+        for (RandomBoxConfig.Reward reward : rewards) {
+            if (getItemOrNull(reward.item) == null) {
+                continue;
+            }
+            double probability = normalizeChanceToProbability(reward.chance);
+            if (random.nextDouble() <= probability) {
+                selected.add(reward);
+            }
+        }
+        return selected;
+    }
+
     /**
      * chance는 항상 % 단위로 해석한다. (0.5 = 0.5%, 50 = 50%)
      * 과거에는 1 이하 값을 0~1 확률로 해석했지만, 0.5%를 50%로 오독하는 사고를 막기 위해 통일했다.
@@ -211,39 +245,54 @@ public class RandomBoxItem extends AdvancedItem {
     }
 
     /**
-     * 보상은 인벤토리에 먼저 넣고, 자리가 없어 들어가지 못한 수량만 바닥에 떨어뜨린다.
+     * 보상을 인벤토리에 넣고 실제 증가한 수량을 검증한다.
      * - maxStack 기준으로 쪼개서 지급한다.
-     * - 방송 표기용으로는 쪼개진 스택 리스트를 반환.
+     * - 하나라도 전량 지급되지 않으면 false를 반환하며 호출부에서 전체 인벤토리를 복원한다.
      */
-    private static List<ItemStack> giveRewardSplit(Player player, RandomBoxConfig.Reward r) {
+    private static boolean giveRewardSplit(
+            Player player, RandomBoxConfig.Reward r, List<ItemStack> givenRewards) {
         int totalCount = Math.max(r.count, 1);
 
         Item rewardItem = getItemOrNull(r.item);
         if (rewardItem == null) {
-            return List.of();
+            return false;
         }
 
         int maxStack = Math.max(1, new ItemStack(rewardItem).getMaxStackSize());
 
-        List<ItemStack> given = new ArrayList<>();
         int left = totalCount;
 
         while (left > 0) {
             int give = Math.min(left, maxStack);
             ItemStack stack = new ItemStack(rewardItem, give);
 
-            // Inventory.add가 넣은 만큼 스택을 줄여 주므로, 남은 수량만 드롭된다.
+            int countBefore = countItem(player.getInventory(), rewardItem);
             player.getInventory().add(stack);
-            if (!stack.isEmpty()) {
-                player.drop(stack, false);
+            int insertedCount = countItem(player.getInventory(), rewardItem) - countBefore;
+            if (insertedCount != give) {
+                return false;
             }
 
-            // 방송용 표기 리스트
-            given.add(new ItemStack(rewardItem, give));
+            givenRewards.add(new ItemStack(rewardItem, give));
             left -= give;
         }
 
-        return given;
+        return true;
+    }
+
+    private static List<ItemStack> snapshotInventory(Inventory inventory) {
+        List<ItemStack> snapshot = new ArrayList<>(inventory.getContainerSize());
+        for (int index = 0; index < inventory.getContainerSize(); index++) {
+            snapshot.add(inventory.getItem(index).copy());
+        }
+        return snapshot;
+    }
+
+    private static void restoreInventory(Inventory inventory, List<ItemStack> snapshot) {
+        int size = Math.min(inventory.getContainerSize(), snapshot.size());
+        for (int index = 0; index < size; index++) {
+            inventory.setItem(index, snapshot.get(index).copy());
+        }
     }
 
     /**
