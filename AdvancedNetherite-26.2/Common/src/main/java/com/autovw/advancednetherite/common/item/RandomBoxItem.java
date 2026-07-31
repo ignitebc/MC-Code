@@ -121,7 +121,7 @@ public class RandomBoxItem extends AdvancedItem {
         player.containerMenu.broadcastChanges();
 
         RandomSource rnd = player.getRandom();
-        List<ItemStack> droppedRewardsForBroadcast = new ArrayList<>();
+        List<ItemStack> givenRewardsForBroadcast = new ArrayList<>();
 
         if (config.roll_mode == RandomBoxConfig.RollMode.SINGLE) {
             List<RandomBoxConfig.Reward> pool = new ArrayList<>(rewards);
@@ -136,8 +136,8 @@ public class RandomBoxItem extends AdvancedItem {
                     continue;
                 }
 
-                List<ItemStack> dropped = dropRewardSplit(player, chosen);
-                if (!dropped.isEmpty()) droppedRewardsForBroadcast.addAll(dropped);
+                List<ItemStack> given = giveRewardSplit(player, chosen);
+                if (!given.isEmpty()) givenRewardsForBroadcast.addAll(given);
                 break;
             }
         } else {
@@ -146,14 +146,18 @@ public class RandomBoxItem extends AdvancedItem {
                 double roll = rnd.nextDouble();
 
                 if (roll <= prob) {
-                    List<ItemStack> dropped = dropRewardSplit(player, r);
-                    if (!dropped.isEmpty()) droppedRewardsForBroadcast.addAll(dropped);
+                    List<ItemStack> given = giveRewardSplit(player, r);
+                    if (!given.isEmpty()) givenRewardsForBroadcast.addAll(given);
                 }
             }
         }
 
+        // 인벤토리에 들어간 보상이 바로 보이도록 다시 동기화한다.
+        inv.setChanged();
+        player.containerMenu.broadcastChanges();
+
         // ✅ 여기서 "동일 아이템"을 합산해서 방송 문구를 통합 표시
-        MutableComponent rewardComponent = buildRewardComponent(droppedRewardsForBroadcast);
+        MutableComponent rewardComponent = buildRewardComponent(givenRewardsForBroadcast);
 
         MutableComponent broadcast = Component.literal(player.getName().getString() + "님이 ")
                 .append(boxNameComponent)
@@ -195,20 +199,23 @@ public class RandomBoxItem extends AdvancedItem {
         return candidates.get(candidates.size() - 1);
     }
 
+    /**
+     * chance는 항상 % 단위로 해석한다. (0.5 = 0.5%, 50 = 50%)
+     * 과거에는 1 이하 값을 0~1 확률로 해석했지만, 0.5%를 50%로 오독하는 사고를 막기 위해 통일했다.
+     */
     private static double normalizeChanceToProbability(double chance) {
         if (Double.isNaN(chance) || Double.isInfinite(chance) || chance <= 0.0) return 0.0;
-        double prob = (chance <= 1.0) ? chance : (chance / 100.0);
-        if (prob < 0.0) return 0.0;
+        double prob = chance / 100.0;
         if (prob > 1.0) return 1.0;
         return prob;
     }
 
     /**
-     * 보상 지급을 인벤이 아니라 "무조건 드랍"으로 고정.
-     * - maxStack 기준으로 쪼개서 여러 개 엔티티로 드랍.
+     * 보상은 인벤토리에 먼저 넣고, 자리가 없어 들어가지 못한 수량만 바닥에 떨어뜨린다.
+     * - maxStack 기준으로 쪼개서 지급한다.
      * - 방송 표기용으로는 쪼개진 스택 리스트를 반환.
      */
-    private static List<ItemStack> dropRewardSplit(Player player, RandomBoxConfig.Reward r) {
+    private static List<ItemStack> giveRewardSplit(Player player, RandomBoxConfig.Reward r) {
         int totalCount = Math.max(r.count, 1);
 
         Item rewardItem = getItemOrNull(r.item);
@@ -218,21 +225,25 @@ public class RandomBoxItem extends AdvancedItem {
 
         int maxStack = Math.max(1, new ItemStack(rewardItem).getMaxStackSize());
 
-        List<ItemStack> dropped = new ArrayList<>();
+        List<ItemStack> given = new ArrayList<>();
         int left = totalCount;
 
         while (left > 0) {
             int give = Math.min(left, maxStack);
             ItemStack stack = new ItemStack(rewardItem, give);
 
-            player.drop(stack, false);
+            // Inventory.add가 넣은 만큼 스택을 줄여 주므로, 남은 수량만 드롭된다.
+            player.getInventory().add(stack);
+            if (!stack.isEmpty()) {
+                player.drop(stack, false);
+            }
 
             // 방송용 표기 리스트
-            dropped.add(new ItemStack(rewardItem, give));
+            given.add(new ItemStack(rewardItem, give));
             left -= give;
         }
 
-        return dropped;
+        return given;
     }
 
     /**

@@ -15,7 +15,7 @@ public final class RandomBoxConfig {
     public Identifier required_key;
     public Consume consume;
 
-    public RollMode roll_mode = RollMode.INDEPENDENT;
+    public RollMode roll_mode = RollMode.SINGLE;
 
     public List<Reward> rewards;
 
@@ -29,8 +29,9 @@ public final class RandomBoxConfig {
         public int count = 1;
 
         /**
-         * INDEPENDENT: 0~1 확률
-         * SINGLE: 가중치(상대값)로 사용 (0.9/0.1 또는 90/10 가능)
+         * 항상 % 단위. (0.5 = 0.5%, 50 = 50%)
+         * INDEPENDENT: 항목별 독립 판정 확률
+         * SINGLE: 가중치로 사용하며, 합이 100이면 표기 %가 그대로 확률이 된다.
          */
         public double chance = 1.0;
     }
