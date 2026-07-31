@@ -48,6 +48,13 @@ public final class EventKillElytraDuringRaidOrWither
                 return;
             }
 
+            // 사망 후 리스폰 전까지도 틱이 계속 돌기 때문에,
+            // 죽은 플레이어를 대상으로 브로드캐스트와 kill이 반복되지 않도록 막는다.
+            if (!serverPlayer.isAlive())
+            {
+                return;
+            }
+
             // 1) 레이드(흉조) 활성 여부: 플레이어 위치 기준
             if (isRaidActiveAtPlayer(level, serverPlayer))
             {
