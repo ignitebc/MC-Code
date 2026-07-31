@@ -503,19 +503,22 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
             this.arc$statData = arcServerPlayer.arc$getStatData();
             this.arc$lastDistanceInCm = arcServerPlayer.arc$getLastDistancesInCm();
             this.arc$lastRemainderInCm = arcServerPlayer.arc$getLastRemaindersInCm();
-            this.arc$isSwimming = arcServerPlayer.arc$isSwimming();
             this.arc$swimmingDistanceInCm = arcServerPlayer.arc$getSwimmingDistanceInCm();
-            this.arc$isWalking = arcServerPlayer.arc$isWalking();
-            this.arc$walkingDistance = arcServerPlayer.arc$getWalkingDistance();
-            this.arc$isSprinting = arcServerPlayer.arc$isSprinting();
             this.arc$sprintingDistance = arcServerPlayer.arc$getSprintingDistance();
-            this.arc$isCrouching = arcServerPlayer.arc$isCrouching();
             this.arc$crouchingDistance = arcServerPlayer.arc$getCrouchingDistance();
-            this.arc$isElytraFlying = arcServerPlayer.arc$isElytraFlying();
             this.arc$elytraFlyingDistance = arcServerPlayer.arc$getElytraFlyingDistance();
-            this.arc$isGrinding = arcServerPlayer.arc$isGrinding();
-            this.arc$isHorseRiding = arcServerPlayer.arc$isHorseRiding();
             this.arc$blockPosCache = arcServerPlayer.arc$getBlockPosCache();
+
+            // A respawned player has a new movement counter. Keeping the old baseline makes
+            // walking stop until the new counter catches up and can add negative sprint distance.
+            this.arc$isSwimming = false;
+            this.arc$isWalking = false;
+            this.arc$walkingDistance = this.moveDist;
+            this.arc$isSprinting = false;
+            this.arc$isCrouching = false;
+            this.arc$isElytraFlying = false;
+            this.arc$isGrinding = false;
+            this.arc$isHorseRiding = false;
         }
     }
 
