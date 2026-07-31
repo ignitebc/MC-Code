@@ -18,7 +18,8 @@ public class ImbuingScreen extends AbstractContainerScreen<ImbuingMenu> {
     private static final Identifier TEXTURE_LOCATION = IllagerInvasion.id(
             "textures/gui/container/imbuing_table.png");
 
-    private static final int CHANCE_TEXT_Y = 20;
+    private static final int CHANCE_TEXT_Y = 21;
+    private static final float CHANCE_TEXT_SCALE = 0.75F;
     private static final int SLOT_LABEL_Y = 30;
     private static final int SEPARATOR_Y = 42;
     private static final int BUTTON_X = 52;
@@ -172,13 +173,18 @@ public class ImbuingScreen extends AbstractContainerScreen<ImbuingMenu> {
         Component separator = Component.literal(" , ");
 
         int totalWidth = this.font.width(successText) + this.font.width(separator) + this.font.width(destroyText);
-        int textX = (this.imageWidth - totalWidth) / 2;
 
-        guiGraphics.text(this.font, successText, textX, CHANCE_TEXT_Y, SUCCESS_COLOR, false);
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate((this.imageWidth - totalWidth * CHANCE_TEXT_SCALE) / 2.0F, CHANCE_TEXT_Y);
+        guiGraphics.pose().scale(CHANCE_TEXT_SCALE, CHANCE_TEXT_SCALE);
+
+        int textX = 0;
+        guiGraphics.text(this.font, successText, textX, 0, SUCCESS_COLOR, false);
         textX += this.font.width(successText);
-        guiGraphics.text(this.font, separator, textX, CHANCE_TEXT_Y, LABEL_COLOR, false);
+        guiGraphics.text(this.font, separator, textX, 0, LABEL_COLOR, false);
         textX += this.font.width(separator);
-        guiGraphics.text(this.font, destroyText, textX, CHANCE_TEXT_Y, DESTROY_COLOR, false);
+        guiGraphics.text(this.font, destroyText, textX, 0, DESTROY_COLOR, false);
+        guiGraphics.pose().popMatrix();
     }
 
     /**
