@@ -54,7 +54,7 @@ public final class ModItems
 
     // petbox
     public static final PetBoxItem NOMAL_PETBOX = new PetBoxItem(List.of(() -> ModEntityTypes.DIALGA_PET), 1.0, new Item.Properties().setId(key("nomal_petbox")));
-    public static final PetBoxItem RARE_PETBOX = new PetBoxItem(List.of(() -> ModEntityTypes.DRAGOON_PET), 3.0, new Item.Properties().setId(key("rare_petbox")));
+    public static final PetBoxItem RARE_PETBOX = new PetBoxItem(List.of(() -> ModEntityTypes.UNICORN_PET), 3.0, new Item.Properties().setId(key("rare_petbox")));
     public static final PetBoxItem LEGEND_PETBOX = new PetBoxItem(List.of(() -> ModEntityTypes.FAIRLINS_PET, () -> ModEntityTypes.DARK_DRAGON_PET), 5.0, new Item.Properties().setId(key("legend_petbox")));
 
     // ARMOR SETS

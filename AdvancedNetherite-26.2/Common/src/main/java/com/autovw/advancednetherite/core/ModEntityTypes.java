@@ -18,13 +18,13 @@ public final class ModEntityTypes
             .noLootTable()
             .build(key("dialga_pet"));
 
-    public static final EntityType<DialgaPetEntity> DRAGOON_PET = EntityType.Builder
+    public static final EntityType<DialgaPetEntity> UNICORN_PET = EntityType.Builder
             .of(DialgaPetEntity::new, MobCategory.CREATURE)
-            .sized(1.2F, 0.8F)
+            .sized(1.1F, 1.5F)
             .clientTrackingRange(10)
             .fireImmune()
             .noLootTable()
-            .build(key("dragoon_pet"));
+            .build(key("unicorn_pet"));
 
     public static final EntityType<DialgaPetEntity> FAIRLINS_PET = EntityType.Builder
             .of(DialgaPetEntity::new, MobCategory.CREATURE)

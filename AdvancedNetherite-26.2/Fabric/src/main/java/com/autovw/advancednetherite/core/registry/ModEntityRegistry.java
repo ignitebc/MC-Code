@@ -18,8 +18,8 @@ public final class ModEntityRegistry
     {
         Registry.register(BuiltInRegistries.ENTITY_TYPE, id("dialga_pet"), ModEntityTypes.DIALGA_PET);
         FabricDefaultAttributeRegistry.register(ModEntityTypes.DIALGA_PET, DialgaPetEntity.createAttributes());
-        Registry.register(BuiltInRegistries.ENTITY_TYPE, id("dragoon_pet"), ModEntityTypes.DRAGOON_PET);
-        FabricDefaultAttributeRegistry.register(ModEntityTypes.DRAGOON_PET, DialgaPetEntity.createAttributes());
+        Registry.register(BuiltInRegistries.ENTITY_TYPE, id("unicorn_pet"), ModEntityTypes.UNICORN_PET);
+        FabricDefaultAttributeRegistry.register(ModEntityTypes.UNICORN_PET, DialgaPetEntity.createAttributes());
         Registry.register(BuiltInRegistries.ENTITY_TYPE, id("fairlins_pet"), ModEntityTypes.FAIRLINS_PET);
         FabricDefaultAttributeRegistry.register(ModEntityTypes.FAIRLINS_PET, DialgaPetEntity.createAttributes());
         Registry.register(BuiltInRegistries.ENTITY_TYPE, id("dark_dragon_pet"), ModEntityTypes.DARK_DRAGON_PET);
