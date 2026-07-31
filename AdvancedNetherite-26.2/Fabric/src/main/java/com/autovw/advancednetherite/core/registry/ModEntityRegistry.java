@@ -24,6 +24,12 @@ public final class ModEntityRegistry
         FabricDefaultAttributeRegistry.register(ModEntityTypes.FAIRLINS_PET, DialgaPetEntity.createAttributes());
         Registry.register(BuiltInRegistries.ENTITY_TYPE, id("dark_dragon_pet"), ModEntityTypes.DARK_DRAGON_PET);
         FabricDefaultAttributeRegistry.register(ModEntityTypes.DARK_DRAGON_PET, DialgaPetEntity.createAttributes());
+        Registry.register(BuiltInRegistries.ENTITY_TYPE, id("kirby_pet"), ModEntityTypes.KIRBY_PET);
+        FabricDefaultAttributeRegistry.register(ModEntityTypes.KIRBY_PET, DialgaPetEntity.createAttributes());
+        Registry.register(BuiltInRegistries.ENTITY_TYPE, id("gazelle_pet"), ModEntityTypes.GAZELLE_PET);
+        FabricDefaultAttributeRegistry.register(ModEntityTypes.GAZELLE_PET, DialgaPetEntity.createAttributes());
+        Registry.register(BuiltInRegistries.ENTITY_TYPE, id("sculken_raven_pet"), ModEntityTypes.SCULKEN_RAVEN_PET);
+        FabricDefaultAttributeRegistry.register(ModEntityTypes.SCULKEN_RAVEN_PET, DialgaPetEntity.createAttributes());
     }
 
     private static Identifier id(String name)

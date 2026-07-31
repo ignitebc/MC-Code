@@ -42,6 +42,30 @@ public final class ModEntityTypes
             .noLootTable()
             .build(key("dark_dragon_pet"));
 
+    public static final EntityType<DialgaPetEntity> KIRBY_PET = EntityType.Builder
+            .of(DialgaPetEntity::new, MobCategory.CREATURE)
+            .sized(0.6F, 0.7F)
+            .clientTrackingRange(10)
+            .fireImmune()
+            .noLootTable()
+            .build(key("kirby_pet"));
+
+    public static final EntityType<DialgaPetEntity> GAZELLE_PET = EntityType.Builder
+            .of(DialgaPetEntity::new, MobCategory.CREATURE)
+            .sized(0.8F, 1.1F)
+            .clientTrackingRange(10)
+            .fireImmune()
+            .noLootTable()
+            .build(key("gazelle_pet"));
+
+    public static final EntityType<DialgaPetEntity> SCULKEN_RAVEN_PET = EntityType.Builder
+            .of(DialgaPetEntity::new, MobCategory.CREATURE)
+            .sized(1.2F, 1.2F)
+            .clientTrackingRange(10)
+            .fireImmune()
+            .noLootTable()
+            .build(key("sculken_raven_pet"));
+
     private ModEntityTypes()
     {
     }

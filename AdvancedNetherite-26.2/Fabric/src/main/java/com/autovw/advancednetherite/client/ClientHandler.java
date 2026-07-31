@@ -3,10 +3,16 @@ package com.autovw.advancednetherite.client;
 import com.autovw.advancednetherite.client.model.DarkDragonPetModel;
 import com.autovw.advancednetherite.client.model.DialgaPetModel;
 import com.autovw.advancednetherite.client.model.FairlinsPetModel;
+import com.autovw.advancednetherite.client.model.GazellePetModel;
+import com.autovw.advancednetherite.client.model.KirbyPetModel;
+import com.autovw.advancednetherite.client.model.SculkenRavenPetModel;
 import com.autovw.advancednetherite.client.model.UnicornPetModel;
 import com.autovw.advancednetherite.client.renderer.DarkDragonPetRenderer;
 import com.autovw.advancednetherite.client.renderer.DialgaPetRenderer;
 import com.autovw.advancednetherite.client.renderer.FairlinsPetRenderer;
+import com.autovw.advancednetherite.client.renderer.GazellePetRenderer;
+import com.autovw.advancednetherite.client.renderer.KirbyPetRenderer;
+import com.autovw.advancednetherite.client.renderer.SculkenRavenPetRenderer;
 import com.autovw.advancednetherite.client.renderer.UnicornPetRenderer;
 import com.autovw.advancednetherite.core.ModEntityTypes;
 import net.fabricmc.api.ClientModInitializer;
@@ -29,5 +35,11 @@ public class ClientHandler implements ClientModInitializer
         EntityRendererRegistry.register(ModEntityTypes.FAIRLINS_PET, FairlinsPetRenderer::new);
         ModelLayerRegistry.registerModelLayer(DarkDragonPetModel.LAYER_LOCATION, DarkDragonPetModel::createBodyLayer);
         EntityRendererRegistry.register(ModEntityTypes.DARK_DRAGON_PET, DarkDragonPetRenderer::new);
+        ModelLayerRegistry.registerModelLayer(KirbyPetModel.LAYER_LOCATION, KirbyPetModel::createBodyLayer);
+        EntityRendererRegistry.register(ModEntityTypes.KIRBY_PET, KirbyPetRenderer::new);
+        ModelLayerRegistry.registerModelLayer(GazellePetModel.LAYER_LOCATION, GazellePetModel::createBodyLayer);
+        EntityRendererRegistry.register(ModEntityTypes.GAZELLE_PET, GazellePetRenderer::new);
+        ModelLayerRegistry.registerModelLayer(SculkenRavenPetModel.LAYER_LOCATION, SculkenRavenPetModel::createBodyLayer);
+        EntityRendererRegistry.register(ModEntityTypes.SCULKEN_RAVEN_PET, SculkenRavenPetRenderer::new);
     }
 }
