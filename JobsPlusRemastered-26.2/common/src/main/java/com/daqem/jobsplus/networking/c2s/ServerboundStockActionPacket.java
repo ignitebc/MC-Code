@@ -23,6 +23,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
@@ -265,6 +266,17 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
             StockMarketTicker.onStockAccountChanged(player, account);
         }
         jobsServerPlayer.jobsplus$setStockAccount(account);
+        if (isTransferAction(packet.action))
+        {
+            // 인벤토리는 로그아웃 즉시 저장되지만 계좌 원장은 오토세이브 때 저장된다.
+            // 이 시점 차이를 노려 출금 후 강제 종료로 비트코인을 복사하지 못하도록
+            // 입출금 직후 원장을 바로 디스크에 기록한다.
+            MinecraftServer server = player.level().getServer();
+            if (server != null)
+            {
+                server.overworld().getDataStorage().scheduleSave();
+            }
+        }
         player.getInventory().setChanged();
         player.containerMenu.broadcastChanges();
         StockScreenSync.send(jobsServerPlayer);
