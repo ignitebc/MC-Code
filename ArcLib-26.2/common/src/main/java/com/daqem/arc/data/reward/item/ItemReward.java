@@ -8,6 +8,7 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.daqem.arc.player.PlayerItemDelivery;
+import com.daqem.arc.player.SkillActivationNotifier;
 import com.google.gson.JsonObject;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -37,7 +38,9 @@ public class ItemReward extends AbstractReward {
         ArcPlayer arcPlayer = actionData.getPlayer();
         if (arcPlayer.arc$getPlayer() instanceof ServerPlayer serverPlayer) {
             ItemStack reward = itemTemplate.create();
+            ItemStack notificationStack = reward.copy();
             PlayerItemDelivery.giveOrDrop(serverPlayer, reward);
+            SkillActivationNotifier.notifyExtraDrop(serverPlayer, notificationStack);
         }
         return new ActionResult();
     }

@@ -11,6 +11,7 @@ import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
 import com.daqem.jobsplus.accessor.DropMultiplierAccessor;
 import com.google.gson.JsonObject;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -35,16 +36,13 @@ public class EntityDropMultiplierReward extends AbstractReward
     public ActionResult apply(ActionData actionData)
     {
 
-        // 확률 체크
-        if (!passedChance(actionData))
-        {
-            return new ActionResult();
-        }
-
         Entity target = actionData.getData(ActionDataType.ENTITY);
-        if (target instanceof LivingEntity living)
+        if (target instanceof LivingEntity living
+                && actionData.getPlayer().arc$getPlayer() instanceof ServerPlayer serverPlayer)
         {
-            ((DropMultiplierAccessor) living).jobsplus$setDropMultiplier(this.multiplier);
+            DropMultiplierAccessor accessor = (DropMultiplierAccessor) living;
+            accessor.jobsplus$setDropMultiplier(this.multiplier);
+            accessor.jobsplus$setDropRewardPlayer(serverPlayer.getUUID());
         }
 
         return new ActionResult();

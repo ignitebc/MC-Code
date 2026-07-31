@@ -1,13 +1,17 @@
 package com.daqem.jobsplus.mixin;
 
 import com.daqem.jobsplus.accessor.DropMultiplierAccessor;
+import com.daqem.arc.player.SkillActivationNotifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+
+import java.util.UUID;
 
 /**
  * 26.2 기준:
@@ -22,6 +26,9 @@ public abstract class MixinLivingEntityDropMultiplier implements DropMultiplierA
     @Unique
     private int jobsplus$dropMultiplier = 1;
 
+    @Unique
+    private UUID jobsplus$dropRewardPlayer;
+
     @Override
     public int jobsplus$getDropMultiplier() {
         return jobsplus$dropMultiplier;
@@ -33,35 +40,29 @@ public abstract class MixinLivingEntityDropMultiplier implements DropMultiplierA
     }
 
     @Override
+    public UUID jobsplus$getDropRewardPlayer() {
+        return this.jobsplus$dropRewardPlayer;
+    }
+
+    @Override
+    public void jobsplus$setDropRewardPlayer(UUID playerUuid) {
+        this.jobsplus$dropRewardPlayer = playerUuid;
+    }
+
+    @Override
     public void jobsplus$clearDropMultiplier() {
         this.jobsplus$dropMultiplier = 1;
+        this.jobsplus$dropRewardPlayer = null;
     }
 
-    /**
-     * Entity#spawnAtLocation(ServerLevel, ItemStack) 대응
-     * - argsOnly=true 이므로 "파라미터" 중 ItemStack만 찾아서 교체합니다.
-     */
+    /** 최종 드롭 생성 오버로드 한 곳에서만 배수를 적용해 위임 과정의 중복 적용을 막습니다. */
     @ModifyVariable(
-            method = "spawnAtLocation(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/entity/item/ItemEntity;",
+            method = "spawnAtLocation(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/entity/item/ItemEntity;",
             at = @At("HEAD"),
             argsOnly = true,
             require = 0
     )
-    private ItemStack jobsplus$multiplyDropStack_2args(ItemStack original) {
-        return jobsplus$applyMultiplier(original);
-    }
-
-    /**
-     * 26.2에서 존재할 수 있는 추가 오버로드도 같이 대응 (대표적으로 float/boolean 등이 붙는 경우가 있음)
-     * - 아래는 "ServerLevel + ItemStack + float" 형태를 우선 대응합니다.
-     */
-    @ModifyVariable(
-            method = "spawnAtLocation(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;F)Lnet/minecraft/world/entity/item/ItemEntity;",
-            at = @At("HEAD"),
-            argsOnly = true,
-            require = 0
-    )
-    private ItemStack jobsplus$multiplyDropStack_3args(ItemStack original) {
+    private ItemStack jobsplus$multiplyDropStack(ItemStack original) {
         return jobsplus$applyMultiplier(original);
     }
 
@@ -76,6 +77,19 @@ public abstract class MixinLivingEntityDropMultiplier implements DropMultiplierA
         long multiplied = (long) copy.getCount() * (long) m;
         int newCount = (int) Math.min(copy.getMaxStackSize(), multiplied);
         copy.setCount(newCount);
+
+        int extraCount = newCount - original.getCount();
+        if (extraCount > 0 && this.jobsplus$dropRewardPlayer != null) {
+            Entity entity = (Entity) (Object) this;
+            if (entity.level() instanceof ServerLevel serverLevel) {
+                ServerPlayer player = serverLevel.getServer().getPlayerList()
+                        .getPlayer(this.jobsplus$dropRewardPlayer);
+                if (player != null) {
+                    SkillActivationNotifier.notifyExtraDrop(
+                            player, original.copyWithCount(extraCount));
+                }
+            }
+        }
 
         return copy;
     }

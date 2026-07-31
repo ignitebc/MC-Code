@@ -7,6 +7,7 @@ import com.daqem.arc.api.reward.AbstractReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
+import com.daqem.arc.player.SkillActivationNotifier;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.minecraft.core.BlockPos;
@@ -60,7 +61,9 @@ public class DropItemReward extends AbstractReward {
                             pos.getZ(),
                             itemStack.copy());
                     entity.setDefaultPickUpDelay();
-                    serverLevel.addFreshEntity(entity);
+                    if (serverLevel.addFreshEntity(entity)) {
+                        SkillActivationNotifier.notifyExtraDrop(actionData.getPlayer(), itemStack);
+                    }
                 } else {
                     BlockState state = actionData.getData(ActionDataType.BLOCK_STATE);
                     if (state != null) {
@@ -71,7 +74,8 @@ public class DropItemReward extends AbstractReward {
                                         .withParameter(LootContextParams.BLOCK_STATE, state)
                                         .withParameter(LootContextParams.THIS_ENTITY, actionData.getPlayer().arc$getPlayer())
                         );
-                        for (int i = 0; i < itemStack.getCount(); i++) {
+                        List<ItemStack> addedDrops = new java.util.ArrayList<>();
+                        for (int i = 0; i < itemStack.getCount() && !drops.isEmpty(); i++) {
                             ItemStack randomDrop = drops.get(serverLevel.getRandom().nextInt(drops.size()));
                             ItemEntity entity = new ItemEntity(
                                     serverLevel,
@@ -80,8 +84,11 @@ public class DropItemReward extends AbstractReward {
                                     pos.getZ(),
                                     randomDrop);
                             entity.setDefaultPickUpDelay();
-                            serverLevel.addFreshEntity(entity);
+                            if (serverLevel.addFreshEntity(entity)) {
+                                addedDrops.add(randomDrop.copy());
+                            }
                         }
+                        SkillActivationNotifier.notifyExtraDrop(actionData.getPlayer(), addedDrops);
                     }
                 }
             }

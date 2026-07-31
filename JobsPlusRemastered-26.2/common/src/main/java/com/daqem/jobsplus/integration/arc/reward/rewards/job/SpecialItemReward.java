@@ -8,6 +8,7 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
 import com.daqem.jobsplus.player.JobsPlayer;
+import com.daqem.arc.player.SkillActivationNotifier;
 import com.daqem.jobsplus.player.PlayerItemDelivery;
 import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
@@ -81,7 +82,9 @@ public class SpecialItemReward extends AbstractReward
 
         ItemStack reward = this.itemTemplate.create();
         reward.setCount(grantedAmount);
+        ItemStack notificationStack = reward.copy();
         giveToPlayer(arcPlayer, reward);
+        SkillActivationNotifier.notifyExtraDrop(arcPlayer, notificationStack);
 
         return new ActionResult();
     }

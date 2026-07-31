@@ -221,5 +221,6 @@
   "arc.reward.water_movement_efficiency_modifier": "수중 이동 효율 보정",
   "arc.reward.description.water_movement_efficiency_modifier": "수중 이동 효율을 %s 증가시킵니다.",
   "arc.condition.hostile_entity": "적대적 생명체",
-  "arc.condition.description.hostile_entity": "대상이 적대적 생명체일 때 성립합니다. 소, 닭, 주민 같은 중립·우호 생명체는 제외됩니다."
+  "arc.condition.description.hostile_entity": "대상이 적대적 생명체일 때 성립합니다. 소, 닭, 주민 같은 중립·우호 생명체는 제외됩니다.",
+  "arc.skill.extra_drop": "스킬이 발동되어 %s을(를) 추가 드롭했습니다!"
 }

@@ -7,6 +7,7 @@ import com.daqem.arc.api.reward.AbstractReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
+import com.daqem.arc.player.SkillActivationNotifier;
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -56,12 +57,17 @@ public class BlockDropMultiplierReward extends AbstractReward {
                                         .withParameter(LootContextParams.BLOCK_STATE, blockState)
                                         .withParameter(LootContextParams.THIS_ENTITY, actionData.getPlayer().arc$getPlayer())
                         );
+                        List<ItemStack> addedDrops = new java.util.ArrayList<>();
                         for (ItemStack drop : drops) {
                             for (int i = 1; i < multiplier; i++) {
-                                level.addFreshEntity(
-                                        new ItemEntity(level, vec3.x(), vec3.y(), vec3.z(), drop));
+                                ItemStack extraDrop = drop.copy();
+                                if (level.addFreshEntity(
+                                        new ItemEntity(level, vec3.x(), vec3.y(), vec3.z(), extraDrop))) {
+                                    addedDrops.add(extraDrop.copy());
+                                }
                             }
                         }
+                        SkillActivationNotifier.notifyExtraDrop(actionData.getPlayer(), addedDrops);
                     }
                 }
             }
