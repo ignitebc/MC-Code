@@ -53,6 +53,12 @@ public class ServerboundStockViewStatePacket implements CustomPacketPayload
             return;
         }
 
+        // 시청 상태 토글을 반복 전송해 시세 세션 재시작을 유발하는 공격을 막는다.
+        if (!StockViewRateLimiter.tryAcquire(jobsServerPlayer.jobsplus$getServerPlayer()))
+        {
+            return;
+        }
+
         if (packet.viewing)
         {
             StockMarketTicker.enterStockView(jobsServerPlayer.jobsplus$getServerPlayer());

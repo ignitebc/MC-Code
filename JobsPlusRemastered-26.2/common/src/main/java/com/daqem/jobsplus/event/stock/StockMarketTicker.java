@@ -3,6 +3,7 @@ package com.daqem.jobsplus.event.stock;
 import com.daqem.jobsplus.networking.StockScreenSync;
 import com.daqem.jobsplus.networking.c2s.ShopTransactionRateLimiter;
 import com.daqem.jobsplus.networking.c2s.StockTransactionRateLimiter;
+import com.daqem.jobsplus.networking.c2s.StockViewRateLimiter;
 import com.daqem.jobsplus.networking.s2c.ClientboundStockSnapshotPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.stock.StockAccount;
@@ -39,9 +40,17 @@ public final class StockMarketTicker
 {
     private static final Set<UUID> ACTIVE_VIEWERS = new LinkedHashSet<>();
 
+    /**
+     * 세션 요구가 사라져도 이 시간 동안은 세션을 유지한다.
+     * 탭을 여닫을 때마다 세션이 중지·재시작되면 시세 조회 작업이 무한정 쌓일 수 있으므로,
+     * 유예 시간 안의 재진입은 기존 세션을 그대로 사용하게 한다.
+     */
+    private static final long SESSION_STOP_DELAY_MILLIS = 60_000L;
+
     private static long lastRequestedMinute = Long.MIN_VALUE;
     private static long lastBroadcastVersion;
     private static boolean marketSessionActive;
+    private static long sessionIdleSinceMillis = Long.MIN_VALUE;
 
     private StockMarketTicker()
     {
@@ -207,8 +216,10 @@ public final class StockMarketTicker
         lastRequestedMinute = Long.MIN_VALUE;
         lastBroadcastVersion = 0;
         marketSessionActive = false;
+        sessionIdleSinceMillis = Long.MIN_VALUE;
         StockTransactionRateLimiter.reset();
         ShopTransactionRateLimiter.reset();
+        StockViewRateLimiter.reset();
         StockMarketService.getInstance().stopSession();
         ensureMarketSession(server);
     }
@@ -219,8 +230,10 @@ public final class StockMarketTicker
         lastRequestedMinute = Long.MIN_VALUE;
         lastBroadcastVersion = 0;
         marketSessionActive = false;
+        sessionIdleSinceMillis = Long.MIN_VALUE;
         StockTransactionRateLimiter.reset();
         ShopTransactionRateLimiter.reset();
+        StockViewRateLimiter.reset();
         StockMarketService.getInstance().stopSession();
     }
 
@@ -257,6 +270,7 @@ public final class StockMarketTicker
         ACTIVE_VIEWERS.remove(player.getUUID());
         StockTransactionRateLimiter.forget(player.getUUID());
         ShopTransactionRateLimiter.forget(player.getUUID());
+        StockViewRateLimiter.forget(player.getUUID());
 
         MinecraftServer server = player.level().getServer();
         if (server != null)
@@ -269,8 +283,13 @@ public final class StockMarketTicker
     {
         StockPositionLedger ledger = StockPositionLedger.get(server);
         boolean sessionRequired = !ACTIVE_VIEWERS.isEmpty() || ledger.hasMarketWork();
-        if (sessionRequired && !marketSessionActive)
+        if (sessionRequired)
         {
+            sessionIdleSinceMillis = Long.MIN_VALUE;
+            if (marketSessionActive)
+            {
+                return;
+            }
             long currentMinute = StockMarketSnapshot.currentMarketMinute();
             lastRequestedMinute = currentMinute;
             lastBroadcastVersion = 0;
@@ -281,13 +300,28 @@ public final class StockMarketTicker
             );
             return;
         }
-        if (!sessionRequired && marketSessionActive)
+        if (!marketSessionActive)
         {
-            marketSessionActive = false;
-            lastRequestedMinute = Long.MIN_VALUE;
-            lastBroadcastVersion = 0;
-            StockMarketService.getInstance().stopSession();
+            return;
         }
+
+        // 유예 시간이 지날 때까지 세션 중지를 미룬다. 유예 중 재진입하면 위에서 초기화된다.
+        long now = System.currentTimeMillis();
+        if (sessionIdleSinceMillis == Long.MIN_VALUE)
+        {
+            sessionIdleSinceMillis = now;
+            return;
+        }
+        if (now - sessionIdleSinceMillis < SESSION_STOP_DELAY_MILLIS)
+        {
+            return;
+        }
+
+        marketSessionActive = false;
+        sessionIdleSinceMillis = Long.MIN_VALUE;
+        lastRequestedMinute = Long.MIN_VALUE;
+        lastBroadcastVersion = 0;
+        StockMarketService.getInstance().stopSession();
     }
 
     private static void onServerTick(MinecraftServer server)
