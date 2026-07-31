@@ -25,9 +25,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.minecart.MinecartTNT;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -211,13 +209,11 @@ public class ChunkProtectionEvents {
             return EventResult.pass();
         });
 
-        // 플레이어가 일으켰거나 주인을 추적할 수 없는 폭발물이 소유 청크에 닿으면 폭발 자체를 취소한다.
+        // 폭발 반경이 소유 청크에 닿으면 폭발 자체를 취소한다.
+        // 크리퍼·위더처럼 책임 플레이어를 추적할 수 없는 몹 폭발도 예외 없이 검사해야
+        // 몹을 남의 청크로 유인하는 그리핑을 막을 수 있다.
         ExplosionEvent.PRE.register((Level level, Explosion explosion) -> {
             Player responsiblePlayer = ChunkProtection.findResponsiblePlayer(explosion);
-            if (responsiblePlayer == null && !isUnownedExplosiveEntity(explosion)) {
-                return EventResult.pass();
-            }
-
             BlockPos origin = BlockPos.containing(explosion.center().x, explosion.center().y, explosion.center().z);
             int radius = Math.max(1, Mth.ceil(explosion.radius() * 1.3F));
             if (ChunkProtection.denyReachAndNotify(level,
@@ -273,11 +269,6 @@ public class ChunkProtectionEvents {
 
     private static boolean isExplosiveEntityItem(ItemStack itemStack) {
         return itemStack.is(Items.END_CRYSTAL) || itemStack.is(Items.TNT_MINECART);
-    }
-
-    private static boolean isUnownedExplosiveEntity(Explosion explosion) {
-        Entity source = explosion.getDirectSourceEntity();
-        return source instanceof PrimedTnt || source instanceof MinecartTNT || source instanceof EndCrystal;
     }
 
     @Nullable
