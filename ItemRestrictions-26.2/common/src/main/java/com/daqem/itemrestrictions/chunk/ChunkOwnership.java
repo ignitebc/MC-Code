@@ -36,6 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ChunkOwnership {
 
     private static final String FILE_NAME = "chunk_owners.json";
+    private static final String BACKUP_FILE_NAME = FILE_NAME + ".bak";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     /** 차원별 청크 소유자. 키는 {@link ChunkPos#pack(int, int)} 값이다. */
@@ -59,8 +60,54 @@ public final class ChunkOwnership {
             return;
         }
 
+        try {
+            OWNERS.putAll(parseOwners(savePath));
+            saveEnabled = true;
+            ItemRestrictions.LOGGER.info("Loaded chunk ownership for {} dimensions", OWNERS.size());
+            return;
+        } catch (Exception exception) {
+            ItemRestrictions.LOGGER.error(
+                    "Failed to read chunk ownership data. Trying backup file.",
+                    exception);
+        }
+        loadFromBackup();
+    }
+
+    /**
+     * 본 파일이 손상됐을 때 마지막 정상 저장본으로 복구한다.
+     * 손상 파일은 이름을 바꿔 보존하고, 백업까지 읽을 수 없을 때만 기동을 중단한다.
+     */
+    private static void loadFromBackup() {
+        Path backupPath = savePath.resolveSibling(BACKUP_FILE_NAME);
+        if (!Files.exists(backupPath)) {
+            ItemRestrictions.LOGGER.error(
+                    "Failed to read chunk ownership data and no backup exists. "
+                            + "Server startup is aborted to protect the existing file.");
+            throw new IllegalStateException("Cannot safely load chunk ownership data");
+        }
+
+        try {
+            Map<Identifier, Map<Long, Owner>> loadedOwners = parseOwners(backupPath);
+            quarantineCorruptFile();
+            OWNERS.putAll(loadedOwners);
+            saveEnabled = true;
+            save();
+            ItemRestrictions.LOGGER.warn(
+                    "Restored chunk ownership from backup for {} dimensions. "
+                            + "Claims made after the last backup may be missing.",
+                    OWNERS.size());
+        } catch (Exception exception) {
+            ItemRestrictions.LOGGER.error(
+                    "Backup chunk ownership data is also unreadable. "
+                            + "Server startup is aborted to protect the existing files.",
+                    exception);
+            throw new IllegalStateException("Cannot safely load chunk ownership data", exception);
+        }
+    }
+
+    private static Map<Identifier, Map<Long, Owner>> parseOwners(Path path) throws IOException {
         Map<Identifier, Map<Long, Owner>> loadedOwners = new HashMap<>();
-        try (Reader reader = Files.newBufferedReader(savePath, StandardCharsets.UTF_8)) {
+        try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
             for (String dimensionId : root.keySet()) {
                 Identifier dimension = Identifier.tryParse(dimensionId);
@@ -76,14 +123,17 @@ public final class ChunkOwnership {
                 }
                 loadedOwners.put(dimension, chunks);
             }
-            OWNERS.putAll(loadedOwners);
-            saveEnabled = true;
-            ItemRestrictions.LOGGER.info("Loaded chunk ownership for {} dimensions", OWNERS.size());
-        } catch (Exception exception) {
-            ItemRestrictions.LOGGER.error(
-                    "Failed to read chunk ownership data. Server startup is aborted to protect the existing file.",
-                    exception);
-            throw new IllegalStateException("Cannot safely load chunk ownership data", exception);
+        }
+        return loadedOwners;
+    }
+
+    private static void quarantineCorruptFile() {
+        Path corruptPath = savePath.resolveSibling(FILE_NAME + ".corrupt-" + System.currentTimeMillis());
+        try {
+            Files.move(savePath, corruptPath, StandardCopyOption.REPLACE_EXISTING);
+            ItemRestrictions.LOGGER.warn("Moved corrupt chunk ownership file to {}", corruptPath.getFileName());
+        } catch (IOException exception) {
+            ItemRestrictions.LOGGER.warn("Failed to move corrupt chunk ownership file aside", exception);
         }
     }
 
@@ -115,6 +165,7 @@ public final class ChunkOwnership {
             return false;
         }
 
+        backupCurrentFile();
         try {
             moveTemporaryFile(temporaryPath);
             return true;
@@ -126,6 +177,23 @@ public final class ChunkOwnership {
                 ItemRestrictions.LOGGER.warn("Failed to delete temporary chunk ownership data", cleanupException);
             }
             return false;
+        }
+    }
+
+    /**
+     * 새 내용으로 덮어쓰기 직전의 본 파일을 백업으로 남긴다.
+     * 본 파일은 항상 임시 파일 교체로만 기록되므로 이 백업은 마지막 정상 저장본이다.
+     * 백업 실패가 저장 자체를 막지는 않는다.
+     */
+    private static void backupCurrentFile() {
+        if (!Files.exists(savePath)) {
+            return;
+        }
+        Path backupPath = savePath.resolveSibling(BACKUP_FILE_NAME);
+        try {
+            Files.copy(savePath, backupPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException exception) {
+            ItemRestrictions.LOGGER.warn("Failed to back up chunk ownership data", exception);
         }
     }
 
