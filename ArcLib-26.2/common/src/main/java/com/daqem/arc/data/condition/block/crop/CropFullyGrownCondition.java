@@ -6,15 +6,13 @@ import com.daqem.arc.api.condition.AbstractCondition;
 import com.daqem.arc.api.condition.serializer.IConditionSerializer;
 import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
+import com.daqem.arc.event.crop.CropHarvestHelper;
 import com.google.gson.*;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.block.state.properties.Property;
-
-import java.util.Collection;
-import java.util.Optional;
 
 public class CropFullyGrownCondition extends AbstractCondition {
 
@@ -25,25 +23,13 @@ public class CropFullyGrownCondition extends AbstractCondition {
     @Override
     public boolean isMet(ActionData actionData) {
         BlockState blockState = actionData.getData(ActionDataType.BLOCK_STATE);
-        if (blockState != null) {
-            Collection<Property<?>> properties = blockState.getProperties();
-            Optional<Property<?>> optionalAgeProperty = properties.stream()
-                    .filter(property -> property.getName().equals("age"))
-                    .findFirst();
-            if (optionalAgeProperty.isPresent()) {
-                IntegerProperty ageProperty = (IntegerProperty) optionalAgeProperty.get();
-                Collection<Integer> possibleValues = ageProperty.getPossibleValues();
-                Integer lastValue = possibleValues.stream().reduce((a, b) -> b).orElse(null);
-                if (lastValue != null) {
-                    int fullyGrownAge = lastValue;
-                    Optional<Integer> optionalAgeValue = blockState.getOptionalValue(ageProperty);
-                    if (optionalAgeValue.isPresent()) {
-                        return optionalAgeValue.get() == fullyGrownAge;
-                    }
-                }
-            }
+        if (blockState == null) {
+            return false;
         }
-        return false;
+
+        Level level = actionData.getData(ActionDataType.WORLD);
+        BlockPos blockPos = actionData.getData(ActionDataType.BLOCK_POSITION);
+        return CropHarvestHelper.isFullyGrown(blockState, level, blockPos);
     }
 
     @Override
