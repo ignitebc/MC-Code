@@ -9,5 +9,6 @@
       "type": "arc:water_movement_efficiency_modifier",
       "efficiency": 1.0
     }
-  ]
+  ],
+  "conditions": []
 }

@@ -13,5 +13,11 @@
       "type": "arc:water_movement_efficiency_modifier",
       "efficiency": 0.9
     }
+  ],
+  "conditions": [
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:fisherman/water_child_x"
+    }
   ]
 }

@@ -9,5 +9,6 @@
       "type": "arc:oxygen_bonus_modifier",
       "bonus": 19
     }
-  ]
+  ],
+  "conditions": []
 }

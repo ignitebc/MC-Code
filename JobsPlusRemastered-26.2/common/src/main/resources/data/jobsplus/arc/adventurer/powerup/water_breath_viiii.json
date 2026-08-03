@@ -9,5 +9,11 @@
       "type": "arc:oxygen_bonus_modifier",
       "bonus": 9
     }
+  ],
+  "conditions": [
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:adventurer/water_breath_x"
+    }
   ]
 }

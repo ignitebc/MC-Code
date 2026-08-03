@@ -15,13 +15,16 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 수중 관련 속성(산소 보너스, 수중 이동 효율)을 매 틱 동기화한다.
  * <p>
- * {@link DefensiveAttributeSync}와 같은 방식으로, 조건을 만족하는 보상 중 가장 높은 값 하나만
- * 적용한다. 스킬 단계를 여러 개 보유해도 최상위 단계만 적용되도록 하기 위함이다.
+ * {@link MovementSpeedAttributeSync}와 같은 방식으로, 조건을 만족하는 보상을 모두 개별
+ * 모디파이어로 등록해 합연산으로 더한다. 같은 스킬 줄에서 하위 단계가 중복으로 더해지는 것은
+ * 스킬 데이터의 상위 단계 비활성 조건이 막아준다.
  */
 public final class AquaticAttributeSync
 {
@@ -42,8 +45,8 @@ public final class AquaticAttributeSync
         }
 
         ActionData actionData = new ActionDataBuilder(arcPlayer, ActionType.SWIM).build();
-        AttributeRewardSelection oxygenBonus = new AttributeRewardSelection();
-        AttributeRewardSelection waterMovementEfficiency = new AttributeRewardSelection();
+        Map<Identifier, Double> oxygenBonuses = new HashMap<>();
+        Map<Identifier, Double> waterMovementEfficiencies = new HashMap<>();
 
         for (IActionHolder holder : arcPlayer.arc$getActionHolders())
         {
@@ -56,38 +59,35 @@ public final class AquaticAttributeSync
                 for (IReward reward : action.getRewards())
                 {
                     if (reward instanceof OxygenBonusAttributeModifierReward oxygenReward
-                            && action.metConditions(actionData)
-                            && oxygenReward.getBonus() > oxygenBonus.value)
+                            && action.metConditions(actionData))
                     {
-                        oxygenBonus.id = OxygenBonusAttributeModifierReward.computeModifierId(
+                        Identifier id = OxygenBonusAttributeModifierReward.computeModifierId(
                                 holder.getLocation(),
                                 action.getLocation());
-                        oxygenBonus.value = oxygenReward.getBonus();
+                        oxygenBonuses.put(id, oxygenReward.getBonus());
                     }
                     else if (reward instanceof WaterMovementEfficiencyAttributeModifierReward efficiencyReward
-                            && action.metConditions(actionData)
-                            && efficiencyReward.getEfficiency() > waterMovementEfficiency.value)
+                            && action.metConditions(actionData))
                     {
-                        waterMovementEfficiency.id =
-                                WaterMovementEfficiencyAttributeModifierReward.computeModifierId(
-                                        holder.getLocation(),
-                                        action.getLocation());
-                        waterMovementEfficiency.value = efficiencyReward.getEfficiency();
+                        Identifier id = WaterMovementEfficiencyAttributeModifierReward.computeModifierId(
+                                holder.getLocation(),
+                                action.getLocation());
+                        waterMovementEfficiencies.put(id, efficiencyReward.getEfficiency());
                     }
                 }
             });
         }
 
-        syncAttribute(serverPlayer, Attributes.OXYGEN_BONUS, "oxygen_bonus/", oxygenBonus);
+        syncAttribute(serverPlayer, Attributes.OXYGEN_BONUS, "oxygen_bonus/", oxygenBonuses);
         syncAttribute(serverPlayer, Attributes.WATER_MOVEMENT_EFFICIENCY, "water_movement_efficiency/",
-                waterMovementEfficiency);
+                waterMovementEfficiencies);
     }
 
     private static void syncAttribute(
             ServerPlayer serverPlayer,
             net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> attribute,
             String pathPrefix,
-            AttributeRewardSelection selection)
+            Map<Identifier, Double> desiredModifiers)
     {
         AttributeInstance instance = serverPlayer.getAttribute(attribute);
         if (instance == null)
@@ -102,7 +102,7 @@ public final class AquaticAttributeSync
             if (id != null
                     && id.getNamespace().equals("arc")
                     && id.getPath().startsWith(pathPrefix)
-                    && !id.equals(selection.id))
+                    && !desiredModifiers.containsKey(id))
             {
                 toRemove.add(id);
             }
@@ -112,30 +112,24 @@ public final class AquaticAttributeSync
             instance.removeModifier(id);
         }
 
-        if (selection.id == null)
+        for (Map.Entry<Identifier, Double> entry : desiredModifiers.entrySet())
         {
-            return;
-        }
+            Identifier id = entry.getKey();
+            double amount = entry.getValue();
 
-        AttributeModifier current = instance.getModifier(selection.id);
-        if (current == null)
-        {
-            instance.addPermanentModifier(
-                    new AttributeModifier(selection.id, selection.value, AttributeModifier.Operation.ADD_VALUE));
+            AttributeModifier current = instance.getModifier(id);
+            if (current == null)
+            {
+                instance.addPermanentModifier(
+                        new AttributeModifier(id, amount, AttributeModifier.Operation.ADD_VALUE));
+            }
+            else if (current.operation() != AttributeModifier.Operation.ADD_VALUE
+                    || Double.compare(current.amount(), amount) != 0)
+            {
+                instance.removeModifier(id);
+                instance.addPermanentModifier(
+                        new AttributeModifier(id, amount, AttributeModifier.Operation.ADD_VALUE));
+            }
         }
-        else if (current.operation() != AttributeModifier.Operation.ADD_VALUE
-                || Double.compare(current.amount(), selection.value) != 0)
-        {
-            instance.removeModifier(selection.id);
-            instance.addPermanentModifier(
-                    new AttributeModifier(selection.id, selection.value, AttributeModifier.Operation.ADD_VALUE));
-        }
-    }
-
-    private static class AttributeRewardSelection
-    {
-
-        private Identifier id;
-        private double value;
     }
 }
