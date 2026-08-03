@@ -9,4 +9,12 @@ public interface IArcAbstractArrow {
     int arc$getFireDurationTicks();
 
     void arc$setFireDurationTicks(int fireDurationTicks);
+
+    int arc$getPoisonDurationTicks();
+
+    void arc$setPoisonDurationTicks(int poisonDurationTicks);
+
+    int arc$getPoisonAmplifier();
+
+    void arc$setPoisonAmplifier(int poisonAmplifier);
 }

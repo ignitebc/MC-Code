@@ -131,6 +131,8 @@
   "arc.reward.description.multiple_arrows": "활로 화살을 한 번에 %s개 발사할 수 있게 합니다.",
   "arc.reward.entity_on_fire": "개체 점화",
   "arc.reward.description.entity_on_fire": "대상 개체를 %s초 동안 불태웁니다.",
+  "arc.reward.entity_poison": "개체 중독",
+  "arc.reward.description.entity_poison": "대상 개체에게 독 %s단계를 %s초 동안 겁니다.",
   "arc.reward.block_drop_multiplier": "블록 드롭 배율",
   "arc.reward.description.block_drop_multiplier": "블록을 파괴할 때 떨어지는 아이템 수를 %s배로 늘립니다.",
   "arc.reward.move_to_entity": "개체로 이동",

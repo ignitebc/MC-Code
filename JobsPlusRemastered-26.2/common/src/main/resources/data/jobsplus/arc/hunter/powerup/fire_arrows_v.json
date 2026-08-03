@@ -10,6 +10,13 @@
       "chance": 100,
       "priority": 2,
       "ticks": 200
+    },
+    {
+      "type": "arc:entity_poison",
+      "chance": 100,
+      "priority": 2,
+      "ticks": 200,
+      "amplifier": 0
     }
   ],
   "conditions": [
@@ -17,7 +24,6 @@
       "type": "arc:entity_type",
       "entity_type": "minecraft:arrow"
     },
-
     {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:hunter/fire_arrows_vi"

@@ -12,6 +12,7 @@ import com.daqem.arc.data.reward.effect.EffectReward;
 import com.daqem.arc.data.reward.effect.RemoveEffectReward;
 import com.daqem.arc.data.reward.entity.DamageMultiplierReward;
 import com.daqem.arc.data.reward.entity.EntityOnFireReward;
+import com.daqem.arc.data.reward.entity.EntityPoisonReward;
 import com.daqem.arc.data.reward.entity.MultipleArrowsReward;
 import com.daqem.arc.data.reward.experience.ExpMultiplierReward;
 import com.daqem.arc.data.reward.experience.ExpReward;
@@ -46,6 +47,7 @@ public interface RewardType<T extends IReward> extends IRewardType<T> {
     IRewardType<DropItemReward> DROP_ITEM = register(Arc.getId("drop_item"), new DropItemReward.Serializer());
     IRewardType<MultipleArrowsReward> MULTIPLE_ARROWS = register(Arc.getId("multiple_arrows"), new MultipleArrowsReward.Serializer());
     IRewardType<EntityOnFireReward> ENTITY_ON_FIRE = register(Arc.getId("entity_on_fire"), new EntityOnFireReward.Serializer());
+    IRewardType<EntityPoisonReward> ENTITY_POISON = register(Arc.getId("entity_poison"), new EntityPoisonReward.Serializer());
     IRewardType<BlockDropMultiplierReward> BLOCK_DROP_MULTIPLIER = register(Arc.getId("block_drop_multiplier"), new BlockDropMultiplierReward.Serializer());
     IRewardType<MoveToEntityReward> MOVE_TO_ENTITY = register(Arc.getId("move_to_entity"), new MoveToEntityReward.Serializer());
     IRewardType<ExpMultiplierReward> EXP_MULTIPLIER = register(Arc.getId("exp_multiplier"), new ExpMultiplierReward.Serializer());

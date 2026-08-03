@@ -10,6 +10,13 @@
       "chance": 100,
       "priority": 2,
       "ticks": 300
+    },
+    {
+      "type": "arc:entity_poison",
+      "chance": 100,
+      "priority": 2,
+      "ticks": 300,
+      "amplifier": 1
     }
   ],
   "conditions": [
