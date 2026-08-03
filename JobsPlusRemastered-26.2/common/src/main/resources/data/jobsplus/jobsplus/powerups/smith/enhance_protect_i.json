@@ -1,8 +1,0 @@
-{
-  "job": "jobsplus:smith",
-  "icon": {
-    "id": "minecraft:netherite_scrap"
-  },
-  "price": 10,
-  "required_level": 0
-}
