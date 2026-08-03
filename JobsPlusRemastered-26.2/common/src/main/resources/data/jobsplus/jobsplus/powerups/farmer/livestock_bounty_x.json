@@ -1,8 +1,8 @@
 {
   "job": "jobsplus:farmer",
-  "parent": "jobsplus:farmer/hoe_range_viiii",
+  "parent": "jobsplus:farmer/livestock_bounty_viiii",
   "icon": {
-    "id": "minecraft:diamond_hoe",
+    "id": "minecraft:beef",
     "count": 10
   },
   "price": 28,

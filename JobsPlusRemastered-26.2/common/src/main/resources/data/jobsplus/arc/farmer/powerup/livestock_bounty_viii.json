@@ -1,0 +1,55 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:farmer/livestock_bounty_viii"
+  },
+  "type": "arc:on_kill_entity",
+  "rewards": [
+    {
+      "type": "jobsplus:entity_drop_multiplier",
+      "multiplier": 2,
+      "chance": 40
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:entity_types",
+      "entity_types": [
+        "minecraft:cow",
+        "minecraft:mooshroom",
+        "minecraft:sheep",
+        "minecraft:pig",
+        "minecraft:chicken",
+        "minecraft:rabbit",
+        "minecraft:goat",
+        "minecraft:horse",
+        "minecraft:donkey",
+        "minecraft:mule",
+        "minecraft:llama",
+        "minecraft:trader_llama",
+        "minecraft:camel",
+        "minecraft:strider",
+        "minecraft:wolf",
+        "minecraft:cat",
+        "minecraft:ocelot",
+        "minecraft:fox",
+        "minecraft:panda",
+        "minecraft:parrot",
+        "minecraft:bee",
+        "minecraft:armadillo",
+        "minecraft:sniffer",
+        "minecraft:frog",
+        "minecraft:axolotl",
+        "minecraft:turtle"
+      ]
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/livestock_bounty_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:farmer/livestock_bounty_x"
+    }
+  ]
+}

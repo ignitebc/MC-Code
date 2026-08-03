@@ -1,7 +1,7 @@
 {
   "job": "jobsplus:farmer",
   "icon": {
-    "id": "minecraft:diamond_hoe"
+    "id": "minecraft:beef"
   },
   "price": 10,
   "required_level": 0
