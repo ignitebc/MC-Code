@@ -14,7 +14,7 @@
   "container.imbue.enhance": "강화하기",
   "container.imbue.enhancementGemMissing": "강화 원석이 필요합니다.",
   "container.imbue.equipmentMissing": "강화할 장비를 넣어 주세요.",
-  "container.imbue.equipmentNotSupported": "네더라이트-다이아 장비만 강화할 수 있습니다.",
+  "container.imbue.equipmentNotSupported": "서리빛 네더라이트 장비만 강화할 수 있습니다.",
   "container.imbue.maxLevelReached": "이미 최대 강화 단계입니다.",
   "container.imbue.result.confirm": "확인",
   "container.imbue.result.destroyed": "강화가 실패하여 아이템이 파괴되었습니다.",
