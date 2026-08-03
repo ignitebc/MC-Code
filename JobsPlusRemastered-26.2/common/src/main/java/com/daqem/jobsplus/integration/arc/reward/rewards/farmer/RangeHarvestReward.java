@@ -8,9 +8,11 @@ import com.daqem.arc.api.reward.AbstractReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.event.triggers.BlockEvents;
+import com.daqem.arc.player.SkillActivationNotifier;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -53,6 +55,7 @@ public class RangeHarvestReward extends AbstractReward
             return new ActionResult();
         }
 
+        int harvestedCount = 0;
         HARVESTING_RANGE.set(true);
         try
         {
@@ -72,6 +75,7 @@ public class RangeHarvestReward extends AbstractReward
                     {
                         BlockEvents.onHarvestCrop(arcServerPlayer, cropState, cropPos, serverLevel);
                         serverLevel.destroyBlock(cropPos, true, serverPlayer, 512);
+                        harvestedCount++;
                     }
                 }
             }
@@ -79,6 +83,13 @@ public class RangeHarvestReward extends AbstractReward
         finally
         {
             HARVESTING_RANGE.set(false);
+        }
+
+        if (harvestedCount > 0)
+        {
+            SkillActivationNotifier.notifySkillActivated(
+                    serverPlayer,
+                    Component.translatable("jobsplus.skill.range_harvest", harvestedCount));
         }
 
         return new ActionResult();

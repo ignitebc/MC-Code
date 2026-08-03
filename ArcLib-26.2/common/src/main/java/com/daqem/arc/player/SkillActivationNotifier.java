@@ -31,6 +31,20 @@ public final class SkillActivationNotifier {
         notifyExtraDrop(player, List.of(itemStack));
     }
 
+    /**
+     * 추가로 얻은 아이템을 정확히 셀 수 없는 스킬이 발동 사실만 알릴 때 사용한다.
+     * 알림은 시전한 플레이어에게만 전송된다.
+     */
+    public static void notifySkillActivated(ArcPlayer player, Component message) {
+        if (player.arc$getPlayer() instanceof ServerPlayer serverPlayer) {
+            notifySkillActivated(serverPlayer, message);
+        }
+    }
+
+    public static void notifySkillActivated(ServerPlayer player, Component message) {
+        player.sendSystemMessage(message.copy().withStyle(ChatFormatting.GOLD));
+    }
+
     public static void notifyExtraDrop(ServerPlayer player, List<ItemStack> itemStacks) {
         List<ItemStack> mergedStacks = mergeStacks(itemStacks);
         if (mergedStacks.isEmpty()) {

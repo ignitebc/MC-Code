@@ -5,6 +5,7 @@ import com.daqem.arc.api.action.result.ActionResult;
 import com.daqem.arc.api.reward.AbstractReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
+import com.daqem.arc.player.SkillActivationNotifier;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
 import com.daqem.jobsplus.player.PlayerItemDelivery;
 import com.google.gson.JsonObject;
@@ -34,7 +35,9 @@ public class PreserveBoneMealReward extends AbstractReward
                 && !serverPlayer.hasInfiniteMaterials())
         {
             ItemStack refundedBoneMeal = new ItemStack(Items.BONE_MEAL);
+            ItemStack notificationStack = refundedBoneMeal.copy();
             PlayerItemDelivery.giveOrDrop(serverPlayer, refundedBoneMeal);
+            SkillActivationNotifier.notifyExtraDrop(serverPlayer, notificationStack);
         }
         return new ActionResult();
     }
