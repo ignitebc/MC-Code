@@ -202,16 +202,43 @@ public class DialgaPetEntity extends TamableAnimal
 
     /**
      * 펫은 어떤 공격도 받지 않으므로 펫끼리의 전투는 영원히 끝나지 않는다.
-     * 서로를 공격 대상으로 삼지 않게 막는다.
+     * 주인이 펫에게 맞은 경우, 그 펫 대신 펫의 주인을 대상으로 잡을 수 있을 때만 복수를 허용한다.
      */
     @Override
     public boolean wantsToAttack(LivingEntity target, LivingEntity targetOwner)
     {
-        if (target instanceof DialgaPetEntity)
+        if (target instanceof DialgaPetEntity attackingPet)
         {
-            return false;
+            return resolveAttackingPetOwner(attackingPet) != null;
         }
         return super.wantsToAttack(target, targetOwner);
+    }
+
+    /**
+     * 공격 대상이 펫이면 그 펫의 주인으로 치환한다.
+     * 펫은 무적이라 직접 때릴 가치가 없고, 주인을 물어야 전투가 성립한다.
+     */
+    @Override
+    public void setTarget(LivingEntity target)
+    {
+        if (target instanceof DialgaPetEntity attackingPet)
+        {
+            target = resolveAttackingPetOwner(attackingPet);
+        }
+        super.setTarget(target);
+    }
+
+    private LivingEntity resolveAttackingPetOwner(DialgaPetEntity attackingPet)
+    {
+        LivingEntity attackerOwner = attackingPet.getOwner();
+        boolean isValidTarget = attackerOwner != null
+                && attackerOwner != this.getOwner()
+                && attackerOwner.level() == this.level();
+        if (isValidTarget)
+        {
+            return attackerOwner;
+        }
+        return null;
     }
 
     @Override
