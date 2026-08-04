@@ -92,18 +92,27 @@ public class TreeBuilder{
 		
 		if(mod.getConfiguration().getTrees().getBreakMode().isCheckLeavesAround()){
 			var aroundRequired = mod.getConfiguration().getTrees().getMinimumLeavesAroundRequired();
-			if(detectionMode.getLeafAroundPosProvider()
+			var leavesAround = detectionMode.getLeafAroundPosProvider()
 					.apply(tree)
 					.mapToLong(topLog -> getLeavesAround(level, topLog))
-					.sum() < aroundRequired
-			){
+					.sum();
+			// 잎 개수 조건은 원목 건축물이 벌목되는 것을 막기 위한 것이다.
+			// 도구가 중간에 부서져 잎 없이 공중에 남은 나무는 건축물이 아니므로 조건을 면제해
+			// 새 도구로 다시 일괄 벌목할 수 있게 한다.
+			if(leavesAround < aroundRequired && !isFloatingTree(level, tree)){
 				// TODO Set it back as info, see #845
 				log.debug("Tree at {} doesn't have enough leaves around top most log", originPos);
 				return empty();
 			}
 		}
-		
+
 		return Optional.of(tree.asImmutableTree());
+	}
+
+	private static boolean isFloatingTree(@NonNull ILevel level, @NonNull MutableTree tree){
+		return tree.getBottomMostLog()
+				.map(bottomLog -> level.getBlockState(bottomLog.below()).getBlock().isAir())
+				.orElse(false);
 	}
 	
 	private static void postProcess(@NonNull MutableTree tree){
