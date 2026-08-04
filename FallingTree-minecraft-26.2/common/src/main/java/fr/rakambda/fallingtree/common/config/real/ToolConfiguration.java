@@ -23,8 +23,10 @@ public class ToolConfiguration implements IToolConfiguration, IResettable{
 	@Expose
 	@NonNull
 	private List<String> denied = new ArrayList<>();
+	// 내구도가 모자라도 나무 전체를 벌목한다. 도구는 중간에 부서질 수 있으며,
+	// 나무가 공중에 조각으로 남는 것을 막기 위한 의도된 기본값이다.
 	@Expose
-	private DurabilityMode durabilityMode = DurabilityMode.NORMAL;
+	private DurabilityMode durabilityMode = DurabilityMode.BYPASS;
 	@Expose
 	private boolean ignoreTools = false;
 	@Expose
