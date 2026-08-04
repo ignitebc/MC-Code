@@ -38,7 +38,7 @@ public final class ModItemRegistry
         Registry.register(BuiltInRegistries.ITEM, id("job_select_ticket"), ModItems.JOB_SELECT_TICKET);
         Registry.register(BuiltInRegistries.ITEM, id("death_item_protection_scroll"), ModItems.DEATH_ITEM_PROTECTION_SCROLL);
         Registry.register(BuiltInRegistries.ITEM, id("enhance_protection_scroll"), ModItems.ENHANCE_PROTECTION_SCROLL);
-        Registry.register(BuiltInRegistries.ITEM, id("chunk_claim_map"), ModItems.CHUNK_CLAIM_MAP);
+        Registry.register(BuiltInRegistries.ITEM, id("chunk_claim_map"), ModItems.LAND_PURCHASE_DOCUMENT);
         Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_3"), ModItems.ENHANCE_SUCCESS_SCROLL_3);
         Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_5"), ModItems.ENHANCE_SUCCESS_SCROLL_5);
         Registry.register(BuiltInRegistries.ITEM, id("enhance_success_scroll_7"), ModItems.ENHANCE_SUCCESS_SCROLL_7);

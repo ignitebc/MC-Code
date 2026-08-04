@@ -46,7 +46,7 @@ public final class ModItems
     public static final AdvancedItem JOB_SELECT_TICKET = new AdvancedItem(new Item.Properties().setId(key("job_select_ticket")));
     public static final AdvancedItem DEATH_ITEM_PROTECTION_SCROLL = new AdvancedItem(new Item.Properties().setId(key("death_item_protection_scroll")));
     public static final AdvancedItem ENHANCE_PROTECTION_SCROLL = new AdvancedItem(new Item.Properties().setId(key("enhance_protection_scroll")));
-    public static final AdvancedItem CHUNK_CLAIM_MAP = new AdvancedItem(new Item.Properties().setId(key("chunk_claim_map")));
+    public static final AdvancedItem LAND_PURCHASE_DOCUMENT = new AdvancedItem(new Item.Properties().setId(key("chunk_claim_map")));
     public static final AdvancedItem ENHANCE_SUCCESS_SCROLL_3 = new AdvancedItem(new Item.Properties().setId(key("enhance_success_scroll_3")));
     public static final AdvancedItem ENHANCE_SUCCESS_SCROLL_5 = new AdvancedItem(new Item.Properties().setId(key("enhance_success_scroll_5")));
     public static final AdvancedItem ENHANCE_SUCCESS_SCROLL_7 = new AdvancedItem(new Item.Properties().setId(key("enhance_success_scroll_7")));

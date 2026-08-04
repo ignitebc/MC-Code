@@ -77,7 +77,7 @@ public class ModModelProvider extends FabricModelProvider
         // 직업선택권 외 주문서
         itemModel(generator, ModItems.JOB_SELECT_TICKET);
         itemModel(generator, ModItems.DEATH_ITEM_PROTECTION_SCROLL);
-        itemModel(generator, ModItems.CHUNK_CLAIM_MAP);
+        itemModel(generator, ModItems.LAND_PURCHASE_DOCUMENT);
         itemModel(generator, ModItems.ENHANCE_PROTECTION_SCROLL);
         itemModel(generator, ModItems.ENHANCE_SUCCESS_SCROLL_3);
         itemModel(generator, ModItems.ENHANCE_SUCCESS_SCROLL_5);

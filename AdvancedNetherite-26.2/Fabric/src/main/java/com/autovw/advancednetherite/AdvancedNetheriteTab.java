@@ -121,7 +121,7 @@ public final class AdvancedNetheriteTab
                     // 직업선택권 외 주문서
                     entries.accept(ModItems.JOB_SELECT_TICKET);
                     entries.accept(ModItems.DEATH_ITEM_PROTECTION_SCROLL);
-                    entries.accept(ModItems.CHUNK_CLAIM_MAP);
+                    entries.accept(ModItems.LAND_PURCHASE_DOCUMENT);
                     entries.accept(ModItems.ENHANCE_PROTECTION_SCROLL);
                     entries.accept(ModItems.ENHANCE_SUCCESS_SCROLL_3);
                     entries.accept(ModItems.ENHANCE_SUCCESS_SCROLL_5);
