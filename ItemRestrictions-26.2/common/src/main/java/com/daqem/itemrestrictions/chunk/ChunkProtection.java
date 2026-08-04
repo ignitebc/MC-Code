@@ -3,6 +3,8 @@ package com.daqem.itemrestrictions.chunk;
 import com.daqem.itemrestrictions.ItemRestrictions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
@@ -63,10 +65,11 @@ public final class ChunkProtection {
         if (!ChunkOwnership.isAvailable()) {
             message = ItemRestrictions.translatable("chunk.unavailable");
         } else {
-            if (ChunkOwnership.getOwner(level, blockPos) == null) {
+            ChunkOwnership.Owner owner = ChunkOwnership.getOwner(level, blockPos);
+            if (owner == null) {
                 return;
             }
-            message = ItemRestrictions.translatable("chunk.protected");
+            message = ItemRestrictions.translatable("chunk.protected", getOwnerName(level, owner));
         }
 
         long now = System.currentTimeMillis();
@@ -79,6 +82,25 @@ public final class ChunkProtection {
     }
 
     /**
+     * 구매 시점에 저장한 소유자 이름을 우선 쓰고, 이름이 저장되기 전의 데이터면
+     * 접속 중인 플레이어에서 찾는다. 둘 다 없으면 대체 문구를 쓴다.
+     */
+    private static Component getOwnerName(Level level, ChunkOwnership.Owner owner) {
+        if (owner.name() != null && !owner.name().isBlank()) {
+            return Component.literal(owner.name());
+        }
+
+        MinecraftServer server = level.getServer();
+        if (server != null) {
+            ServerPlayer ownerPlayer = server.getPlayerList().getPlayer(owner.uuid());
+            if (ownerPlayer != null) {
+                return ownerPlayer.getName();
+            }
+        }
+        return ItemRestrictions.translatable("chunk.owner.unknown");
+    }
+
+    /**
      * 위치를 건드릴 수 없으면 안내까지 띄우고 true를 돌려준다.
      */
     public static boolean denyAndNotify(Level level, BlockPos blockPos, @Nullable Player player) {
@@ -87,6 +109,17 @@ public final class ChunkProtection {
         }
         notifyBlocked(level, blockPos, player);
         return true;
+    }
+
+    /**
+     * 클라이언트는 소유권 정보를 모른 채 설치·사용이 성공할 것으로 예측해 아이템 개수를 먼저 줄인다.
+     * 서버가 취소하면 줄어든 것처럼 보이는 개수를 되돌리도록 인벤토리 전체를 다시 보낸다.
+     * 아이템 소모가 있는 상호작용을 막았을 때만 호출해야 한다. (매 틱 호출되는 곳에서는 금지)
+     */
+    public static void resyncInventory(@Nullable Player player) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.containerMenu.sendAllDataToRemote();
+        }
     }
 
     @Nullable
@@ -188,6 +221,7 @@ public final class ChunkProtection {
             return false;
         }
         if (player != null && !level.isClientSide()) {
+            resyncInventory(player);
             long now = System.currentTimeMillis();
             Long last = LAST_MESSAGE_TIME.get(player.getUUID());
             if (last == null || now - last >= MESSAGE_COOLDOWN_MILLIS) {

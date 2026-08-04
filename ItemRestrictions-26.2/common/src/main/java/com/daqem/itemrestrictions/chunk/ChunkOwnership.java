@@ -48,7 +48,7 @@ public final class ChunkOwnership {
     private ChunkOwnership() {
     }
 
-    public record Owner(UUID uuid) {
+    public record Owner(UUID uuid, @Nullable String name) {
     }
 
     public static synchronized void load(MinecraftServer server) {
@@ -118,8 +118,13 @@ public final class ChunkOwnership {
                 JsonObject entries = root.getAsJsonObject(dimensionId);
                 for (String chunkKey : entries.keySet()) {
                     JsonObject owner = entries.getAsJsonObject(chunkKey);
+                    // 이름 없이 저장된 예전 데이터도 읽을 수 있어야 한다.
+                    String ownerName = null;
+                    if (owner.has("name")) {
+                        ownerName = owner.get("name").getAsString();
+                    }
                     chunks.put(Long.parseLong(chunkKey),
-                            new Owner(UUID.fromString(owner.get("uuid").getAsString())));
+                            new Owner(UUID.fromString(owner.get("uuid").getAsString()), ownerName));
                 }
                 loadedOwners.put(dimension, chunks);
             }
@@ -148,6 +153,9 @@ public final class ChunkOwnership {
             chunks.forEach((chunkKey, owner) -> {
                 JsonObject value = new JsonObject();
                 value.addProperty("uuid", owner.uuid().toString());
+                if (owner.name() != null) {
+                    value.addProperty("name", owner.name());
+                }
                 entries.add(Long.toString(chunkKey), value);
             });
             root.add(dimension.toString(), entries);

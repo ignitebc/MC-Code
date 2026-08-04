@@ -17,6 +17,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.attribute.EnvironmentAttributes;
@@ -35,8 +36,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -47,8 +50,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ChunkProtectionEvents {
 
-    /** 상점에서 파는 청크 구매 지도서. 다른 모드의 아이템이라 레지스트리 ID로 찾는다. */
-    private static final Identifier CHUNK_CLAIM_MAP_ID = Identifier.fromNamespaceAndPath(
+    /** 상점에서 파는 땅 구입 문서. 다른 모드의 아이템이라 레지스트리 ID로 찾는다. */
+    private static final Identifier LAND_PURCHASE_DOCUMENT_ID = Identifier.fromNamespaceAndPath(
             "advancednetherite",
             "chunk_claim_map");
 
@@ -63,13 +66,13 @@ public class ChunkProtectionEvents {
             return EventResult.pass();
         });
 
-        // 지도서를 들고 우클릭하면 서 있는 청크를 구매한다.
+        // 땅 구입 문서를 들고 우클릭하면 서 있는 청크를 구매한다.
         InteractionEvent.RIGHT_CLICK_ITEM.register((Player player, InteractionHand hand) -> {
             if (player.level().isClientSide() || hand != InteractionHand.MAIN_HAND) {
                 return EventResult.pass();
             }
             ItemStack itemStack = player.getItemInHand(hand);
-            if (!isChunkClaimMap(itemStack)) {
+            if (!isLandPurchaseDocument(itemStack)) {
                 return EventResult.pass();
             }
             return EventResult.fromMinecraft(claimChunk(player, itemStack));
@@ -95,11 +98,13 @@ public class ChunkProtectionEvents {
                 player = placingPlayer;
             }
             if (ChunkProtection.denyAndNotify(level, pos, player)) {
+                ChunkProtection.resyncInventory(player);
                 return EventResult.interruptFalse();
             }
             BlockPos connectedBlockPos = getConnectedBlockPos(pos, state);
             if (connectedBlockPos != null
                     && ChunkProtection.denyAndNotify(level, connectedBlockPos, player)) {
+                ChunkProtection.resyncInventory(player);
                 return EventResult.interruptFalse();
             }
             // 폭발물은 터진 뒤에 막을 수 없으므로 피해 반경이 남의 땅에 닿는지 미리 재서 설치를 막는다.
@@ -116,6 +121,7 @@ public class ChunkProtectionEvents {
                                                     Direction direction) -> {
             Level level = player.level();
             if (ChunkProtection.denyAndNotify(level, pos, player)) {
+                ChunkProtection.resyncInventory(player);
                 return EventResult.interruptFalse();
             }
 
@@ -123,6 +129,7 @@ public class ChunkProtectionEvents {
             BlockPos connectedBlockPos = getConnectedBlockPos(pos, blockState);
             if (connectedBlockPos != null
                     && ChunkProtection.denyAndNotify(level, connectedBlockPos, player)) {
+                ChunkProtection.resyncInventory(player);
                 return EventResult.interruptFalse();
             }
 
@@ -160,6 +167,7 @@ public class ChunkProtectionEvents {
         InteractionEvent.INTERACT_ENTITY.register((Player player, Entity entity,
                                                    InteractionHand hand) -> {
             if (ChunkProtection.denyAndNotify(player.level(), entity.blockPosition(), player)) {
+                ChunkProtection.resyncInventory(player);
                 return EventResult.interruptFalse();
             }
             return EventResult.pass();
@@ -204,6 +212,7 @@ public class ChunkProtectionEvents {
                 return EventResult.pass();
             }
             if (ChunkProtection.denyAndNotify(level, blockHitResult.getBlockPos(), player)) {
+                ChunkProtection.resyncInventory(player);
                 return EventResult.interruptFalse();
             }
             return EventResult.pass();
@@ -252,11 +261,25 @@ public class ChunkProtectionEvents {
         return 0;
     }
 
-    private static boolean isChunkClaimMap(ItemStack itemStack) {
+    /**
+     * 청크 안에 아이템 보관 블록이 있는지 확인한다. 특정 블록을 나열하는 대신
+     * 인벤토리를 가진 모든 블록 엔티티(상자, 통, 셜커 상자, 호퍼, 화로 등)를 검사한다.
+     */
+    private static boolean hasContainerBlock(Level level, ChunkPos chunkPos) {
+        LevelChunk chunk = level.getChunk(chunkPos.x(), chunkPos.z());
+        for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+            if (blockEntity instanceof Container) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isLandPurchaseDocument(ItemStack itemStack) {
         if (itemStack.isEmpty()) {
             return false;
         }
-        return CHUNK_CLAIM_MAP_ID.equals(
+        return LAND_PURCHASE_DOCUMENT_ID.equals(
                 BuiltInRegistries.ITEM.getKey(itemStack.getItem()));
     }
 
@@ -283,7 +306,7 @@ public class ChunkProtectionEvents {
     }
 
     /**
-     * 서 있는 청크를 구매한다. 이미 주인이 있으면 지도서를 소모하지 않는다.
+     * 서 있는 청크를 구매한다. 이미 주인이 있으면 문서를 소모하지 않는다.
      */
     private static InteractionResult claimChunk(Player player, ItemStack itemStack) {
         Level level = player.level();
@@ -300,7 +323,13 @@ public class ChunkProtectionEvents {
             return InteractionResult.FAIL;
         }
 
-        ChunkOwnership.Owner owner = new ChunkOwnership.Owner(player.getUUID());
+        // 공용 상자가 놓인 청크를 사서 사유화하는 것을 막는다.
+        if (hasContainerBlock(level, chunkPos)) {
+            player.sendSystemMessage(ItemRestrictions.translatable("chunk.claim.container_present"));
+            return InteractionResult.FAIL;
+        }
+
+        ChunkOwnership.Owner owner = new ChunkOwnership.Owner(player.getUUID(), player.getName().getString());
         if (!ChunkOwnership.claim(level, chunkPos, owner)) {
             player.sendSystemMessage(ItemRestrictions.translatable("chunk.claim.failed"));
             return InteractionResult.FAIL;
