@@ -10,6 +10,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -169,7 +170,7 @@ public class ImbuingMenu extends AbstractContainerMenu {
         if (buttonId != ENHANCE_BUTTON_ID || this.getEnhanceState() != EnhanceState.READY) {
             return false;
         }
-        this.access.execute((Level level, BlockPos blockPos) -> this.enhanceEquipment(player, level));
+        this.access.execute((Level level, BlockPos blockPos) -> this.enhanceEquipment(player, level, blockPos));
         return true;
     }
 
@@ -177,7 +178,7 @@ public class ImbuingMenu extends AbstractContainerMenu {
      * 성공하면 한 단계 오르고, 실패하면 한 단계 내려간다. 파괴 판정이 나와도 파괴 방지권이 있으면
      * 방지권을 소모해 실패로 대체한다.
      */
-    private void enhanceEquipment(Player player, Level level) {
+    private void enhanceEquipment(Player player, Level level, BlockPos blockPos) {
         ItemStack equipment = this.input.getItem(EQUIPMENT_SLOT);
         ItemStack successScroll = this.input.getItem(SUCCESS_SCROLL_SLOT);
         ItemStack protectionScroll = this.input.getItem(PROTECTION_SCROLL_SLOT);
@@ -201,12 +202,12 @@ public class ImbuingMenu extends AbstractContainerMenu {
             this.input.setItem(EQUIPMENT_SLOT, equipment);
             this.setEnhanceResult(EnhanceResult.SUCCESS, attemptLevel);
             this.broadcastEnhanceResult(player, level, equipmentName, EnhanceResult.SUCCESS, attemptLevel);
-            player.playSound(ModSoundEvents.SORCERER_COMPLETE_CAST_SOUND_EVENT.value(), 1.0f, 1.0f);
+            level.playSound(null, blockPos, ModSoundEvents.SORCERER_COMPLETE_CAST_SOUND_EVENT.value(), SoundSource.BLOCKS, 1.0f, 1.0f);
         } else if (roll < successChance + destroyChance && !protectionPresent) {
             this.input.setItem(EQUIPMENT_SLOT, ItemStack.EMPTY);
             this.setEnhanceResult(EnhanceResult.DESTROYED, 0);
             this.broadcastEnhanceResult(player, level, equipmentName, EnhanceResult.DESTROYED, 0);
-            player.playSound(SoundEvents.ITEM_BREAK.value(), 1.0f, 1.0f);
+            level.playSound(null, blockPos, SoundEvents.ITEM_BREAK.value(), SoundSource.BLOCKS, 1.0f, 1.0f);
         } else {
             boolean destructionPrevented = roll < successChance + destroyChance;
             if (destructionPrevented) {
@@ -221,7 +222,7 @@ public class ImbuingMenu extends AbstractContainerMenu {
             } else {
                 this.broadcastEnhanceResult(player, level, equipmentName, EnhanceResult.FAILURE, failedLevel);
             }
-            player.playSound(SoundEvents.FIRE_EXTINGUISH, 1.0f, 1.0f);
+            level.playSound(null, blockPos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 1.0f, 1.0f);
         }
 
         this.updateEnhanceInfo();
