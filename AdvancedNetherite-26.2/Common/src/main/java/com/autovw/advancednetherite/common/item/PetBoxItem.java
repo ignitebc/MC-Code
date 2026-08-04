@@ -1,13 +1,13 @@
 package com.autovw.advancednetherite.common.item;
 
 import com.autovw.advancednetherite.common.entity.DialgaPetEntity;
+import com.autovw.advancednetherite.common.pet.PetManager;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -35,32 +35,19 @@ public class PetBoxItem extends AdvancedItem
             return InteractionResult.SUCCESS;
         }
 
-        if (!(level instanceof ServerLevel serverLevel))
+        if (!(level instanceof ServerLevel serverLevel) || !(player instanceof ServerPlayer serverPlayer))
         {
             return InteractionResult.FAIL;
         }
 
         // 상자에 후보가 여러 종류면 균등 확률로 하나를 뽑는다.
         int pickedIndex = serverLevel.getRandom().nextInt(this.petTypes.size());
-        DialgaPetEntity pet = this.petTypes.get(pickedIndex).get().create(serverLevel, EntitySpawnReason.SPAWN_ITEM_USE);
-        if (pet == null)
-        {
-            return InteractionResult.FAIL;
-        }
+        EntityType<DialgaPetEntity> petType = this.petTypes.get(pickedIndex).get();
 
-        pet.snapTo(player.getX() + 1.0, player.getY(), player.getZ() + 1.0, player.getYRot(), 0.0F);
-        pet.tame(player);
-        pet.setPersistenceRequired();
-
-        // 상자 등급별 공격력. 속성 기본값은 바닐라가 엔티티 NBT로 저장하므로 재접속해도 유지된다.
-        AttributeInstance attackDamage = pet.getAttribute(Attributes.ATTACK_DAMAGE);
-        if (attackDamage != null)
+        // 소유의 원본은 펫 저장소 기록이다. 기록 생성에 실패하면 상자를 소모하지 않는다.
+        if (!PetManager.createPet(serverPlayer, petType, this.petAttackDamage))
         {
-            attackDamage.setBaseValue(this.petAttackDamage);
-        }
-
-        if (!serverLevel.addFreshEntity(pet))
-        {
+            serverPlayer.sendSystemMessage(Component.translatable("item.advancednetherite.pet_box.failed"));
             return InteractionResult.FAIL;
         }
 

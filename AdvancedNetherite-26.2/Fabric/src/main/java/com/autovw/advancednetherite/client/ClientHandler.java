@@ -14,8 +14,12 @@ import com.autovw.advancednetherite.client.renderer.GazellePetRenderer;
 import com.autovw.advancednetherite.client.renderer.KirbyPetRenderer;
 import com.autovw.advancednetherite.client.renderer.SculkenRavenPetRenderer;
 import com.autovw.advancednetherite.client.renderer.UnicornPetRenderer;
+import com.autovw.advancednetherite.client.gui.PetToggleButtons;
 import com.autovw.advancednetherite.core.ModEntityTypes;
+import com.autovw.advancednetherite.network.PetListSyncPayload;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 
@@ -41,5 +45,10 @@ public class ClientHandler implements ClientModInitializer
         EntityRendererRegistry.register(ModEntityTypes.GAZELLE_PET, GazellePetRenderer::new);
         ModelLayerRegistry.registerModelLayer(SculkenRavenPetModel.LAYER_LOCATION, SculkenRavenPetModel::createBodyLayer);
         EntityRendererRegistry.register(ModEntityTypes.SCULKEN_RAVEN_PET, SculkenRavenPetRenderer::new);
+
+        ClientPlayNetworking.registerGlobalReceiver(PetListSyncPayload.TYPE,
+                (payload, context) -> ClientPetData.setPets(payload.pets()));
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ClientPetData.clear());
+        PetToggleButtons.register();
     }
 }

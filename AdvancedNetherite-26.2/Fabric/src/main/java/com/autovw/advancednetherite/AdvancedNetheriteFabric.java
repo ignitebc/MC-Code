@@ -2,6 +2,7 @@ package com.autovw.advancednetherite;
 
 import com.autovw.advancednetherite.common.ModLootTableModifiers;
 import com.autovw.advancednetherite.common.randombox.RandomBoxConfigManager;
+import com.autovw.advancednetherite.network.PetNetworking;
 import com.autovw.advancednetherite.config.ConfigHelper;
 import com.autovw.advancednetherite.config.TempConfig;
 import com.autovw.advancednetherite.core.registry.ModBlockRegistry;
@@ -33,6 +34,8 @@ public class AdvancedNetheriteFabric implements ModInitializer
         AdvancedNetheriteTab.registerTab();
 
         ModLootTableModifiers.modifyTables();
+
+        PetNetworking.register();
 
         ConfigHelper.registerClientConfig(() -> TempConfig.CLIENT);
         ConfigHelper.registerCommonConfig(() -> TempConfig.COMMON);

@@ -16,6 +16,7 @@ public final class ModEntityTypes
             .clientTrackingRange(10)
             .fireImmune()
             .noLootTable()
+            .noSave()
             .build(key("dialga_pet"));
 
     public static final EntityType<DialgaPetEntity> UNICORN_PET = EntityType.Builder
@@ -24,6 +25,7 @@ public final class ModEntityTypes
             .clientTrackingRange(10)
             .fireImmune()
             .noLootTable()
+            .noSave()
             .build(key("unicorn_pet"));
 
     public static final EntityType<DialgaPetEntity> FAIRLINS_PET = EntityType.Builder
@@ -32,6 +34,7 @@ public final class ModEntityTypes
             .clientTrackingRange(10)
             .fireImmune()
             .noLootTable()
+            .noSave()
             .build(key("fairlins_pet"));
 
     public static final EntityType<DialgaPetEntity> DARK_DRAGON_PET = EntityType.Builder
@@ -40,6 +43,7 @@ public final class ModEntityTypes
             .clientTrackingRange(10)
             .fireImmune()
             .noLootTable()
+            .noSave()
             .build(key("dark_dragon_pet"));
 
     public static final EntityType<DialgaPetEntity> KIRBY_PET = EntityType.Builder
@@ -48,6 +52,7 @@ public final class ModEntityTypes
             .clientTrackingRange(10)
             .fireImmune()
             .noLootTable()
+            .noSave()
             .build(key("kirby_pet"));
 
     public static final EntityType<DialgaPetEntity> GAZELLE_PET = EntityType.Builder
@@ -56,6 +61,7 @@ public final class ModEntityTypes
             .clientTrackingRange(10)
             .fireImmune()
             .noLootTable()
+            .noSave()
             .build(key("gazelle_pet"));
 
     public static final EntityType<DialgaPetEntity> SCULKEN_RAVEN_PET = EntityType.Builder
@@ -64,6 +70,7 @@ public final class ModEntityTypes
             .clientTrackingRange(10)
             .fireImmune()
             .noLootTable()
+            .noSave()
             .build(key("sculken_raven_pet"));
 
     private ModEntityTypes()
