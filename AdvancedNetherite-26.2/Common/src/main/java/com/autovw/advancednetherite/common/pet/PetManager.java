@@ -4,6 +4,7 @@ import com.autovw.advancednetherite.common.entity.DialgaPetEntity;
 import com.autovw.advancednetherite.core.ModEntityTypes;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -30,6 +31,12 @@ public final class PetManager
 
     /** 기록 ID → 살아 있는 펫 엔티티. 기록 하나에 펫 한 마리만 존재하도록 보장한다. */
     private static final Map<UUID, DialgaPetEntity> LIVE_PETS = new ConcurrentHashMap<>();
+
+    /** 토글 사이에 두는 최소 간격(0.5초). 정상 조작으로는 걸리지 않는 값이다. */
+    private static final int TOGGLE_COOLDOWN_TICKS = 10;
+
+    /** 플레이어 UUID → 마지막 토글을 처리한 서버 틱 */
+    private static final Map<UUID, Integer> LAST_TOGGLE_TICKS = new ConcurrentHashMap<>();
 
     /** 펫 목록이 바뀔 때 클라이언트에 동기화 패킷을 보내는 훅. 플랫폼 초기화 코드가 등록한다. */
     private static Consumer<ServerPlayer> syncHandler;
@@ -97,11 +104,43 @@ public final class PetManager
                 livePet.discard();
             }
         }
+        LAST_TOGGLE_TICKS.remove(player.getUUID());
+
+        // 아직 파일에 반영되지 않은 토글 상태가 남아 있으면 이 시점에 기록해 둔다.
+        PetStorage.saveIfDirty();
+    }
+
+    /**
+     * 토글 패킷을 연타해 서버에 부하를 주는 것을 막는다.
+     * 간격 안에 들어온 요청은 조용히 무시한다.
+     */
+    private static boolean passedToggleCooldown(ServerPlayer player)
+    {
+        MinecraftServer server = player.level().getServer();
+        if (server == null)
+        {
+            return true;
+        }
+
+        int currentTick = server.getTickCount();
+        Integer lastTick = LAST_TOGGLE_TICKS.get(player.getUUID());
+        if (lastTick != null && currentTick - lastTick < TOGGLE_COOLDOWN_TICKS)
+        {
+            return false;
+        }
+
+        LAST_TOGGLE_TICKS.put(player.getUUID(), currentTick);
+        return true;
     }
 
     /** ON/OFF 토글. OFF면 펫을 회수하고, ON이면 곁에 소환한다. */
     public static void togglePet(ServerPlayer player, UUID recordId)
     {
+        if (!passedToggleCooldown(player))
+        {
+            return;
+        }
+
         PetRecord record = PetStorage.findPet(player.getUUID(), recordId);
         if (record == null)
         {
@@ -161,6 +200,7 @@ public final class PetManager
     public static void clearRuntimeState()
     {
         LIVE_PETS.clear();
+        LAST_TOGGLE_TICKS.clear();
     }
 
     /** 레지스트리 ID로 펫 타입을 찾는다. 알 수 없는 ID면 null. */

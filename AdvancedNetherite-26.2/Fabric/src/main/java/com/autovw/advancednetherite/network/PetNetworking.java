@@ -4,6 +4,7 @@ import com.autovw.advancednetherite.common.pet.PetManager;
 import com.autovw.advancednetherite.common.pet.PetRecord;
 import com.autovw.advancednetherite.common.pet.PetStorage;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -17,6 +18,9 @@ import java.util.List;
  */
 public final class PetNetworking
 {
+    /** 밀린 펫 기록 변경을 파일에 반영하는 주기(30초) */
+    private static final int SAVE_INTERVAL_TICKS = 600;
+
     private PetNetworking()
     {
     }
@@ -32,6 +36,12 @@ public final class PetNetworking
         PetManager.setSyncHandler(PetNetworking::sendPetList);
 
         ServerLifecycleEvents.SERVER_STARTING.register(PetStorage::load);
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (server.getTickCount() % SAVE_INTERVAL_TICKS == 0)
+            {
+                PetStorage.saveIfDirty();
+            }
+        });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             PetStorage.save();
             PetManager.clearRuntimeState();

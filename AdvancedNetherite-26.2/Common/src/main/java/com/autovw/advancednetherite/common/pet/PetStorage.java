@@ -29,8 +29,12 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 플레이어별 펫 소유 기록 저장소.
  * <p>
- * 월드 폴더의 JSON 파일 하나로 관리한다. 펫 엔티티는 청크에 저장되지 않으므로
- * 이 저장소가 소유의 유일한 원본이며, 변경이 생길 때마다 파일에 기록한다.
+ * 월드 폴더의 JSON 파일 하나로 관리한다. 펫 엔티티는 접속을 종료할 때 회수되므로
+ * 이 저장소가 소유의 유일한 원본이다.
+ * <p>
+ * 펫 획득처럼 되돌릴 수 없는 변경은 즉시 파일에 기록하고, ON/OFF 토글처럼 잦은 변경은
+ * 표시만 해 두었다가 주기적으로 함께 기록한다. 토글마다 파일 전체를 다시 쓰면
+ * 토글을 연타하는 것만으로 서버가 디스크 작업에 묶이기 때문이다.
  */
 public final class PetStorage
 {
@@ -44,6 +48,9 @@ public final class PetStorage
     private static Path savePath;
     private static volatile boolean saveEnabled;
 
+    /** 아직 파일에 반영되지 않은 변경이 있는지 여부 */
+    private static volatile boolean dirty;
+
     private PetStorage()
     {
     }
@@ -53,6 +60,7 @@ public final class PetStorage
         PETS.clear();
         savePath = server.getWorldPath(LevelResource.ROOT).resolve(FILE_NAME);
         saveEnabled = false;
+        dirty = false;
         if (!Files.exists(savePath))
         {
             saveEnabled = true;
@@ -167,6 +175,7 @@ public final class PetStorage
         try
         {
             moveTemporaryFile(temporaryPath);
+            dirty = false;
             return true;
         }
         catch (IOException exception)
@@ -174,6 +183,19 @@ public final class PetStorage
             LOGGER.error("Failed to replace pet records", exception);
             return false;
         }
+    }
+
+    /**
+     * 밀린 변경이 있을 때만 파일에 기록한다. 서버가 주기적으로 호출한다.
+     * 기록에 실패하면 표시가 남아 다음 호출에서 다시 시도한다.
+     */
+    public static synchronized void saveIfDirty()
+    {
+        if (!dirty)
+        {
+            return;
+        }
+        save();
     }
 
     private static void backupCurrentFile()
@@ -250,7 +272,12 @@ public final class PetStorage
         return false;
     }
 
-    /** 기록의 ON/OFF 상태를 바꾸고 갱신된 기록을 돌려준다. 실패하면 null. */
+    /**
+     * 기록의 ON/OFF 상태를 바꾸고 갱신된 기록을 돌려준다. 대상이 없으면 null.
+     * <p>
+     * 파일 기록은 {@link #saveIfDirty()}에 맡긴다. 아이템 획득과 달리 토글은
+     * 되돌릴 수 없는 손해가 없어서, 저장 직전에 서버가 죽으면 이전 상태로 남는 정도를 감수한다.
+     */
     public static synchronized PetRecord setEnabled(UUID playerId, UUID recordId, boolean enabled)
     {
         if (!saveEnabled)
@@ -268,15 +295,10 @@ public final class PetStorage
             {
                 continue;
             }
-            PetRecord previous = records.get(i);
-            PetRecord updated = previous.withEnabled(enabled);
+            PetRecord updated = records.get(i).withEnabled(enabled);
             records.set(i, updated);
-            if (save())
-            {
-                return updated;
-            }
-            records.set(i, previous);
-            return null;
+            dirty = true;
+            return updated;
         }
         return null;
     }
