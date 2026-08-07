@@ -244,13 +244,25 @@ public final class PetStorage
         }
     }
 
+    /**
+     * 기록 하나를 찾는다. 살아 있는 펫이 매 틱 자기 자격을 확인하며 호출하므로
+     * 목록 사본을 만들지 않고 그 자리에서 훑는다. 기록 자체는 불변이라 그대로 돌려줘도 안전하다.
+     */
     public static PetRecord findPet(UUID playerId, UUID recordId)
     {
-        for (PetRecord record : getPets(playerId))
+        List<PetRecord> records = PETS.get(playerId);
+        if (records == null)
         {
-            if (record.id().equals(recordId))
+            return null;
+        }
+        synchronized (PetStorage.class)
+        {
+            for (PetRecord record : records)
             {
-                return record;
+                if (record.id().equals(recordId))
+                {
+                    return record;
+                }
             }
         }
         return null;
