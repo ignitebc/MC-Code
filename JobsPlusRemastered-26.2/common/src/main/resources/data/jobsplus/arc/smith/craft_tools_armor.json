@@ -24,6 +24,24 @@
         "#c:tools",
         "#c:armor"
       ]
+    },
+    {
+      "type": "arc:not",
+      "conditions": [
+        {
+          "type": "arc:items",
+          "items": [
+            "minecraft:wooden_sword",
+            "minecraft:wooden_pickaxe",
+            "minecraft:wooden_axe",
+            "minecraft:wooden_shovel",
+            "minecraft:wooden_hoe",
+            "minecraft:bow",
+            "minecraft:fishing_rod",
+            "minecraft:shield"
+          ]
+        }
+      ]
     }
   ]
 }
