@@ -7,37 +7,38 @@
   "rewards": [
     {
       "type": "arc:cancel_action",
-      "chance": 6
+      "chance": 6,
+      "activation_message": "jobsplus.skill.null_hit"
     }
   ],
   "conditions": [
     {
-        "type": "jobsplus:powerup_not_active",
-        "powerup": "jobsplus:smith/null_hit_iv"
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/null_hit_iv"
     },
     {
-        "type": "jobsplus:powerup_not_active",
-        "powerup": "jobsplus:smith/null_hit_v"
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/null_hit_v"
     },
     {
-        "type": "jobsplus:powerup_not_active",
-        "powerup": "jobsplus:smith/null_hit_vi"
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/null_hit_vi"
     },
     {
-        "type": "jobsplus:powerup_not_active",
-        "powerup": "jobsplus:smith/null_hit_vii"
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/null_hit_vii"
     },
     {
-        "type": "jobsplus:powerup_not_active",
-        "powerup": "jobsplus:smith/null_hit_viii"
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/null_hit_viii"
     },
     {
-        "type": "jobsplus:powerup_not_active",
-        "powerup": "jobsplus:smith/null_hit_viiii"
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/null_hit_viiii"
     },
     {
-        "type": "jobsplus:powerup_not_active",
-        "powerup": "jobsplus:smith/null_hit_x"
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/null_hit_x"
     }
   ]
 }

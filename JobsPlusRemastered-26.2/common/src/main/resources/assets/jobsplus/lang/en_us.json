@@ -122,6 +122,8 @@
   "jobsplus.job.level_up.toast": "%s 레벨에 도달했습니다!",
   "jobsplus.job.item_unlocked.toast": "새로운 아이템이 해금되었습니다!",
   "jobsplus.skill.range_harvest": "스킬이 발동되어 주변 작물 %s개를 함께 수확했습니다!",
+  "jobsplus.skill.null_hit": "강철 방벽이 발동되어 피해를 완전히 막아냈습니다!",
+  "jobsplus.skill.stronger_potions": "농축 정제가 발동되어 %s 효과가 강해졌습니다!",
   "jobsplus.job.jobsplus.alchemist.name": "연금술사",
   "jobsplus.job.jobsplus.alchemist.description": "[경험치] 양조가 완료된 물약 한 병마다 5.7, 물약 마시기 2~4, 물약 투척 2~4, 연금술 아이템 제작 2~4, 연금술 재료 생물 처치 2~3, 완전히 자란 네더 사마귀 수확 1을 받습니다. [비트코인] 양조가 완료된 물약 한 병마다 1.33% 확률로 1개를 획득하며 나머지 행동에는 비트코인이 없습니다. 양조대 세 칸을 모두 채우면 한 번의 양조로 세 번 적용됩니다. 호퍼로 자동 투입된 양조 재료는 투입 수량만큼의 양조가 모두 끝날 때까지 보상이 지급되지 않습니다.",
   "jobsplus.job.jobsplus.digger.name": "굴착공",

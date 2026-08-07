@@ -8,11 +8,11 @@
     {
       "type": "arc:effect_amplifier_addition",
       "addition": 2,
-      "chance": 30
+      "chance": 30,
+      "activation_message": "jobsplus.skill.stronger_potions"
     }
   ],
   "conditions": [
-    
     {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:alchemist/stronger_potions_vii"

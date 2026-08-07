@@ -7,17 +7,18 @@
   "rewards": [
     {
       "type": "arc:cancel_action",
-      "chance": 16
+      "chance": 16,
+      "activation_message": "jobsplus.skill.null_hit"
     }
   ],
   "conditions": [
     {
-        "type": "jobsplus:powerup_not_active",
-        "powerup": "jobsplus:smith/null_hit_viiii"
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/null_hit_viiii"
     },
     {
-        "type": "jobsplus:powerup_not_active",
-        "powerup": "jobsplus:smith/null_hit_x"
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/null_hit_x"
     }
   ]
 }
