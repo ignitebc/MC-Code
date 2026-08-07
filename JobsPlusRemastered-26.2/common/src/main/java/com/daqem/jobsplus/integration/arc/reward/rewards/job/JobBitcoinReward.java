@@ -8,6 +8,7 @@ import com.daqem.arc.api.reward.IReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.PlayerItemDelivery;
@@ -83,13 +84,20 @@ public class JobBitcoinReward extends AbstractReward
         PlayerItemDelivery.giveOrDrop(serverPlayer, stack);
 
         // 2) 서버 전체 브로드캐스트 메시지
-        if (serverPlayer.level().getServer() != null)
+        if (serverPlayer.level().getServer() != null
+                && actionData.getSourceActionHolder() instanceof JobInstance jobInstance)
         {
+            // 플레이어 이름을 골드색으로 표시
+            Component playerName = serverPlayer.getName().copy()
+                    .withStyle(style -> style.withColor(0xFFD700));
+
+            // 어떤 직업 활동으로 얻었는지 직업 이름을 직업 고유 색상으로 함께 표시한다.
+            Component jobName = jobInstance.getName().copy()
+                    .withStyle(style -> style.withColor(jobInstance.getColorDecimal()));
+
             serverPlayer.level().getServer().getPlayerList().broadcastSystemMessage(
-                    // jobsplus.bitcoin.obtained: "%s님이 비트코인을 획득했습니다!"
-                    JobsPlus.translatable("bitcoin.obtained", serverPlayer.getName().copy()
-                            // 플레이어 이름을 골드색으로 표시
-                            .withStyle(style -> style.withColor(0xFFD700))),
+                    // jobsplus.bitcoin.obtained.job: "%s %s님이 비트코인을 획득했습니다!"
+                    JobsPlus.translatable("bitcoin.obtained.job", jobName, playerName),
                     false // 액션바가 아니라 일반 채팅으로 브로드캐스트
             );
         }
