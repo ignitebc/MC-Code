@@ -196,6 +196,21 @@ public final class PetManager
         return livePet == pet;
     }
 
+    /**
+     * 사라진 펫을 살아 있는 목록에서 지운다. 펫이 어떤 경로로 제거되든 호출된다.
+     * <p>
+     * 이미 다른 개체가 같은 기록으로 등록된 뒤라면 그 개체는 건드리지 않는다.
+     * 차원 이동처럼 옛 개체가 사라진 직후 새 개체가 등록되는 경우가 있기 때문이다.
+     */
+    public static void releasePet(DialgaPetEntity pet)
+    {
+        UUID recordId = pet.getRecordId();
+        if (recordId != null)
+        {
+            LIVE_PETS.remove(recordId, pet);
+        }
+    }
+
     /** 서버 종료 시 런타임 상태를 비운다. */
     public static void clearRuntimeState()
     {

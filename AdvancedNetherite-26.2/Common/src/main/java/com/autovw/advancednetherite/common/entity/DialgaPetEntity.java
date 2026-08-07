@@ -144,6 +144,21 @@ public class DialgaPetEntity extends TamableAnimal
         this.recordId = recordId;
     }
 
+    /**
+     * 어떤 이유로 사라지든 살아 있는 펫 목록에서 자신을 지운다.
+     * 토글과 접속 종료 외에도 유예 시간 초과, 청크 언로드, 명령 처치 같은 경로가 있어서
+     * 여기서 한 번에 정리하지 않으면 사라진 개체의 참조가 계속 남는다.
+     */
+    @Override
+    public void remove(Entity.RemovalReason removalReason)
+    {
+        super.remove(removalReason);
+        if (!this.level().isClientSide())
+        {
+            PetManager.releasePet(this);
+        }
+    }
+
     private void teleportToOwnerLevel(ServerPlayer serverPlayer)
     {
         this.teleport(new TeleportTransition(
