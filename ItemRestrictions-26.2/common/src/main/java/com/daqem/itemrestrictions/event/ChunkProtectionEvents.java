@@ -275,6 +275,47 @@ public class ChunkProtectionEvents {
         return false;
     }
 
+    /**
+     * 청크 안에 공용 시설 블록(제작대 계열 작업대, 울타리)이 있는지 확인한다.
+     * 이 블록들은 블록 엔티티가 없어 컨테이너 검사로 잡히지 않으므로 블록 상태를 직접 훑는다.
+     * 전체 높이 순회는 약 9만 8천 블록이지만 구매 시 한 번만 수행되므로 부담이 없다.
+     */
+    private static boolean hasSharedFacilityBlock(Level level, ChunkPos chunkPos) {
+        LevelChunk chunk = level.getChunk(chunkPos.x(), chunkPos.z());
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+        int minBlockX = chunkPos.getMinBlockX();
+        int minBlockZ = chunkPos.getMinBlockZ();
+        for (int y = level.getMinY(); y <= level.getMaxY(); y++) {
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    cursor.set(minBlockX + x, y, minBlockZ + z);
+                    if (isSharedFacilityBlock(chunk.getBlockState(cursor))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 청크 구매를 막는 공용 시설 블록인지 판정한다. 제작대 계열 작업대 전반과
+     * 모든 울타리(울타리 문 포함)가 대상이다. 화로·양조기 같은 인벤토리 블록은
+     * 컨테이너 검사에서 이미 걸러진다.
+     */
+    private static boolean isSharedFacilityBlock(BlockState state) {
+        boolean isWorkstation = state.is(Blocks.CRAFTING_TABLE)
+                || state.is(Blocks.SMITHING_TABLE)
+                || state.is(Blocks.CARTOGRAPHY_TABLE)
+                || state.is(Blocks.FLETCHING_TABLE)
+                || state.is(Blocks.LOOM)
+                || state.is(Blocks.STONECUTTER)
+                || state.is(Blocks.GRINDSTONE)
+                || state.is(BlockTags.ANVIL);
+        boolean isFence = state.is(BlockTags.FENCES) || state.is(BlockTags.FENCE_GATES);
+        return isWorkstation || isFence;
+    }
+
     private static boolean isLandPurchaseDocument(ItemStack itemStack) {
         if (itemStack.isEmpty()) {
             return false;
@@ -326,6 +367,12 @@ public class ChunkProtectionEvents {
         // 공용 상자가 놓인 청크를 사서 사유화하는 것을 막는다.
         if (hasContainerBlock(level, chunkPos)) {
             player.sendSystemMessage(ItemRestrictions.translatable("chunk.claim.container_present"));
+            return InteractionResult.FAIL;
+        }
+
+        // 제작대·울타리 같은 공용 시설이 놓인 청크도 사유화할 수 없다.
+        if (hasSharedFacilityBlock(level, chunkPos)) {
+            player.sendSystemMessage(ItemRestrictions.translatable("chunk.claim.facility_present"));
             return InteractionResult.FAIL;
         }
 
