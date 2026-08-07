@@ -13,15 +13,14 @@
     },
     {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 0.73,
+      "chance": 0.92,
       "amount": 1
     }
   ],
   "conditions": [
     {
       "type": "arc:entity_types",
-      "entity_types": 
-      [
+      "entity_types": [
         "minecraft:creeper"
       ]
     }

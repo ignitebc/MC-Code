@@ -13,7 +13,7 @@
     },
     {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 1.33,
+      "chance": 1.9,
       "amount": 1
     }
   ]

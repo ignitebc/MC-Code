@@ -13,15 +13,14 @@
     },
     {
       "type": "jobsplus:bitcoin_reward",
-      "chance": 1.6,
+      "chance": 2,
       "amount": 1
     }
   ],
   "conditions": [
     {
       "type": "arc:entity_types",
-      "entity_types": 
-      [
+      "entity_types": [
         "minecraft:wither_skeleton"
       ]
     }
