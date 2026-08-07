@@ -13,6 +13,7 @@ import com.daqem.jobsplus.integration.arc.reward.rewards.job.JobCoinReward;
 import com.daqem.jobsplus.integration.arc.reward.rewards.job.JobExpMultiplierReward;
 import com.daqem.jobsplus.integration.arc.reward.rewards.job.JobExpReward;
 import com.daqem.jobsplus.integration.arc.reward.rewards.job.SpecialItemReward;
+import com.daqem.jobsplus.integration.arc.reward.rewards.smith.LapisRefundReward;
 
 public interface JobsPlusRewardType<T extends IReward> extends RewardType<T>
 {
@@ -37,6 +38,9 @@ public interface JobsPlusRewardType<T extends IReward> extends RewardType<T>
 
     // 지급이 확정된 뒤 보너스 계열 단계만큼 개수를 두 배로 올리는 아이템 보상
     IRewardType<SpecialItemReward> SPECIAL_ITEM = RewardType.register(JobsPlus.getId("special_item"), new SpecialItemReward.Serializer());
+
+    // 마법 부여에 실제로 소모한 청금석을 그대로 반환하는 보상
+    IRewardType<LapisRefundReward> LAPIS_REFUND = RewardType.register(JobsPlus.getId("lapis_refund"), new LapisRefundReward.Serializer());
 
     static void init()
     {

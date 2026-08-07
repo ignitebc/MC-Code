@@ -1,0 +1,31 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:smith/lapis_refund_vi"
+  },
+  "type": "arc:on_enchant_item",
+  "rewards": [
+    {
+      "type": "jobsplus:lapis_refund",
+      "chance": 30
+    }
+  ],
+  "conditions": [
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/lapis_refund_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/lapis_refund_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/lapis_refund_viiii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:smith/lapis_refund_x"
+    }
+  ]
+}

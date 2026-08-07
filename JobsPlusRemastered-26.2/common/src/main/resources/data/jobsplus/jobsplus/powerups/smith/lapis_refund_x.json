@@ -1,0 +1,10 @@
+{
+  "job": "jobsplus:smith",
+  "parent": "jobsplus:smith/lapis_refund_viiii",
+  "icon": {
+    "id": "minecraft:lapis_lazuli",
+    "count": 10
+  },
+  "price": 28,
+  "required_level": 50
+}

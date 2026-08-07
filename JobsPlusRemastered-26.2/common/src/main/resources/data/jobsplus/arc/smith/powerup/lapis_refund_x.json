@@ -1,0 +1,13 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:smith/lapis_refund_x"
+  },
+  "type": "arc:on_enchant_item",
+  "rewards": [
+    {
+      "type": "jobsplus:lapis_refund",
+      "chance": 50
+    }
+  ]
+}
