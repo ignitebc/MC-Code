@@ -12,8 +12,17 @@
   ],
   "conditions": [
     {
-      "type": "arc:damage_source",
-      "source": "melee"
+      "type": "arc:or",
+      "conditions": [
+        {
+          "type": "arc:damage_source",
+          "source": "mob"
+        },
+        {
+          "type": "arc:damage_source",
+          "source": "player"
+        }
+      ]
     },
     {
         "type": "jobsplus:powerup_not_active",
