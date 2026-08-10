@@ -84,8 +84,11 @@ public class RangeHarvestReward extends AbstractReward
                             continue;
                         }
 
-                        BlockEvents.onHarvestCrop(arcServerPlayer, cropState, cropPos, serverLevel);
+                        // 파괴 후 표준 파괴 완료 처리를 호출해 주변 작물도 중앙과 동일하게
+                        // 풍년(BREAK_BLOCK)과 경험치·비트코인·되심기(HARVEST_CROP)를 칸마다 개별 판정한다.
+                        // 범위 수확 자체의 재발동은 HARVESTING_RANGE 가드가 차단한다.
                         serverLevel.destroyBlock(cropPos, true, serverPlayer, 512);
+                        BlockEvents.onBlockBreakComplete(serverLevel, cropPos, cropState, arcServerPlayer);
                         harvestedCount++;
                     }
                 }
@@ -100,7 +103,8 @@ public class RangeHarvestReward extends AbstractReward
         {
             SkillActivationNotifier.notifySkillActivated(
                     serverPlayer,
-                    Component.translatable("jobsplus.skill.range_harvest", harvestedCount));
+                    Component.translatable("jobsplus.skill.range_harvest",
+                            SkillActivationNotifier.resolveSkillName(actionData), harvestedCount));
         }
 
         return new ActionResult();
