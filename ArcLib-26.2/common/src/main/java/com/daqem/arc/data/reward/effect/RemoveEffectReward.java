@@ -7,8 +7,10 @@ import com.daqem.arc.api.reward.AbstractReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
+import com.daqem.arc.player.SkillActivationNotifier;
 import com.google.gson.*;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 
@@ -28,7 +30,16 @@ public class RemoveEffectReward extends AbstractReward {
                     .filter(mobEffect2 -> mobEffect2.value().getDescriptionId()
                             .equals(effect.getEffect().value().getDescriptionId()))
                     .findFirst()
-                    .ifPresent(player::removeEffect);
+                    .ifPresent(mobEffect -> {
+                        if (player.removeEffect(mobEffect)) {
+                            SkillActivationNotifier.notifySkillActivated(
+                                    actionData.getPlayer(),
+                                    Component.translatable(
+                                            "arc.skill.effect_removed",
+                                            SkillActivationNotifier.resolveSkillName(actionData),
+                                            effect.getEffect().value().getDisplayName()));
+                        }
+                    });
         }
         return new ActionResult();
     }

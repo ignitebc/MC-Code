@@ -7,6 +7,7 @@ import com.daqem.arc.api.reward.AbstractReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
+import com.daqem.arc.player.SkillActivationNotifier;
 import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -14,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.effect.MobEffectInstance;
 
 import java.util.Objects;
@@ -39,7 +41,17 @@ public class EffectDurationMultiplierReward extends AbstractReward {
         if (effect != null) {
             if (actionData.getPlayer().arc$getPlayer() instanceof ServerPlayer player){
                 MobEffectInstance newEffect = new MobEffectInstance(effect.getEffect(), Mth.floor(effect.getDuration() * multiplier), effect.getAmplifier(), effect.isAmbient(), effect.isVisible());
+                actionData.setData(ActionDataType.MOB_EFFECT_INSTANCE, newEffect);
                 player.addEffect(newEffect, new ServerPlayer(Objects.requireNonNull(player.level().getServer()), player.level(), new GameProfile(UUID.randomUUID(), "a"), player.clientInformation()));
+                int increasePercent = Mth.floor((multiplier - 1.0D) * 100.0D);
+                SkillActivationNotifier.notifySkillActivated(
+                        player,
+                        Component.translatable(
+                                "arc.skill.effect_duration_extended",
+                                SkillActivationNotifier.resolveSkillName(actionData),
+                                newEffect.getEffect().value().getDisplayName(),
+                                increasePercent,
+                                MobEffectUtil.formatDuration(newEffect, 1.0F, 20.0F)));
             }
         }
         return new ActionResult();

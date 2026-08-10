@@ -85,16 +85,16 @@ public class SpecialItemReward extends AbstractReward
 
         ItemStack reward = this.itemTemplate.create();
         reward.setCount(grantedAmount);
-        ItemStack notificationStack = reward.copy();
         giveToPlayer(arcPlayer, reward);
 
-        // 두 배 지급이면 보너스 파워업(예: 만선) 이름으로, 아니면 발동 홀더 이름으로 알린다.
+        ItemStack baseNotificationStack = reward.copyWithCount(this.amount);
+        SkillActivationNotifier.notifyExtraDrop(actionData, baseNotificationStack);
+
+        // 기본 특수 아이템 획득과 두 배 보너스는 서로 다른 스킬 발동이므로 각각 알린다.
         if (bonusSkillName != null && arcPlayer.arc$getPlayer() instanceof ServerPlayer serverPlayer)
         {
-            SkillActivationNotifier.notifyExtraDrop(serverPlayer, bonusSkillName, notificationStack);
-        } else
-        {
-            SkillActivationNotifier.notifyExtraDrop(actionData, notificationStack);
+            ItemStack bonusNotificationStack = reward.copyWithCount(grantedAmount - this.amount);
+            SkillActivationNotifier.notifyExtraDrop(serverPlayer, bonusSkillName, bonusNotificationStack);
         }
 
         return new ActionResult();

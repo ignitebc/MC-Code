@@ -225,6 +225,8 @@
   "arc.condition.hostile_entity": "적대적 생명체",
   "arc.condition.description.hostile_entity": "대상이 적대적 생명체일 때 성립합니다. 소, 닭, 주민 같은 중립·우호 생명체는 제외됩니다.",
   "arc.skill.extra_drop": "'%1$s'이(가) 발동되어 %2$s 획득했습니다!",
+  "arc.skill.effect_removed": "'%1$s'이(가) 발동되어 %2$s 효과를 제거했습니다!",
+  "arc.skill.effect_duration_extended": "'%1$s'이(가) 발동되어 %2$s 효과의 지속시간이 %3$s%% 증가해 %4$s이(가) 되었습니다!",
   "arc.skill.unknown_skill": "스킬",
   "arc.skill.extra_exp": "'%1$s'이(가) 발동되어 경험치 %2$s을(를) 추가 획득했습니다!"
 }

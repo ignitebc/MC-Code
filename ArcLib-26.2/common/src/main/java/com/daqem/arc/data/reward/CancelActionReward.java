@@ -40,7 +40,11 @@ public class CancelActionReward extends AbstractReward {
             return;
         }
         if (actionData.getPlayer().arc$getPlayer() instanceof ServerPlayer serverPlayer) {
-            SkillActivationNotifier.notifySkillActivated(serverPlayer, Component.translatable(activationMessageKey));
+            SkillActivationNotifier.notifySkillActivated(
+                    serverPlayer,
+                    Component.translatable(
+                            activationMessageKey,
+                            SkillActivationNotifier.resolveSkillName(actionData)));
         }
     }
 

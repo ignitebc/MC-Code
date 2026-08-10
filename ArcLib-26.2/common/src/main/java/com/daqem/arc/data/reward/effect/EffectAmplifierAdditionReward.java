@@ -50,10 +50,17 @@ public class EffectAmplifierAdditionReward extends AbstractReward {
         if (effect != null) {
             if (actionData.getPlayer().arc$getPlayer() instanceof ServerPlayer player){
                 MobEffectInstance newEffect = new MobEffectInstance(effect.getEffect(), effect.getDuration(), Mth.floor(effect.getAmplifier() + addition), effect.isAmbient(), effect.isVisible());
+                actionData.setData(ActionDataType.MOB_EFFECT_INSTANCE, newEffect);
                 player.addEffect(newEffect, new ServerPlayer(Objects.requireNonNull(player.level().getServer()), player.level(), new GameProfile(UUID.randomUUID(), "a"), player.clientInformation()));
                 if (activationMessageKey != null) {
                     Component effectName = newEffect.getEffect().value().getDisplayName();
-                    SkillActivationNotifier.notifySkillActivated(player, Component.translatable(activationMessageKey, effectName));
+                    SkillActivationNotifier.notifySkillActivated(
+                            player,
+                            Component.translatable(
+                                    activationMessageKey,
+                                    SkillActivationNotifier.resolveSkillName(actionData),
+                                    effectName,
+                                    newEffect.getAmplifier() + 1));
                 }
             }
         }

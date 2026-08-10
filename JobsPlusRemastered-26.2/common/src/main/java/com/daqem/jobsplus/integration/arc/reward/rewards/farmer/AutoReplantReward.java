@@ -6,12 +6,14 @@ import com.daqem.arc.api.action.result.ActionResult;
 import com.daqem.arc.api.reward.AbstractReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
+import com.daqem.arc.player.SkillActivationNotifier;
 import com.daqem.jobsplus.event.block.CropReplantManager;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
 import com.daqem.jobsplus.mixin.CropBlockAccessor;
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -47,6 +49,12 @@ public class AutoReplantReward extends AbstractReward
                     == ((CropBlockAccessor) cropBlock).jobsplus$getBaseSeedId().asItem())
             {
                 CropReplantManager.schedule(serverLevel, blockPos, cropBlock);
+                SkillActivationNotifier.notifySkillActivated(
+                        actionData.getPlayer(),
+                        Component.translatable(
+                                "jobsplus.skill.auto_replant",
+                                SkillActivationNotifier.resolveSkillName(actionData),
+                                cropBlock.getName()));
             }
         }
         return new ActionResult();

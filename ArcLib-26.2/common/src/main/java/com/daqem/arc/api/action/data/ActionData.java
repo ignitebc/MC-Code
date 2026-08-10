@@ -35,6 +35,10 @@ public class ActionData implements IActionData {
         return (T) this.actionData.get(actionDataType);
     }
 
+    public <T> void setData(IActionDataType<T> actionDataType, T data) {
+        this.actionData.put(actionDataType, data);
+    }
+
     @Override
     public ArcPlayer getPlayer() {
         return player;
