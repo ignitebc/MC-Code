@@ -56,7 +56,7 @@ public class BlockEvents {
     public static void onBlockBreakComplete(ServerLevel serverLevel, BlockPos pos, BlockState state,
                                             ArcServerPlayer arcServerPlayer) {
         final BlockPos blockPos = pos.immutable();
-        final int expDrop = 0;
+        final int expDrop = BlockBreakExpTracker.consume(blockPos, serverLevel.getGameTime());
 
         // ★ 핵심: "캔 순간"의 도구를 반드시 캡처
         final ItemStack usedTool =

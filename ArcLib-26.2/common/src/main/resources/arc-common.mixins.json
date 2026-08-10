@@ -14,6 +14,7 @@
     "MixinAnvilMenu",
     "MixinAxeItem",
     "MixinBaseContainerBlockEntity",
+    "MixinBlock",
     "MixinBlockStateBase",
     "MixinBrewingStandBlockEntity",
     "MixinConsumable",
