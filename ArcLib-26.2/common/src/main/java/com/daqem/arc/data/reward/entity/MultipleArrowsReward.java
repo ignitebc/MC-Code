@@ -110,6 +110,10 @@ public class MultipleArrowsReward extends AbstractReward {
             projectile.setRemainingFireTicks(shotArrow.getRemainingFireTicks());
             ((IArcAbstractArrow) projectile).arc$setFireDurationTicks(
                     ((IArcAbstractArrow) shotArrow).arc$getFireDurationTicks());
+            ((IArcAbstractArrow) projectile).arc$setPoisonDurationTicks(
+                    ((IArcAbstractArrow) shotArrow).arc$getPoisonDurationTicks());
+            ((IArcAbstractArrow) projectile).arc$setPoisonAmplifier(
+                    ((IArcAbstractArrow) shotArrow).arc$getPoisonAmplifier());
             Vec3 vec3 = player.getUpVector(1.0f);
             Quaternionf quaternionf = new Quaternionf().setAngleAxis(pitch * ((float)Math.PI / 180), vec3.x, vec3.y, vec3.z);
             Vec3 vec32 = player.getViewVector(1.0f);
