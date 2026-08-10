@@ -60,7 +60,7 @@ public final class PetToggleButtons
                         .bounds(left, top + i * BUTTON_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT)
                         .tooltip(buildPetTooltip(entry))
                         .build();
-                Screens.getButtons(screen).add(button);
+                Screens.getWidgets(screen).add(button);
             }
         });
     }

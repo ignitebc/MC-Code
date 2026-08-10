@@ -27,8 +27,8 @@ public final class PetNetworking
 
     public static void register()
     {
-        PayloadTypeRegistry.playS2C().register(PetListSyncPayload.TYPE, PetListSyncPayload.STREAM_CODEC);
-        PayloadTypeRegistry.playC2S().register(PetTogglePayload.TYPE, PetTogglePayload.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(PetListSyncPayload.TYPE, PetListSyncPayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(PetTogglePayload.TYPE, PetTogglePayload.STREAM_CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(PetTogglePayload.TYPE,
                 (payload, context) -> PetManager.togglePet(context.player(), payload.recordId()));
