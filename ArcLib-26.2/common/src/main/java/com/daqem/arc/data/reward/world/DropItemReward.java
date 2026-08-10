@@ -62,7 +62,7 @@ public class DropItemReward extends AbstractReward {
                             itemStack.copy());
                     entity.setDefaultPickUpDelay();
                     if (serverLevel.addFreshEntity(entity)) {
-                        SkillActivationNotifier.notifyExtraDrop(actionData.getPlayer(), itemStack);
+                        SkillActivationNotifier.notifyExtraDrop(actionData, itemStack);
                     }
                 } else {
                     BlockState state = actionData.getData(ActionDataType.BLOCK_STATE);
@@ -88,7 +88,7 @@ public class DropItemReward extends AbstractReward {
                                 addedDrops.add(randomDrop.copy());
                             }
                         }
-                        SkillActivationNotifier.notifyExtraDrop(actionData.getPlayer(), addedDrops);
+                        SkillActivationNotifier.notifyExtraDrop(actionData, addedDrops);
                     }
                 }
             }

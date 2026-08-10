@@ -52,7 +52,7 @@ public class LapisRefundReward extends AbstractReward
             ItemStack refund = new ItemStack(Items.LAPIS_LAZULI, usedLapisCount);
             ItemStack notificationStack = refund.copy();
             PlayerItemDelivery.giveOrDrop(serverPlayer, refund);
-            SkillActivationNotifier.notifyExtraDrop(serverPlayer, notificationStack);
+            SkillActivationNotifier.notifyExtraDrop(actionData, notificationStack);
         }
 
         return new ActionResult();

@@ -6,6 +6,7 @@ import com.daqem.arc.api.player.ArcPlayer;
 import com.daqem.arc.api.reward.AbstractReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
+import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
 import com.daqem.jobsplus.player.JobsPlayer;
 import com.daqem.arc.player.SkillActivationNotifier;
@@ -75,18 +76,48 @@ public class SpecialItemReward extends AbstractReward
         }
 
         int grantedAmount = this.amount;
+        Component bonusSkillName = null;
         if (this.shouldDouble(jobsPlayer, actionData))
         {
             grantedAmount = grantedAmount * 2;
+            bonusSkillName = getBonusPowerupName(jobsPlayer);
         }
 
         ItemStack reward = this.itemTemplate.create();
         reward.setCount(grantedAmount);
         ItemStack notificationStack = reward.copy();
         giveToPlayer(arcPlayer, reward);
-        SkillActivationNotifier.notifyExtraDrop(arcPlayer, notificationStack);
+
+        // 두 배 지급이면 보너스 파워업(예: 만선) 이름으로, 아니면 발동 홀더 이름으로 알린다.
+        if (bonusSkillName != null && arcPlayer.arc$getPlayer() instanceof ServerPlayer serverPlayer)
+        {
+            SkillActivationNotifier.notifyExtraDrop(serverPlayer, bonusSkillName, notificationStack);
+        } else
+        {
+            SkillActivationNotifier.notifyExtraDrop(actionData, notificationStack);
+        }
 
         return new ActionResult();
+    }
+
+    /** 보유한 보너스 계열 최고 단계 파워업의 표시 이름을 돌려준다. 없으면 null이다. */
+    private Component getBonusPowerupName(JobsPlayer jobsPlayer)
+    {
+        int tier = getHighestActiveTier(jobsPlayer, this.bonusPowerupLine);
+        if (tier <= 0)
+        {
+            return null;
+        }
+
+        Identifier powerupLocation = Identifier.fromNamespaceAndPath(
+                this.bonusPowerupLine.getNamespace(),
+                this.bonusPowerupLine.getPath() + "_" + TIER_SUFFIXES[tier - 1]);
+        PowerupInstance powerupInstance = PowerupInstance.of(powerupLocation);
+        if (powerupInstance == null)
+        {
+            return null;
+        }
+        return powerupInstance.getName();
     }
 
     private boolean shouldDouble(JobsPlayer jobsPlayer, ActionData actionData)

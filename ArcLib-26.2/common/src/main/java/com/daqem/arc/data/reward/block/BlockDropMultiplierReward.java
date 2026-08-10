@@ -61,7 +61,7 @@ public class BlockDropMultiplierReward extends AbstractReward {
                     }
                 }
                 if (!addedDrops.isEmpty()) {
-                    SkillActivationNotifier.notifyExtraDrop(actionData.getPlayer(), addedDrops);
+                    SkillActivationNotifier.notifyExtraDrop(actionData, addedDrops);
                 }
             }
         }

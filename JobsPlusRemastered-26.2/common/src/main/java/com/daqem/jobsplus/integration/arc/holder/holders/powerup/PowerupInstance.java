@@ -50,6 +50,12 @@ public class PowerupInstance extends AbstractActionHolder
         return JobsPlus.translatable("powerup." + location.getNamespace() + "." + location.getPath().replace('/', '.') + ".name");
     }
 
+    @Override
+    public MutableComponent getDisplayName()
+    {
+        return getName();
+    }
+
     public MutableComponent getDescription()
     {
         return JobsPlus.translatable("powerup." + location.getNamespace() + "." + location.getPath().replace('/', '.') + ".description");

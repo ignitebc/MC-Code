@@ -37,7 +37,7 @@ public class PreserveBoneMealReward extends AbstractReward
             ItemStack refundedBoneMeal = new ItemStack(Items.BONE_MEAL);
             ItemStack notificationStack = refundedBoneMeal.copy();
             PlayerItemDelivery.giveOrDrop(serverPlayer, refundedBoneMeal);
-            SkillActivationNotifier.notifyExtraDrop(serverPlayer, notificationStack);
+            SkillActivationNotifier.notifyExtraDrop(actionData, notificationStack);
         }
         return new ActionResult();
     }

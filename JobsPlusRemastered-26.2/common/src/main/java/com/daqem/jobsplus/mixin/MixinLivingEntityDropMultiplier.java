@@ -2,6 +2,7 @@ package com.daqem.jobsplus.mixin;
 
 import com.daqem.jobsplus.accessor.DropMultiplierAccessor;
 import com.daqem.arc.player.SkillActivationNotifier;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -29,6 +30,9 @@ public abstract class MixinLivingEntityDropMultiplier implements DropMultiplierA
     @Unique
     private UUID jobsplus$dropRewardPlayer;
 
+    @Unique
+    private Component jobsplus$dropSkillName;
+
     @Override
     public int jobsplus$getDropMultiplier() {
         return jobsplus$dropMultiplier;
@@ -50,9 +54,20 @@ public abstract class MixinLivingEntityDropMultiplier implements DropMultiplierA
     }
 
     @Override
+    public Component jobsplus$getDropSkillName() {
+        return this.jobsplus$dropSkillName;
+    }
+
+    @Override
+    public void jobsplus$setDropSkillName(Component skillName) {
+        this.jobsplus$dropSkillName = skillName;
+    }
+
+    @Override
     public void jobsplus$clearDropMultiplier() {
         this.jobsplus$dropMultiplier = 1;
         this.jobsplus$dropRewardPlayer = null;
+        this.jobsplus$dropSkillName = null;
     }
 
     /** 최종 드롭 생성 오버로드 한 곳에서만 배수를 적용해 위임 과정의 중복 적용을 막습니다. */
@@ -86,7 +101,7 @@ public abstract class MixinLivingEntityDropMultiplier implements DropMultiplierA
                         .getPlayer(this.jobsplus$dropRewardPlayer);
                 if (player != null) {
                     SkillActivationNotifier.notifyExtraDrop(
-                            player, original.copyWithCount(extraCount));
+                            player, this.jobsplus$dropSkillName, original.copyWithCount(extraCount));
                 }
             }
         }

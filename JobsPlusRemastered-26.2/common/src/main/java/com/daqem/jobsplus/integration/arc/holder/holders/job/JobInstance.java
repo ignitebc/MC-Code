@@ -52,6 +52,12 @@ public class JobInstance extends AbstractActionHolder
         return JobsPlus.translatable("job." + location.getNamespace() + "." + location.getPath() + ".name");
     }
 
+    @Override
+    public MutableComponent getDisplayName()
+    {
+        return getName();
+    }
+
     public MutableComponent getDescription()
     {
         return JobsPlus.translatable("job." + location.getNamespace() + "." + location.getPath() + ".description");

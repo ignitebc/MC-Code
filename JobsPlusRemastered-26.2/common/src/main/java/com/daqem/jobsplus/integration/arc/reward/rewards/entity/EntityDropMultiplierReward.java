@@ -7,6 +7,7 @@ import com.daqem.arc.api.reward.AbstractReward;
 import com.daqem.arc.api.reward.IReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
+import com.daqem.arc.player.SkillActivationNotifier;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
 import com.daqem.jobsplus.accessor.DropMultiplierAccessor;
 import com.google.gson.JsonObject;
@@ -43,6 +44,7 @@ public class EntityDropMultiplierReward extends AbstractReward
             DropMultiplierAccessor accessor = (DropMultiplierAccessor) living;
             accessor.jobsplus$setDropMultiplier(this.multiplier);
             accessor.jobsplus$setDropRewardPlayer(serverPlayer.getUUID());
+            accessor.jobsplus$setDropSkillName(SkillActivationNotifier.resolveSkillName(actionData));
         }
 
         return new ActionResult();

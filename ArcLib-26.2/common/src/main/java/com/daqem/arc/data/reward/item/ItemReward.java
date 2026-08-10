@@ -40,7 +40,7 @@ public class ItemReward extends AbstractReward {
             ItemStack reward = itemTemplate.create();
             ItemStack notificationStack = reward.copy();
             PlayerItemDelivery.giveOrDrop(serverPlayer, reward);
-            SkillActivationNotifier.notifyExtraDrop(serverPlayer, notificationStack);
+            SkillActivationNotifier.notifyExtraDrop(actionData, notificationStack);
         }
         return new ActionResult();
     }

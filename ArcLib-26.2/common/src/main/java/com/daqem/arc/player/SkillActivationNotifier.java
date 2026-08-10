@@ -1,11 +1,14 @@
 package com.daqem.arc.player;
 
+import com.daqem.arc.api.action.data.ActionData;
+import com.daqem.arc.api.action.holder.IActionHolder;
 import com.daqem.arc.api.player.ArcPlayer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,20 +18,55 @@ public final class SkillActivationNotifier {
     private SkillActivationNotifier() {
     }
 
-    public static void notifyExtraDrop(ArcPlayer player, ItemStack itemStack) {
-        if (player.arc$getPlayer() instanceof ServerPlayer serverPlayer) {
-            notifyExtraDrop(serverPlayer, List.of(itemStack));
+    /**
+     * 액션을 발동시킨 홀더(파워업·직업 등)의 표시 이름을 돌려준다.
+     * 이름이 없으면 일반 문구("스킬")로 대체해 항상 표시 가능한 이름을 보장한다.
+     */
+    public static Component resolveSkillName(ActionData actionData) {
+        IActionHolder sourceActionHolder = actionData.getSourceActionHolder();
+        if (sourceActionHolder != null) {
+            Component displayName = sourceActionHolder.getDisplayName();
+            if (displayName != null) {
+                return displayName;
+            }
+        }
+        return Component.translatable("arc.skill.unknown_skill");
+    }
+
+    public static void notifyExtraDrop(ActionData actionData, ItemStack itemStack) {
+        notifyExtraDrop(actionData, List.of(itemStack));
+    }
+
+    public static void notifyExtraDrop(ActionData actionData, List<ItemStack> itemStacks) {
+        if (actionData.getPlayer().arc$getPlayer() instanceof ServerPlayer serverPlayer) {
+            notifyExtraDrop(serverPlayer, resolveSkillName(actionData), itemStacks);
         }
     }
 
-    public static void notifyExtraDrop(ArcPlayer player, List<ItemStack> itemStacks) {
-        if (player.arc$getPlayer() instanceof ServerPlayer serverPlayer) {
-            notifyExtraDrop(serverPlayer, itemStacks);
-        }
+    public static void notifyExtraDrop(ServerPlayer player, @Nullable Component skillName, ItemStack itemStack) {
+        notifyExtraDrop(player, skillName, List.of(itemStack));
     }
 
-    public static void notifyExtraDrop(ServerPlayer player, ItemStack itemStack) {
-        notifyExtraDrop(player, List.of(itemStack));
+    public static void notifyExtraDrop(ServerPlayer player, @Nullable Component skillName, List<ItemStack> itemStacks) {
+        List<ItemStack> mergedStacks = mergeStacks(itemStacks);
+        if (mergedStacks.isEmpty()) {
+            return;
+        }
+
+        MutableComponent items = Component.empty();
+        for (int index = 0; index < mergedStacks.size(); index++) {
+            ItemStack stack = mergedStacks.get(index);
+            if (index > 0) {
+                items.append(Component.literal(", "));
+            }
+            items.append(Component.literal("'"))
+                    .append(stack.getHoverName())
+                    .append(Component.literal("' x" + stack.getCount()));
+        }
+
+        Component resolvedSkillName = skillName != null ? skillName : Component.translatable("arc.skill.unknown_skill");
+        player.sendSystemMessage(Component.translatable("arc.skill.extra_drop", resolvedSkillName, items)
+                .withStyle(ChatFormatting.GOLD));
     }
 
     /**
@@ -43,26 +81,6 @@ public final class SkillActivationNotifier {
 
     public static void notifySkillActivated(ServerPlayer player, Component message) {
         player.sendSystemMessage(message.copy().withStyle(ChatFormatting.GOLD));
-    }
-
-    public static void notifyExtraDrop(ServerPlayer player, List<ItemStack> itemStacks) {
-        List<ItemStack> mergedStacks = mergeStacks(itemStacks);
-        if (mergedStacks.isEmpty()) {
-            return;
-        }
-
-        MutableComponent items = Component.empty();
-        for (int index = 0; index < mergedStacks.size(); index++) {
-            ItemStack stack = mergedStacks.get(index);
-            if (index > 0) {
-                items.append(Component.literal(", "));
-            }
-            items.append(stack.getHoverName())
-                    .append(Component.literal(" x" + stack.getCount()));
-        }
-
-        player.sendSystemMessage(Component.translatable("arc.skill.extra_drop", items)
-                .withStyle(ChatFormatting.GOLD));
     }
 
     private static List<ItemStack> mergeStacks(List<ItemStack> itemStacks) {

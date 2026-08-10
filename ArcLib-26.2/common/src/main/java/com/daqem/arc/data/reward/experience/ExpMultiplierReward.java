@@ -5,6 +5,7 @@ import com.daqem.arc.api.action.data.type.ActionDataType;
 import com.daqem.arc.api.action.result.ActionResult;
 import com.daqem.arc.api.player.ArcPlayer;
 import com.daqem.arc.api.reward.AbstractReward;
+import com.daqem.arc.player.SkillActivationNotifier;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
@@ -12,6 +13,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.level.Level;
@@ -51,8 +53,13 @@ public class ExpMultiplierReward extends AbstractReward {
             if (exp != null && exp > 0 && blockPos != null) {
                 int bonusExp = collectWholeBonusExp(actionData.getPlayer(), exp);
                 if (bonusExp > 0) {
-                    level.addFreshEntity(
+                    boolean spawned = level.addFreshEntity(
                             new ExperienceOrb(level, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, bonusExp));
+                    if (spawned && actionData.getPlayer().arc$getPlayer() instanceof ServerPlayer serverPlayer) {
+                        SkillActivationNotifier.notifySkillActivated(serverPlayer,
+                                Component.translatable("arc.skill.extra_exp",
+                                        SkillActivationNotifier.resolveSkillName(actionData), bonusExp));
+                    }
                 }
             }
         }
