@@ -45,6 +45,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
+
 /**
  * 청크 소유권 구매와 보호를 담당하는 이벤트 묶음.
  */
@@ -364,6 +366,11 @@ public class ChunkProtectionEvents {
             return InteractionResult.FAIL;
         }
 
+        if (hasAdjacentChunkOwnedByOther(level, chunkPos, player.getUUID())) {
+            player.sendSystemMessage(ItemRestrictions.translatable("chunk.claim.adjacent_other"));
+            return InteractionResult.FAIL;
+        }
+
         // 공용 상자가 놓인 청크를 사서 사유화하는 것을 막는다.
         if (hasContainerBlock(level, chunkPos)) {
             player.sendSystemMessage(ItemRestrictions.translatable("chunk.claim.container_present"));
@@ -390,5 +397,18 @@ public class ChunkProtectionEvents {
                 chunkPos.x(),
                 chunkPos.z()));
         return InteractionResult.SUCCESS;
+    }
+
+    private static boolean hasAdjacentChunkOwnedByOther(Level level, ChunkPos chunkPos, UUID playerId) {
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            ChunkPos adjacentChunkPos = new ChunkPos(
+                    chunkPos.x() + direction.getStepX(),
+                    chunkPos.z() + direction.getStepZ());
+            ChunkOwnership.Owner adjacentOwner = ChunkOwnership.getOwner(level, adjacentChunkPos);
+            if (adjacentOwner != null && !adjacentOwner.uuid().equals(playerId)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
