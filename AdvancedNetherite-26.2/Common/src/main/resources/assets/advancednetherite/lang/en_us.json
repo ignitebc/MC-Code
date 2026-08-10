@@ -143,6 +143,8 @@
   "entity.advancednetherite.sculken_raven_pet": "스컬큰 레이븐 펫",
   "entity.advancednetherite.fairlins_pet": "페어린 펫",
   "entity.advancednetherite.dark_dragon_pet": "암흑드래곤 펫",
+  "entity.advancednetherite.gomi_pet": "꼬미 펫",
+  "entity.advancednetherite.super_gomi_pet": "슈퍼 꼬미 펫",
   "item.advancednetherite.chunk_claim_map": "땅 구입 문서",
   "item.advancednetherite.pet_box.failed": "펫 저장소를 사용할 수 없어 소환에 실패했습니다. 관리자에게 문의해 주세요."
 }

@@ -30,6 +30,10 @@ public final class ModEntityRegistry
         FabricDefaultAttributeRegistry.register(ModEntityTypes.GAZELLE_PET, DialgaPetEntity.createAttributes());
         Registry.register(BuiltInRegistries.ENTITY_TYPE, id("sculken_raven_pet"), ModEntityTypes.SCULKEN_RAVEN_PET);
         FabricDefaultAttributeRegistry.register(ModEntityTypes.SCULKEN_RAVEN_PET, DialgaPetEntity.createAttributes());
+        Registry.register(BuiltInRegistries.ENTITY_TYPE, id("gomi_pet"), ModEntityTypes.GOMI_PET);
+        FabricDefaultAttributeRegistry.register(ModEntityTypes.GOMI_PET, DialgaPetEntity.createAttributes());
+        Registry.register(BuiltInRegistries.ENTITY_TYPE, id("super_gomi_pet"), ModEntityTypes.SUPER_GOMI_PET);
+        FabricDefaultAttributeRegistry.register(ModEntityTypes.SUPER_GOMI_PET, DialgaPetEntity.createAttributes());
     }
 
     private static Identifier id(String name)

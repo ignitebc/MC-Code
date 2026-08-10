@@ -286,7 +286,9 @@ public final class PetManager
                 ModEntityTypes.GAZELLE_PET,
                 ModEntityTypes.FAIRLINS_PET,
                 ModEntityTypes.DARK_DRAGON_PET,
-                ModEntityTypes.SCULKEN_RAVEN_PET);
+                ModEntityTypes.SCULKEN_RAVEN_PET,
+                ModEntityTypes.GOMI_PET,
+                ModEntityTypes.SUPER_GOMI_PET);
         for (EntityType<DialgaPetEntity> petType : petTypes)
         {
             typesById.put(BuiltInRegistries.ENTITY_TYPE.getKey(petType).toString(), petType);

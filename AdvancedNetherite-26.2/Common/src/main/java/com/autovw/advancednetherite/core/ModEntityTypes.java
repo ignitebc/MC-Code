@@ -73,6 +73,24 @@ public final class ModEntityTypes
             .noSave()
             .build(key("sculken_raven_pet"));
 
+    public static final EntityType<DialgaPetEntity> GOMI_PET = EntityType.Builder
+            .of(DialgaPetEntity::new, MobCategory.CREATURE)
+            .sized(0.8F, 1.0F)
+            .clientTrackingRange(10)
+            .fireImmune()
+            .noLootTable()
+            .noSave()
+            .build(key("gomi_pet"));
+
+    public static final EntityType<DialgaPetEntity> SUPER_GOMI_PET = EntityType.Builder
+            .of(DialgaPetEntity::new, MobCategory.CREATURE)
+            .sized(1.2F, 1.2F)
+            .clientTrackingRange(10)
+            .fireImmune()
+            .noLootTable()
+            .noSave()
+            .build(key("super_gomi_pet"));
+
     private ModEntityTypes()
     {
     }
