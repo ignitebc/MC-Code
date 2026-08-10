@@ -7,6 +7,7 @@
   "rewards": [
     {
       "type": "arc:effect_amplifier_addition",
+      "priority": 2,
       "addition": 2,
       "chance": 20,
       "activation_message": "jobsplus.skill.stronger_potions"
