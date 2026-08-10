@@ -11,6 +11,8 @@ import com.daqem.arc.event.triggers.BlockEvents;
 import com.daqem.arc.player.SkillActivationNotifier;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
 import com.google.gson.JsonObject;
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.BlockEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -73,6 +75,15 @@ public class RangeHarvestReward extends AbstractReward
                     if (cropState.getBlock() instanceof CropBlock cropBlock
                             && cropBlock.isMaxAge(cropState))
                     {
+                        // destroyBlock 직접 호출은 파괴 이벤트를 거치지 않아 보호 모드가 개입할 수 없으므로,
+                        // 파괴 전 이벤트를 직접 조회해 보호 구역(타인 클레임 등)의 작물은 범위 수확에서 제외한다.
+                        EventResult breakResult = BlockEvent.BREAK.invoker()
+                                .breakBlock(serverLevel, cropPos, cropState, serverPlayer);
+                        if (breakResult.isFalse())
+                        {
+                            continue;
+                        }
+
                         BlockEvents.onHarvestCrop(arcServerPlayer, cropState, cropPos, serverLevel);
                         serverLevel.destroyBlock(cropPos, true, serverPlayer, 512);
                         harvestedCount++;
