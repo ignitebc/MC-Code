@@ -17,9 +17,9 @@ import net.minecraft.world.level.Level;
 
 public class ExpMultiplierReward extends AbstractReward {
 
-    private final int multiplier;
+    private final double multiplier;
 
-    public ExpMultiplierReward(double chance, int priority, int multiplier) {
+    public ExpMultiplierReward(double chance, int priority, double multiplier) {
         super(chance, priority);
         this.multiplier = multiplier;
     }
@@ -37,11 +37,12 @@ public class ExpMultiplierReward extends AbstractReward {
         }
         if (level != null) {
             Integer exp = actionData.getData(ActionDataType.EXP_DROP);
-            if (exp != null && (exp * multiplier) - exp > 0) {
+            if (exp != null) {
+                int bonusExp = (int) Math.round(exp * multiplier) - exp;
                 BlockPos blockPos = actionData.getData(ActionDataType.BLOCK_POSITION);
-                if (blockPos != null) {
+                if (bonusExp > 0 && blockPos != null) {
                     level.addFreshEntity(
-                            new ExperienceOrb(level, blockPos.getX(), blockPos.getY(), blockPos.getZ(), (exp * multiplier) - exp));
+                            new ExperienceOrb(level, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, bonusExp));
                 }
             }
         }
@@ -53,7 +54,7 @@ public class ExpMultiplierReward extends AbstractReward {
         return RewardType.EXP_MULTIPLIER;
     }
 
-    public int getMultiplier() {
+    public double getMultiplier() {
         return multiplier;
     }
 
@@ -64,7 +65,7 @@ public class ExpMultiplierReward extends AbstractReward {
             return new ExpMultiplierReward(
                     chance,
                     priority,
-                    GsonHelper.getAsInt(jsonObject, "multiplier"));
+                    GsonHelper.getAsDouble(jsonObject, "multiplier"));
         }
 
         @Override
@@ -72,13 +73,13 @@ public class ExpMultiplierReward extends AbstractReward {
             return new ExpMultiplierReward(
                     chance,
                     priority,
-                    friendlyByteBuf.readInt());
+                    friendlyByteBuf.readDouble());
         }
 
         @Override
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, ExpMultiplierReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
-            friendlyByteBuf.writeInt(type.multiplier);
+            friendlyByteBuf.writeDouble(type.multiplier);
         }
     }
 }
