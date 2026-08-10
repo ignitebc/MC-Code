@@ -21,6 +21,9 @@
       ]
     },
     {
+      "type": "arc:not_in_block_pos_cache"
+    },
+    {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:digger/gold_block_digger_iv"
     },
