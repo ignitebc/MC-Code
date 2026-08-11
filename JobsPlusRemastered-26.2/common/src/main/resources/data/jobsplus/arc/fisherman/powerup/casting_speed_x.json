@@ -1,0 +1,14 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:fisherman/casting_speed_x"
+  },
+  "type": "arc:on_fished_up_item",
+  "rewards": [
+    {
+      "type": "arc:fishing_wait_time_multiplier",
+      "multiplier": 0.5
+    }
+  ],
+  "conditions": []
+}

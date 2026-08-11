@@ -1,0 +1,9 @@
+{
+  "job": "jobsplus:fisherman",
+  "parent": "jobsplus:fisherman/casting_speed_vii",
+  "icon": {
+    "id": "minecraft:fishing_rod"
+  },
+  "price": 24,
+  "required_level": 35
+}
