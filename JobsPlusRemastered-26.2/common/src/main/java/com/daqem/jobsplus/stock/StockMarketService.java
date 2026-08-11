@@ -20,10 +20,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -94,11 +95,20 @@ public final class StockMarketService
     {
         // 분 경계 직전에 진입 조회가 시작되면 다음 분 조회와 겹칠 수 있다.
         // 단일 스레드면 새 분 조회가 이전 조회를 기다리게 되므로 여유분을 둔다.
-        this.refreshExecutor = Executors.newFixedThreadPool(2, runnable -> {
-            Thread thread = new Thread(runnable, "JobsPlus-StockMarket");
-            thread.setDaemon(true);
-            return thread;
-        });
+        // 대기 큐는 1개로 제한한다. 실행 중 2개에 대기 1개를 넘게 쌓일 이유가 없고,
+        // 큐가 가득 차면 가장 오래된 대기 조회를 버려 최신 분 조회가 밀리지 않게 한다.
+        // 버려진 분은 다음 분 갱신에서 자연히 복구된다. 조회가 없는 동안 유휴 스레드는 회수한다.
+        ThreadPoolExecutor boundedExecutor = new ThreadPoolExecutor(
+                2, 2, 60L, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(1),
+                runnable -> {
+                    Thread thread = new Thread(runnable, "JobsPlus-StockMarket");
+                    thread.setDaemon(true);
+                    return thread;
+                },
+                new ThreadPoolExecutor.DiscardOldestPolicy());
+        boundedExecutor.allowCoreThreadTimeOut(true);
+        this.refreshExecutor = boundedExecutor;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(8))
                 .build();
