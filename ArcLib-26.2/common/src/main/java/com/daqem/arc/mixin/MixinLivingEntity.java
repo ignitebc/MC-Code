@@ -4,7 +4,6 @@ import com.daqem.arc.api.action.result.ActionResult;
 import com.daqem.arc.api.player.ArcPlayer;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.event.triggers.PlayerEvents;
-import com.daqem.arc.player.SwimSpeedMultiplierResolver;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -55,6 +54,7 @@ public abstract class MixinLivingEntity extends Entity
     /**
      * 물속 이동 가속에 수영 속도 배율을 곱한다. 이동은 클라이언트가 계산하므로
      * 서버·클라이언트 공통으로 주입되며, 배율 계산도 양쪽에서 같은 방식으로 이뤄진다.
+     * 매 수영 틱마다 호출되므로 배율은 홀더 구성이 바뀔 때만 다시 계산되는 캐시 값을 쓴다.
      */
     @ModifyArg(
             method = "travelInWater(Lnet/minecraft/world/phys/Vec3;DZD)V",
@@ -66,7 +66,7 @@ public abstract class MixinLivingEntity extends Entity
     {
         if (this instanceof ArcPlayer arcPlayer)
         {
-            return speed * SwimSpeedMultiplierResolver.getMultiplier(arcPlayer);
+            return speed * arcPlayer.arc$getSwimSpeedMultiplier();
         }
         return speed;
     }

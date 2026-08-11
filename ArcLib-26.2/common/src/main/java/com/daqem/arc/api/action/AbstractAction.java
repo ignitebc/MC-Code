@@ -87,13 +87,22 @@ public abstract class AbstractAction implements IAction {
     }
 
     public ActionResult perform(ActionData actionData) {
-        IActionHolder sourceActionHolder = actionData.getPlayer().arc$getActionHolders().stream()
-        .filter(actionHolder -> actionHolder.getType() == this.getActionHolderType()
-                && actionHolder.getLocation().equals(this.getActionHolderLocation()))
-        .findFirst()
-        .orElseThrow(() -> new IllegalStateException("Action holder not found for action " + this.getType().getLocation() + " and action holder " + this.getActionHolderLocation()));
+        // sendToAction() 은 캐시에서 액션과 함께 찾은 소스 홀더를 미리 지정해 주므로
+        // 매 액션마다 홀더 목록을 복사해 다시 찾을 필요가 없다. 외부에서 직접 호출한
+        // 경우에만 기존 방식으로 조회한다.
+        IActionHolder sourceActionHolder = actionData.getSourceActionHolder();
+        boolean holderMatchesAction = sourceActionHolder != null
+                && sourceActionHolder.getType() == this.getActionHolderType()
+                && sourceActionHolder.getLocation().equals(this.getActionHolderLocation());
+        if (!holderMatchesAction) {
+            sourceActionHolder = actionData.getPlayer().arc$getActionHolders().stream()
+                    .filter(actionHolder -> actionHolder.getType() == this.getActionHolderType()
+                            && actionHolder.getLocation().equals(this.getActionHolderLocation()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Action holder not found for action " + this.getType().getLocation() + " and action holder " + this.getActionHolderLocation()));
 
-        actionData.setSourceActionHolder(sourceActionHolder);
+            actionData.setSourceActionHolder(sourceActionHolder);
+        }
 
         ActionResult result = new ActionResult();
 

@@ -1,6 +1,8 @@
 package com.daqem.arc.api.player;
 
 import com.daqem.arc.api.action.holder.IActionHolder;
+import com.daqem.arc.api.action.type.IActionType;
+import com.daqem.arc.player.PlayerActionCache;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -9,6 +11,10 @@ import java.util.List;
 public interface ArcPlayer {
 
     List<IActionHolder> arc$getActionHolders();
+
+    List<PlayerActionCache.ActionEntry> arc$getActionsOfType(IActionType<?> actionType);
+
+    float arc$getSwimSpeedMultiplier();
 
     void arc$addActionHolder(IActionHolder actionHolder);
 

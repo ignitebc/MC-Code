@@ -5,6 +5,7 @@ import com.daqem.arc.api.action.data.type.ActionDataType;
 import com.daqem.arc.api.action.holder.IActionHolder;
 import com.daqem.arc.api.action.result.ActionResult;
 import com.daqem.arc.api.action.type.ActionType;
+import com.daqem.arc.api.action.type.IActionType;
 import com.daqem.arc.api.condition.ICondition;
 import com.daqem.arc.api.player.ArcPlayer;
 import com.daqem.arc.data.PlayerActionHolderManager;
@@ -15,6 +16,7 @@ import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.networking.ClientboundSyncPlayerActionHoldersPacket;
 import com.daqem.arc.player.BlockPosCache;
 import com.daqem.arc.player.CachedBlockPos;
+import com.daqem.arc.player.PlayerActionCache;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
 import dev.architectury.networking.NetworkManager;
@@ -70,6 +72,8 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     @Unique
     private Map<Identifier, IActionHolder> arc$actionHolders = new HashMap<>();
     @Unique
+    private final PlayerActionCache arc$actionCache = new PlayerActionCache();
+    @Unique
     private Map<ICondition, Integer> arc$lastDistanceInCm = new HashMap<>();
     @Unique
     private Map<ICondition, Integer> arc$lastRemainderInCm = new HashMap<>();
@@ -120,9 +124,36 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     }
 
     @Override
+    public List<PlayerActionCache.ActionEntry> arc$getActionsOfType(IActionType<?> actionType) {
+        arc$ensureActionCacheUpToDate();
+        return this.arc$actionCache.getActionsOfType(actionType);
+    }
+
+    @Override
+    public float arc$getSwimSpeedMultiplier() {
+        arc$ensureActionCacheUpToDate();
+        return this.arc$actionCache.getSwimSpeedMultiplier();
+    }
+
+    @Unique
+    private void arc$ensureActionCacheUpToDate() {
+        if (this.arc$actionCache.isUpToDate()) {
+            return;
+        }
+        // 데이터팩 reload 는 액션과 condition 객체를 새로 파싱하므로, 이전 condition 이
+        // key 인 거리 캐시는 다시 조회될 수 없는 항목만 남는다. 남겨두면 누수가 된다.
+        if (this.arc$actionCache.isDataGenerationOutdated()) {
+            this.arc$lastDistanceInCm.clear();
+            this.arc$lastRemainderInCm.clear();
+        }
+        this.arc$actionCache.rebuild(this.arc$actionHolders.values());
+    }
+
+    @Override
     public void arc$addActionHolder(IActionHolder actionHolder) {
         if (actionHolder == null) return;
         this.arc$actionHolders.put(actionHolder.getLocation(), actionHolder);
+        this.arc$actionCache.invalidate();
         arc$syncActionHoldersWithClient();
     }
 
@@ -137,11 +168,13 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     @Override
     public void arc$removeActionHolder(IActionHolder actionHolder) {
         this.arc$actionHolders.remove(actionHolder.getLocation());
+        this.arc$actionCache.invalidate();
     }
 
     @Override
     public void arc$clearActionHolders() {
         this.arc$actionHolders.clear();
+        this.arc$actionCache.invalidate();
     }
 
     @Override
@@ -473,6 +506,7 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     public void restoreFrom(ServerPlayer oldPlayer, boolean alive, CallbackInfo ci) {
         if (oldPlayer instanceof ArcServerPlayer arcServerPlayer) {
             this.arc$actionHolders = arcServerPlayer.arc$getActionHoldersMap();
+            this.arc$actionCache.invalidate();
             this.arc$lastDistanceInCm = arcServerPlayer.arc$getLastDistancesInCm();
             this.arc$lastRemainderInCm = arcServerPlayer.arc$getLastRemaindersInCm();
             this.arc$swimmingDistanceInCm = arcServerPlayer.arc$getSwimmingDistanceInCm();

@@ -1,7 +1,9 @@
 package com.daqem.arc.mixin.client;
 
 import com.daqem.arc.api.action.holder.IActionHolder;
+import com.daqem.arc.api.action.type.IActionType;
 import com.daqem.arc.api.player.ArcClientPlayer;
+import com.daqem.arc.player.PlayerActionCache;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -23,6 +25,8 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer implements A
 
     @Unique
     private final List<IActionHolder> actionHolders = new ArrayList<>();
+    @Unique
+    private final PlayerActionCache arc$actionCache = new PlayerActionCache();
 
     public MixinLocalPlayer(ClientLevel clientLevel, GameProfile gameProfile) {
         super(clientLevel, gameProfile);
@@ -34,9 +38,30 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer implements A
     }
 
     @Override
+    public List<PlayerActionCache.ActionEntry> arc$getActionsOfType(IActionType<?> actionType) {
+        arc$ensureActionCacheUpToDate();
+        return this.arc$actionCache.getActionsOfType(actionType);
+    }
+
+    @Override
+    public float arc$getSwimSpeedMultiplier() {
+        arc$ensureActionCacheUpToDate();
+        return this.arc$actionCache.getSwimSpeedMultiplier();
+    }
+
+    @Unique
+    private void arc$ensureActionCacheUpToDate() {
+        if (this.arc$actionCache.isUpToDate()) {
+            return;
+        }
+        this.arc$actionCache.rebuild(this.actionHolders);
+    }
+
+    @Override
     public void arc$addActionHolder(IActionHolder actionHolder) {
         if (actionHolder == null) return;
         actionHolders.add(actionHolder);
+        arc$actionCache.invalidate();
     }
 
     @Override
@@ -44,16 +69,19 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer implements A
         if (actionHolders == null) return;
         actionHolders.removeIf(Objects::isNull);
         this.actionHolders.addAll(actionHolders);
+        arc$actionCache.invalidate();
     }
 
     @Override
     public void arc$removeActionHolder(IActionHolder actionHolder) {
         actionHolders.remove(actionHolder);
+        arc$actionCache.invalidate();
     }
 
     @Override
     public void arc$clearActionHolders() {
         actionHolders.clear();
+        arc$actionCache.invalidate();
     }
 
     @Override

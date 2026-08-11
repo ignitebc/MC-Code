@@ -7,6 +7,7 @@ import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,9 @@ public class ActionHolderManager {
 
     private final Map<IActionHolderType<?>, Map<Identifier, IAction>> actions = new HashMap<>();
     private final Map<IActionHolderType<?>, Map<Identifier, IActionHolder>> actionHolders = new HashMap<>();
+    // 데이터팩 reload 는 플레이어가 참조 중인 홀더의 액션 목록을 제자리에서 교체하므로,
+    // 플레이어별 액션 캐시가 세대 번호 비교만으로 이를 감지할 수 있게 한다.
+    private final AtomicInteger dataGeneration = new AtomicInteger();
 
     private static ActionHolderManager instance;
 
@@ -36,6 +40,7 @@ public class ActionHolderManager {
             actionHolder.clearActions();
             actionHolder.addActions(actionsForHolder);
         }
+        dataGeneration.incrementAndGet();
     }
 
     public void registerActions(List<IAction> actions) {
@@ -50,15 +55,22 @@ public class ActionHolderManager {
                     holder.addActions(actionHolderActions);
                 })
         );
+        dataGeneration.incrementAndGet();
     }
 
     public void clearAllActionHoldersForType(IActionHolderType<?> type) {
         actionHolders.remove(type);
+        dataGeneration.incrementAndGet();
     }
 
     public void clearAllActions() {
         actions.clear();
         actionHolders.values().forEach(holderMap -> holderMap.values().forEach(IActionHolder::clearActions));
+        dataGeneration.incrementAndGet();
+    }
+
+    public int getDataGeneration() {
+        return dataGeneration.get();
     }
 
     public List<IActionHolder> getActionHolders(List<Identifier> actionHolderLocations) {

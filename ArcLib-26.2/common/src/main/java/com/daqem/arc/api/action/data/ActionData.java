@@ -1,6 +1,5 @@
 package com.daqem.arc.api.action.data;
 
-import com.daqem.arc.api.action.IAction;
 import com.daqem.arc.api.action.data.type.IActionDataType;
 import com.daqem.arc.api.action.holder.IActionHolder;
 import com.daqem.arc.api.action.type.ActionType;
@@ -8,13 +7,12 @@ import com.daqem.arc.api.action.type.IActionType;
 import com.daqem.arc.api.player.ArcPlayer;
 import com.daqem.arc.api.action.result.ActionResult;
 import com.daqem.arc.event.events.ActionEvent;
+import com.daqem.arc.player.PlayerActionCache;
 import dev.architectury.event.EventResult;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class ActionData implements IActionData {
 
@@ -56,17 +54,15 @@ public class ActionData implements IActionData {
             return new ActionResult().withCancelAction(true);
         }
 
-        List<IAction> allPlayerActions = getPlayerActions();
-        List<IAction> correctPlayerActions = allPlayerActions.stream()
-                .filter(this::isTypeOfCurrentAction)
-                .toList();
-
-        return correctPlayerActions.stream()
-                .sorted((action1, action2) -> Integer.compare(
-                        getHighestRewardPriority(action2),
-                        getHighestRewardPriority(action1)))
-                .map(this::performCurrentAction)
-                .reduce(new ActionResult(), ActionResult::merge);
+        // 이동처럼 매 틱 호출되는 경로이므로 매번 전체 액션을 모아 필터·정렬하는 대신
+        // 타입별로 정렬해 둔 플레이어 캐시를 그대로 사용한다.
+        List<PlayerActionCache.ActionEntry> actionEntries = this.player.arc$getActionsOfType(this.actionType);
+        ActionResult mergedResult = new ActionResult();
+        for (PlayerActionCache.ActionEntry actionEntry : actionEntries) {
+            this.setSourceActionHolder(actionEntry.holder());
+            mergedResult = mergedResult.merge(actionEntry.action().perform(this));
+        }
+        return mergedResult;
     }
 
     @Override
@@ -76,27 +72,5 @@ public class ActionData implements IActionData {
 
     public void setSourceActionHolder(IActionHolder sourceActionHolder) {
         this.sourceActionHolder = sourceActionHolder;
-    }
-
-    private List<IAction> getPlayerActions() {
-        return this.player.arc$getActionHolders().stream()
-                .filter(Objects::nonNull)
-                .flatMap(actionHolder -> actionHolder.getActions().stream())
-                .collect(Collectors.toList());
-    }
-
-    private boolean isTypeOfCurrentAction(IAction action) {
-        return action.getType() == this.actionType;
-    }
-
-    private int getHighestRewardPriority(IAction action) {
-        return action.getRewards().stream()
-                .mapToInt(reward -> reward.getPriority())
-                .max()
-                .orElse(0);
-    }
-
-    private ActionResult performCurrentAction(IAction action) {
-        return action.perform(this);
     }
 }
