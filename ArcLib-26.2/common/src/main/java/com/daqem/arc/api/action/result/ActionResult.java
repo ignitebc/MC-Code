@@ -11,10 +11,19 @@ public class ActionResult
     public ActionResult merge(ActionResult other)
     {
         this.cancelAction = this.cancelAction || other.cancelAction;
-        this.destroySpeedModifier = this.destroySpeedModifier * other.destroySpeedModifier;
-        this.attackSpeedModifier = this.attackSpeedModifier * other.attackSpeedModifier;
-        this.damageModifier = this.damageModifier * other.damageModifier;
+        this.destroySpeedModifier = combineAdditively(this.destroySpeedModifier, other.destroySpeedModifier);
+        this.attackSpeedModifier = combineAdditively(this.attackSpeedModifier, other.attackSpeedModifier);
+        this.damageModifier = combineAdditively(this.damageModifier, other.damageModifier);
         return this;
+    }
+
+    /**
+     * 스킬 배율 간 중첩은 합연산으로 통일한다. 배율에서 기준값 1을 뺀 증가분끼리 더하므로
+     * 1.2와 1.3을 합치면 1.5가 되고, 한쪽이 기본값 1.0이면 다른 쪽 값이 그대로 유지된다.
+     */
+    private static float combineAdditively(float firstModifier, float secondModifier)
+    {
+        return firstModifier + secondModifier - 1.0F;
     }
 
     public boolean shouldCancelAction()
