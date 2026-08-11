@@ -16,6 +16,7 @@ import com.daqem.arc.data.reward.entity.EntityPoisonReward;
 import com.daqem.arc.data.reward.entity.MultipleArrowsReward;
 import com.daqem.arc.data.reward.experience.ExpMultiplierReward;
 import com.daqem.arc.data.reward.experience.ExpReward;
+import com.daqem.arc.data.reward.item.CaughtFishMultiplierReward;
 import com.daqem.arc.data.reward.item.ItemReward;
 import com.daqem.arc.data.reward.player.AttackSpeedMultiplierReward;
 import com.daqem.arc.data.reward.player.BlockInteractionRangeAttributeModifierReward;
@@ -75,6 +76,8 @@ public interface RewardType<T extends IReward> extends IRewardType<T> {
             register(Arc.getId("swim_speed_multiplier"), new SwimSpeedMultiplierReward.Serializer());
     IRewardType<FishingWaitTimeMultiplierReward> FISHING_WAIT_TIME_MULTIPLIER =
             register(Arc.getId("fishing_wait_time_multiplier"), new FishingWaitTimeMultiplierReward.Serializer());
+    IRewardType<CaughtFishMultiplierReward> CAUGHT_FISH_MULTIPLIER =
+            register(Arc.getId("caught_fish_multiplier"), new CaughtFishMultiplierReward.Serializer());
 
     static <T extends IReward> IRewardType<T> register(final Identifier location, final IRewardSerializer<T> serializer) {
         return Registry.register(ArcRegistry.REWARD, location, new RewardType<T>() {
