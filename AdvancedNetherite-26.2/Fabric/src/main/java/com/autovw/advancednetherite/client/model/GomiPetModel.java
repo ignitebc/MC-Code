@@ -13,16 +13,37 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
+/**
+ * 일반 꼬미 모델. 참고 이미지의 SD 비율(머리가 몸보다 큰 복셀 피규어)에 맞춰
+ * 기존 네발동물 비율을 대폭 수정했다.
+ * <p>
+ * 핵심 실루엣: 몸보다 넓은 머리(폭 10.5 vs 몸 7.8), 짧고 통통한 몸(길이 8.5),
+ * 짧고 굵은 다리, 넓은 볼과 돌출 주둥이, 계단형 귀, 등 위로 크게 말린 3단 꼬리,
+ * 흰 줄무늬가 지오메트리로 살아 있는 남색 조끼.
+ * <p>
+ * 텍스처는 256x256을 64px 격자 팔레트로 사용한다. 좌표는 Renderer 스케일 1.0
+ * 기준으로 잡았고 최종 크기는 Renderer 의 scale 에서만 조정한다.
+ */
 public class GomiPetModel extends EntityModel<LivingEntityRenderState>
 {
-    private static final int TEXTURE_SIZE = 512;
+    private static final int TEXTURE_SIZE = 256;
 
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(
             Identifier.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "gomi_pet"),
             "main");
-    public static final ModelLayerLocation SUPER_LAYER_LOCATION = new ModelLayerLocation(
-            Identifier.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "super_gomi_pet"),
-            "main");
+
+    // 64px 격자 팔레트 좌표 (gomi_pet.png 생성 스크립트와 일치해야 함)
+    private static final int TAN_U = 0, TAN_V = 0;
+    private static final int LIGHT_TAN_U = 64, LIGHT_TAN_V = 0;
+    private static final int CREAM_U = 128, CREAM_V = 0;
+    private static final int DARK_TAN_U = 192, DARK_TAN_V = 0;
+    private static final int PALE_CREAM_U = 0, PALE_CREAM_V = 64;
+    private static final int NAVY_U = 64, NAVY_V = 64;
+    private static final int STRIPE_U = 192, STRIPE_V = 64;
+    private static final int BLACK_U = 0, BLACK_V = 128;
+    private static final int WHITE_U = 64, WHITE_V = 128;
+    private static final int PINK_U = 128, PINK_V = 128;
+    private static final int MOUTH_U = 192, MOUTH_V = 128;
 
     private final ModelPart head;
     private final ModelPart frontLeftLeg;
@@ -30,10 +51,8 @@ public class GomiPetModel extends EntityModel<LivingEntityRenderState>
     private final ModelPart backLeftLeg;
     private final ModelPart backRightLeg;
     private final ModelPart tailBase;
+    private final ModelPart tailCurve;
     private final ModelPart tailTip;
-    private final ModelPart leftWing;
-    private final ModelPart rightWing;
-    private final ModelPart cape;
 
     public GomiPetModel(ModelPart root)
     {
@@ -45,322 +64,166 @@ public class GomiPetModel extends EntityModel<LivingEntityRenderState>
         this.backLeftLeg = body.getChild("back_left_leg");
         this.backRightLeg = body.getChild("back_right_leg");
         this.tailBase = body.getChild("tail_base");
-        this.tailTip = this.tailBase.getChild("tail_tip");
-        this.leftWing = body.getChild("left_wing");
-        this.rightWing = body.getChild("right_wing");
-        this.cape = body.getChild("cape");
+        this.tailCurve = this.tailBase.getChild("tail_curve");
+        this.tailTip = this.tailCurve.getChild("tail_tip");
     }
 
     public static LayerDefinition createBodyLayer()
     {
-        return createLayer(false);
-    }
-
-    public static LayerDefinition createSuperBodyLayer()
-    {
-        return createLayer(true);
-    }
-
-    private static LayerDefinition createLayer(boolean superForm)
-    {
         MeshDefinition meshDefinition = new MeshDefinition();
         PartDefinition root = meshDefinition.getRoot();
 
-        int tanU = 0;
-        int tanV = 0;
-        int lightTanU = 128;
-        int lightTanV = 0;
-        int creamU = 256;
-        int creamV = 0;
-        int darkTanU = 384;
-        int darkTanV = 0;
-        int blackU = 256;
-        int blackV = superForm ? 256 : 128;
-        int whiteU = 384;
-        int whiteV = superForm ? 256 : 128;
-        int pinkU = 0;
-        int pinkV = superForm ? 384 : 256;
-
+        // 짧고 통통한 몸통. 다리 바닥이 정확히 지면(y=24)에 닿도록 y 오프셋을 맞췄다.
         PartDefinition body = root.addOrReplaceChild(
                 "body",
                 CubeListBuilder.create()
-                        .texOffs(tanU, tanV).addBox(-4.5F, -5.0F, -5.5F, 9.0F, 8.5F, 11.0F)
-                        .texOffs(lightTanU, lightTanV).addBox(-5.0F, -3.5F, 1.5F, 10.0F, 6.5F, 4.5F)
-                        .texOffs(creamU, creamV).addBox(-3.5F, 1.5F, -5.8F, 7.0F, 2.0F, 2.0F),
-                PartPose.offset(0.0F, 14.0F, 2.0F));
+                        .texOffs(CREAM_U, CREAM_V).addBox(-3.9F, -3.5F, -4.25F, 7.8F, 7.0F, 8.5F),
+                PartPose.offset(0.0F, 15.4F, 0.5F));
 
-        if (superForm)
-        {
-            addSuperSuit(body);
-        }
-        else
-        {
-            addNormalHarness(body);
-        }
-
-        PartDefinition head = body.addOrReplaceChild(
-                "head",
-                CubeListBuilder.create()
-                        .texOffs(tanU, tanV).addBox(-4.8F, -5.8F, -4.0F, 9.6F, 7.5F, 7.0F)
-                        .texOffs(lightTanU, lightTanV).addBox(-3.8F, -6.8F, -3.5F, 7.6F, 1.5F, 6.0F)
-                        .texOffs(lightTanU, lightTanV).addBox(-5.5F, -3.9F, -3.5F, 1.5F, 4.3F, 5.5F)
-                        .texOffs(lightTanU, lightTanV).addBox(4.0F, -3.9F, -3.5F, 1.5F, 4.3F, 5.5F)
-                        .texOffs(creamU, creamV).addBox(-3.8F, 0.2F, -4.0F, 7.6F, 2.3F, 5.5F),
-                PartPose.offset(0.0F, -5.0F, -5.4F));
-
-        addFace(head, tanU, tanV, creamU, creamV, darkTanU, darkTanV, blackU, blackV, whiteU, whiteV, pinkU, pinkV);
-        addLeg(body, "front_left_leg", 2.7F, -3.8F, superForm, tanU, tanV, creamU, creamV);
-        addLeg(body, "front_right_leg", -2.7F, -3.8F, superForm, tanU, tanV, creamU, creamV);
-        addLeg(body, "back_left_leg", 2.7F, 3.6F, superForm, tanU, tanV, creamU, creamV);
-        addLeg(body, "back_right_leg", -2.7F, 3.6F, superForm, tanU, tanV, creamU, creamV);
-        addCurledTail(body, tanU, tanV, lightTanU, lightTanV, creamU, creamV);
-        addHeroParts(body, superForm);
+        addVest(body);
+        addHead(body);
+        addLeg(body, "front_left_leg", 2.2F, -2.6F);
+        addLeg(body, "front_right_leg", -2.2F, -2.6F);
+        addLeg(body, "back_left_leg", 2.2F, 2.6F);
+        addLeg(body, "back_right_leg", -2.2F, 2.6F);
+        addCurledTail(body);
 
         return LayerDefinition.create(meshDefinition, TEXTURE_SIZE, TEXTURE_SIZE);
     }
 
-    private static void addFace(
-            PartDefinition head,
-            int tanU,
-            int tanV,
-            int creamU,
-            int creamV,
-            int darkTanU,
-            int darkTanV,
-            int blackU,
-            int blackV,
-            int whiteU,
-            int whiteV,
-            int pinkU,
-            int pinkV)
+    private static void addVest(PartDefinition body)
     {
-        head.addOrReplaceChild(
-                "left_ear",
+        // 몸 전체를 덮는 외피가 아니라 앞가슴과 몸통 앞쪽 절반을 감싸는 조끼 형태
+        body.addOrReplaceChild(
+                "vest",
                 CubeListBuilder.create()
-                        .texOffs(tanU, tanV).addBox(-1.3F, -3.0F, -0.9F, 2.6F, 3.0F, 2.0F)
-                        .texOffs(darkTanU, darkTanV).addBox(-0.65F, -2.2F, -1.1F, 1.3F, 1.8F, 0.5F),
-                PartPose.offsetAndRotation(3.2F, -6.3F, -0.3F, 0.0F, 0.0F, 0.08F));
-        head.addOrReplaceChild(
-                "right_ear",
+                        .texOffs(NAVY_U, NAVY_V).addBox(-4.05F, -3.0F, -4.55F, 8.1F, 5.4F, 0.9F)
+                        .texOffs(NAVY_U, NAVY_V).addBox(3.85F, -3.2F, -4.3F, 0.9F, 5.6F, 5.6F)
+                        .texOffs(NAVY_U, NAVY_V).addBox(-4.75F, -3.2F, -4.3F, 0.9F, 5.6F, 5.6F)
+                        .texOffs(NAVY_U, NAVY_V).addBox(-4.0F, -3.85F, -4.3F, 8.0F, 0.9F, 5.6F)
+                        .texOffs(NAVY_U, NAVY_V).addBox(-4.0F, 2.9F, -4.3F, 8.0F, 0.9F, 5.6F),
+                PartPose.ZERO);
+
+        // 흰 줄무늬는 텍스처가 아니라 얇은 큐브로 만들어 측면에서도 두께가 보이게 유지
+        body.addOrReplaceChild(
+                "vest_stripes",
                 CubeListBuilder.create()
-                        .texOffs(tanU, tanV).addBox(-1.3F, -3.0F, -0.9F, 2.6F, 3.0F, 2.0F)
-                        .texOffs(darkTanU, darkTanV).addBox(-0.65F, -2.2F, -1.1F, 1.3F, 1.8F, 0.5F),
-                PartPose.offsetAndRotation(-3.2F, -6.3F, -0.3F, 0.0F, 0.0F, -0.08F));
+                        .texOffs(STRIPE_U, STRIPE_V).addBox(-4.15F, -0.9F, -4.75F, 8.3F, 1.3F, 0.5F)
+                        .texOffs(STRIPE_U, STRIPE_V).addBox(-0.7F, -2.9F, -4.8F, 1.4F, 5.4F, 0.5F)
+                        .texOffs(STRIPE_U, STRIPE_V).addBox(-0.7F, -4.0F, -3.8F, 1.4F, 0.45F, 4.8F),
+                PartPose.ZERO);
+        body.addOrReplaceChild(
+                "left_vest_stripe",
+                CubeListBuilder.create().texOffs(STRIPE_U, STRIPE_V)
+                        .addBox(-0.3F, -0.65F, -2.8F, 0.6F, 1.3F, 5.6F),
+                PartPose.offsetAndRotation(4.55F, -0.9F, -1.4F, 0.45F, 0.0F, 0.0F));
+        body.addOrReplaceChild(
+                "right_vest_stripe",
+                CubeListBuilder.create().texOffs(STRIPE_U, STRIPE_V)
+                        .addBox(-0.3F, -0.65F, -2.8F, 0.6F, 1.3F, 5.6F),
+                PartPose.offsetAndRotation(-4.55F, -0.9F, -1.4F, 0.45F, 0.0F, 0.0F));
+    }
+
+    private static void addHead(PartDefinition body)
+    {
+        // 머리가 몸보다 넓은 것이 핵심 실루엣 (머리 폭 10.5 vs 몸 폭 7.8)
+        PartDefinition head = body.addOrReplaceChild(
+                "head",
+                CubeListBuilder.create()
+                        .texOffs(TAN_U, TAN_V).addBox(-5.25F, -7.0F, -6.9F, 10.5F, 8.5F, 7.5F)
+                        .texOffs(CREAM_U, CREAM_V).addBox(-4.5F, -2.0F, -7.2F, 9.0F, 3.3F, 3.5F),
+                PartPose.offset(0.0F, -3.0F, -3.4F));
+
+        addEar(head, "left_ear", 3.3F, 0.08F);
+        addEar(head, "right_ear", -3.3F, -0.08F);
 
         head.addOrReplaceChild(
                 "left_cheek",
-                CubeListBuilder.create().texOffs(creamU, creamV)
-                        .addBox(-1.9F, -1.8F, -0.8F, 3.8F, 3.6F, 1.6F),
-                PartPose.offset(2.7F, -0.4F, -4.2F));
+                CubeListBuilder.create().texOffs(CREAM_U, CREAM_V)
+                        .addBox(-2.3F, -2.1F, -1.0F, 4.6F, 4.2F, 2.0F),
+                PartPose.offset(3.5F, -0.6F, -6.6F));
         head.addOrReplaceChild(
                 "right_cheek",
-                CubeListBuilder.create().texOffs(creamU, creamV)
-                        .addBox(-1.9F, -1.8F, -0.8F, 3.8F, 3.6F, 1.6F),
-                PartPose.offset(-2.7F, -0.4F, -4.2F));
+                CubeListBuilder.create().texOffs(CREAM_U, CREAM_V)
+                        .addBox(-2.3F, -2.1F, -1.0F, 4.6F, 4.2F, 2.0F),
+                PartPose.offset(-3.5F, -0.6F, -6.6F));
+
         head.addOrReplaceChild(
                 "muzzle",
-                CubeListBuilder.create().texOffs(creamU, creamV)
-                        .addBox(-2.1F, -1.4F, -1.6F, 4.2F, 2.8F, 2.5F),
-                PartPose.offset(0.0F, 0.0F, -5.0F));
+                CubeListBuilder.create().texOffs(CREAM_U, CREAM_V)
+                        .addBox(-2.35F, -1.5F, -2.9F, 4.7F, 3.1F, 2.9F),
+                PartPose.offset(0.0F, 0.0F, -6.9F));
+        head.addOrReplaceChild(
+                "nose",
+                CubeListBuilder.create().texOffs(BLACK_U, BLACK_V)
+                        .addBox(-0.9F, -0.6F, -0.65F, 1.8F, 1.2F, 1.1F),
+                PartPose.offset(0.0F, -1.1F, -9.7F));
+        head.addOrReplaceChild(
+                "mouth",
+                CubeListBuilder.create().texOffs(MOUTH_U, MOUTH_V)
+                        .addBox(-1.5F, -0.6F, -0.45F, 3.0F, 1.3F, 0.8F),
+                PartPose.offset(0.0F, 1.3F, -9.6F));
+        head.addOrReplaceChild(
+                "tongue",
+                CubeListBuilder.create().texOffs(PINK_U, PINK_V)
+                        .addBox(-1.05F, -0.4F, -0.55F, 2.1F, 2.1F, 1.0F),
+                PartPose.offset(0.0F, 2.2F, -9.5F));
 
         head.addOrReplaceChild(
                 "left_eye",
                 CubeListBuilder.create()
-                        .texOffs(blackU, blackV).addBox(-0.9F, -0.9F, -0.5F, 1.8F, 1.8F, 0.7F)
-                        .texOffs(whiteU, whiteV).addBox(0.15F, -0.65F, -0.7F, 0.5F, 0.5F, 0.3F),
-                PartPose.offset(2.25F, -2.75F, -4.0F));
+                        .texOffs(BLACK_U, BLACK_V).addBox(-0.9F, -0.9F, -0.45F, 1.8F, 1.8F, 0.8F)
+                        .texOffs(WHITE_U, WHITE_V).addBox(0.12F, -0.62F, -0.62F, 0.5F, 0.5F, 0.3F),
+                PartPose.offset(2.6F, -3.2F, -7.0F));
         head.addOrReplaceChild(
                 "right_eye",
                 CubeListBuilder.create()
-                        .texOffs(blackU, blackV).addBox(-0.9F, -0.9F, -0.5F, 1.8F, 1.8F, 0.7F)
-                        .texOffs(whiteU, whiteV).addBox(-0.65F, -0.65F, -0.7F, 0.5F, 0.5F, 0.3F),
-                PartPose.offset(-2.25F, -2.75F, -4.0F));
+                        .texOffs(BLACK_U, BLACK_V).addBox(-0.9F, -0.9F, -0.45F, 1.8F, 1.8F, 0.8F)
+                        .texOffs(WHITE_U, WHITE_V).addBox(-0.62F, -0.62F, -0.62F, 0.5F, 0.5F, 0.3F),
+                PartPose.offset(-2.6F, -3.2F, -7.0F));
+    }
+
+    private static void addEar(PartDefinition head, String name, float x, float tilt)
+    {
+        // 굵은 밑단 위에 좁은 윗단을 얹은 사각 계단형 귀 + 안쪽 진한 색
         head.addOrReplaceChild(
-                "nose",
-                CubeListBuilder.create().texOffs(blackU, blackV)
-                        .addBox(-1.0F, -0.75F, -0.8F, 2.0F, 1.5F, 1.2F),
-                PartPose.offset(0.0F, -0.4F, -6.5F));
-        head.addOrReplaceChild(
-                "mouth",
-                CubeListBuilder.create().texOffs(blackU, blackV)
-                        .addBox(-1.5F, -0.4F, -0.5F, 3.0F, 1.4F, 0.8F),
-                PartPose.offset(0.0F, 1.4F, -5.7F));
-        head.addOrReplaceChild(
-                "tongue",
-                CubeListBuilder.create().texOffs(pinkU, pinkV)
-                        .addBox(-0.9F, 0.0F, -0.8F, 1.8F, 1.8F, 1.0F),
-                PartPose.offset(0.0F, 2.2F, -5.7F));
-    }
-
-    private static void addNormalHarness(PartDefinition body)
-    {
-        int navyU = 0;
-        int navyV = 128;
-        int stripeU = 128;
-        int stripeV = 128;
-
-        body.addOrReplaceChild(
-                "outfit",
+                name,
                 CubeListBuilder.create()
-                        .texOffs(navyU, navyV).addBox(-4.5F, -4.5F, -6.1F, 9.0F, 6.3F, 1.2F)
-                        .texOffs(navyU, navyV).addBox(-4.5F, -5.6F, -5.0F, 9.0F, 1.4F, 8.0F)
-                        .texOffs(navyU, navyV).addBox(-4.6F, -4.5F, -5.0F, 1.2F, 6.5F, 8.0F)
-                        .texOffs(navyU, navyV).addBox(3.4F, -4.5F, -5.0F, 1.2F, 6.5F, 8.0F)
-                        .texOffs(stripeU, stripeV).addBox(-4.7F, -2.2F, -6.8F, 9.4F, 1.2F, 0.8F)
-                        .texOffs(stripeU, stripeV).addBox(-0.7F, -4.5F, -6.9F, 1.4F, 6.0F, 0.8F),
-                PartPose.ZERO);
-        body.addOrReplaceChild(
-                "left_harness_stripe",
-                CubeListBuilder.create().texOffs(stripeU, stripeV)
-                        .addBox(-0.35F, -0.6F, -3.0F, 0.7F, 1.2F, 6.0F),
-                PartPose.offsetAndRotation(4.65F, -2.0F, -1.0F, 0.48F, 0.0F, 0.0F));
-        body.addOrReplaceChild(
-                "right_harness_stripe",
-                CubeListBuilder.create().texOffs(stripeU, stripeV)
-                        .addBox(-0.35F, -0.6F, -3.0F, 0.7F, 1.2F, 6.0F),
-                PartPose.offsetAndRotation(-4.65F, -2.0F, -1.0F, 0.48F, 0.0F, 0.0F));
+                        .texOffs(TAN_U, TAN_V).addBox(-1.5F, -2.0F, -1.0F, 3.0F, 2.0F, 2.0F)
+                        .texOffs(TAN_U, TAN_V).addBox(-1.0F, -3.8F, -1.0F, 2.0F, 2.0F, 2.0F)
+                        .texOffs(DARK_TAN_U, DARK_TAN_V).addBox(-0.8F, -1.8F, -1.15F, 1.6F, 1.5F, 0.4F),
+                PartPose.offsetAndRotation(x, -6.9F, -3.0F, 0.0F, 0.0F, tilt));
     }
 
-    private static void addSuperSuit(PartDefinition body)
+    private static void addLeg(PartDefinition body, String name, float x, float z)
     {
-        int blueU = 0;
-        int blueV = 128;
-        int darkBlueU = 128;
-        int darkBlueV = 128;
-        int redU = 256;
-        int redV = 128;
-        int goldU = 0;
-        int goldV = 256;
-        int yellowU = 128;
-        int yellowV = 256;
-
+        // 짧고 굵은 다리 + 네모난 발
         body.addOrReplaceChild(
-                "outfit",
+                name,
                 CubeListBuilder.create()
-                        .texOffs(blueU, blueV).addBox(-4.4F, -5.3F, -5.7F, 8.8F, 8.5F, 11.4F)
-                        .texOffs(darkBlueU, darkBlueV).addBox(-4.5F, 1.0F, -5.8F, 9.0F, 2.0F, 11.6F)
-                        .texOffs(redU, redV).addBox(-4.8F, -5.8F, -6.0F, 9.6F, 1.5F, 12.0F)
-                        .texOffs(goldU, goldV).addBox(-4.7F, 1.8F, -5.9F, 9.4F, 1.0F, 11.8F),
-                PartPose.ZERO);
-
-        body.addOrReplaceChild(
-                "emblem",
-                CubeListBuilder.create()
-                        .texOffs(goldU, goldV).addBox(-2.8F, -2.8F, -0.6F, 5.6F, 5.6F, 0.8F)
-                        .texOffs(256, 128).addBox(-1.9F, -1.9F, -1.0F, 3.8F, 3.8F, 0.8F)
-                        .texOffs(yellowU, yellowV).addBox(-0.7F, -1.3F, -1.4F, 1.4F, 2.6F, 0.8F)
-                        .texOffs(yellowU, yellowV).addBox(-1.3F, -0.7F, -1.4F, 2.6F, 1.4F, 0.8F),
-                PartPose.offset(0.0F, -0.2F, -5.8F));
+                        .texOffs(CREAM_U, CREAM_V).addBox(-1.6F, 0.0F, -1.6F, 3.2F, 4.3F, 3.2F)
+                        .texOffs(PALE_CREAM_U, PALE_CREAM_V).addBox(-1.9F, 4.3F, -2.2F, 3.8F, 1.8F, 4.0F),
+                PartPose.offset(x, 2.5F, z));
     }
 
-    private static void addLeg(
-            PartDefinition body,
-            String name,
-            float x,
-            float z,
-            boolean superForm,
-            int tanU,
-            int tanV,
-            int creamU,
-            int creamV)
+    private static void addCurledTail(PartDefinition body)
     {
-        CubeListBuilder legBuilder = CubeListBuilder.create();
-        if (superForm)
-        {
-            legBuilder
-                    .texOffs(0, 128).addBox(-1.6F, 0.0F, -1.6F, 3.2F, 4.2F, 3.2F)
-                    .texOffs(256, 128).addBox(-1.75F, 3.5F, -1.75F, 3.5F, 2.0F, 3.5F)
-                    .texOffs(creamU, creamV).addBox(-1.9F, 5.0F, -2.3F, 3.8F, 2.2F, 4.2F);
-        }
-        else
-        {
-            legBuilder
-                    .texOffs(tanU, tanV).addBox(-1.6F, 0.0F, -1.6F, 3.2F, 5.5F, 3.2F)
-                    .texOffs(creamU, creamV).addBox(-1.9F, 5.0F, -2.3F, 3.8F, 2.2F, 4.2F);
-        }
-        body.addOrReplaceChild(name, legBuilder, PartPose.offset(x, 2.0F, z));
-    }
-
-    private static void addCurledTail(
-            PartDefinition body,
-            int tanU,
-            int tanV,
-            int lightTanU,
-            int lightTanV,
-            int creamU,
-            int creamV)
-    {
+        // 등 위에서 크게 한 바퀴 말린 3단 꼬리. 끝으로 갈수록 크고 밝아진다.
         PartDefinition tailBase = body.addOrReplaceChild(
                 "tail_base",
-                CubeListBuilder.create()
-                        .texOffs(tanU, tanV).addBox(-1.6F, -1.6F, 0.0F, 3.2F, 3.2F, 4.2F)
-                        .texOffs(lightTanU, lightTanV).addBox(-1.9F, -4.8F, 2.2F, 3.8F, 4.2F, 3.4F)
-                        .texOffs(lightTanU, lightTanV).addBox(-2.2F, -6.0F, -0.2F, 4.4F, 3.2F, 4.2F),
-                PartPose.offset(0.0F, -1.5F, 5.0F));
-        tailBase.addOrReplaceChild(
+                CubeListBuilder.create().texOffs(TAN_U, TAN_V)
+                        .addBox(-1.6F, -1.5F, -0.4F, 3.2F, 3.0F, 3.0F),
+                PartPose.offset(0.0F, -3.2F, 3.6F));
+        PartDefinition tailCurve = tailBase.addOrReplaceChild(
+                "tail_curve",
+                CubeListBuilder.create().texOffs(LIGHT_TAN_U, LIGHT_TAN_V)
+                        .addBox(-2.0F, -2.4F, -1.2F, 4.0F, 3.2F, 3.6F),
+                PartPose.offset(0.0F, -2.6F, 1.8F));
+        tailCurve.addOrReplaceChild(
                 "tail_tip",
-                CubeListBuilder.create()
-                        .texOffs(creamU, creamV).addBox(-2.3F, -2.2F, -4.8F, 4.6F, 4.4F, 5.0F)
-                        .texOffs(lightTanU, lightTanV).addBox(-1.8F, -1.7F, -6.2F, 3.6F, 3.4F, 2.4F),
-                PartPose.offset(0.0F, -4.7F, 2.0F));
-    }
-
-    private static void addHeroParts(PartDefinition body, boolean superForm)
-    {
-        PartDefinition leftWing = body.addOrReplaceChild("left_wing", CubeListBuilder.create(), PartPose.offset(4.0F, -4.5F, 0.5F));
-        PartDefinition rightWing = body.addOrReplaceChild("right_wing", CubeListBuilder.create(), PartPose.offset(-4.0F, -4.5F, 0.5F));
-        CubeListBuilder capeBuilder = CubeListBuilder.create();
-
-        if (superForm)
-        {
-            addWingFeathers(leftWing, false);
-            addWingFeathers(rightWing, true);
-            capeBuilder
-                    .texOffs(256, 128).addBox(-5.2F, -0.5F, 0.0F, 10.4F, 1.2F, 4.0F)
-                    .texOffs(256, 128).addBox(-4.6F, 0.2F, 3.0F, 9.2F, 1.2F, 5.0F)
-                    .texOffs(384, 128).addBox(-4.2F, 1.0F, 7.0F, 3.8F, 1.2F, 5.0F)
-                    .texOffs(384, 128).addBox(0.4F, 1.0F, 7.0F, 3.8F, 1.2F, 5.0F)
-                    .texOffs(0, 256).addBox(-2.7F, -1.2F, 3.8F, 5.4F, 0.8F, 5.4F)
-                    .texOffs(256, 128).addBox(-1.8F, -1.7F, 4.7F, 3.6F, 0.8F, 3.6F)
-                    .texOffs(128, 256).addBox(-0.6F, -2.2F, 5.2F, 1.2F, 0.8F, 2.6F)
-                    .texOffs(128, 256).addBox(-1.3F, -2.2F, 5.9F, 2.6F, 0.8F, 1.2F);
-        }
-        body.addOrReplaceChild("cape", capeBuilder, PartPose.offset(0.0F, -5.5F, 2.5F));
-    }
-
-    private static void addWingFeathers(PartDefinition wing, boolean mirrored)
-    {
-        float direction = mirrored ? -1.0F : 1.0F;
-        int wingU = 256;
-        int wingV = 384;
-        int shadowU = 384;
-        int shadowV = 384;
-
-        wing.addOrReplaceChild(
-                "upper_feather",
-                CubeListBuilder.create()
-                        .texOffs(wingU, wingV).addBox(mirrored ? -13.0F : 0.0F, -0.8F, -0.8F, 13.0F, 1.6F, 1.6F),
-                PartPose.offsetAndRotation(0.0F, -0.5F, 0.0F, 0.0F, -0.08F * direction, -1.02F * direction));
-        wing.addOrReplaceChild(
-                "middle_feather",
-                CubeListBuilder.create()
-                        .texOffs(wingU, wingV).addBox(mirrored ? -11.5F : 0.0F, -0.9F, -0.9F, 11.5F, 1.8F, 1.8F),
-                PartPose.offsetAndRotation(0.0F, 0.4F, 0.7F, 0.0F, -0.04F * direction, -0.82F * direction));
-        wing.addOrReplaceChild(
-                "lower_feather",
-                CubeListBuilder.create()
-                        .texOffs(shadowU, shadowV).addBox(mirrored ? -10.0F : 0.0F, -1.0F, -1.0F, 10.0F, 2.0F, 2.0F),
-                PartPose.offsetAndRotation(0.0F, 1.4F, 1.3F, 0.0F, 0.0F, -0.62F * direction));
-        wing.addOrReplaceChild(
-                "bottom_feather",
-                CubeListBuilder.create()
-                        .texOffs(shadowU, shadowV).addBox(mirrored ? -8.0F : 0.0F, -1.0F, -1.1F, 8.0F, 2.0F, 2.2F),
-                PartPose.offsetAndRotation(0.0F, 2.4F, 1.8F, 0.0F, 0.0F, -0.42F * direction));
-        wing.addOrReplaceChild(
-                "wing_base",
-                CubeListBuilder.create()
-                        .texOffs(wingU, wingV).addBox(mirrored ? -5.0F : 0.0F, -1.8F, -1.5F, 5.0F, 4.0F, 3.0F),
-                PartPose.ZERO);
+                CubeListBuilder.create().texOffs(PALE_CREAM_U, PALE_CREAM_V)
+                        .addBox(-2.3F, -2.0F, -3.2F, 4.6F, 3.8F, 3.6F),
+                PartPose.offset(0.0F, -1.8F, -1.4F));
     }
 
     @Override
@@ -378,13 +241,10 @@ public class GomiPetModel extends EntityModel<LivingEntityRenderState>
         this.backLeftLeg.xRot = Mth.cos(walkPosition + Mth.PI) * 1.1F * walkSpeed;
         this.backRightLeg.xRot = Mth.cos(walkPosition) * 1.1F * walkSpeed;
 
+        // 3단 꼬리는 끝으로 갈수록 흔들림을 줄여 말린 덩어리가 함께 흔들리는 느낌을 낸다
         float wag = Mth.sin(renderState.ageInTicks * 0.25F) * 0.2F;
         this.tailBase.yRot = wag;
-        this.tailTip.yRot = wag * 0.6F;
-
-        float flap = Mth.cos(renderState.ageInTicks * 0.35F) * 0.12F;
-        this.leftWing.zRot = -0.08F - flap;
-        this.rightWing.zRot = 0.08F + flap;
-        this.cape.xRot = renderState.walkAnimationSpeed * 0.12F;
+        this.tailCurve.yRot = wag * 0.5F;
+        this.tailTip.yRot = wag * 0.3F;
     }
 }
