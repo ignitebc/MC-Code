@@ -74,10 +74,11 @@ public class GomiPetModel extends EntityModel<LivingEntityRenderState>
         PartDefinition root = meshDefinition.getRoot();
 
         // 짧고 통통한 몸통. 다리 바닥이 정확히 지면(y=24)에 닿도록 y 오프셋을 맞췄다.
+        // 몸통은 머리와 같은 황갈색으로 맞춰 얼굴과 몸이 따로 놀지 않게 한다
         PartDefinition body = root.addOrReplaceChild(
                 "body",
                 CubeListBuilder.create()
-                        .texOffs(CREAM_U, CREAM_V).addBox(-3.9F, -3.5F, -4.25F, 7.8F, 7.0F, 8.5F),
+                        .texOffs(TAN_U, TAN_V).addBox(-3.9F, -3.5F, -4.25F, 7.8F, 7.0F, 8.5F),
                 PartPose.offset(0.0F, 15.4F, 0.5F));
 
         addVest(body);
@@ -197,11 +198,11 @@ public class GomiPetModel extends EntityModel<LivingEntityRenderState>
 
     private static void addLeg(PartDefinition body, String name, float x, float z)
     {
-        // 짧고 굵은 다리 + 네모난 발
+        // 짧고 굵은 다리(밝은 황갈색) + 연한 크림색 네모난 발
         body.addOrReplaceChild(
                 name,
                 CubeListBuilder.create()
-                        .texOffs(CREAM_U, CREAM_V).addBox(-1.6F, 0.0F, -1.6F, 3.2F, 4.3F, 3.2F)
+                        .texOffs(LIGHT_TAN_U, LIGHT_TAN_V).addBox(-1.6F, 0.0F, -1.6F, 3.2F, 4.3F, 3.2F)
                         .texOffs(PALE_CREAM_U, PALE_CREAM_V).addBox(-1.9F, 4.3F, -2.2F, 3.8F, 1.8F, 4.0F),
                 PartPose.offset(x, 2.5F, z));
     }
