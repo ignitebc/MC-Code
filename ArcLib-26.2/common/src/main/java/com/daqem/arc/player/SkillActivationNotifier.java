@@ -12,8 +12,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class SkillActivationNotifier {
+
+    private static final Pattern TIER_SUFFIX_PATTERN = Pattern.compile("\\s+[IVX]+$");
 
     private SkillActivationNotifier() {
     }
@@ -27,10 +31,28 @@ public final class SkillActivationNotifier {
         if (sourceActionHolder != null) {
             Component displayName = sourceActionHolder.getDisplayName();
             if (displayName != null) {
-                return displayName;
+                return stripTierSuffix(displayName);
             }
         }
         return Component.translatable("arc.skill.unknown_skill");
+    }
+
+    /**
+     * 알림에는 단계 구분 없이 스킬명만 노출하도록 이름 끝의 로마 숫자 단계(I~X)를 제거한다.
+     * 번역이 서버에 로드되지 않아 이름을 문자열로 풀 수 없으면 원본 컴포넌트를 그대로 돌려준다.
+     */
+    public static Component stripTierSuffix(Component skillName) {
+        String resolvedName = skillName.getString();
+        Matcher tierMatcher = TIER_SUFFIX_PATTERN.matcher(resolvedName);
+        if (!tierMatcher.find()) {
+            return skillName;
+        }
+
+        String baseName = resolvedName.substring(0, tierMatcher.start());
+        if (baseName.isBlank()) {
+            return skillName;
+        }
+        return Component.literal(baseName).setStyle(skillName.getStyle());
     }
 
     public static void notifyExtraDrop(ActionData actionData, ItemStack itemStack) {

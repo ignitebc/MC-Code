@@ -117,7 +117,7 @@ public class SpecialItemReward extends AbstractReward
         {
             return null;
         }
-        return powerupInstance.getName();
+        return SkillActivationNotifier.stripTierSuffix(powerupInstance.getName());
     }
 
     private boolean shouldDouble(JobsPlayer jobsPlayer, ActionData actionData)
