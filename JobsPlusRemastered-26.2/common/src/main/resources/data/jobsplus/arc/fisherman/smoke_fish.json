@@ -1,0 +1,32 @@
+{
+  "holder": {
+    "type": "jobsplus:job",
+    "id": "jobsplus:fisherman"
+  },
+  "type": "arc:on_smelt_item",
+  "rewards": [
+    {
+      "type": "jobsplus:job_exp",
+      "chance": 100,
+      "min": 1.2,
+      "max": 1.2
+    },
+    {
+      "type": "jobsplus:bitcoin_reward",
+      "chance": 0.2,
+      "amount": 1
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:is_smoking_recipe"
+    },
+    {
+      "type": "arc:items",
+      "items": [
+        "minecraft:cooked_cod",
+        "minecraft:cooked_salmon"
+      ]
+    }
+  ]
+}
