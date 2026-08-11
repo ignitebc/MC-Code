@@ -7,6 +7,7 @@ import com.autovw.advancednetherite.client.model.GazellePetModel;
 import com.autovw.advancednetherite.client.model.GomiPetModel;
 import com.autovw.advancednetherite.client.model.KirbyPetModel;
 import com.autovw.advancednetherite.client.model.SculkenRavenPetModel;
+import com.autovw.advancednetherite.client.model.SuperGomiPetModel;
 import com.autovw.advancednetherite.client.model.UnicornPetModel;
 import com.autovw.advancednetherite.client.renderer.DarkDragonPetRenderer;
 import com.autovw.advancednetherite.client.renderer.DialgaPetRenderer;
@@ -50,7 +51,7 @@ public class ClientHandler implements ClientModInitializer
         EntityRendererRegistry.register(ModEntityTypes.SCULKEN_RAVEN_PET, SculkenRavenPetRenderer::new);
         ModelLayerRegistry.registerModelLayer(GomiPetModel.LAYER_LOCATION, GomiPetModel::createBodyLayer);
         EntityRendererRegistry.register(ModEntityTypes.GOMI_PET, GomiPetRenderer::new);
-        ModelLayerRegistry.registerModelLayer(GomiPetModel.SUPER_LAYER_LOCATION, GomiPetModel::createSuperBodyLayer);
+        ModelLayerRegistry.registerModelLayer(SuperGomiPetModel.LAYER_LOCATION, SuperGomiPetModel::createBodyLayer);
         EntityRendererRegistry.register(ModEntityTypes.SUPER_GOMI_PET, SuperGomiPetRenderer::new);
 
         ClientPlayNetworking.registerGlobalReceiver(PetListSyncPayload.TYPE,
