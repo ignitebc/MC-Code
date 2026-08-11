@@ -15,13 +15,11 @@ import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.networking.ClientboundSyncPlayerActionHoldersPacket;
 import com.daqem.arc.player.BlockPosCache;
 import com.daqem.arc.player.CachedBlockPos;
-import com.daqem.arc.player.stat.StatData;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
@@ -71,8 +69,6 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
 
     @Unique
     private Map<Identifier, IActionHolder> arc$actionHolders = new HashMap<>();
-    @Unique
-    private NonNullList<StatData> arc$statData = NonNullList.create();
     @Unique
     private Map<ICondition, Integer> arc$lastDistanceInCm = new HashMap<>();
     @Unique
@@ -151,16 +147,6 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     @Override
     public ServerPlayer arc$getServerPlayer() {
         return (ServerPlayer) (Object) this;
-    }
-
-    @Override
-    public NonNullList<StatData> arc$getStatData() {
-        return this.arc$statData;
-    }
-
-    @Override
-    public void arc$addStatData(StatData statData) {
-        this.arc$statData.add(statData);
     }
 
     @Override
@@ -431,20 +417,7 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
 
     @Inject(at = @At("TAIL"), method = "awardStat(Lnet/minecraft/stats/Stat;I)V")
     public void awardStat(Stat<?> stat, int amount, CallbackInfo ci) {
-        int previousAmount = 0;
-        boolean found = false;
-        for (StatData statData : arc$getStatData()) {
-            if (statData.getStat().equals(stat)) {
-                previousAmount = statData.getAmount();
-                statData.addAmount(amount);
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            arc$addStatData(new StatData(stat, amount));
-        }
-        StatEvents.onAwardStat(this, stat, previousAmount, previousAmount + amount);
+        StatEvents.onAwardStat(this, stat, amount);
     }
 
     @Inject(at = @At("TAIL"), method = "onEffectAdded(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)V")
@@ -500,7 +473,6 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     public void restoreFrom(ServerPlayer oldPlayer, boolean alive, CallbackInfo ci) {
         if (oldPlayer instanceof ArcServerPlayer arcServerPlayer) {
             this.arc$actionHolders = arcServerPlayer.arc$getActionHoldersMap();
-            this.arc$statData = arcServerPlayer.arc$getStatData();
             this.arc$lastDistanceInCm = arcServerPlayer.arc$getLastDistancesInCm();
             this.arc$lastRemainderInCm = arcServerPlayer.arc$getLastRemaindersInCm();
             this.arc$swimmingDistanceInCm = arcServerPlayer.arc$getSwimmingDistanceInCm();

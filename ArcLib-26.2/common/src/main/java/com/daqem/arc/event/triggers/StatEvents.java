@@ -7,15 +7,18 @@ import net.minecraft.world.item.Item;
 
 public class StatEvents {
 
-    public static void onAwardStat(ArcServerPlayer player, Stat<?> stat, int previousAmount, int newAmount) {
-        onAwardSwimStat(player, stat, newAmount);
+    // 이전에는 플레이어별로 모든 Stat 총량을 별도 목록에 복제해 두고 매 award 마다
+    // 선형 탐색했다. 실제로 필요한 값은 수영/겉날개 세션 누적 거리뿐이므로
+    // 이미 있는 플레이어 필드에 증가분만 더하는 방식으로 대체했다.
+    public static void onAwardStat(ArcServerPlayer player, Stat<?> stat, int amount) {
+        onAwardSwimStat(player, stat, amount);
         onAwardUseStat(player, stat);
-        onAwardElytraFlyingStat(player, stat, newAmount);
+        onAwardElytraFlyingStat(player, stat, amount);
     }
 
-    private static void onAwardSwimStat(ArcServerPlayer player, Stat<?> stat, int newAmount) {
+    private static void onAwardSwimStat(ArcServerPlayer player, Stat<?> stat, int amount) {
         if (stat.equals(Stats.CUSTOM.get(Stats.SWIM_ONE_CM))) {
-            player.arc$setSwimmingDistanceInCm(newAmount);
+            player.arc$setSwimmingDistanceInCm(player.arc$getSwimmingDistanceInCm() + amount);
         }
     }
 
@@ -25,9 +28,9 @@ public class StatEvents {
         }
     }
 
-    private static void onAwardElytraFlyingStat(ArcServerPlayer player, Stat<?> stat, int newAmount) {
+    private static void onAwardElytraFlyingStat(ArcServerPlayer player, Stat<?> stat, int amount) {
         if (stat == Stats.CUSTOM.get(Stats.AVIATE_ONE_CM)) {
-            player.arc$setElytraFlyingDistanceInCm(newAmount);
+            player.arc$setElytraFlyingDistanceInCm(player.arc$getElytraFlyingDistance() + amount);
         }
     }
 }

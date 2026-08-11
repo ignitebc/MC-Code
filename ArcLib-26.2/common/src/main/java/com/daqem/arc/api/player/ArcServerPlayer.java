@@ -3,8 +3,6 @@ package com.daqem.arc.api.player;
 import com.daqem.arc.api.action.holder.IActionHolder;
 import com.daqem.arc.api.condition.ICondition;
 import com.daqem.arc.player.BlockPosCache;
-import com.daqem.arc.player.stat.StatData;
-import net.minecraft.core.NonNullList;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -13,10 +11,6 @@ import java.util.Map;
 public interface ArcServerPlayer extends ArcPlayer {
 
     ServerPlayer arc$getServerPlayer();
-
-    NonNullList<StatData> arc$getStatData();
-
-    void arc$addStatData(StatData statData);
 
     void arc$setSwimmingDistanceInCm(int swimmingDistanceInCm);
 
