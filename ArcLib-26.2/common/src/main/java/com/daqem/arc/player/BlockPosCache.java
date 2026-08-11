@@ -4,9 +4,9 @@ import com.daqem.arc.config.ArcCommonConfig;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.Level;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
@@ -15,7 +15,7 @@ public class BlockPosCache {
     private static final int MAX_POSITION_COUNT = 1_000;
 
     private final Set<CachedBlockPos> positionSet = new HashSet<>();
-    private final Queue<CachedBlockPos> positionQueue = new LinkedList<>();
+    private final Queue<CachedBlockPos> positionQueue = new ArrayDeque<>();
 
     public void add(Level level, Vec3i pos) {
         CachedBlockPos cachedBlockPos = CachedBlockPos.of(level, pos);
