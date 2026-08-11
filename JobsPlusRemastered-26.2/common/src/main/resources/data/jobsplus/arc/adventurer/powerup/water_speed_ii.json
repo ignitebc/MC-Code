@@ -6,8 +6,8 @@
   "type": "arc:on_swim",
   "rewards": [
     {
-      "type": "arc:water_movement_efficiency_modifier",
-      "efficiency": 0.2
+      "type": "arc:swim_speed_multiplier",
+      "multiplier": 1.1
     }
   ],
   "conditions": [

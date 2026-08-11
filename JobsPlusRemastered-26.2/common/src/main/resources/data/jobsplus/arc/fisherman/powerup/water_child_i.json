@@ -10,8 +10,8 @@
       "bonus": 1
     },
     {
-      "type": "arc:water_movement_efficiency_modifier",
-      "efficiency": 0.1
+      "type": "arc:swim_speed_multiplier",
+      "multiplier": 1.05
     }
   ],
   "conditions": [

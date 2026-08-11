@@ -25,6 +25,7 @@ import com.daqem.arc.data.reward.player.MoveToEntityReward;
 import com.daqem.arc.data.reward.player.MovementSpeedAttributeModifierReward;
 import com.daqem.arc.data.reward.player.OxygenBonusAttributeModifierReward;
 import com.daqem.arc.data.reward.player.SafeFallDistanceAttributeModifierReward;
+import com.daqem.arc.data.reward.player.SwimSpeedMultiplierReward;
 import com.daqem.arc.data.reward.player.WaterMovementEfficiencyAttributeModifierReward;
 import com.daqem.arc.data.reward.server.CommandReward;
 import com.daqem.arc.data.reward.world.DropItemReward;
@@ -69,6 +70,8 @@ public interface RewardType<T extends IReward> extends IRewardType<T> {
             register(Arc.getId("oxygen_bonus_modifier"), new OxygenBonusAttributeModifierReward.Serializer());
     IRewardType<WaterMovementEfficiencyAttributeModifierReward> WATER_MOVEMENT_EFFICIENCY_ATTRIBUTE_MODIFIER =
             register(Arc.getId("water_movement_efficiency_modifier"), new WaterMovementEfficiencyAttributeModifierReward.Serializer());
+    IRewardType<SwimSpeedMultiplierReward> SWIM_SPEED_MULTIPLIER =
+            register(Arc.getId("swim_speed_multiplier"), new SwimSpeedMultiplierReward.Serializer());
 
     static <T extends IReward> IRewardType<T> register(final Identifier location, final IRewardSerializer<T> serializer) {
         return Registry.register(ArcRegistry.REWARD, location, new RewardType<T>() {
