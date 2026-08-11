@@ -1,7 +1,7 @@
 {
   "job": "jobsplus:fisherman",
   "icon": {
-    "id": "minecraft:conduit"
+    "id": "minecraft:cod"
   },
   "price": 10,
   "required_level": 0

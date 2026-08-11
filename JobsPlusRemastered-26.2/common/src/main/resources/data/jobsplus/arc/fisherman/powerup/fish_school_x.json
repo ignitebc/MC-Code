@@ -1,0 +1,22 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:fisherman/fish_school_x"
+  },
+  "type": "arc:on_fished_up_item",
+  "rewards": [
+    {
+      "type": "arc:caught_fish_multiplier",
+      "chance": 50,
+      "multiplier": 3
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:items",
+      "items": [
+        "#minecraft:fishes"
+      ]
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 {
   "job": "jobsplus:fisherman",
-  "parent": "jobsplus:fisherman/water_child_vi",
+  "parent": "jobsplus:fisherman/fish_school_vi",
   "icon": {
-    "id": "minecraft:conduit",
+    "id": "minecraft:cod",
     "count": 7
   },
   "price": 22,
