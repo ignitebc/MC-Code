@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:alchemist",
-  "parent": "jobsplus:alchemist/drop_multiplier_viiii",
+  "parent": "jobsplus:alchemist/drop_multiplier_ix",
   "icon": {
     "id": "minecraft:blaze_powder",
     "count": 10

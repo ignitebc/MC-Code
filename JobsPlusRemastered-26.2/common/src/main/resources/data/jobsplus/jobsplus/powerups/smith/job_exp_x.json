@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:smith",
-  "parent": "jobsplus:smith/job_exp_viiii",
+  "parent": "jobsplus:smith/job_exp_ix",
   "icon": {
     "id": "minecraft:experience_bottle",
     "count": 10

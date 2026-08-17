@@ -13,7 +13,7 @@ public final class SkillLineKey
 
     // String#replaceFirst 는 호출할 때마다 정규식을 다시 컴파일하므로 한 번만 컴파일해 둔다.
     private static final Pattern TIER_SUFFIX_PATTERN =
-            Pattern.compile("_(?:viiii|viii|vii|vi|iv|iii|ii|ix|x|v|i)$");
+            Pattern.compile("_(?:viii|vii|vi|iv|iii|ii|ix|x|v|i)$");
 
     private SkillLineKey()
     {

@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:fisherman",
-  "parent": "jobsplus:fisherman/fish_school_viiii",
+  "parent": "jobsplus:fisherman/fish_school_ix",
   "icon": {
     "id": "minecraft:cod",
     "count": 10

@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:smith",
-  "parent": "jobsplus:smith/less_damage_melee_viiii",
+  "parent": "jobsplus:smith/less_damage_melee_ix",
   "icon": {
     "id": "minecraft:diamond_sword",
     "count": 10

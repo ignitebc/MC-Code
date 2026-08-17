@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:miner",
-  "parent": "jobsplus:miner/exp_boost_block_viiii",
+  "parent": "jobsplus:miner/exp_boost_block_ix",
   "icon": {
     "id": "minecraft:amethyst_shard",
     "count": 10

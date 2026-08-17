@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:adventurer",
-  "parent": "jobsplus:adventurer/job_exp_viiii",
+  "parent": "jobsplus:adventurer/job_exp_ix",
   "icon": {
     "id": "minecraft:experience_bottle",
     "count": 10

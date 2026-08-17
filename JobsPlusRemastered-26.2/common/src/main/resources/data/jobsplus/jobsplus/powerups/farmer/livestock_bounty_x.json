@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:farmer",
-  "parent": "jobsplus:farmer/livestock_bounty_viiii",
+  "parent": "jobsplus:farmer/livestock_bounty_ix",
   "icon": {
     "id": "minecraft:beef",
     "count": 10

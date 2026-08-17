@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:miner",
-  "parent": "jobsplus:miner/pickaxe_efficiency_viiii",
+  "parent": "jobsplus:miner/pickaxe_efficiency_ix",
   "icon": {
     "id": "minecraft:diamond_pickaxe",
     "count": 10

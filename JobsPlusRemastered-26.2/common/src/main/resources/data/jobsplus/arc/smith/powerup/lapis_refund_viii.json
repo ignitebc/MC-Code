@@ -13,7 +13,7 @@
   "conditions": [
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:smith/lapis_refund_viiii"
+      "powerup": "jobsplus:smith/lapis_refund_ix"
     },
     {
       "type": "jobsplus:powerup_not_active",

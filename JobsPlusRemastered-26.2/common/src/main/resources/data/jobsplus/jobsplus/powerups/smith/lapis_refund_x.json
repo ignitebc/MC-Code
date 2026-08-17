@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:smith",
-  "parent": "jobsplus:smith/lapis_refund_viiii",
+  "parent": "jobsplus:smith/lapis_refund_ix",
   "icon": {
     "id": "minecraft:lapis_lazuli",
     "count": 10

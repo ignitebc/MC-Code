@@ -1,1 +1,0 @@
-{"holder":{"type":"jobsplus:powerup","id":"jobsplus:farmer/double_drops_viiii"},"type":"arc:on_break_block","rewards":[{"type":"arc:block_drop_multiplier","chance":45,"multiplier":2}],"conditions":[{"type":"arc:crop_fully_grown"},{"type":"jobsplus:powerup_not_active","powerup":"jobsplus:farmer/double_drops_x"}]}

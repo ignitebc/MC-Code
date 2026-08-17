@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:digger",
-  "parent": "jobsplus:digger/gold_nugget_digger_viiii",
+  "parent": "jobsplus:digger/gold_nugget_digger_ix",
   "icon": {
     "id": "minecraft:gold_nugget",
     "count": 10

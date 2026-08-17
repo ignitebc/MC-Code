@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:adventurer",
-  "parent": "jobsplus:adventurer/water_speed_viiii",
+  "parent": "jobsplus:adventurer/water_speed_ix",
   "icon": {
     "id": "minecraft:heart_of_the_sea",
     "count": 10

@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:farmer",
-  "parent": "jobsplus:farmer/range_harvest_viiii",
+  "parent": "jobsplus:farmer/range_harvest_ix",
   "icon": {
     "id": "minecraft:golden_hoe",
     "count": 10

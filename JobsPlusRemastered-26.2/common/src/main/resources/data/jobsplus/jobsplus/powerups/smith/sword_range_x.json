@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:smith",
-  "parent": "jobsplus:smith/sword_range_viiii",
+  "parent": "jobsplus:smith/sword_range_ix",
   "icon": {
     "id": "minecraft:diamond_sword",
     "count": 10

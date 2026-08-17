@@ -17,7 +17,7 @@
         "#minecraft:pickaxes"
       ]
     },
-    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:miner/pickaxe_range_viiii" },
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:miner/pickaxe_range_ix" },
     { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:miner/pickaxe_range_x" }
   ]
 }

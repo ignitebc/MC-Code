@@ -13,7 +13,7 @@
   "conditions": [
     {
       "type": "jobsplus:powerup_not_active",
-      "powerup": "jobsplus:adventurer/water_breath_viiii"
+      "powerup": "jobsplus:adventurer/water_breath_ix"
     },
     {
       "type": "jobsplus:powerup_not_active",

@@ -36,7 +36,7 @@ public class SpecialItemReward extends AbstractReward
 
     /** 로마 숫자 단계 접미사. 뒤쪽이 상위 단계다. */
     private static final String[] TIER_SUFFIXES = {
-            "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "viiii", "x"
+            "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x"
     };
 
     private final ItemStackTemplate itemTemplate;

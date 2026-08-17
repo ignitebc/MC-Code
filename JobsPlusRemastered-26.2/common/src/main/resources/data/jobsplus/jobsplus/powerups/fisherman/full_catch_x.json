@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:fisherman",
-  "parent": "jobsplus:fisherman/full_catch_viiii",
+  "parent": "jobsplus:fisherman/full_catch_ix",
   "icon": {
     "id": "minecraft:heart_of_the_sea",
     "count": 10

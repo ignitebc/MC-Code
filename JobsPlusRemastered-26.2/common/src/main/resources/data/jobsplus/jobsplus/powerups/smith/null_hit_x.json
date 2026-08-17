@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:smith",
-  "parent": "jobsplus:smith/null_hit_viiii",
+  "parent": "jobsplus:smith/null_hit_ix",
   "icon": {
     "id": "minecraft:diamond_chestplate",
     "count": 10

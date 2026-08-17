@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:fisherman",
-  "parent": "jobsplus:fisherman/get_special_item_viiii",
+  "parent": "jobsplus:fisherman/get_special_item_ix",
   "icon": {
     "id": "minecraft:ender_chest",
     "count": 10

@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:farmer",
-  "parent": "jobsplus:farmer/auto_replant_viiii",
+  "parent": "jobsplus:farmer/auto_replant_ix",
   "icon": {
     "id": "minecraft:wheat_seeds",
     "count": 10

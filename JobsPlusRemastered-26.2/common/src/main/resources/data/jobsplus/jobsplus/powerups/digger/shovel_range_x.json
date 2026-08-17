@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:digger",
-  "parent": "jobsplus:digger/shovel_range_viiii",
+  "parent": "jobsplus:digger/shovel_range_ix",
   "icon": {
     "id": "minecraft:diamond_shovel",
     "count": 10

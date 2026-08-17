@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:fisherman",
-  "parent": "jobsplus:fisherman/grappling_hook_viiii",
+  "parent": "jobsplus:fisherman/grappling_hook_ix",
   "icon": {
     "id": "minecraft:fishing_rod",
     "count": 10

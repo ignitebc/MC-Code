@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:hunter",
-  "parent": "jobsplus:hunter/fire_arrows_viiii",
+  "parent": "jobsplus:hunter/fire_arrows_ix",
   "icon": {
     "id": "minecraft:fire_charge",
     "count": 10

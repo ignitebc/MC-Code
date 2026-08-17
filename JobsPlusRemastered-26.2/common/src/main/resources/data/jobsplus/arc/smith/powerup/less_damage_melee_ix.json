@@ -1,0 +1,32 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:smith/less_damage_melee_ix"
+  },
+  "type": "arc:on_get_hurt",
+  "rewards": [
+    {
+      "type": "arc:damage_multiplier",
+      "multiplier": 0.865
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:or",
+      "conditions": [
+        {
+          "type": "arc:damage_source",
+          "source": "mob"
+        },
+        {
+          "type": "arc:damage_source",
+          "source": "player"
+        }
+      ]
+    },
+    {
+        "type": "jobsplus:powerup_not_active",
+        "powerup": "jobsplus:smith/less_damage_melee_x"
+    }
+  ]
+}

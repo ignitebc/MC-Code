@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:miner",
-  "parent": "jobsplus:miner/ore_refining_viiii",
+  "parent": "jobsplus:miner/ore_refining_ix",
   "icon": {
     "id": "minecraft:raw_gold",
     "count": 10

@@ -13,7 +13,7 @@
   "conditions": [
     { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_vii" },
     { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_viii" },
-    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_viiii" },
+    { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_ix" },
     { "type": "jobsplus:powerup_not_active", "powerup": "jobsplus:hunter/run_speed_x" }
   ]
 }

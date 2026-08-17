@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:hunter",
-  "parent": "jobsplus:hunter/multiple_arrows_viiii",
+  "parent": "jobsplus:hunter/multiple_arrows_ix",
   "icon": {
     "id": "minecraft:arrow",
     "count": 10

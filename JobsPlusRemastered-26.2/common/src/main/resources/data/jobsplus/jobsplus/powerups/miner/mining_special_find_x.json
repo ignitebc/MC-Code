@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:miner",
-  "parent": "jobsplus:miner/mining_special_find_viiii",
+  "parent": "jobsplus:miner/mining_special_find_ix",
   "icon": {
     "id": "minecraft:diamond",
     "count": 10

@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:alchemist",
-  "parent": "jobsplus:alchemist/harmful_potion_immunity_viiii",
+  "parent": "jobsplus:alchemist/harmful_potion_immunity_ix",
   "icon": {
     "id": "minecraft:milk_bucket",
     "count": 10

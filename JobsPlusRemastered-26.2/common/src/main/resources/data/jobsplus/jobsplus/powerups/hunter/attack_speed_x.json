@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:hunter",
-  "parent": "jobsplus:hunter/attack_speed_viiii",
+  "parent": "jobsplus:hunter/attack_speed_ix",
   "icon": {
     "id": "minecraft:feather",
     "count": 10

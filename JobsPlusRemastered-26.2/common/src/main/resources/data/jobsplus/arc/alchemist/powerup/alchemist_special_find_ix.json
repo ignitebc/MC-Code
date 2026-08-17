@@ -1,0 +1,29 @@
+{
+  "holder":
+  {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:alchemist/alchemist_special_find_ix"
+  },
+  "type": "arc:on_brew_potion",
+  "rewards":
+  [
+    {
+      "type": "arc:item",
+      "chance": 4.5,
+      "item":
+      {
+        "id": "minecraft:diamond"
+      },
+      "amount": 1,
+      "overflow": "drop"
+    }
+  ],
+  "conditions":
+  [
+    
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:alchemist/alchemist_special_find_x"
+    }
+  ]
+}

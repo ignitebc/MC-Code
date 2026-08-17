@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:fisherman",
-  "parent": "jobsplus:fisherman/less_fall_damage_viiii",
+  "parent": "jobsplus:fisherman/less_fall_damage_ix",
   "icon": {
     "id": "minecraft:leather_boots",
     "count": 10

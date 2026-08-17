@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:hunter",
-  "parent": "jobsplus:hunter/run_speed_viiii",
+  "parent": "jobsplus:hunter/run_speed_ix",
   "icon": {
     "id": "minecraft:diamond_boots",
     "count": 10
