@@ -84,28 +84,25 @@ public class JobBitcoinReward extends AbstractReward
 
         PlayerItemDelivery.giveOrDrop(serverPlayer, stack);
 
-        // 실제 지급이 끝난 BTC만 분석용 메트릭에 기록한다.
-        if (actionData.getSourceActionHolder() instanceof JobInstance jobInstance)
+        // 2) 서버 전체 브로드캐스트 메시지
+        if (serverPlayer.level().getServer() != null
+                && actionData.getSourceActionHolder() instanceof JobInstance jobInstance)
         {
             JobsPlusMetrics.recordBitcoin(serverPlayer, jobInstance, this.amount);
 
-            // 2) 서버 전체 브로드캐스트 메시지
-            if (serverPlayer.level().getServer() != null)
-            {
-                // 플레이어 이름을 골드색으로 표시
-                Component playerName = serverPlayer.getName().copy()
-                        .withStyle(style -> style.withColor(0xFFD700));
+            // 플레이어 이름을 골드색으로 표시
+            Component playerName = serverPlayer.getName().copy()
+                    .withStyle(style -> style.withColor(0xFFD700));
 
-                // 어떤 직업 활동으로 얻었는지 직업 이름을 직업 고유 색상으로 함께 표시한다.
-                Component jobName = jobInstance.getName().copy()
-                        .withStyle(style -> style.withColor(jobInstance.getColorDecimal()));
+            // 어떤 직업 활동으로 얻었는지 직업 이름을 직업 고유 색상으로 함께 표시한다.
+            Component jobName = jobInstance.getName().copy()
+                    .withStyle(style -> style.withColor(jobInstance.getColorDecimal()));
 
-                serverPlayer.level().getServer().getPlayerList().broadcastSystemMessage(
-                        // jobsplus.bitcoin.obtained.job: "%s %s님이 비트코인을 획득했습니다!"
-                        JobsPlus.translatable("bitcoin.obtained.job", jobName, playerName),
-                        false // 액션바가 아니라 일반 채팅으로 브로드캐스트
-                );
-            }
+            serverPlayer.level().getServer().getPlayerList().broadcastSystemMessage(
+                    // jobsplus.bitcoin.obtained.job: "%s %s님이 비트코인을 획득했습니다!"
+                    JobsPlus.translatable("bitcoin.obtained.job", jobName, playerName),
+                    false // 액션바가 아니라 일반 채팅으로 브로드캐스트
+            );
         }
 
         return new ActionResult();
@@ -131,7 +128,8 @@ public class JobBitcoinReward extends AbstractReward
         public JobBitcoinReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority)
         {
             // 네트워크 패킷에서 amount 복원
-            return new JobBitcoinReward(chance, priority, friendlyByteBuf.readInt());
+            int amount = friendlyByteBuf.readInt();
+            return new JobBitcoinReward(chance, priority, amount);
         }
 
         @Override

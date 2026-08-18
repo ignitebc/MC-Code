@@ -99,6 +99,7 @@ public class JobExpMultiplierReward extends AbstractReward
 
     public static class Serializer implements IRewardSerializer<JobExpMultiplierReward>
     {
+
         @Override
         public JobExpMultiplierReward fromJson(JsonObject jsonObject, double chance, int priority)
         {
