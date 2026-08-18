@@ -14,6 +14,7 @@ import com.daqem.jobsplus.integration.arc.holder.type.JobsPlusActionHolderType;
 import com.daqem.jobsplus.integration.arc.action.type.JobsPlusActionType;
 import com.daqem.jobsplus.integration.arc.condition.type.JobsPlusConditionType;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
+import com.daqem.jobsplus.metrics.JobsPlusMetrics;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import com.mojang.logging.LogUtils;
 import dev.architectury.registry.ReloadListenerRegistry;
@@ -49,6 +50,7 @@ public class JobsPlus
         CropReplantManager.registerEvent();
         StockMarketTicker.registerEvent(); // 주식 시청자·미결제 포지션·예약 주문이 있으면 매분 시세 갱신
         EventDeleteRandomItemOnDeath.registerEvent(); // 사망 시 소지품 한 칸을 무작위로 삭제
+        JobsPlusMetrics.registerEvents(); // EXP/BTC/접속시간 분석용 경량 메트릭
     }
 
     private static void initRegistry()

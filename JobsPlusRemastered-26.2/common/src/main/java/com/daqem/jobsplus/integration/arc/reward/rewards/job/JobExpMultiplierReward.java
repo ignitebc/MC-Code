@@ -12,6 +12,7 @@ import com.daqem.jobsplus.integration.arc.data.type.JobsPlusActionDataType;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
+import com.daqem.jobsplus.metrics.JobsPlusMetrics;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.job.Job;
 import com.google.gson.JsonObject;
@@ -78,6 +79,7 @@ public class JobExpMultiplierReward extends AbstractReward
                 {
                     double experience = exp * this.multiplier - exp;
                     job.addExperienceWithoutEvent(experience);
+                    JobsPlusMetrics.recordExperience(jobsServerPlayer, job, experience);
                 }
             }
         }
@@ -97,7 +99,6 @@ public class JobExpMultiplierReward extends AbstractReward
 
     public static class Serializer implements IRewardSerializer<JobExpMultiplierReward>
     {
-
         @Override
         public JobExpMultiplierReward fromJson(JsonObject jsonObject, double chance, int priority)
         {
