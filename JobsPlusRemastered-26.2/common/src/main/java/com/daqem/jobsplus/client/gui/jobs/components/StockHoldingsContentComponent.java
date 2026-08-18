@@ -70,7 +70,7 @@ public class StockHoldingsContentComponent extends EmptyComponent
                 y + 2, TEXT_COLOR);
         drawScaledCentered(guiGraphics, "투자금", x + (AVERAGE_PRICE_COLUMN_END + QUANTITY_COLUMN_END) / 2, y + 2, TEXT_COLOR);
         // 전일 대비가 아니라 평단가 대비 손익이므로 "수익률"이 맞다.
-        drawScaledCentered(guiGraphics, "수익률(%)", x + (QUANTITY_COLUMN_END + TABLE_WIDTH) / 2, y + 2, TEXT_COLOR);
+        drawScaled(guiGraphics, "수익률(%)", x + QUANTITY_COLUMN_END + 2, y + 2, TEXT_COLOR);
         guiGraphics.fill(x, y + ROW_HEIGHT - 1, right, y + ROW_HEIGHT, GRID_COLOR);
 
         StockMarketSnapshot snapshot = ClientStockMarket.getSnapshot();
@@ -113,7 +113,7 @@ public class StockHoldingsContentComponent extends EmptyComponent
                     rowY + 2, TEXT_COLOR);
             drawScaledRight(guiGraphics, averagePrice, x + AVERAGE_PRICE_COLUMN_END - 2, rowY + 2, TEXT_COLOR);
             drawScaledRight(guiGraphics, investedAmount, x + QUANTITY_COLUMN_END - 2, rowY + 2, TEXT_COLOR);
-            drawScaledRight(guiGraphics, returnRate, right - 2, rowY + 2, returnColor);
+            drawScaled(guiGraphics, returnRate, x + QUANTITY_COLUMN_END + 2, rowY + 2, returnColor);
             guiGraphics.fill(x, rowY + ROW_HEIGHT - 1, right, rowY + ROW_HEIGHT, GRID_COLOR);
             index++;
         }

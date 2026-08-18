@@ -12,7 +12,8 @@ import net.minecraft.util.Mth;
 public abstract class AbstractScrollWidget extends ScrollContainerWidget
 {
 
-    private final static int SCROLL_HANDLE_WIDTH = 14;
+    private final static int DEFAULT_SCROLL_HANDLE_WIDTH = 14;
+    private final static int DEFAULT_SCROLL_TRACK_WIDTH = 8;
     private final static int SCROLL_HANDLE_HEIGHT = 15;
 
     private final int itemHeight;
@@ -32,13 +33,23 @@ public abstract class AbstractScrollWidget extends ScrollContainerWidget
     @Override
     public boolean updateScrolling(MouseButtonEvent event)
     {
-        ((AbstractScrollAreaAccessor) this).jobsplus$setScrolling(this.scrollable() && this.isValidClickButton(event.buttonInfo()) && event.x() >= this.scrollBarX() && event.x() <= this.scrollBarX() + SCROLL_HANDLE_WIDTH && event.y() >= this.getY() && event.y() < this.getBottom());
+        ((AbstractScrollAreaAccessor) this).jobsplus$setScrolling(this.scrollable() && this.isValidClickButton(event.buttonInfo()) && event.x() >= this.scrollBarX() && event.x() <= this.scrollBarX() + this.scrollHandleWidth() && event.y() >= this.getY() && event.y() < this.getBottom());
         return ((AbstractScrollAreaAccessor) this).jobsplus$getScrolling();
     }
 
     protected int scrollBarX()
     {
-        return this.getRight() - SCROLL_HANDLE_WIDTH;
+        return this.getRight() - this.scrollHandleWidth();
+    }
+
+    protected int scrollHandleWidth()
+    {
+        return DEFAULT_SCROLL_HANDLE_WIDTH;
+    }
+
+    protected int scrollTrackWidth()
+    {
+        return DEFAULT_SCROLL_TRACK_WIDTH;
     }
 
     @Override
@@ -55,10 +66,13 @@ public abstract class AbstractScrollWidget extends ScrollContainerWidget
         if (this.scrollable())
         {
             int scrollBarX = this.scrollBarX();
+            int scrollHandleWidth = this.scrollHandleWidth();
+            int scrollTrackWidth = this.scrollTrackWidth();
+            int scrollTrackX = scrollBarX + (scrollHandleWidth - scrollTrackWidth) / 2;
             int scrollerHeight = this.scrollerHeight();
             int scrollBarY = this.scrollBarY();
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/scroll_bar"), scrollBarX + 3, this.getY(), 8, this.getHeight());
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/scroll_handle"), scrollBarX, Mth.clamp(scrollBarY, this.getY() + 4, this.getBottom() - scrollerHeight - 4), 14, scrollerHeight);
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/scroll_bar"), scrollTrackX, this.getY(), scrollTrackWidth, this.getHeight());
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/scroll_handle"), scrollBarX, Mth.clamp(scrollBarY, this.getY() + 4, this.getBottom() - scrollerHeight - 4), scrollHandleWidth, scrollerHeight);
             if (this.isOverScrollbar(mouseX, mouseY))
             {
                 guiGraphics.requestCursor(((AbstractScrollAreaAccessor) this).jobsplus$getScrolling() ? CursorTypes.RESIZE_NS : CursorTypes.POINTING_HAND);

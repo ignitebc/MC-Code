@@ -5,9 +5,24 @@ import com.daqem.jobsplus.client.gui.jobs.components.StockHoldingsContentCompone
 
 public class StockHoldingsScrollWidget extends AbstractScrollWidget
 {
+    private static final int SCROLL_HANDLE_WIDTH = 7;
+    private static final int SCROLL_TRACK_WIDTH = 4;
+
     public StockHoldingsScrollWidget(int width, int height, JobsScreenState state)
     {
         super(width, height, 10);
         this.addComponent(new StockHoldingsContentComponent(state));
+    }
+
+    @Override
+    protected int scrollHandleWidth()
+    {
+        return SCROLL_HANDLE_WIDTH;
+    }
+
+    @Override
+    protected int scrollTrackWidth()
+    {
+        return SCROLL_TRACK_WIDTH;
     }
 }
