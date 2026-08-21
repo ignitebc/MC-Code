@@ -1,7 +1,7 @@
 package com.autovw.advancednetherite.core;
 
 import com.autovw.advancednetherite.AdvancedNetherite;
-import com.autovw.advancednetherite.common.item.AdvancedItem;
+import com.autovw.advancednetherite.common.item.RewardCouponItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -13,11 +13,13 @@ import net.minecraft.world.item.Item;
  */
 public final class ModRewardCouponItems
 {
-    public static final AdvancedItem EXPERIENCE_DOUBLE_COUPON = new AdvancedItem(
-            new Item.Properties().setId(key("experience_double_coupon"))
+    public static final RewardCouponItem EXPERIENCE_DOUBLE_COUPON = new RewardCouponItem(
+            new Item.Properties().setId(key("experience_double_coupon")),
+            RewardCouponItem.CouponType.EXPERIENCE
     );
-    public static final AdvancedItem BITCOIN_DOUBLE_COUPON = new AdvancedItem(
-            new Item.Properties().setId(key("bitcoin_double_coupon"))
+    public static final RewardCouponItem BITCOIN_DOUBLE_COUPON = new RewardCouponItem(
+            new Item.Properties().setId(key("bitcoin_double_coupon")),
+            RewardCouponItem.CouponType.BITCOIN
     );
 
     private ModRewardCouponItems()
