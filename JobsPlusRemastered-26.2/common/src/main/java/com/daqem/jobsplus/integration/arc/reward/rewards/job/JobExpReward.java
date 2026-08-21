@@ -9,11 +9,14 @@ import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
 import com.daqem.jobsplus.player.JobsServerPlayer;
+import com.daqem.jobsplus.player.coupon.RewardCouponLedger;
 import com.daqem.jobsplus.player.job.Job;
 import com.google.gson.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
 
 public class JobExpReward extends AbstractReward
@@ -63,6 +66,14 @@ public class JobExpReward extends AbstractReward
                     {
                         exp = min + actionData.getPlayer().arc$getPlayer().getRandom().nextDouble() * (max - min);
                     }
+
+                    ServerPlayer serverPlayer = jobsServerPlayer.jobsplus$getServerPlayer();
+                    MinecraftServer server = serverPlayer.level().getServer();
+                    if (server != null && RewardCouponLedger.get(server).isExperienceDoubleActive(serverPlayer.getUUID()))
+                    {
+                        exp *= 2.0D;
+                    }
+
                     job.addExperience(exp);
                 }
             }

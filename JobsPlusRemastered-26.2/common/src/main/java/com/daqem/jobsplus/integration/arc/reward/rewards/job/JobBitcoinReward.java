@@ -13,12 +13,14 @@ import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
 import com.daqem.jobsplus.metrics.JobsPlusMetrics;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.PlayerItemDelivery;
+import com.daqem.jobsplus.player.coupon.RewardCouponLedger;
 import com.google.gson.JsonObject;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
@@ -76,11 +78,22 @@ public class JobBitcoinReward extends AbstractReward
             return new ActionResult();
         }
 
+        int rewardAmount = this.amount;
+        if (actionData.getSourceActionHolder() instanceof JobInstance jobInstance
+                && jobsServerPlayer.jobsplus$getJob(jobInstance) != null)
+        {
+            MinecraftServer server = serverPlayer.level().getServer();
+            if (server != null && RewardCouponLedger.get(server).isBitcoinDoubleActive(serverPlayer.getUUID()))
+            {
+                rewardAmount = (int) Math.min(Integer.MAX_VALUE, (long) rewardAmount * 2L);
+            }
+        }
+
         // Holder.Reference<Item> 에서 실제 Item 인스턴스 꺼내기
         Item bitcoinItem = optionalHolder.get().value();
 
         // 지급할 ItemStack 생성
-        ItemStack stack = new ItemStack(bitcoinItem, this.amount);
+        ItemStack stack = new ItemStack(bitcoinItem, rewardAmount);
 
         PlayerItemDelivery.giveOrDrop(serverPlayer, stack);
 
@@ -88,7 +101,7 @@ public class JobBitcoinReward extends AbstractReward
         if (serverPlayer.level().getServer() != null
                 && actionData.getSourceActionHolder() instanceof JobInstance jobInstance)
         {
-            JobsPlusMetrics.recordBitcoin(serverPlayer, jobInstance, this.amount);
+            JobsPlusMetrics.recordBitcoin(serverPlayer, jobInstance, rewardAmount);
 
             // 플레이어 이름을 골드색으로 표시
             Component playerName = serverPlayer.getName().copy()

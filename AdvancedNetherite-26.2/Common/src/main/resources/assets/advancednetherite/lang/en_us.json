@@ -116,6 +116,8 @@
   "config.advancednetherite.screen.button.install_configured": "%s 설치",
   "config.advancednetherite.screen.button.instructions": "설명서",
   "item.advancednetherite.bitcoin": "비트코인",
+  "item.advancednetherite.experience_double_coupon": "직업 경험치 2배 쿠폰",
+  "item.advancednetherite.bitcoin_double_coupon": "비트코인 2배 쿠폰",
   "item.advancednetherite.random_box_i": "랜덤 상자 I",
   "item.advancednetherite.random_box_ii": "랜덤 상자 II",
   "item.advancednetherite.random_box_iii": "랜덤 상자 III",

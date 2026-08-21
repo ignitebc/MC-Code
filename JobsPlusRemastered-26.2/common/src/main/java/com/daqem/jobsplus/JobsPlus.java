@@ -2,11 +2,14 @@ package com.daqem.jobsplus;
 
 import com.daqem.arc.registry.ArcRegistry;
 import com.daqem.jobsplus.config.JobsPlusConfig;
+import com.daqem.jobsplus.effect.JobsPlusMobEffects;
 import com.daqem.jobsplus.event.command.EventRegisterCommands;
 import com.daqem.jobsplus.event.block.CropReplantManager;
 import com.daqem.jobsplus.event.item.EventJobSelectTicketUse;
+import com.daqem.jobsplus.event.item.EventRewardCouponUse;
 import com.daqem.jobsplus.event.player.EventDeleteRandomItemOnDeath;
 import com.daqem.jobsplus.event.player.EventKillElytraDuringRaidOrWither;
+import com.daqem.jobsplus.event.player.EventRewardCouponEffectSync;
 import com.daqem.jobsplus.event.stock.StockMarketTicker;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobManager;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupManager;
@@ -34,6 +37,7 @@ public class JobsPlus
     {
         JobsPlusConfig.init();
         JobsPlusNetworking.init();
+        JobsPlusMobEffects.init();
 
         registerEvents();
         initRegistry();
@@ -46,6 +50,8 @@ public class JobsPlus
     {
         EventRegisterCommands.registerEvent();
         EventJobSelectTicketUse.registerEvent(); // 추가
+        EventRewardCouponUse.registerEvent();
+        EventRewardCouponEffectSync.registerEvent();
         EventKillElytraDuringRaidOrWither.registerEvent(); // 레이드/위더 활성 시 겉날개 즉사
         CropReplantManager.registerEvent();
         StockMarketTicker.registerEvent(); // 주식 시청자·미결제 포지션·예약 주문이 있으면 매분 시세 갱신
