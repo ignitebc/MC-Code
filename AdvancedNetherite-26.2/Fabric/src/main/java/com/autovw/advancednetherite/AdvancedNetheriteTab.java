@@ -3,6 +3,7 @@ package com.autovw.advancednetherite;
 import com.autovw.advancednetherite.api.annotation.Internal;
 import com.autovw.advancednetherite.common.item.AdvancedItem;
 import com.autovw.advancednetherite.core.ModItems;
+import com.autovw.advancednetherite.core.ModRewardCouponItems;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -101,6 +102,10 @@ public final class AdvancedNetheriteTab
 
                     // BitCoin
                     entries.accept(ModItems.BITCOIN);
+
+                    // Reward coupons
+                    entries.accept(ModRewardCouponItems.EXPERIENCE_DOUBLE_COUPON);
+                    entries.accept(ModRewardCouponItems.BITCOIN_DOUBLE_COUPON);
 
                     // randomBox 1~4
                     entries.accept(ModItems.RANDOM_BOX_I);
