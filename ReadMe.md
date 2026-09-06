@@ -2,6 +2,9 @@
 
 Jobs+는 Minecraft에 직업, 레벨, 스킬, 보상, 아이템 제한, 상점 및 주식 거래 기능을 추가하는 Fabric 모드입니다.
 
+서버 공통 수면·전투·사망·피해·배고픔 규칙은 별도 [Server Utilities](ServerUtilities-26.2/README.md) 모듈에서 관리합니다.
+해당 규칙을 유지하려면 이번에 수정한 Jobs+·Advanced Netherite와 Server Utilities를 함께 설치합니다.
+
 ## 목차
 
 - [지원 환경](#지원-환경)
