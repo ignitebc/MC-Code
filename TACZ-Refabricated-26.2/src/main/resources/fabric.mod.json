@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "tacz",
+  "version": "${version}",
+  "name": "TaCZ Refabricated 26.2",
+  "description": "An unofficial Fabric-only port of Timeless & Classics Guns: Zero for Minecraft 26.2.",
+  "authors": [
+    "Sh1roCu"
+  ],
+  "contact": {},
+  "license": "GPL3 / CC BY-NC-ND 4.0",
+  "icon": "icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "cn.sh1rocu.tacz.client.TaCZFabricClient"
+    ],
+    "main": [
+      "cn.sh1rocu.tacz.TaCZFabric"
+    ]
+  },
+  "custom": {
+    "loom:injected_interfaces": {
+      "net/minecraft/world/entity/LivingEntity": [
+        "cn/sh1rocu/tacz/api/mixin/ItemHandlerCapability"
+      ]
+    }
+  },
+  "mixins": [
+    "tacz.mixins.json",
+    "tacz.fabric.mixins.json"
+  ],
+  "accessWidener": "tacz.accesswidener",
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${supported_minecraft_versions}",
+    "java": ">=${java_version}",
+    "forgeconfigapiport": ">=26.2.1"
+  }
+}
