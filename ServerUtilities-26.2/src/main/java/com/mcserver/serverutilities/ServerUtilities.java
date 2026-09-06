@@ -28,6 +28,7 @@ public final class ServerUtilities implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        rejectLegacyModule("jobsplus", "com/daqem/jobsplus/event/player/EventDeleteRandomItemOnDeath.class");
         rejectLegacyModule("advancednetherite", "com/autovw/advancednetherite/mixin/HungerExhaustionMixin.class");
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             try {

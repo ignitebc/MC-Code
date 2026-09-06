@@ -7,7 +7,6 @@ import com.daqem.jobsplus.event.command.EventRegisterCommands;
 import com.daqem.jobsplus.event.block.CropReplantManager;
 import com.daqem.jobsplus.event.item.EventJobSelectTicketUse;
 import com.daqem.jobsplus.event.item.EventRewardCouponUse;
-import com.daqem.jobsplus.event.player.EventDeleteRandomItemOnDeath;
 import com.daqem.jobsplus.event.player.EventRewardCouponEffectSync;
 import com.daqem.jobsplus.event.stock.StockMarketTicker;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobManager;
@@ -53,7 +52,6 @@ public class JobsPlus
         EventRewardCouponEffectSync.registerEvent();
         CropReplantManager.registerEvent();
         StockMarketTicker.registerEvent(); // 주식 시청자·미결제 포지션·예약 주문이 있으면 매분 시세 갱신
-        EventDeleteRandomItemOnDeath.registerEvent(); // 사망 시 소지품 한 칸을 무작위로 삭제
         JobsPlusMetrics.registerEvents(); // EXP/BTC/접속시간 분석용 경량 메트릭
     }
 

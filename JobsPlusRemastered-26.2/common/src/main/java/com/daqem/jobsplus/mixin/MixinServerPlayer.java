@@ -17,7 +17,6 @@ import com.daqem.jobsplus.player.job.powerup.PowerupState;
 import com.daqem.jobsplus.player.stock.StockAccount;
 import com.daqem.jobsplus.player.stock.StockPositionLedger;
 import com.mojang.authlib.GameProfile;
-import com.mojang.serialization.Codec;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
@@ -50,8 +49,6 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     private List<Job> jobsplus$jobs = new ArrayList<>();
     @Unique
     private int jobsplus$coins = 0;
-    @Unique
-    private boolean jobsplus$deathItemProtected;
 
     /**
      * 직업추가권 등으로 얻는 추가 슬롯 (상한 없음)
@@ -216,18 +213,6 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     }
 
     @Override
-    public boolean jobsplus$isDeathItemProtected()
-    {
-        return this.jobsplus$deathItemProtected;
-    }
-
-    @Override
-    public void jobsplus$setDeathItemProtected(boolean deathItemProtected)
-    {
-        this.jobsplus$deathItemProtected = deathItemProtected;
-    }
-
-    @Override
     public List<IActionHolder> jobsplus$getActionHolders() {
         List<IActionHolder> actionHolders = new ArrayList<>(jobsplus$getJobInstances());
         actionHolders.addAll(
@@ -302,12 +287,6 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
             // 주식 계좌는 월드 저장 데이터에 UUID 기준으로 보관되므로 복사할 필요가 없다.
 
             this.jobsplus$jobs.forEach(job -> job.setPlayer(this));
-            if (oldJobsServerPlayer.jobsplus$isDeathItemProtected())
-            {
-                this.getInventory().replaceWith(oldPlayer.getInventory());
-                this.jobsplus$deathItemProtected = false;
-                oldJobsServerPlayer.jobsplus$setDeathItemProtected(false);
-            }
             JobHealthSync.sync(this);
         }
     }
@@ -318,10 +297,6 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
         valueOutput.store("JobsPlus", ServerPlayerData.CODEC,
                 new ServerPlayerData(this.jobsplus$jobs, this.jobsplus$coins, this.jobsplus$extraJobSlots,
                         StockAccount.EMPTY));
-
-        // 사망 보존 플래그는 리스폰 시 인벤토리 복원의 유일한 근거이므로,
-        // 사망 화면에서 접속을 끊거나 서버가 재시작돼도 유지되도록 함께 저장한다.
-        valueOutput.store("JobsPlusDeathItemProtected", Codec.BOOL, this.jobsplus$deathItemProtected);
     }
 
     @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
@@ -342,9 +317,6 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
             }
             JobHealthSync.sync(this);
         });
-
-        valueInput.read("JobsPlusDeathItemProtected", Codec.BOOL)
-                .ifPresent(protectedFlag -> this.jobsplus$deathItemProtected = protectedFlag);
     }
 
     @Inject(at = @At("TAIL"), method = "tick()V")

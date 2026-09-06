@@ -27,10 +27,6 @@ public interface JobsServerPlayer extends JobsPlayer {
      */
     void jobsplus$addExtraJobSlots(int delta);
 
-    boolean jobsplus$isDeathItemProtected();
-
-    void jobsplus$setDeathItemProtected(boolean deathItemProtected);
-
     /**
      * 실제 적용되는 최대 직업 수
      * 정책:
