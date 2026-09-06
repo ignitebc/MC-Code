@@ -4,9 +4,7 @@
   "package": "com.autovw.advancednetherite.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "CreeperExplosionDamageMixin",
     "EnderManMixin",
-    "HungerExhaustionMixin",
     "PhantomMixin"
   ],
   "client": [
