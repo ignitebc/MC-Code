@@ -47,6 +47,7 @@ crash-reports/
 
 # Fabric JAR 수집 산출물 (의존성 문서는 Build_File에 별도 보관)
 Build_File/build_files/*
+Build_File/.jar-collection-*/
 
 # 서버 반영용 수정 파일 전달 폴더
 mc수정한파일/

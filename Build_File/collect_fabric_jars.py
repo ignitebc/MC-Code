@@ -4,6 +4,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import zipfile
 from typing import Optional
@@ -148,11 +149,56 @@ def prepare_target_directory(target_dir: Path) -> bool:
         print(f"Refusing to reset an unexpected target directory: {resolved_target_dir}")
         return False
 
-    if resolved_target_dir.exists():
-        shutil.rmtree(resolved_target_dir)
-
-    resolved_target_dir.mkdir(parents=True, exist_ok=True)
+    # 빌드·검증 실패 시 마지막 성공 산출물을 유지한다.
+    if target_dir.is_symlink() or (resolved_target_dir.exists() and not resolved_target_dir.is_dir()):
+        print(f"Invalid output directory: {target_dir}")
+        return False
     return True
+
+
+def publish_release_jars(release_jars: list, target_dir: Path) -> bool:
+    if not prepare_target_directory(target_dir):
+        return False
+
+    build_file_dir = Path(__file__).resolve().parent
+    work_dir = Path(tempfile.mkdtemp(prefix=".jar-collection-", dir=build_file_dir)).resolve()
+    # 이동·삭제할 모든 경로는 이 실행에서 만든 작업 폴더 안에 둔다.
+    if work_dir.parent != build_file_dir or not work_dir.name.startswith(".jar-collection-"):
+        raise ValueError("Unexpected collection staging directory")
+    staging = work_dir / "new"
+    backup = work_dir / "previous"
+    published = False
+    try:
+        staging.mkdir()
+        names = set()
+        for module_name, expected_mod_id, jar in release_jars:
+            if jar.name.lower() in names:
+                raise ValueError(f"Duplicate JAR filename: {jar.name}")
+            names.add(jar.name.lower())
+            shutil.copy2(jar, staging / jar.name)
+
+        if target_dir.exists():
+            target_dir.rename(backup)
+        try:
+            staging.rename(target_dir)
+        except OSError:
+            if backup.exists():
+                backup.rename(target_dir)
+            raise
+        published = True
+        return True
+    except (OSError, ValueError) as error:
+        print(f"Could not publish release JARs: {error}")
+        return False
+    finally:
+        if backup.exists() and not published:
+            # 복원까지 실패했다면 이전 산출물을 자동 삭제하지 않는다.
+            print(f"Previous release JARs retained for recovery: {backup}")
+        else:
+            try:
+                shutil.rmtree(work_dir)
+            except OSError as error:
+                print(f"Could not clean collection staging directory {work_dir}: {error}")
 
 
 def find_latest_release_jar(module_root: Path, fabric_dir: Optional[str]) -> Optional[Path]:
@@ -329,6 +375,11 @@ def copy_module_jars() -> int:
     if not prepare_target_directory(target_dir):
         return 1
 
+    dependency_manifest = Path(__file__).resolve().parent / DEPENDENCY_MANIFEST_NAME
+    if not dependency_manifest.is_file():
+        print(f"Dependency manifest not found: {dependency_manifest}")
+        return 1
+
     for module_name, fabric_dir, expected_mod_id in MODULES:
         module_root = root / module_name
         if not build_fabric_module(module_root, fabric_dir, java_home):
@@ -367,20 +418,12 @@ def copy_module_jars() -> int:
         print("\nNo files were copied. Fix the build outputs and run again.")
         return 1
 
-    copied = []
-    for module_name, expected_mod_id, jar in release_jars:
-        target = target_dir / jar.name
-        shutil.copy2(jar, target)
-        copied.append((module_name, jar, target))
-
-    dependency_manifest = Path(__file__).resolve().parent / DEPENDENCY_MANIFEST_NAME
-    if not dependency_manifest.is_file():
-        print(f"Dependency manifest not found: {dependency_manifest}")
+    if not publish_release_jars(release_jars, target_dir):
         return 1
 
     print("Copied Fabric release jars:")
-    for module_name, source, target in copied:
-        print(f"  - {module_name}: {source.name} -> {target}{get_environment_label(source)}")
+    for module_name, expected_mod_id, source in release_jars:
+        print(f"  - {module_name}: {source.name} -> {target_dir / source.name}{get_environment_label(source)}")
 
     print(f"Dependency manifest: {dependency_manifest}")
     return 0
