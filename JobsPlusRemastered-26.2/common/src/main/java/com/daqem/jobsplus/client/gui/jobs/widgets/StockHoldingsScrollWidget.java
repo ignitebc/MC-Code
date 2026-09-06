@@ -11,7 +11,7 @@ public class StockHoldingsScrollWidget extends AbstractScrollWidget
     public StockHoldingsScrollWidget(int width, int height, JobsScreenState state)
     {
         super(width, height, 10);
-        this.addComponent(new StockHoldingsContentComponent(state));
+        this.addComponent(new StockHoldingsContentComponent(state, width - 10));
     }
 
     @Override

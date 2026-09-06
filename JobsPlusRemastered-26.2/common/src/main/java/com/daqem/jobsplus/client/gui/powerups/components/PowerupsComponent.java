@@ -34,6 +34,7 @@ public class PowerupsComponent extends JobsSpriteComponent
     {
         super(0, 0, layout.width(), layout.height(), JobsPlus.getId("powerups/background"));
         this.state = state;
+        state.setDetailsPanelVisible(layout.wide());
         this.addWidget(new JobsCloseButton(getWidth() - 22, 7));
         CoinsComponent coinsComponent = new CoinsComponent(state);
         coinsComponent.setX(getWidth() - coinsComponent.getWidth() - 8);
@@ -83,11 +84,14 @@ public class PowerupsComponent extends JobsSpriteComponent
         SkillTreeComponent skillTreeComponent = new SkillTreeComponent(
                 10,
                 34,
-                getWidth() - 20,
+                getWidth() - 20 - (layout.wide() ? 158 : 0),
                 getHeight() - 57,
                 powerupsSkillTree
         );
         this.addComponent(skillTreeComponent);
+        if (layout.wide()) {
+            this.addComponent(new PowerupDetailsComponent(state, getWidth() - 158, 32, 150, getHeight() - 53));
+        }
     }
 
     @Override

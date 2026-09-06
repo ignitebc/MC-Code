@@ -15,7 +15,7 @@ public class ShopScrollContentComponent extends EmptyComponent
 
     private static final int START_X = 0;
     private static final int START_Y = 0;
-    private static final int ROW_HEIGHT = 26;
+    private static final int ROW_HEIGHT = 32;
 
     public ShopScrollContentComponent(JobsScreenState state, int width)
     {

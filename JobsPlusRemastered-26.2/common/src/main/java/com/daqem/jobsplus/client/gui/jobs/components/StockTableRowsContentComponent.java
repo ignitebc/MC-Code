@@ -1,6 +1,7 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
 import com.daqem.jobsplus.client.gui.theme.JobsTheme;
+import com.daqem.jobsplus.client.gui.theme.StockIcons;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.stock.ClientStockMarket;
 import com.daqem.jobsplus.stock.SnapshotStatus;
@@ -21,7 +22,7 @@ import java.util.Locale;
 public class StockTableRowsContentComponent extends EmptyComponent
 {
     private static final float TEXT_SCALE = 0.60f;
-    private static final int POSITIVE_COLOR = JobsTheme.SUCCESS;
+    private static final int POSITIVE_COLOR = JobsTheme.CYAN;
     private static final int NEGATIVE_COLOR = JobsTheme.ERROR;
     private static final NumberFormat PRICE_FORMAT = NumberFormat.getIntegerInstance(Locale.KOREA);
 
@@ -69,13 +70,6 @@ public class StockTableRowsContentComponent extends EmptyComponent
         int y = getTotalY();
         int right = x + getWidth();
         int bottom = y + getHeight();
-        guiGraphics.fill(x, y, x + 1, bottom, StockTableComponent.GRID_COLOR);
-        guiGraphics.fill(x + StockTableComponent.nameColumn(getWidth()), y,
-                x + StockTableComponent.nameColumn(getWidth()) + 1, bottom, StockTableComponent.GRID_COLOR);
-        guiGraphics.fill(x + StockTableComponent.priceColumn(getWidth()), y,
-                x + StockTableComponent.priceColumn(getWidth()) + 1, bottom, StockTableComponent.GRID_COLOR);
-        guiGraphics.fill(right - 1, y, right, bottom, StockTableComponent.GRID_COLOR);
-
         List<StockCatalog.StockDefinition> stocks = StockCatalog.getStocks();
         // 플레이어 PC 시간이 아니라 서버가 알려 준 상태로만 판단한다.
         StockMarketSnapshot snapshot = ClientStockMarket.getSnapshot();
@@ -86,26 +80,27 @@ public class StockTableRowsContentComponent extends EmptyComponent
             StockQuote quote = snapshot.getQuote(stock.id());
             int rowY = y + index * StockTableComponent.ROW_HEIGHT;
             boolean selected = stock.id().equals(this.state.getSelectedStockId());
-            if (selected)
-            {
-                guiGraphics.fill(x + 1, rowY, right - 1,
-                        rowY + StockTableComponent.ROW_HEIGHT - 1, JobsTheme.SELECTED);
+            boolean hovered = mouseX >= x && mouseX < right && mouseY >= rowY
+                    && mouseY < rowY + StockTableComponent.ROW_HEIGHT - 2;
+            JobsTheme.texture(guiGraphics, selected || hovered ? JobsTheme.Skin.SECONDARY_HOVER : JobsTheme.Skin.INSET,
+                    x, rowY, getWidth(), StockTableComponent.ROW_HEIGHT - 2);
+            if (selected) {
+                guiGraphics.fill(x + 1, rowY + 2, x + 3, rowY + StockTableComponent.ROW_HEIGHT - 4, JobsTheme.CYAN);
             }
-            guiGraphics.fill(x, rowY + StockTableComponent.ROW_HEIGHT - 1, right,
-                    rowY + StockTableComponent.ROW_HEIGHT, StockTableComponent.GRID_COLOR);
-
-            drawScaledString(guiGraphics, selected ? "▶" : "",
-                    x + 1, rowY + 2, StockTableComponent.TEXT_COLOR);
-            JobsTheme.text(guiGraphics, Component.literal(stock.name()), x + 5, rowY + 2,
-                    StockTableComponent.nameColumn(getWidth()) - 8, StockTableComponent.TEXT_COLOR);
+            StockIcons.draw(guiGraphics, stock.id(), x + 6, rowY + 3, 16);
+            int nameWidth = StockTableComponent.nameColumn(getWidth()) - 29;
+            JobsTheme.text(guiGraphics, Component.literal(stock.id()), x + 26, rowY + 3,
+                    nameWidth, StockTableComponent.TEXT_COLOR);
+            JobsTheme.text(guiGraphics, Component.literal(stock.name()), x + 26, rowY + 13,
+                    nameWidth, JobsTheme.MUTED);
             if (quote == null || !quote.hasValidPrice())
             {
                 // 갱신 중과 조회 실패는 모두 거래가 막히지만, 원인이 다르므로 구분해서 알린다.
                 String statusText = refreshing ? "갱신 중" : "조회 실패";
                 drawScaledString(guiGraphics, statusText,
-                        x + StockTableComponent.nameColumn(getWidth()) + 2, rowY + 2,
+                        x + StockTableComponent.nameColumn(getWidth()) + 2, rowY + 8,
                         StockTableComponent.TEXT_COLOR);
-                drawScaledStringRight(guiGraphics, "-", right - 3, rowY + 2,
+                drawScaledStringRight(guiGraphics, "-", right - 3, rowY + 8,
                         StockTableComponent.TEXT_COLOR);
                 continue;
             }
@@ -116,7 +111,13 @@ public class StockTableRowsContentComponent extends EmptyComponent
                     StockTableComponent.priceColumn(getWidth()) - StockTableComponent.nameColumn(getWidth()),
                     StockTableComponent.ROW_HEIGHT - 1, StockTableComponent.TEXT_COLOR);
 
-            String changeText = String.format(Locale.ROOT, "%+.2f%%", quote.percentChange());
+            String direction = "";
+            if (quote.percentChange() > 0) {
+                direction = "▲ ";
+            } else if (quote.percentChange() < 0) {
+                direction = "▼ ";
+            }
+            String changeText = direction + String.format(Locale.ROOT, "%.2f%%", Math.abs(quote.percentChange()));
             int changeColor = quote.percentChange() > 0
                     ? POSITIVE_COLOR
                     : quote.percentChange() < 0 ? NEGATIVE_COLOR : StockTableComponent.TEXT_COLOR;

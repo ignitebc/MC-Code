@@ -20,6 +20,9 @@ public class CoinsComponent extends EmptyComponent {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY,
                                    float partialTick, int parentWidth, int parentHeight) {
+        if (parentWidth >= 420) {
+            return;
+        }
         JobsTheme.sprite(graphics, JobsPlus.getId("jobs/coins"), getTotalX() + 3, getTotalY() + 3, 7, 8);
         JobsTheme.text(graphics, Component.literal("직업 코인 " + state.getCoins()),
                 getTotalX() + 14, getTotalY() + 3, getWidth() - 16, JobsTheme.TEXT);

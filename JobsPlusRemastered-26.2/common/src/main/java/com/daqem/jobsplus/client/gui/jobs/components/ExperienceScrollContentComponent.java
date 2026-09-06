@@ -53,7 +53,7 @@ public class ExperienceScrollContentComponent extends EmptyComponent
         String jobPath = state.getSelectedJob().getJobInstance().getLocation().getPath();
         for (IAction action : actions)
         {
-            ActionItemComponent actionItemComponent = new ActionItemComponent(action, jobPath, getWidth());
+            ActionItemComponent actionItemComponent = new ActionItemComponent(action, jobPath, getWidth(), state.getSelectedJob().getJobInstance().getIconItem());
             actionItemComponent.setY(yOffset);
             this.addComponent(actionItemComponent);
             yOffset += actionItemComponent.getHeight() + SECTION_GAP;

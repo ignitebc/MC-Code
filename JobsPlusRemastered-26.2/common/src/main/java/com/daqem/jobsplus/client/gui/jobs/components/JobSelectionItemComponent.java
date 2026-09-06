@@ -10,7 +10,7 @@ public class JobSelectionItemComponent extends EmptyComponent
 
     public JobSelectionItemComponent(Job job, JobsScreenState state, int width)
     {
-        super(0, 0, width, 20);
+        super(0, 0, width, 24);
 
         JobSelectionItemWidget jobSelectionItemWidget = new JobSelectionItemWidget(job, state, width);
 

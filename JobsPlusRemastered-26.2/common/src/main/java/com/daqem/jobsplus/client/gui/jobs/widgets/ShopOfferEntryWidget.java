@@ -27,7 +27,7 @@ public class ShopOfferEntryWidget extends CustomButtonWidget
 
     public ShopOfferEntryWidget(int x, int y, int width, JobsScreenState state, ShopOffer offer)
     {
-        super(x, y, width, 24, Component.empty(), null, button -> state.setSelectedShopOffer(offer));
+        super(x, y, width, 30, Component.empty(), null, button -> state.setSelectedShopOffer(offer));
         this.state = state;
         this.offer = offer;
     }
@@ -46,9 +46,9 @@ public class ShopOfferEntryWidget extends CustomButtonWidget
             guiGraphics.fill(getX(), getY() + 3, getX() + 2, getY() + getHeight() - 3, JobsTheme.CYAN);
         }
         int inputSlotX = getX() + 5;
-        int outputSlotX = getX() + getWidth() - 23;
+        int outputSlotX = getX() + getWidth() / 2 + 5;
         JobsTheme.sprite(guiGraphics, JobsPlus.getId("jobs/item_slot_1"), inputSlotX, getY() + 3, 18, 18);
-        JobsTheme.label(guiGraphics, Component.literal("→"), getX() + 25, getY(), getWidth() - 50, getHeight(), JobsTheme.CYAN);
+        JobsTheme.label(guiGraphics, Component.literal("→"), getX() + getWidth() / 2 - 5, getY(), 8, getHeight(), JobsTheme.CYAN);
         JobsTheme.sprite(guiGraphics, JobsPlus.getId("jobs/item_slot_1"), outputSlotX, getY() + 3, 18, 18);
 
         // 입력/출력 아이템 스택
@@ -64,10 +64,14 @@ public class ShopOfferEntryWidget extends CustomButtonWidget
 
         // 아이템 렌더링
         guiGraphics.item(inStack, inX, inY);
-        guiGraphics.itemDecorations(Minecraft.getInstance().font, inStack, inX, inY);
+
 
         guiGraphics.item(outStack, outX, outY);
-        guiGraphics.itemDecorations(Minecraft.getInstance().font, outStack, outX, outY);
+        int textWidth = Math.max(1, getWidth() / 2 - 32);
+        JobsTheme.text(guiGraphics, inStack.getHoverName(), inputSlotX + 21, getY() + 5, textWidth, JobsTheme.TEXT);
+        JobsTheme.text(guiGraphics, Component.literal("× " + offer.inputAmount()), inputSlotX + 21, getY() + 17, textWidth, JobsTheme.MUTED);
+        JobsTheme.text(guiGraphics, outStack.getHoverName(), outputSlotX + 21, getY() + 5, textWidth, JobsTheme.TEXT);
+        JobsTheme.text(guiGraphics, Component.literal("× " + offer.outputAmount()), outputSlotX + 21, getY() + 17, textWidth, JobsTheme.MUTED);
 
         // ====== 중요: 여기서는 툴팁을 직접 그리지 않는다 ======
         // 스크롤 컨테이너가 Scissor를 쓰고 있어서, 여기서 툴팁/disableScissor를 만지면 underflow로 터진다.

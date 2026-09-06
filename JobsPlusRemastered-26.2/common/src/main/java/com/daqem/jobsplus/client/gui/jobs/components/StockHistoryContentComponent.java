@@ -27,9 +27,9 @@ public class StockHistoryContentComponent extends EmptyComponent
 
     private final JobsScreenState state;
 
-    public StockHistoryContentComponent(JobsScreenState state)
+    public StockHistoryContentComponent(JobsScreenState state, int width)
     {
-        super(0, 0, 132, HEADER_HEIGHT
+        super(0, 0, width, HEADER_HEIGHT
                 + Math.max(1, Math.min(MAX_TRANSACTIONS, state.getStockAccount().transactions().size()))
                 * ROW_HEIGHT);
         this.state = state;
@@ -45,10 +45,10 @@ public class StockHistoryContentComponent extends EmptyComponent
 
         drawCentered(guiGraphics, "최근 거래내역", x + getWidth() / 2, y + 2);
         drawScaled(guiGraphics, "일시", x + 2, y + 13, TEXT_COLOR);
-        drawScaled(guiGraphics, "구분", x + 35, y + 13, TEXT_COLOR);
-        drawScaled(guiGraphics, "종목", x + 52, y + 13, TEXT_COLOR);
+        drawScaled(guiGraphics, "구분", x + getWidth() * 27 / 100, y + 13, TEXT_COLOR);
+        drawScaled(guiGraphics, "종목", x + getWidth() * 40 / 100, y + 13, TEXT_COLOR);
         // 표시값은 주식 수량이 아니라 거래에 쓰인 비트코인 금액이다.
-        drawScaledRight(guiGraphics, "금액", x + 103, y + 13, TEXT_COLOR);
+        drawScaledRight(guiGraphics, "금액", x + getWidth() * 78 / 100, y + 13, TEXT_COLOR);
         drawScaledRight(guiGraphics, "수익률(%)", right - 2, y + 13, TEXT_COLOR);
         guiGraphics.fill(x, y + HEADER_HEIGHT - 1, right, y + HEADER_HEIGHT, GRID_COLOR);
 
@@ -69,10 +69,10 @@ public class StockHistoryContentComponent extends EmptyComponent
             int rowY = y + HEADER_HEIGHT + index * ROW_HEIGHT;
             drawScaled(guiGraphics, TIME_FORMAT.format(Instant.ofEpochMilli(transaction.timestamp())),
                     x + 2, rowY + 2, TEXT_COLOR);
-            drawScaled(guiGraphics, getTransactionName(transaction.type()), x + 35, rowY + 2, TEXT_COLOR);
-            drawScaled(guiGraphics, getStockName(transaction.stockId()), x + 52, rowY + 2, TEXT_COLOR);
+            drawScaled(guiGraphics, getTransactionName(transaction.type()), x + getWidth() * 27 / 100, rowY + 2, TEXT_COLOR);
+            drawScaled(guiGraphics, getStockName(transaction.stockId()), x + getWidth() * 40 / 100, rowY + 2, TEXT_COLOR);
             drawScaledRight(guiGraphics, String.format(Locale.ROOT, "%.2f개", transaction.amount()),
-                    x + 103, rowY + 2, TEXT_COLOR);
+                    x + getWidth() * 78 / 100, rowY + 2, TEXT_COLOR);
             drawScaledRight(guiGraphics, formatReturnRate(transaction), right - 2, rowY + 2,
                     getReturnRateColor(transaction));
             guiGraphics.fill(x, rowY + ROW_HEIGHT - 1, right, rowY + ROW_HEIGHT, GRID_COLOR);

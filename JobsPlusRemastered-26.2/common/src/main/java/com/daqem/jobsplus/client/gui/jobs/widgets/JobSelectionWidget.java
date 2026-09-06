@@ -11,7 +11,7 @@ public class JobSelectionWidget extends AbstractScrollWidget
 
     public JobSelectionWidget(int width, int height, JobsScreenState state)
     {
-        super(width, height, 20);
+        super(width, height, 24);
         List<Job> jobs = state.getJobs();
         for (Job job : jobs)
         {

@@ -32,9 +32,9 @@ public class StockHoldingsContentComponent extends EmptyComponent
 
     private final JobsScreenState state;
 
-    public StockHoldingsContentComponent(JobsScreenState state)
+    public StockHoldingsContentComponent(JobsScreenState state, int width)
     {
-        super(0, 0, TABLE_WIDTH, Math.max(20, (state.getStockAccount().positions().size() + 1) * ROW_HEIGHT));
+        super(0, 0, width, Math.max(20, (state.getStockAccount().positions().size() + 1) * ROW_HEIGHT));
         this.state = state;
         int index = 0;
         for (StockPosition position : state.getStockAccount().positions())
@@ -60,18 +60,22 @@ public class StockHoldingsContentComponent extends EmptyComponent
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth,
                        int parentHeight)
     {
+        int nameColumn = getWidth() * 25 / 100;
+        int positionColumn = getWidth() * 40 / 100;
+        int priceColumn = getWidth() * 63 / 100;
+        int amountColumn = getWidth() * 80 / 100;
         int x = getTotalX();
         int y = getTotalY();
         int right = x + getWidth();
         int bottom = y + getHeight();
-        drawScaledCentered(guiGraphics, "종목명", x + NAME_COLUMN_END / 2, y + 2, TEXT_COLOR);
-        drawScaledCentered(guiGraphics, "포지션", x + (NAME_COLUMN_END + POSITION_COLUMN_END) / 2, y + 2,
+        drawScaledCentered(guiGraphics, "종목명", x + nameColumn / 2, y + 2, TEXT_COLOR);
+        drawScaledCentered(guiGraphics, "포지션", x + (nameColumn + positionColumn) / 2, y + 2,
                 TEXT_COLOR);
-        drawScaledCentered(guiGraphics, "평단가", x + (POSITION_COLUMN_END + AVERAGE_PRICE_COLUMN_END) / 2,
+        drawScaledCentered(guiGraphics, "평단가", x + (positionColumn + priceColumn) / 2,
                 y + 2, TEXT_COLOR);
-        drawScaledCentered(guiGraphics, "투자금", x + (AVERAGE_PRICE_COLUMN_END + QUANTITY_COLUMN_END) / 2, y + 2, TEXT_COLOR);
+        drawScaledCentered(guiGraphics, "투자금", x + (priceColumn + amountColumn) / 2, y + 2, TEXT_COLOR);
         // 전일 대비가 아니라 평단가 대비 손익이므로 "수익률"이 맞다.
-        drawScaled(guiGraphics, "수익률(%)", x + QUANTITY_COLUMN_END + 2, y + 2, TEXT_COLOR);
+        drawScaled(guiGraphics, "수익률(%)", x + amountColumn + 2, y + 2, TEXT_COLOR);
         guiGraphics.fill(x, y + ROW_HEIGHT - 1, right, y + ROW_HEIGHT, GRID_COLOR);
 
         StockMarketSnapshot snapshot = ClientStockMarket.getSnapshot();
@@ -110,20 +114,20 @@ public class StockHoldingsContentComponent extends EmptyComponent
 
             drawScaled(guiGraphics, selected ? "▶" : "", x + 1, rowY + 2, TEXT_COLOR);
             JobsTheme.text(guiGraphics, Component.literal(name), x + 6, rowY + 2,
-                    NAME_COLUMN_END - 9, TEXT_COLOR);
-            drawScaledCentered(guiGraphics, positionName, x + (NAME_COLUMN_END + POSITION_COLUMN_END) / 2,
+                    nameColumn - 9, TEXT_COLOR);
+            drawScaledCentered(guiGraphics, positionName, x + (nameColumn + positionColumn) / 2,
                     rowY + 2, TEXT_COLOR);
-            drawScaledRight(guiGraphics, averagePrice, x + AVERAGE_PRICE_COLUMN_END - 2, rowY + 2, TEXT_COLOR);
-            drawScaledRight(guiGraphics, investedAmount, x + QUANTITY_COLUMN_END - 2, rowY + 2, TEXT_COLOR);
-            drawScaled(guiGraphics, returnRate, x + QUANTITY_COLUMN_END + 2, rowY + 2, returnColor);
+            drawScaledRight(guiGraphics, averagePrice, x + priceColumn - 2, rowY + 2, TEXT_COLOR);
+            drawScaledRight(guiGraphics, investedAmount, x + amountColumn - 2, rowY + 2, TEXT_COLOR);
+            drawScaled(guiGraphics, returnRate, x + amountColumn + 2, rowY + 2, returnColor);
             guiGraphics.fill(x, rowY + ROW_HEIGHT - 1, right, rowY + ROW_HEIGHT, GRID_COLOR);
             index++;
         }
 
-        guiGraphics.fill(x + NAME_COLUMN_END, y, x + NAME_COLUMN_END + 1, bottom, GRID_COLOR);
-        guiGraphics.fill(x + POSITION_COLUMN_END, y, x + POSITION_COLUMN_END + 1, bottom, GRID_COLOR);
-        guiGraphics.fill(x + AVERAGE_PRICE_COLUMN_END, y, x + AVERAGE_PRICE_COLUMN_END + 1, bottom, GRID_COLOR);
-        guiGraphics.fill(x + QUANTITY_COLUMN_END, y, x + QUANTITY_COLUMN_END + 1, bottom, GRID_COLOR);
+        guiGraphics.fill(x + nameColumn, y, x + nameColumn + 1, bottom, GRID_COLOR);
+        guiGraphics.fill(x + positionColumn, y, x + positionColumn + 1, bottom, GRID_COLOR);
+        guiGraphics.fill(x + priceColumn, y, x + priceColumn + 1, bottom, GRID_COLOR);
+        guiGraphics.fill(x + amountColumn, y, x + amountColumn + 1, bottom, GRID_COLOR);
     }
 
     private static String formatAmount(double amount)

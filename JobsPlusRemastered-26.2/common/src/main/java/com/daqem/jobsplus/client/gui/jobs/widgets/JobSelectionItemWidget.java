@@ -18,7 +18,7 @@ public class JobSelectionItemWidget extends CustomButtonWidget
 
     public JobSelectionItemWidget(Job job, JobsScreenState state, int width)
     {
-        super(0, 0, width, 19, job.getJobInstance().getName(), SPRITES, button -> state.setSelectedJob(job));
+        super(0, 0, width, 23, job.getJobInstance().getName(), SPRITES, button -> state.setSelectedJob(job));
         this.job = job;
         this.state = state;
     }
@@ -35,18 +35,14 @@ public class JobSelectionItemWidget extends CustomButtonWidget
             guiGraphics.fill(getX(), getY() + 2, getX() + 2, getY() + getHeight() - 2, JobsTheme.CYAN);
         }
         guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().translate(getX() + 4, getY() + 3);
-        guiGraphics.pose().scale(0.75f, 0.75f);
+        guiGraphics.pose().translate(getX() + 5, getY() + 4);
+        guiGraphics.pose().scale(1.0f, 1.0f);
         guiGraphics.fakeItem(this.job.getJobInstance().getIconItem(), 0, 0);
         guiGraphics.pose().popMatrix();
-        JobsTheme.text(guiGraphics, getMessage(), getX() + 19, getY() + 4, getWidth() - 34,
+        JobsTheme.text(guiGraphics, getMessage(), getX() + 25, getY() + 8, getWidth() - 56,
                 this.job.getLevel() > 0 ? JobsTheme.TEXT : JobsTheme.MUTED);
-        if (this.job.getLevel() > 0)
-        {
-            JobsTheme.label(guiGraphics, JobsPlus.literal(Integer.toString(this.job.getLevel())),
-                    getX() + getWidth() - 16, getY() + 1, 14, 12, JobsTheme.CYAN);
-            JobsTheme.progress(guiGraphics, getX() + 19, getY() + 13, getWidth() - 24, 4,
-                    this.job.getExperiencePercentage());
-        }
+        JobsTheme.text(guiGraphics, JobsPlus.literal(this.job.getLevel() > 0 ? "보유" : "미보유"),
+                getX() + getWidth() - 27, getY() + 8, 24,
+                this.job.getLevel() > 0 ? JobsTheme.CYAN : JobsTheme.MUTED);
     }
 }

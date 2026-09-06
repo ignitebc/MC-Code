@@ -8,6 +8,6 @@ public class StockHistoryScrollWidget extends AbstractScrollWidget
     public StockHistoryScrollWidget(int width, int height, JobsScreenState state)
     {
         super(width, height, 10);
-        this.addComponent(new StockHistoryContentComponent(state));
+        this.addComponent(new StockHistoryContentComponent(state, width - 10));
     }
 }

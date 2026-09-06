@@ -57,7 +57,7 @@ public class ShopSellButtonWidget extends CustomButtonWidget
             return;
         }
         JobsTheme.button(guiGraphics, getX(), getY(), getWidth(), getHeight(),
-                enabled, isHoveredOrFocused(), false, false);
+                enabled, isHoveredOrFocused(), false, true);
         JobsTheme.label(guiGraphics, getMessage(), getX(), getY(), getWidth(), getHeight(),
                 enabled ? JobsTheme.TEXT : JobsTheme.DISABLED);
     }

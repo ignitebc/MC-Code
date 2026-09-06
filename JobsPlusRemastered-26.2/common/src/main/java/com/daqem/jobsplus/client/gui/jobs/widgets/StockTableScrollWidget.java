@@ -7,7 +7,7 @@ public class StockTableScrollWidget extends AbstractScrollWidget
 {
     public StockTableScrollWidget(int width, int height, JobsScreenState state)
     {
-        super(width, height, 8);
+        super(width, height, 24);
         this.addComponent(new StockTableRowsContentComponent(state, width - 10));
     }
 }

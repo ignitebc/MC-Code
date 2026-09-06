@@ -360,6 +360,22 @@ public class UserGuideScrollComponent extends EmptyComponent
         this.addWidget(recipesScrollWidget);
     }
 
+    private static Component styleSections(String text) {
+        MutableComponent result = Component.empty();
+        String[] lines = text.split("\n", -1);
+        for (int i = 0; i < lines.length; i++) {
+            MutableComponent line = Component.literal(lines[i]);
+            if (lines[i].stripLeading().startsWith("■") || lines[i].stripLeading().startsWith("★")) {
+                line.withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD);
+            }
+            result.append(line);
+            if (i < lines.length - 1) {
+                result.append("\n");
+            }
+        }
+        return result;
+    }
+
     private static Component createGuideComponent()
     {
         String guide = USER_GUIDE.strip();
@@ -371,11 +387,11 @@ public class UserGuideScrollComponent extends EmptyComponent
             int redStart = guide.indexOf(RED_TEXT_START, currentIndex);
             if (redStart < 0)
             {
-                component.append(Component.literal(guide.substring(currentIndex)));
+                component.append(styleSections(guide.substring(currentIndex)));
                 break;
             }
 
-            component.append(Component.literal(guide.substring(currentIndex, redStart)));
+            component.append(styleSections(guide.substring(currentIndex, redStart)));
             int contentStart = redStart + RED_TEXT_START.length();
             int redEnd = guide.indexOf(RED_TEXT_END, contentStart);
             if (redEnd < 0)

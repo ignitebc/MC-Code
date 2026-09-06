@@ -69,11 +69,24 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
         this.skillTreeItem = skillTreeItem;
         this.state = state;
         this.powerup = powerup;
+        if (powerup != null && state.getPreviewWidget() == null) {
+            state.setPreviewWidget(this);
+        }
     }
 
     @Override
     protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        if (isHoveredOrFocused() && this.powerup != null) {
+            this.state.setPreviewWidget(this);
+        }
         this.blitSlot(guiGraphics);
+    }
+
+    /** Reuse the exact node action, including its existing eligibility checks. */
+    public void activateFromDetails() {
+        if (this.powerup != null && isActive()) {
+            this.onPress.onPress(this);
+        }
     }
 
     public PowerupsScreenState getState() {
@@ -129,6 +142,9 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
 
     @Override
     public void extractTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        if (this.state.isDetailsPanelVisible()) {
+            return;
+        }
         // 레벨 조건과 상관없이 마우스 오버 시 항상 툴팁 표시
         if (this.isMouseOver(mouseX, mouseY)) {
             Component title = this.powerup != null ? this.powerup.getPowerupInstance().getName() : state.getJob().getJobInstance().getName();

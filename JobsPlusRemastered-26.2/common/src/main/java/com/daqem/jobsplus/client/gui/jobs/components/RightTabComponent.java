@@ -13,7 +13,12 @@ public class RightTabComponent extends EmptyComponent
 
     public RightTabComponent(int x, int y, JobsScreenState state, RightTab tab)
     {
-        super(x, y, getTabWidth(tab), HEIGHT);
+        this(x, y, state, tab, getTabWidth(tab));
+    }
+
+    public RightTabComponent(int x, int y, JobsScreenState state, RightTab tab, int width)
+    {
+        super(x, y, width, HEIGHT);
 
         RightTabWidget rightTabWidget = new RightTabWidget(state, tab, getWidth(), getHeight());
 

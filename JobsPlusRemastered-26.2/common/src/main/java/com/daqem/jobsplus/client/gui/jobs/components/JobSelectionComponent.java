@@ -6,12 +6,17 @@ import com.daqem.uilib.gui.component.EmptyComponent;
 
 public class JobSelectionComponent extends EmptyComponent
 {
+    private final JobSelectionWidget listWidget;
 
     public JobSelectionComponent(JobsScreenState state, int x, int y, int width, int height)
     {
         super(x, y, width, height);
 
-        JobSelectionWidget jobSelectionWidget = new JobSelectionWidget(getWidth(), getHeight(), state);
-        this.addWidget(jobSelectionWidget);
+        this.listWidget = new JobSelectionWidget(getWidth(), getHeight(), state);
+        this.addWidget(this.listWidget);
+    }
+    public void resizeHeight(int height) {
+        this.setHeight(height);
+        this.listWidget.setHeight(height);
     }
 }
