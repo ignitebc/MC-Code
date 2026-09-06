@@ -37,7 +37,6 @@ import java.util.function.Consumer;
 public class StockTradingComponent extends EmptyComponent
 {
     private final int contentWidth;
-    private final boolean expanded;
     private static final int TEXT_COLOR = JobsTheme.TEXT;
     private static final int BORDER_COLOR = JobsTheme.DIVIDER;
     private static final NumberFormat NUMBER_FORMAT = NumberFormat.getNumberInstance(Locale.KOREA);
@@ -57,7 +56,6 @@ public class StockTradingComponent extends EmptyComponent
     {
         super(0, 0, width, height);
         this.contentWidth = width - 10;
-        this.expanded = width >= 156 && height >= 190;
         this.state = state;
 
         int modeButtonX = 0;
@@ -84,35 +82,35 @@ public class StockTradingComponent extends EmptyComponent
             modeButtonX += modeButtonWidth + 2;
         }
 
-        this.buyAmountInput = createAmountInput(column(12), expanded ? 93 : 112, 1);
-        this.sellAmountInput = createAmountInput(column(12), 149, 1);
-        this.transferAmountInput = createAmountInput(column(12), 96, 10);
+        this.buyAmountInput = createAmountInput(column(12), 111, 1);
+        this.sellAmountInput = createAmountInput(column(12), getHeight() - 22, 1);
+        this.transferAmountInput = createAmountInput(column(12), getHeight() - 58, 10);
         this.addWidget(this.buyAmountInput);
         this.addWidget(this.sellAmountInput);
         this.addWidget(this.transferAmountInput);
 
-        this.addStyledButton(new StyledButton(column(6), expanded ? 66 : 79, column(30), JobsTheme.BUTTON_HEIGHT, Component.literal("롱"),
+        this.addStyledButton(new StyledButton(column(6), 82, column(30), JobsTheme.BUTTON_HEIGHT, Component.literal("롱"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.BUY,
                 () -> this.selectPositionSide(StockPositionSide.LONG),
                 () -> this.state.getSelectedStockPositionSide() == StockPositionSide.LONG));
-        this.addStyledButton(new StyledButton(column(39), expanded ? 66 : 79, column(30), JobsTheme.BUTTON_HEIGHT, Component.literal("숏"),
+        this.addStyledButton(new StyledButton(column(39), 82, column(30), JobsTheme.BUTTON_HEIGHT, Component.literal("숏"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.BUY,
                 () -> this.selectPositionSide(StockPositionSide.SHORT),
                 () -> this.state.getSelectedStockPositionSide() == StockPositionSide.SHORT));
-        this.leverageButton = new StyledButton(column(72), expanded ? 66 : 79, column(79), 16, Component.empty(),
+        this.leverageButton = new StyledButton(column(72), 82, column(79), 16, Component.empty(),
                 () -> this.state.getStockPanelMode() == StockPanelMode.BUY,
                 () -> this.leverageDropdownOpen = !this.leverageDropdownOpen,
                 () -> this.leverageDropdownOpen);
         this.addStyledButton(this.leverageButton);
 
-        this.addStyledButton(new StyledButton(column(76), expanded ? 93 : 112, column(17), JobsTheme.BUTTON_HEIGHT, Component.literal("-"),
+        this.addStyledButton(new StyledButton(column(76), 111, column(17), JobsTheme.BUTTON_HEIGHT, Component.literal("-"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.BUY && !this.leverageDropdownOpen,
                 () -> changeAmount(this.buyAmountInput, -1), () -> false));
-        this.addStyledButton(new StyledButton(column(98), expanded ? 93 : 112, column(17), JobsTheme.BUTTON_HEIGHT, Component.literal("+"),
+        this.addStyledButton(new StyledButton(column(98), 111, column(17), JobsTheme.BUTTON_HEIGHT, Component.literal("+"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.BUY && !this.leverageDropdownOpen,
                 () -> changeAmount(this.buyAmountInput, 1), () -> false));
 
-        this.addStyledButton(new StyledButton(expanded ? 6 : column(124), expanded ? 120 : 112, expanded ? getWidth() - 12 : column(27), JobsTheme.BUTTON_HEIGHT, Component.literal("예약"),
+        this.addStyledButton(new StyledButton(column(124), 111, column(27), JobsTheme.BUTTON_HEIGHT, Component.literal("예약"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.BUY && !this.leverageDropdownOpen,
                 this::sendBuyAction, () -> false));
 
@@ -122,7 +120,7 @@ public class StockTradingComponent extends EmptyComponent
             int optionColumn = optionIndex % 2;
             int optionRow = optionIndex / 2;
             int optionX = column(72 + optionColumn * 40);
-            int optionY = (expanded ? 83 : 96) + optionRow * 17;
+            int optionY = 99 + optionRow * 17;
             this.addStyledButton(new StyledButton(
                     optionX,
                     optionY,
@@ -135,39 +133,39 @@ public class StockTradingComponent extends EmptyComponent
             ));
         }
 
-        this.addStyledButton(new StyledButton(column(76), 149, column(17), JobsTheme.BUTTON_HEIGHT, Component.literal("-"),
+        this.addStyledButton(new StyledButton(column(76), getHeight() - 22, column(17), JobsTheme.BUTTON_HEIGHT, Component.literal("-"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.SELL,
                 () -> changeAmount(this.sellAmountInput, -1), () -> false));
-        this.addStyledButton(new StyledButton(column(98), 149, column(17), JobsTheme.BUTTON_HEIGHT, Component.literal("+"),
+        this.addStyledButton(new StyledButton(column(98), getHeight() - 22, column(17), JobsTheme.BUTTON_HEIGHT, Component.literal("+"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.SELL,
                 () -> changeAmount(this.sellAmountInput, 1), () -> false));
-        this.sellButton = new StyledButton(column(124), 149, column(27), JobsTheme.BUTTON_HEIGHT, Component.literal("판매"),
+        this.sellButton = new StyledButton(column(124), getHeight() - 22, column(27), JobsTheme.BUTTON_HEIGHT, Component.literal("판매"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.SELL,
                 this::sendSelectedHoldingSellAction, () -> false);
         this.addStyledButton(this.sellButton);
 
-        this.addStyledButton(new StyledButton(column(76), 96, column(17), JobsTheme.BUTTON_HEIGHT, Component.literal("-"),
+        this.addStyledButton(new StyledButton(column(76), getHeight() - 58, column(17), JobsTheme.BUTTON_HEIGHT, Component.literal("-"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.TRANSFER,
                 () -> changeAmount(this.transferAmountInput, -10), () -> false));
-        this.addStyledButton(new StyledButton(column(98), 96, column(17), JobsTheme.BUTTON_HEIGHT, Component.literal("+"),
+        this.addStyledButton(new StyledButton(column(98), getHeight() - 58, column(17), JobsTheme.BUTTON_HEIGHT, Component.literal("+"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.TRANSFER,
                 () -> changeAmount(this.transferAmountInput, 10), () -> false));
-        this.addStyledButton(new StyledButton(column(10), 122, column(65), JobsTheme.BUTTON_HEIGHT, Component.literal("입금"),
+        this.addStyledButton(new StyledButton(column(10), getHeight() - 32, column(65), JobsTheme.BUTTON_HEIGHT, Component.literal("입금"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.TRANSFER,
                 () -> showTransferConfirmation(ServerboundStockActionPacket.Action.DEPOSIT),
                 () -> false));
-        this.addStyledButton(new StyledButton(column(81), 122, column(65), JobsTheme.BUTTON_HEIGHT, Component.literal("출금"),
+        this.addStyledButton(new StyledButton(column(81), getHeight() - 32, column(65), JobsTheme.BUTTON_HEIGHT, Component.literal("출금"),
                 () -> this.state.getStockPanelMode() == StockPanelMode.TRANSFER,
                 () -> showTransferConfirmation(ServerboundStockActionPacket.Action.WITHDRAW),
                 () -> false));
 
-        EmptyComponent buyHoldingsComponent = new EmptyComponent(5, expanded ? 158 : 135, contentWidth, expanded ? getHeight() - 163 : 33);
-        this.buyHoldingsScrollWidget = createHoldingsScrollWidget(expanded ? getHeight() - 163 : 33);
+        EmptyComponent buyHoldingsComponent = new EmptyComponent(5, 135, contentWidth, getHeight() - 140);
+        this.buyHoldingsScrollWidget = createHoldingsScrollWidget(getHeight() - 140);
         buyHoldingsComponent.addWidget(this.buyHoldingsScrollWidget);
         this.addComponent(buyHoldingsComponent);
 
-        EmptyComponent sellHoldingsComponent = new EmptyComponent(5, 52, contentWidth, 49);
-        this.sellHoldingsScrollWidget = createHoldingsScrollWidget(49);
+        EmptyComponent sellHoldingsComponent = new EmptyComponent(5, 52, contentWidth, getHeight() - 122);
+        this.sellHoldingsScrollWidget = createHoldingsScrollWidget(getHeight() - 122);
         sellHoldingsComponent.addWidget(this.sellHoldingsScrollWidget);
         this.addComponent(sellHoldingsComponent);
 
@@ -227,49 +225,26 @@ public class StockTradingComponent extends EmptyComponent
         String selectedName = displayedStockId == null
                 ? "선택 필요"
                 : StockCatalog.getStockName(displayedStockId);
-        if (expanded && panelMode == StockPanelMode.BUY) {
-            drawExpandedBuy(guiGraphics, x, y, displayedStockId, selectedName, snapshot, selectedQuote);
+        drawAccountSummary(guiGraphics, x, y, snapshot);
+        if (panelMode == StockPanelMode.TRANSFER) {
+            drawTransferPanel(guiGraphics, x, y);
             return;
         }
-        drawBox(guiGraphics, x + 5, y + 22, contentWidth, 26);
-        drawCenteredScaled(guiGraphics, "보유 자산: " + formatAmount(this.state.getStockAccount().balance()),
-                x + getWidth() / 2, y + 26);
-
-        drawCenteredScaled(guiGraphics, "내 포지션 평가: " + formatTotalStockValue(snapshot),
-                x + getWidth() / 2, y + 37);
-
-        if (panelMode == StockPanelMode.TRANSFER)
-        {
-            drawBox(guiGraphics, x + 5, y + 82, contentWidth, 34);
-            drawCenteredScaled(guiGraphics, "입출금 수량 (10개 단위·최대 1,000)", x + getWidth() / 2, y + 85);
+        if (panelMode == StockPanelMode.SELL) {
+            drawBox(guiGraphics, x + 5, y + 52, contentWidth, getHeight() - 122);
+            drawSelection(guiGraphics, x, y + getHeight() - 67, displayedStockId, selectedName,
+                    formatPrice(snapshot, selectedQuote, "현재가(원)"));
+            JobsTheme.text(guiGraphics, Component.literal("판매할 투자원금 · 1개 단위 · 최대 1,000"),
+                    x + 8, y + getHeight() - 34, getWidth() - 16, JobsTheme.MUTED);
             return;
         }
-
-        String priceLabel = "현재가격";
-        if (panelMode == StockPanelMode.BUY)
-        {
-            priceLabel = "예약 확인가";
+        drawSelection(guiGraphics, x, y + 52, displayedStockId, selectedName,
+                formatPrice(snapshot, selectedQuote, "예약 확인가(원)"));
+        if (!this.leverageDropdownOpen) {
+            JobsTheme.text(guiGraphics, Component.literal("예약 투자금 · 1개 단위 · 최대 1,000"),
+                    x + 8, y + 100, getWidth() - 16, JobsTheme.MUTED);
+            drawBox(guiGraphics, x + 5, y + 135, contentWidth, getHeight() - 140);
         }
-        String currentPrice = formatPrice(snapshot, selectedQuote, priceLabel);
-
-        if (panelMode == StockPanelMode.SELL)
-        {
-            drawBox(guiGraphics, x + 5, y + 52, contentWidth, 49);
-            drawBox(guiGraphics, x + 5, y + 104, contentWidth, 27);
-            drawCenteredScaled(guiGraphics, "판매 종목: " + selectedName, x + getWidth() / 2, y + 108);
-            drawCenteredScaled(guiGraphics, currentPrice, x + getWidth() / 2, y + 119);
-            drawBox(guiGraphics, x + 5, y + 134, contentWidth, 34);
-            // 입력값은 평가금액이 아니라 처분할 투자원금이다.
-            drawCenteredScaled(guiGraphics, "판매할 투자원금 (1개 단위·최대 1,000)", x + getWidth() / 2, y + 137);
-            return;
-        }
-
-        drawBox(guiGraphics, x + 5, y + 52, contentWidth, 24);
-        drawCenteredScaled(guiGraphics, "선택 종목: " + selectedName, x + getWidth() / 2, y + 56);
-        drawCenteredScaled(guiGraphics, currentPrice, x + getWidth() / 2, y + 66);
-        drawBox(guiGraphics, x + 5, y + 98, contentWidth, 34);
-        drawCentered(guiGraphics, "예약 투자금 (1개 단위·최대 1,000)", x + getWidth() / 2, y + 101);
-        drawBox(guiGraphics, x + 5, y + 135, contentWidth, 33);
     }
 
     /**
@@ -621,26 +596,43 @@ public class StockTradingComponent extends EmptyComponent
         return Math.round(coordinate * getWidth() / 156.0f);
     }
 
-    private void drawExpandedBuy(GuiGraphicsExtractor graphics, int x, int y, String stockId,
-                                 String name, StockMarketSnapshot snapshot, StockQuote quote) {
-        StockIcons.draw(graphics, stockId, x + 8, y + 25, 20);
-        JobsTheme.text(graphics, Component.literal(stockId + " · " + name), x + 34, y + 25,
-                getWidth() - 42, JobsTheme.TEXT);
-        JobsTheme.text(graphics, Component.literal(formatPrice(snapshot, quote, "현재가(원)")),
-                x + 34, y + 38, getWidth() - 42, JobsTheme.MUTED);
-        JobsTheme.text(graphics, Component.literal("포지션 평가  " + formatTotalStockValue(snapshot)),
-                x + 8, y + 52, getWidth() - 16, JobsTheme.MUTED);
-        JobsTheme.text(graphics, Component.literal("투자 원금 · 1개 단위 · 최대 1,000 BTC"),
-                x + 8, y + 83, getWidth() - 16, JobsTheme.TEXT);
-        if (!this.leverageDropdownOpen) {
-            JobsTheme.text(graphics, Component.literal("BTC"), x + column(120), y + 97,
-                    getWidth() - column(120) - 6, JobsTheme.MUTED);
-            JobsTheme.text(graphics, Component.literal("다음 시세 반영 시 체결"), x + 8, y + 111,
-                    getWidth() - 16, JobsTheme.MUTED);
-            JobsTheme.text(graphics, Component.literal("보유 포지션"), x + 8, y + 144,
-                    getWidth() - 16, JobsTheme.TEXT);
-            drawBox(graphics, x + 5, y + 158, contentWidth, getHeight() - 163);
-        }
+    private void drawAccountSummary(GuiGraphicsExtractor graphics, int x, int y, StockMarketSnapshot snapshot) {
+        int cardWidth = (contentWidth - 4) / 2;
+        drawBox(graphics, x + 5, y + 22, cardWidth, 26);
+        drawBox(graphics, x + 9 + cardWidth, y + 22, contentWidth - cardWidth - 4, 26);
+        JobsTheme.text(graphics, Component.literal("주식 계좌"), x + 10, y + 26, cardWidth - 10, JobsTheme.MUTED);
+        JobsTheme.text(graphics, Component.literal(formatAmount(state.getStockAccount().balance())),
+                x + 10, y + 37, cardWidth - 10, JobsTheme.CYAN);
+        JobsTheme.text(graphics, Component.literal("포지션 평가"), x + cardWidth + 14, y + 26,
+                cardWidth - 10, JobsTheme.MUTED);
+        JobsTheme.text(graphics, Component.literal(formatTotalStockValue(snapshot)),
+                x + cardWidth + 14, y + 37, cardWidth - 10, JobsTheme.TEXT);
+    }
+
+    private void drawSelection(GuiGraphicsExtractor graphics, int x, int y, String stockId,
+                               String name, String price) {
+        JobsTheme.texture(graphics, JobsTheme.Skin.HEADER, x + 5, y, contentWidth, 27);
+        StockIcons.draw(graphics, stockId, x + 9, y + 4, 19);
+        JobsTheme.text(graphics, Component.literal(name), x + 34, y + 4, getWidth() - 43, JobsTheme.TEXT);
+        JobsTheme.text(graphics, Component.literal(price), x + 34, y + 16, getWidth() - 43, JobsTheme.MUTED);
+    }
+
+    private void drawTransferPanel(GuiGraphicsExtractor graphics, int x, int y) {
+        int flowHeight = Math.max(30, getHeight() - 135);
+        drawBox(graphics, x + 5, y + 54, contentWidth, flowHeight);
+        StockIcons.draw(graphics, "BTC", x + getWidth() / 2 - 9, y + 59, 18);
+        JobsTheme.label(graphics, Component.literal("인벤토리"), x + 8, y + 61, getWidth() / 2 - 22, 12, JobsTheme.TEXT);
+        JobsTheme.label(graphics, Component.literal("주식 계좌"), x + getWidth() / 2 + 14, y + 61,
+                getWidth() / 2 - 22, 12, JobsTheme.TEXT);
+        JobsTheme.label(graphics, Component.literal("입금 →     ← 출금"), x + 10, y + 78,
+                getWidth() - 20, 10, JobsTheme.CYAN);
+        drawBox(graphics, x + 5, y + getHeight() - 78, contentWidth, 43);
+        JobsTheme.text(graphics, Component.literal("입출금 수량 · 10개 단위 · 최대 1,000"),
+                x + 10, y + getHeight() - 72, getWidth() - 20, JobsTheme.MUTED);
+        JobsTheme.text(graphics, Component.literal("BTC"), x + column(124), y + getHeight() - 54,
+                getWidth() - column(124) - 6, JobsTheme.CYAN);
+        JobsTheme.label(graphics, Component.literal("출금 시 소득세 0.2% 차감"), x + 5,
+                y + getHeight() - 12, contentWidth, 9, JobsTheme.MUTED);
     }
 
     private static class AmountInputFilter implements Consumer<String>

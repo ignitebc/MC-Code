@@ -83,13 +83,19 @@ public final class TaczCatalog {
                     Object data = call(common.get(), "getGunData");
                     gunData.put(key, data);
                     description.add("기본 장탄수: " + call(data, "getAmmoAmount"));
-                    description.add("발사 방식: " + call(data, "getFireModeSet"));
+                    description.add("발사 방식: " + ((List<?>) call(data, "getFireModeSet")).stream()
+                            .map(mode -> TaczStats.modeName(mode.toString())).collect(java.util.stream.Collectors.joining(" / ")));
+                    TaczStats.gun(description, data);
                     Object display = call(client, "getDefaultDisplay");
                     if (display != null) {
                         description.add("기본 조준 배율: " + call(display, "getIronZoom") + "×");
                     }
                     links.add(new Link("사용 탄환", key(Kind.AMMO, (Identifier) call(data, "getAmmoId"))));
                 } else if (kind == Kind.ATTACHMENT) {
+                    TaczStats.attachment(description, call(common.get(), "getData"));
+                    if (description.isEmpty()) {
+                        description.add("추가 능력치 보정 없음");
+                    }
                     Object type = call(common.get(), "getType");
                     attachmentTypes.put(key, type);
                     description.add("슬롯: " + slotName(type));
@@ -125,6 +131,14 @@ public final class TaczCatalog {
                 if (Boolean.TRUE.equals(allow.invoke(gun.icon().getItem(), gun.icon(), part.icon()))) {
                     gun.links().add(new Link(slotName(attachmentTypes.get(part.key())), part.key()));
                     part.links().add(new Link("호환 총기", gun.key()));
+                    Map<?, ?> exclusive = (Map<?, ?>) call(data, "getExclusiveAttachments");
+                    Object override = exclusive.get(part.id());
+                    if (override != null) {
+                        gun.description().add("전용 파츠 효과 · " + part.name().getString());
+                        TaczStats.attachment(gun.description(), override);
+                        part.description().add("전용 효과 · " + gun.name().getString() + " 장착 시");
+                        TaczStats.attachment(part.description(), override);
+                    }
                 }
             }
             Map<?, ?> builtIns = (Map<?, ?>) call(data, "getBuiltInAttachments");

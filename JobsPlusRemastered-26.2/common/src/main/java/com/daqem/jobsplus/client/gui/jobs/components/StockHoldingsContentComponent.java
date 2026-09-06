@@ -20,7 +20,7 @@ import java.util.Locale;
 
 public class StockHoldingsContentComponent extends EmptyComponent
 {
-    private static final int ROW_HEIGHT = 10;
+    private static final int ROW_HEIGHT = 16;
     private static final int TABLE_WIDTH = 136;
     private static final int NAME_COLUMN_END = 34;
     private static final int POSITION_COLUMN_END = 54;
@@ -34,7 +34,7 @@ public class StockHoldingsContentComponent extends EmptyComponent
 
     public StockHoldingsContentComponent(JobsScreenState state, int width)
     {
-        super(0, 0, width, Math.max(20, (state.getStockAccount().positions().size() + 1) * ROW_HEIGHT));
+        super(0, 0, width, Math.max(36, (state.getStockAccount().positions().size() + 1) * ROW_HEIGHT));
         this.state = state;
         int index = 0;
         for (StockPosition position : state.getStockAccount().positions())
@@ -67,7 +67,7 @@ public class StockHoldingsContentComponent extends EmptyComponent
         int x = getTotalX();
         int y = getTotalY();
         int right = x + getWidth();
-        int bottom = y + getHeight();
+        JobsTheme.texture(guiGraphics, JobsTheme.Skin.HEADER, x, y, getWidth(), ROW_HEIGHT);
         drawScaledCentered(guiGraphics, "종목명", x + nameColumn / 2, y + 2, TEXT_COLOR);
         drawScaledCentered(guiGraphics, "포지션", x + (nameColumn + positionColumn) / 2, y + 2,
                 TEXT_COLOR);
@@ -84,9 +84,10 @@ public class StockHoldingsContentComponent extends EmptyComponent
         {
             int rowY = y + ROW_HEIGHT + index * ROW_HEIGHT;
             boolean selected = position.stockId().equals(this.state.getSelectedHoldingStockId());
-            if (selected)
-            {
-                guiGraphics.fill(x, rowY, right, rowY + ROW_HEIGHT - 1, JobsTheme.SELECTED);
+            guiGraphics.fill(x, rowY, right, rowY + ROW_HEIGHT - 1,
+                    selected ? JobsTheme.SELECTED : (index % 2 == 0 ? JobsTheme.INSET : JobsTheme.PANEL));
+            if (selected) {
+                guiGraphics.fill(x, rowY + 5, x + 2, rowY + ROW_HEIGHT - 2, JobsTheme.CYAN);
             }
             StockQuote quote = snapshot.getQuote(position.stockId());
             String name = StockCatalog.getStockName(position.stockId());
@@ -112,22 +113,23 @@ public class StockHoldingsContentComponent extends EmptyComponent
                 }
             }
 
-            drawScaled(guiGraphics, selected ? "▶" : "", x + 1, rowY + 2, TEXT_COLOR);
-            JobsTheme.text(guiGraphics, Component.literal(name), x + 6, rowY + 2,
+            drawScaled(guiGraphics, selected ? "▶" : "", x + 1, rowY + 5, TEXT_COLOR);
+            JobsTheme.text(guiGraphics, Component.literal(name), x + 6, rowY + 5,
                     nameColumn - 9, TEXT_COLOR);
             drawScaledCentered(guiGraphics, positionName, x + (nameColumn + positionColumn) / 2,
-                    rowY + 2, TEXT_COLOR);
-            drawScaledRight(guiGraphics, averagePrice, x + priceColumn - 2, rowY + 2, TEXT_COLOR);
-            drawScaledRight(guiGraphics, investedAmount, x + amountColumn - 2, rowY + 2, TEXT_COLOR);
-            drawScaled(guiGraphics, returnRate, x + amountColumn + 2, rowY + 2, returnColor);
+                    rowY + 5, TEXT_COLOR);
+            drawScaledRight(guiGraphics, averagePrice, x + priceColumn - 2, rowY + 5, TEXT_COLOR);
+            drawScaledRight(guiGraphics, investedAmount, x + amountColumn - 2, rowY + 5, TEXT_COLOR);
+            drawScaled(guiGraphics, returnRate, x + amountColumn + 2, rowY + 5, returnColor);
             guiGraphics.fill(x, rowY + ROW_HEIGHT - 1, right, rowY + ROW_HEIGHT, GRID_COLOR);
             index++;
         }
 
-        guiGraphics.fill(x + nameColumn, y, x + nameColumn + 1, bottom, GRID_COLOR);
-        guiGraphics.fill(x + positionColumn, y, x + positionColumn + 1, bottom, GRID_COLOR);
-        guiGraphics.fill(x + priceColumn, y, x + priceColumn + 1, bottom, GRID_COLOR);
-        guiGraphics.fill(x + amountColumn, y, x + amountColumn + 1, bottom, GRID_COLOR);
+        if (this.state.getStockAccount().positions().isEmpty()) {
+            JobsTheme.label(guiGraphics, Component.literal("보유 포지션이 없습니다."), x, y + ROW_HEIGHT + 4,
+                    getWidth(), 12, JobsTheme.MUTED);
+        }
+
     }
 
     private static String formatAmount(double amount)

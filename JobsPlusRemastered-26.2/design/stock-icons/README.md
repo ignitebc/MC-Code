@@ -14,9 +14,18 @@ Sources and corresponding license copies:
 - Disney: https://github.com/tabler/tabler-icons — `LICENSE-tabler.txt`.
 
 `hanwha.svg` is a simplified group-inspired symbol and `udmtek.svg` is a custom
-UDM monogram, rather than official logo reproductions. The three Samsung
-catalog entries share the Samsung group wordmark. Brand names and marks remain
-the property of their respective owners.
+UDM monogram, rather than official logo reproductions. Samsung Electronics (005930)
+retains the Samsung wordmark. Samsung SDI (006400) and Samsung Electro-Mechanics
+(009150) use their respective company-name combination marks from official sites:
+
+- Samsung SDI CI: https://www.samsungsdi.com/about-sdi/ci.html
+  SVG: https://www.samsungsdi.com/resources/images/about_sdi/ci_img_09.svg
+- Samsung Electro-Mechanics: https://www.samsungsem.com/global/index.do
+  SVG: https://www.samsungsem.com/resources/images/global/common/logo_oval.svg
+
+The two combination marks retain their source geometry and colors, with a light
+backing added at export for contrast against the dark UI. Brand names and marks
+remain the property of their respective owners.
 
 The SVG artwork was fitted into a square with transparent padding and exported
 with Inkscape. PNGs, rather than the SVG design sources, are packaged for the game.

@@ -13,7 +13,7 @@ import java.util.List;
 public class ShopScrollContentComponent extends EmptyComponent
 {
 
-    private static final int ROW_HEIGHT = 49;
+    private static final int ROW_HEIGHT = 29;
 
     public ShopScrollContentComponent(JobsScreenState state, int width)
     {

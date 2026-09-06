@@ -1,6 +1,8 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
 import com.daqem.jobsplus.client.gui.theme.JobsTheme;
+import com.daqem.jobsplus.client.gui.theme.StockIcons;
+import net.minecraft.network.chat.Component;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.stock.StockCatalog;
 import com.daqem.jobsplus.player.stock.StockTransaction;
@@ -19,7 +21,7 @@ public class StockHistoryContentComponent extends EmptyComponent
 {
     private static final int MAX_TRANSACTIONS = 50;
     private static final int HEADER_HEIGHT = 22;
-    private static final int ROW_HEIGHT = 10;
+    private static final int ROW_HEIGHT = 28;
     private static final int TEXT_COLOR = JobsTheme.TEXT;
     private static final int GRID_COLOR = JobsTheme.DIVIDER;
     private static final DateTimeFormatter TIME_FORMAT =
@@ -43,14 +45,8 @@ public class StockHistoryContentComponent extends EmptyComponent
         int y = getTotalY();
         int right = x + getWidth();
 
-        drawCentered(guiGraphics, "최근 거래내역", x + getWidth() / 2, y + 2);
-        drawScaled(guiGraphics, "일시", x + 2, y + 13, TEXT_COLOR);
-        drawScaled(guiGraphics, "구분", x + getWidth() * 27 / 100, y + 13, TEXT_COLOR);
-        drawScaled(guiGraphics, "종목", x + getWidth() * 40 / 100, y + 13, TEXT_COLOR);
-        // 표시값은 주식 수량이 아니라 거래에 쓰인 비트코인 금액이다.
-        drawScaledRight(guiGraphics, "금액", x + getWidth() * 78 / 100, y + 13, TEXT_COLOR);
-        drawScaledRight(guiGraphics, "수익률(%)", right - 2, y + 13, TEXT_COLOR);
-        guiGraphics.fill(x, y + HEADER_HEIGHT - 1, right, y + HEADER_HEIGHT, GRID_COLOR);
+        JobsTheme.texture(guiGraphics, JobsTheme.Skin.HEADER, x, y, getWidth(), HEADER_HEIGHT - 3);
+        JobsTheme.text(guiGraphics, Component.literal("최근 거래내역"), x + 6, y + 5, getWidth() - 12, JobsTheme.CYAN);
 
         List<StockTransaction> transactions = this.state.getStockAccount().transactions().stream()
                 .sorted(Comparator.comparingLong(StockTransaction::timestamp).reversed())
@@ -67,13 +63,17 @@ public class StockHistoryContentComponent extends EmptyComponent
         {
             StockTransaction transaction = transactions.get(index);
             int rowY = y + HEADER_HEIGHT + index * ROW_HEIGHT;
+            JobsTheme.texture(guiGraphics, JobsTheme.Skin.INSET, x, rowY, getWidth(), ROW_HEIGHT - 3);
+            String iconId = transaction.stockId().isEmpty() ? "BTC" : transaction.stockId();
+            StockIcons.draw(guiGraphics, iconId, x + 4, rowY + 4, 16);
+            String title = getTransactionName(transaction.type()) + " · " + getStockName(transaction.stockId());
+            JobsTheme.text(guiGraphics, Component.literal(title), x + 24, rowY + 4,
+                    getWidth() * 60 / 100 - 26, TEXT_COLOR);
             drawScaled(guiGraphics, TIME_FORMAT.format(Instant.ofEpochMilli(transaction.timestamp())),
-                    x + 2, rowY + 2, TEXT_COLOR);
-            drawScaled(guiGraphics, getTransactionName(transaction.type()), x + getWidth() * 27 / 100, rowY + 2, TEXT_COLOR);
-            drawScaled(guiGraphics, getStockName(transaction.stockId()), x + getWidth() * 40 / 100, rowY + 2, TEXT_COLOR);
+                    x + 24, rowY + 16, JobsTheme.MUTED);
             drawScaledRight(guiGraphics, String.format(Locale.ROOT, "%.2f개", transaction.amount()),
-                    x + getWidth() * 78 / 100, rowY + 2, TEXT_COLOR);
-            drawScaledRight(guiGraphics, formatReturnRate(transaction), right - 2, rowY + 2,
+                    right - 5, rowY + 4, TEXT_COLOR);
+            drawScaledRight(guiGraphics, formatReturnRate(transaction), right - 5, rowY + 16,
                     getReturnRateColor(transaction));
             guiGraphics.fill(x, rowY + ROW_HEIGHT - 1, right, rowY + ROW_HEIGHT, GRID_COLOR);
         }

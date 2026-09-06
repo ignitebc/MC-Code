@@ -5,6 +5,10 @@ import com.daqem.jobsplus.client.gunguide.TaczCatalog.Entry;
 import com.daqem.jobsplus.client.gunguide.TaczCatalog.Kind;
 import com.daqem.jobsplus.client.gui.jobs.widgets.ActionScrollWidget;
 import com.daqem.jobsplus.client.gui.theme.JobsTheme;
+import com.daqem.jobsplus.client.gui.theme.JobsEditBox;
+import net.minecraft.util.FormattedCharSequence;
+import java.util.Locale;
+import java.text.Normalizer;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import com.daqem.uilib.gui.widget.CustomButtonWidget;
 import net.minecraft.client.Minecraft;
@@ -26,6 +30,13 @@ public class GunGuideComponent extends EmptyComponent {
     private final int detailX;
     private final ActionScrollWidget listScroll;
     private final ActionScrollWidget detailScroll;
+    private final JobsEditBox searchInput;
+    private final ActionScrollWidget searchScroll;
+    private String searchQuery = "";
+    private String renderedQuery;
+    private String revealEntry;
+    private final Map<String, Integer> cardRows = new java.util.HashMap<>();
+    private boolean searchOpen;
     private Kind category = Kind.GUN;
     private Kind renderedCategory;
     private Entry selected;
@@ -40,7 +51,7 @@ public class GunGuideComponent extends EmptyComponent {
         int categoryWidth = (listWidth - 4) / 3;
         for (Kind kind : Kind.values()) {
             addWidget(new GuideButton(kind.ordinal() * (categoryWidth + 2), 0, categoryWidth, 16,
-                    Component.literal(kind.label), ItemStack.EMPTY, () -> category == kind, () -> category = kind));
+                    Component.literal(kind.label), ItemStack.EMPTY, () -> category == kind, () -> selectCategory(kind)));
         }
         listScroll = new ActionScrollWidget(listWidth, Math.max(1, height - 21));
         listScroll.setY(21);
@@ -48,27 +59,101 @@ public class GunGuideComponent extends EmptyComponent {
         detailScroll.setX(detailX);
         addWidget(listScroll);
         addWidget(detailScroll);
+        searchScroll = new ActionScrollWidget(width - detailX, Math.min(height, 170));
+        searchScroll.setX(detailX);
+        searchScroll.visible = false;
+        addWidget(searchScroll);
+        int searchWidth = Math.min(155, width - detailX);
+        searchInput = new JobsEditBox(Minecraft.getInstance().font, width - searchWidth, -17,
+                searchWidth, 14, Component.literal("총기 도감 검색")) {
+            @Override
+            public void setFocused(boolean focused) {
+                super.setFocused(focused);
+                if (focused && !searchQuery.isEmpty()) {
+                    searchOpen = true;
+                }
+            }
+        };
+        searchInput.setMaxLength(64);
+        searchInput.setHint(Component.literal("총기 · 탄약 · 파츠 검색"));
+        searchInput.setResponder(value -> {
+            searchQuery = normalize(value);
+            searchOpen = !searchQuery.isEmpty();
+        });
+        addWidget(searchInput);
         selected = catalog.entries().stream().filter(entry -> entry.kind() == Kind.GUN).findFirst()
                 .orElse(catalog.entries().isEmpty() ? null : catalog.entries().getFirst());
         refresh();
     }
 
+    private void selectCategory(Kind kind) {
+        category = kind;
+        searchOpen = false;
+        searchInput.setFocused(false);
+    }
+
+    private void navigateTo(Entry entry) {
+        selected = entry;
+        selectCategory(entry.kind());
+        revealEntry = entry.key();
+    }
+
     private void refresh() {
         if (renderedCategory != category) {
+            cardRows.clear();
             listScroll.clearComponents();
             listScroll.setScrollAmount(0);
             EmptyComponent content = new EmptyComponent(0, 0, listWidth - 10, 0);
             List<Entry> visible = catalog.entries().stream().filter(entry -> entry.kind() == category).toList();
-            int columns = content.getWidth() >= 150 ? 2 : 1;
+            int columns = 3;
             int cardWidth = (content.getWidth() - (columns - 1) * 4) / columns;
-            for (int i = 0; i < visible.size(); i++) {
-                Entry entry = visible.get(i);
-                content.addWidget(new GuideButton((i % columns) * (cardWidth + 4), (i / columns) * 59,
-                        cardWidth, 55, entry.name(), entry.icon(), () -> selected == entry, () -> selected = entry));
+            int rowY = 0;
+            for (int first = 0; first < visible.size(); first += columns) {
+                int rowHeight = 0;
+                for (int i = first; i < Math.min(first + columns, visible.size()); i++) {
+                    rowHeight = Math.max(rowHeight, 35 + wrappedHeight(visible.get(i).name(), cardWidth - 6, 0.65f));
+                }
+                for (int i = first; i < Math.min(first + columns, visible.size()); i++) {
+                    Entry entry = visible.get(i);
+                    cardRows.put(entry.key(), rowY);
+                    content.addWidget(new GuideButton((i % columns) * (cardWidth + 4), rowY,
+                            cardWidth, rowHeight, entry.name(), entry.icon(), () -> selected == entry,
+                            () -> navigateTo(entry)));
+                }
+                rowY += rowHeight + 4;
             }
-            content.setHeight(((visible.size() + columns - 1) / columns) * 59);
+            content.setHeight(rowY);
             listScroll.addComponent(content);
             renderedCategory = category;
+        }
+        if (revealEntry != null) {
+            listScroll.setScrollAmount(cardRows.getOrDefault(revealEntry, 0));
+            revealEntry = null;
+        }
+        if (!searchQuery.equals(renderedQuery)) {
+            searchScroll.clearComponents();
+            searchScroll.setScrollAmount(0);
+            EmptyComponent results = new EmptyComponent(0, 0, searchScroll.getWidth() - 10, 0);
+            int resultY = 0;
+            if (!searchQuery.isEmpty()) {
+                for (Entry entry : catalog.entries()) {
+                    if (!normalize(entry.name().getString() + " " + entry.id()).contains(searchQuery)) {
+                        continue;
+                    }
+                    Component title = Component.literal(entry.kind().label + " · ").append(entry.name());
+                    int rowHeight = Math.max(26, wrappedHeight(title, results.getWidth() - 26, 0.7f) + 8);
+                    results.addWidget(new GuideButton(0, resultY, results.getWidth(), rowHeight,
+                            title, entry.icon(), () -> false, () -> navigateTo(entry), false));
+                    resultY += rowHeight + 3;
+                }
+                if (resultY == 0) {
+                    results.addComponent(new LineComponent(8, results.getWidth(), "검색 결과가 없습니다.", JobsTheme.MUTED));
+                    resultY = 25;
+                }
+            }
+            results.setHeight(resultY);
+            searchScroll.addComponent(results);
+            renderedQuery = searchQuery;
         }
         if (renderedSelection != selected) {
             detailScroll.clearComponents();
@@ -85,8 +170,9 @@ public class GunGuideComponent extends EmptyComponent {
         content.addComponent(new PreviewComponent(width, entry));
         int y = 73;
         for (String text : entry.description()) {
-            content.addComponent(new LineComponent(y, width, text, JobsTheme.MUTED));
-            y += 13;
+            LineComponent line = new LineComponent(y, width, text, JobsTheme.MUTED);
+            content.addComponent(line);
+            y += line.getHeight() + 3;
         }
         content.addComponent(new LineComponent(y + 3, width, "제작 재료", JobsTheme.CYAN));
         y += 20;
@@ -96,9 +182,9 @@ public class GunGuideComponent extends EmptyComponent {
         }
         for (int recipeIndex = 0; recipeIndex < entry.recipes().size(); recipeIndex++) {
             TaczCatalog.Recipe recipe = entry.recipes().get(recipeIndex);
-            content.addComponent(new LineComponent(y, width,
-                    "제작식 " + (recipeIndex + 1) + " · 결과 × " + recipe.outputCount(), JobsTheme.TEXT));
-            y += 14;
+            if (recipeIndex > 0) {
+                y += 8;
+            }
             for (TaczCatalog.Material material : recipe.materials()) {
                 content.addComponent(new MaterialComponent(y, width, material));
                 y += 29;
@@ -119,9 +205,10 @@ public class GunGuideComponent extends EmptyComponent {
                 continue;
             }
             Component title = Component.literal(link.label() + " · ").append(target.name());
-            content.addWidget(new GuideButton(0, y, width, 25, title, target.icon(), () -> false,
-                    () -> selected = target));
-            y += 28;
+            int linkHeight = Math.max(25, wrappedHeight(title, width - 26, 0.7f) + 8);
+            content.addWidget(new GuideButton(0, y, width, linkHeight, title, target.icon(), () -> false,
+                    () -> navigateTo(target), false));
+            y += linkHeight + 3;
         }
         content.setHeight(y + 4);
         return content;
@@ -130,10 +217,12 @@ public class GunGuideComponent extends EmptyComponent {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY,
                                    float partialTick, int parentWidth, int parentHeight) {
-        if (renderedCategory != category || renderedSelection != selected) {
+        if (renderedCategory != category || renderedSelection != selected || revealEntry != null || !searchQuery.equals(renderedQuery)) {
             refresh();
             updateParentPosition(getParentX(), getParentY(), parentWidth, parentHeight);
         }
+        detailScroll.visible = !searchOpen;
+        searchScroll.visible = searchOpen;
         JobsTheme.texture(graphics, JobsTheme.Skin.INSET, getTotalX() + detailX - 3, getTotalY(),
                 getWidth() - detailX + 3, getHeight());
         if (!catalog.message().isEmpty()) {
@@ -145,10 +234,17 @@ public class GunGuideComponent extends EmptyComponent {
     private static class GuideButton extends CustomButtonWidget {
         private final ItemStack icon;
         private final BooleanSupplier selected;
+        private final boolean card;
 
         GuideButton(int x, int y, int width, int height, Component title, ItemStack icon,
                     BooleanSupplier selected, Runnable action) {
+            this(x, y, width, height, title, icon, selected, action, height > 40);
+        }
+
+        GuideButton(int x, int y, int width, int height, Component title, ItemStack icon,
+                    BooleanSupplier selected, Runnable action, boolean card) {
             super(x, y, width, height, title, null, button -> action.run());
+            this.card = card;
             this.icon = icon;
             this.selected = selected;
         }
@@ -157,12 +253,12 @@ public class GunGuideComponent extends EmptyComponent {
         protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
             JobsTheme.button(graphics, getX(), getY(), getWidth(), getHeight(), active,
                     isHoveredOrFocused(), selected.getAsBoolean(), false);
-            if (getHeight() > 40) {
-                drawItem(graphics, icon, getX() + (getWidth() - 30) / 2, getY() + 4, 30);
-                JobsTheme.label(graphics, getMessage(), getX() + 3, getY() + 39, getWidth() - 6, 12, JobsTheme.TEXT);
+            if (card) {
+                drawItem(graphics, icon, getX() + (getWidth() - 26) / 2, getY() + 3, 26);
+                drawWrapped(graphics, getMessage(), getX() + 3, getY() + 32, getWidth() - 6, 0.65f, JobsTheme.TEXT, true);
             } else if (!icon.isEmpty()) {
                 graphics.fakeItem(icon, getX() + 3, getY() + 4);
-                JobsTheme.text(graphics, getMessage(), getX() + 22, getY() + 8, getWidth() - 26, JobsTheme.TEXT);
+                drawWrapped(graphics, getMessage(), getX() + 22, getY() + 4, getWidth() - 26, 0.7f, JobsTheme.TEXT, false);
             } else {
                 JobsTheme.label(graphics, getMessage(), getX(), getY(), getWidth(), getHeight(), JobsTheme.TEXT);
             }
@@ -187,14 +283,14 @@ public class GunGuideComponent extends EmptyComponent {
         private final Component text;
         private final int color;
         LineComponent(int y, int width, String text, int color) {
-            super(3, y, width - 6, 12);
+            super(3, y, width - 6, wrappedHeight(Component.literal(text), width - 6, 0.75f));
             this.text = Component.literal(text);
             this.color = color;
         }
         @Override
         public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY,
                                        float partialTick, int parentWidth, int parentHeight) {
-            JobsTheme.text(graphics, text, getTotalX(), getTotalY(), getWidth(), color);
+            drawWrapped(graphics, text, getTotalX(), getTotalY(), getWidth(), 0.75f, color, false);
         }
     }
 
@@ -230,6 +326,29 @@ public class GunGuideComponent extends EmptyComponent {
                     getTotalX() + 23, getTotalY() + 15, getWidth() - 27,
                     owned >= material.count() ? JobsTheme.CYAN : JobsTheme.ERROR);
         }
+    }
+
+    private static String normalize(String text) {
+        return Normalizer.normalize(text, Normalizer.Form.NFKC).toLowerCase(Locale.ROOT).replaceAll("\\s+", "");
+    }
+
+    private static int wrappedHeight(Component text, int width, float scale) {
+        return (int) Math.ceil(Minecraft.getInstance().font.split(text, Math.max(1, (int) (width / scale))).size() * 10 * scale);
+    }
+
+    private static void drawWrapped(GuiGraphicsExtractor graphics, Component text, int x, int y,
+                                    int width, float scale, int color, boolean centered) {
+        var font = Minecraft.getInstance().font;
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(x, y);
+        graphics.pose().scale(scale, scale);
+        int lineY = 0;
+        for (FormattedCharSequence line : font.split(text, Math.max(1, (int) (width / scale)))) {
+            int lineX = centered ? Math.max(0, (int) ((width / scale - font.width(line)) / 2)) : 0;
+            graphics.text(font, line, lineX, lineY, color, false);
+            lineY += 10;
+        }
+        graphics.pose().popMatrix();
     }
 
     private static void drawItem(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y, int size) {
