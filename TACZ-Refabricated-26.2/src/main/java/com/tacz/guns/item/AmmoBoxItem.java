@@ -53,10 +53,6 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
 
             // 格子为空，那就是取出物品
             if (slotItem.isEmpty()) {
-                // 创造模式弹药箱不能取出任何东西
-                if (isAllTypeCreative(ammoBox) || isCreative(ammoBox)) {
-                    return false;
-                }
                 // 啥也没有，不能取出
                 if (boxAmmoId.equals(DefaultAssets.EMPTY_AMMO_ID)) {
                     return false;
@@ -87,10 +83,6 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
 
             // 如果是子弹
             if (slotItem.getItem() instanceof IAmmo iAmmo) {
-                // 全类型弹药箱不能存入
-                if (isAllTypeCreative(ammoBox)) {
-                    return false;
-                }
                 Identifier slotAmmoId = iAmmo.getAmmoId(slotItem);
                 // 格子里的子弹 ID 不对，不能放
                 if (slotAmmoId.equals(DefaultAssets.EMPTY_AMMO_ID)) {
@@ -103,11 +95,6 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
                     return false;
                 }
                 TimelessAPI.getCommonAmmoIndex(slotAmmoId).ifPresent(index -> {
-                    // 创造模式弹药箱，那就直接存入最大
-                    if (isCreative(ammoBox)) {
-                        this.setAmmoCount(ammoBox, Integer.MAX_VALUE);
-                        return;
-                    }
                     int boxAmmoCount = this.getAmmoCount(ammoBox);
                     int boxLevelMultiplier = this.getAmmoLevel(ammoBox) + 1;
                     int maxSize = index.getStackSize() * SyncConfig.AMMO_BOX_STACK_SIZE.get() * boxLevelMultiplier;
@@ -133,9 +120,6 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
 
     @Override
     public boolean isBarVisible(ItemStack stack) {
-        if (isAllTypeCreative(stack) || isCreative(stack)) {
-            return false;
-        }
         return !this.getAmmoId(stack).equals(DefaultAssets.EMPTY_AMMO_ID) && this.getAmmoCount(stack) > 0;
     }
 
@@ -153,12 +137,6 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
 
     @Override
     public Component getName(ItemStack stack) {
-        if (isAllTypeCreative(stack)) {
-            return Component.translatable("item.tacz.ammo_box.all_type_creative").withStyle(style -> style.withColor(0xAA00AA));
-        }
-        if (isCreative(stack)) {
-            return Component.translatable("item.tacz.ammo_box.creative").withStyle(style -> style.withColor(0xAA00AA));
-        }
         int ammoLevel = getAmmoLevel(stack);
         switch (ammoLevel) {
             case GOLD_LEVEL -> {
@@ -174,14 +152,6 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
     }
 
     @Override
-    public boolean isFoil(ItemStack stack) {
-        if (isAllTypeCreative(stack) || isCreative(stack)) {
-            return true;
-        }
-        return super.isFoil(stack);
-    }
-
-    @Override
     public int getBarColor(ItemStack stack) {
         return Mth.hsvToRgb(1 / 3f, 1.0F, 1.0F);
     }
@@ -193,10 +163,6 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
             output.accept(iAmmoBox.setAmmoLevel(ammoBox.copy(), IRON_LEVEL));
             output.accept(iAmmoBox.setAmmoLevel(ammoBox.copy(), GOLD_LEVEL));
             output.accept(iAmmoBox.setAmmoLevel(ammoBox.copy(), DIAMOND_LEVEL));
-
-            // 添加创造模式弹药盒
-            output.accept(iAmmoBox.setCreative(ammoBox.copy(), false));
-            output.accept(iAmmoBox.setCreative(ammoBox.copy(), true));
         }
     }
 
@@ -222,7 +188,7 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
      *
      * <p>外观变体由 {@code assets/tacz/items/ammo_box.json} 里的
      * {@code minecraft:select} + {@code tacz:ammo_statue} 属性
-     * （见 {@code AmmoBoxStatueProperty}）在 9 个
+     * （见 {@code AmmoBoxStatueProperty}）在 6 个
      * {@code models/item/ammo_box/*.json} 之间切换，染色由模型里的
      * {@code minecraft:dye} tint 完成。这与上游 1.21.1 的做法一致 ——
      * 上游同样没有弹药盒渲染器，只有 {@code ItemProperties.register} + overrides。
@@ -239,15 +205,6 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> adder, TooltipFlag isAdvanced) {
-        if (isAllTypeCreative(stack)) {
-            adder.accept(Component.translatable("tooltip.tacz.ammo_box.usage.all_type_creative").withStyle(style -> style.withColor(0xFFAA00)));
-            return;
-        }
-        if (isCreative(stack)) {
-            adder.accept(Component.translatable("tooltip.tacz.ammo_box.usage.creative.1").withStyle(style -> style.withColor(0xFFFF55)));
-            adder.accept(Component.translatable("tooltip.tacz.ammo_box.usage.creative.2").withStyle(style -> style.withColor(0xFFFF55)));
-            return;
-        }
         adder.accept(Component.translatable("tooltip.tacz.ammo_box.usage.deposit").withStyle(style -> style.withColor(0xAAAAAA)));
         adder.accept(Component.translatable("tooltip.tacz.ammo_box.usage.remove").withStyle(style -> style.withColor(0xAAAAAA)));
     }

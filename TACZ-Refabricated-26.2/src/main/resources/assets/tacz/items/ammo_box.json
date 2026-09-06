@@ -92,51 +92,6 @@
             }
           ]
         }
-      },
-      {
-        "when": [
-          6
-        ],
-        "model": {
-          "type": "minecraft:model",
-          "model": "tacz:item/ammo_box/creative_ammo_box_open",
-          "tints": [
-            {
-              "type": "minecraft:dye",
-              "default": -9274005
-            }
-          ]
-        }
-      },
-      {
-        "when": [
-          7
-        ],
-        "model": {
-          "type": "minecraft:model",
-          "model": "tacz:item/ammo_box/creative_ammo_box_close",
-          "tints": [
-            {
-              "type": "minecraft:dye",
-              "default": -9274005
-            }
-          ]
-        }
-      },
-      {
-        "when": [
-          8
-        ],
-        "model": {
-          "type": "minecraft:model",
-          "model": "tacz:item/ammo_box/all_type_creative_ammo_box",
-          "tints": [
-            {
-              "type": "minecraft:dye",
-              "default": -9274005
-            }
-          ]
-        }
       }
     ],
     "fallback": {

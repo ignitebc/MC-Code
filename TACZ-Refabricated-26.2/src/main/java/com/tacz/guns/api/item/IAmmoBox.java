@@ -59,28 +59,4 @@ public interface IAmmoBox {
      */
     int getAmmoLevel(ItemStack ammoBox);
 
-    /**
-     * 是否是无限子弹盒
-     *
-     * @param ammoBox 子弹盒
-     * @return 是否是无限子弹盒
-     */
-    boolean isCreative(ItemStack ammoBox);
-
-    /**
-     * 是否是全种类无限子弹盒
-     *
-     * @param ammoBox 子弹盒
-     * @return 是否是全种类无限子弹盒
-     */
-    boolean isAllTypeCreative(ItemStack ammoBox);
-
-    /**
-     * 将该弹药箱设置为无限种类
-     *
-     * @param ammoBox   子弹盒
-     * @param isAllType 是否是全弹种类型
-     * @return 修改后的子弹盒
-     */
-    ItemStack setCreative(ItemStack ammoBox, boolean isAllType);
 }

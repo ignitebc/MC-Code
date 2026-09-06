@@ -12,13 +12,14 @@ import net.minecraft.world.item.ItemStack;
 public interface AmmoBoxItemDataAccessor extends IAmmoBox {
     String AMMO_ID_TAG = "AmmoId";
     String AMMO_COUNT_TAG = "AmmoCount";
-    String CREATIVE_TAG = "Creative";
-    String ALL_TYPE_CREATIVE_TAG = "AllTypeCreative";
     String LEVEL_TAG = "Level";
 
     @Override
     default Identifier getAmmoId(ItemStack ammoBox) {
         CompoundTag tag = ItemNbtUtils.getTag(ammoBox);
+        if (hasLegacyCreativeData(tag)) {
+            return DefaultAssets.EMPTY_AMMO_ID;
+        }
         if (tag.contains(AMMO_ID_TAG)) {
             return Identifier.parse(tag.getStringOr(AMMO_ID_TAG, ""));
         }
@@ -27,14 +28,17 @@ public interface AmmoBoxItemDataAccessor extends IAmmoBox {
 
     @Override
     default void setAmmoId(ItemStack ammoBox, Identifier ammoId) {
-        ItemNbtUtils.updateTag(ammoBox, tag -> tag.putString(AMMO_ID_TAG, ammoId.toString()));
+        ItemNbtUtils.updateTag(ammoBox, tag -> {
+            clearLegacyCreativeData(tag);
+            tag.putString(AMMO_ID_TAG, ammoId.toString());
+        });
     }
 
     @Override
     default int getAmmoCount(ItemStack ammoBox) {
         CompoundTag tag = ItemNbtUtils.getTag(ammoBox);
-        if (isAllTypeCreative(ammoBox) || isCreative(ammoBox)) {
-            return Integer.MAX_VALUE;
+        if (hasLegacyCreativeData(tag)) {
+            return 0;
         }
         if (tag.contains(AMMO_COUNT_TAG)) {
             return tag.getIntOr(AMMO_COUNT_TAG, 0);
@@ -45,20 +49,14 @@ public interface AmmoBoxItemDataAccessor extends IAmmoBox {
     @Override
     default void setAmmoCount(ItemStack ammoBox, int count) {
         ItemNbtUtils.updateTag(ammoBox, tag -> {
-            if (isCreative(ammoBox)) {
-                tag.putInt(AMMO_COUNT_TAG, Integer.MAX_VALUE);
-            } else {
-                tag.putInt(AMMO_COUNT_TAG, count);
-            }
+            clearLegacyCreativeData(tag);
+            tag.putInt(AMMO_COUNT_TAG, count);
         });
     }
 
     @Override
     default boolean isAmmoBoxOfGun(ItemStack gun, ItemStack ammoBox) {
         if (gun.getItem() instanceof IGun iGun && ammoBox.getItem() instanceof IAmmoBox iAmmoBox) {
-            if (isAllTypeCreative(ammoBox)) {
-                return true;
-            }
             Identifier ammoId = iAmmoBox.getAmmoId(ammoBox);
             if (ammoId.equals(DefaultAssets.EMPTY_AMMO_ID)) {
                 return false;
@@ -84,39 +82,17 @@ public interface AmmoBoxItemDataAccessor extends IAmmoBox {
         return 0;
     }
 
-    @Override
-    default boolean isCreative(ItemStack ammoBox) {
-        CompoundTag tag = ItemNbtUtils.getTag(ammoBox);
-        if (tag.contains(CREATIVE_TAG)) {
-            return tag.getBooleanOr(CREATIVE_TAG, false);
-        }
-        return false;
+    private static boolean hasLegacyCreativeData(CompoundTag tag) {
+        return tag.getBooleanOr("Creative", false) || tag.getBooleanOr("AllTypeCreative", false);
     }
 
-    @Override
-    default boolean isAllTypeCreative(ItemStack ammoBox) {
-        CompoundTag tag = ItemNbtUtils.getTag(ammoBox);
-        if (tag.contains(ALL_TYPE_CREATIVE_TAG)) {
-            return tag.getBooleanOr(ALL_TYPE_CREATIVE_TAG, false);
+    private static void clearLegacyCreativeData(CompoundTag tag) {
+        // Retired infinite boxes must not retain their synthetic ammo count when reused.
+        if (hasLegacyCreativeData(tag)) {
+            tag.remove(AMMO_ID_TAG);
+            tag.remove(AMMO_COUNT_TAG);
         }
-        return false;
-    }
-
-    @Override
-    default ItemStack setCreative(ItemStack ammoBox, boolean isAllType) {
-        ItemNbtUtils.updateTag(ammoBox, tag -> {
-            if (isAllType) {
-                if (tag.contains(CREATIVE_TAG)) {
-                    tag.remove(CREATIVE_TAG);
-                }
-                tag.putBoolean(ALL_TYPE_CREATIVE_TAG, true);
-            } else {
-                if (tag.contains(ALL_TYPE_CREATIVE_TAG)) {
-                    tag.remove(ALL_TYPE_CREATIVE_TAG);
-                }
-                tag.putBoolean(CREATIVE_TAG, true);
-            }
-        });
-        return ammoBox;
+        tag.remove("Creative");
+        tag.remove("AllTypeCreative");
     }
 }
