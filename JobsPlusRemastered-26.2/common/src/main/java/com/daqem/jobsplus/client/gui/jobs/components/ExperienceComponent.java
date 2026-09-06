@@ -10,7 +10,7 @@ public class ExperienceComponent extends EmptyComponent
     {
         super(0, 0, width, height);
 
-        ActionScrollComponent actionScrollComponent = new ActionScrollComponent(state, getWidth() - 10, getHeight());
+        ActionScrollComponent actionScrollComponent = new ActionScrollComponent(state, getWidth(), getHeight());
 
         this.addComponent(actionScrollComponent);
     }

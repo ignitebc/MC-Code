@@ -1,16 +1,13 @@
 package com.daqem.jobsplus.client.gui.jobs.widgets;
 
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.networking.c2s.ServerboundSellItemPacket;
 import com.daqem.jobsplus.shop.ShopOffer;
 import com.daqem.uilib.gui.widget.CustomButtonWidget;
 import dev.architectury.networking.NetworkManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -28,7 +25,7 @@ public class SellItemButtonWidget extends CustomButtonWidget
     public SellItemButtonWidget(int x, int y, JobsScreenState state)
     {
         super(
-                x, y, 98, 20,
+                x, y, 98, JobsTheme.BUTTON_HEIGHT,
                 JobsPlus.translatable("gui.jobs.shop.sell_button"),
                 null,
                 button -> {
@@ -46,23 +43,10 @@ public class SellItemButtonWidget extends CustomButtonWidget
     @Override
     protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick)
     {
-        // 선택된 상품이 없으면 비활성
         this.active = (state.getSelectedShopOffer() != null);
-
-        guiGraphics.blitSprite(
-                RenderPipelines.GUI_TEXTURED,
-                JobsPlus.getId("jobs/tab_bottom"),
-                this.getX(), this.getY(),
-                this.getWidth(), this.getHeight(),
-                ARGB.white(this.alpha)
-        );
-
-        Component message = this.getMessage();
-        int textWidth = Minecraft.getInstance().font.width(message);
-        int textX = this.getX() + (this.getWidth() - textWidth) / 2;
-        int textY = this.getY() + (this.getHeight() - 9) / 2;
-        int textColor = this.active ? 0xFF1E1410 : 0xFF6B5C53;
-
-        guiGraphics.text(Minecraft.getInstance().font, message, textX, textY, textColor, false);
+        JobsTheme.button(guiGraphics, getX(), getY(), getWidth(), getHeight(),
+                this.active, isHoveredOrFocused(), false, true);
+        JobsTheme.label(guiGraphics, getMessage(), getX(), getY(), getWidth(), getHeight(),
+                this.active ? JobsTheme.TEXT : JobsTheme.DISABLED);
     }
 }

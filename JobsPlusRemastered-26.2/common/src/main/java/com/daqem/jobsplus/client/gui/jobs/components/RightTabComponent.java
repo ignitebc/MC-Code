@@ -5,10 +5,11 @@ import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
 import com.daqem.jobsplus.client.gui.jobs.widgets.RightTabWidget;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import net.minecraft.client.Minecraft;
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 
 public class RightTabComponent extends EmptyComponent
 {
-    public static final int HEIGHT = 18;
+    public static final int HEIGHT = JobsTheme.TAB_HEIGHT;
 
     public RightTabComponent(int x, int y, JobsScreenState state, RightTab tab)
     {
@@ -21,6 +22,6 @@ public class RightTabComponent extends EmptyComponent
 
     public static int getTabWidth(RightTab tab)
     {
-        return Minecraft.getInstance().font.width(tab.getName()) + 10;
+        return (int) Math.ceil(Minecraft.getInstance().font.width(tab.getName()) * JobsTheme.LABEL_SCALE) + 14;
     }
 }

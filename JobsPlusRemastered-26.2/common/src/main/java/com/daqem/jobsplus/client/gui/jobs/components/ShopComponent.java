@@ -36,7 +36,7 @@ public class ShopComponent extends EmptyComponent
         }
 
         // 상품 리스트는 계속 늘어나므로 스크롤 컨테이너로 표시
-        int startY = 46; // 기존 힌트가 있던 영역을 비우고 그대로 시작
-        this.addComponent(new ShopScrollComponent(0, startY, getWidth() - 10, getHeight() - startY, state));
+        int startY = 0;
+        this.addComponent(new ShopScrollComponent(0, startY, getWidth(), getHeight() - startY, state));
     }
 }

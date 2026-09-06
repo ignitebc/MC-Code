@@ -8,6 +8,6 @@ public class ShopScrollWidget extends AbstractScrollWidget
     public ShopScrollWidget(int width, int height, JobsScreenState state)
     {
         super(width, height, 24);
-        this.addComponent(new ShopScrollContentComponent(state));
+        this.addComponent(new ShopScrollContentComponent(state, width - 10));
     }
 }

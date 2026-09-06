@@ -1,22 +1,17 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
-import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.jobs.widgets.JobSelectionWidget;
 import com.daqem.uilib.gui.component.EmptyComponent;
-import com.daqem.uilib.gui.component.text.TextComponent;
 
 public class JobSelectionComponent extends EmptyComponent
 {
 
-    public JobSelectionComponent(JobsScreenState state)
+    public JobSelectionComponent(JobsScreenState state, int x, int y, int width, int height)
     {
-        super(31, 66, 117, 146);
+        super(x, y, width, height);
 
         JobSelectionWidget jobSelectionWidget = new JobSelectionWidget(getWidth(), getHeight(), state);
-        TextComponent title = new TextComponent(0, -10, JobsPlus.translatable("gui.jobs.job_selection"), 0xFF000000);
-
         this.addWidget(jobSelectionWidget);
-        this.addComponent(title);
     }
 }

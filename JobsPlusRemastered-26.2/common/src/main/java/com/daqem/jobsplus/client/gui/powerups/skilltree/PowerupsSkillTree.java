@@ -11,7 +11,9 @@ public class PowerupsSkillTree extends AbstractSkillTree
     public PowerupsSkillTree(List<ISkillTreeItem> items)
     {
         super(items);
-        setHorizontalSpacing(4);
-        setVerticalSpacing(4);
+        setSkillTreeItemWidth(24);
+        setSkillTreeItemHeight(24);
+        setHorizontalSpacing(8);
+        setVerticalSpacing(8);
     }
 }

@@ -13,11 +13,11 @@ public class ActionScrollComponent extends EmptyComponent
 
     public ActionScrollComponent(JobsScreenState state, int width, int height)
     {
-        super(0, 38, width, height - 38);
+        super(0, 0, width, height);
 
         this.actionScrollWidget = new ActionScrollWidget(getWidth(), getHeight());
         ExperienceScrollContentComponent contentComponent =
-                new ExperienceScrollContentComponent(state, Math.max(1, getWidth() - 16));
+                new ExperienceScrollContentComponent(state, Math.max(1, getWidth() - 10));
         this.actionScrollWidget.addComponent(contentComponent);
         this.addWidget(this.actionScrollWidget);
     }

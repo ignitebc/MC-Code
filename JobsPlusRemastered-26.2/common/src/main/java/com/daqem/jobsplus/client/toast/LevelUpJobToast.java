@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.client.toast;
 
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import net.fabricmc.api.EnvType;
@@ -61,9 +62,9 @@ public class LevelUpJobToast implements Toast
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, Font font, long l)
     {
         Entry entry = this.jobInstances.get(this.displayedJobInstanceIndex);
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, 0, 0, this.width(), this.height());
-        guiGraphics.text(font, entry.jobInstance.getName(), 30, 7, -11534256, false);
-        guiGraphics.text(font, JobsPlus.translatable("job.level_up.toast", entry.level), 30, 18, -16777216, false);
+        JobsTheme.sprite(guiGraphics, BACKGROUND_SPRITE, 0, 0, this.width(), this.height());
+        guiGraphics.text(font, entry.jobInstance.getName(), 30, 7, JobsTheme.CYAN, false);
+        guiGraphics.text(font, JobsPlus.translatable("job.level_up.toast", entry.level), 30, 18, JobsTheme.TEXT, false);
         guiGraphics.fakeItem(entry.jobInstance.getIconItem(), 8, 8);
     }
 

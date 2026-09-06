@@ -11,7 +11,7 @@ public class RecipesComponent extends EmptyComponent
         super(0, 0, width, height);
 
         UserGuideScrollComponent userGuideScrollComponent =
-                new UserGuideScrollComponent(state, getWidth() - 10, getHeight());
+                new UserGuideScrollComponent(state, getWidth(), getHeight());
 
         this.addComponent(userGuideScrollComponent);
     }

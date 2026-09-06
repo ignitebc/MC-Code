@@ -1,7 +1,7 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
 import com.daqem.jobsplus.JobsPlus;
-import com.daqem.uilib.gui.component.sprite.SpriteComponent;
+import com.daqem.jobsplus.client.gui.theme.JobsSpriteComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class SlottedItemComponent extends SpriteComponent
+public class SlottedItemComponent extends JobsSpriteComponent
 {
 
     private static final int[] SPRITE_IDS = new int[] { 4, 1, 2, 3, 3, 1, 4, 3, 2, 4, 2, 4, 3, 1, 2, 1 };

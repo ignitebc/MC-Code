@@ -8,31 +8,36 @@ import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance
 import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
 import com.daqem.uilib.gui.component.skilltree.SkillTreeComponent;
-import com.daqem.uilib.gui.component.sprite.SpriteComponent;
-import com.daqem.uilib.gui.component.text.TextComponent;
-import net.minecraft.network.chat.Style;
+import com.daqem.jobsplus.client.gui.theme.JobsSpriteComponent;
+import com.daqem.jobsplus.client.gui.theme.JobsCloseButton;
+import com.daqem.jobsplus.client.gui.theme.JobsLayout;
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class PowerupsComponent extends SpriteComponent
+public class PowerupsComponent extends JobsSpriteComponent
 {
-    public static final int BACKGROUND_WIDTH = 326;
-    public static final int BACKGROUND_HEIGHT = 240;
-    public static final int SKILL_TREE_X = 23;
-    public static final int SKILL_TREE_Y = 30;
-    public static final int SKILL_TREE_WIDTH = 282;
-    public static final int SKILL_TREE_HEIGHT = 192;
+    private final PowerupsScreenState state;
 
     public PowerupsComponent(PowerupsScreenState state)
     {
-        super(0, 0, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, JobsPlus.getId("powerups/background"));
+        this(state, JobsLayout.forScreen(Minecraft.getInstance().getWindow().getGuiScaledWidth(),
+                Minecraft.getInstance().getWindow().getGuiScaledHeight()));
+    }
 
-        TextComponent title = new TextComponent(11, 5, state.getJob().getJobInstance().getName().withStyle(Style.EMPTY.withBold(true)).append(JobsPlus.literal(" • " + state.getJob().getLevel()).withStyle(Style.EMPTY.withBold(false))), 0xFFEAF0FF);
-        this.addComponent(title);
+    private PowerupsComponent(PowerupsScreenState state, JobsLayout layout)
+    {
+        super(0, 0, layout.width(), layout.height(), JobsPlus.getId("powerups/background"));
+        this.state = state;
+        this.addWidget(new JobsCloseButton(getWidth() - 22, 7));
         CoinsComponent coinsComponent = new CoinsComponent(state);
-        coinsComponent.setX(-coinsComponent.getWidth() + 14);
+        coinsComponent.setX(getWidth() - coinsComponent.getWidth() - 8);
+        coinsComponent.setY(getHeight() - 17);
         this.addComponent(coinsComponent);
 
         Map<Identifier, Powerup> allPowerups = state.getJob().getPowerupManager().getAllPowerups().stream().collect(Collectors.toMap(Powerup::getPowerupLocation, powerup -> powerup));
@@ -76,13 +81,29 @@ public class PowerupsComponent extends SpriteComponent
         powerupItems.put(state.getJob().getJobInstance().getLocation(), rootItem);
         PowerupsSkillTree powerupsSkillTree = new PowerupsSkillTree(new ArrayList<>(powerupItems.values()));
         SkillTreeComponent skillTreeComponent = new SkillTreeComponent(
-                SKILL_TREE_X,
-                SKILL_TREE_Y,
-                SKILL_TREE_WIDTH,
-                SKILL_TREE_HEIGHT,
+                10,
+                34,
+                getWidth() - 20,
+                getHeight() - 57,
                 powerupsSkillTree
         );
         this.addComponent(skillTreeComponent);
+    }
+
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY,
+                                   float partialTick, int parentWidth, int parentHeight)
+    {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick, parentWidth, parentHeight);
+        JobsTheme.text(graphics, this.state.getJob().getJobInstance().getName().copy()
+                        .append(Component.literal("  /  스킬  ·  Lv. " + this.state.getJob().getLevel())),
+                getTotalX() + 12, getTotalY() + 11, getWidth() - 48, JobsTheme.CYAN);
+        graphics.fill(getTotalX() + 8, getTotalY() + 27, getTotalX() + getWidth() - 8,
+                getTotalY() + 28, JobsTheme.DIVIDER);
+        JobsTheme.cutBox(graphics, getTotalX() + 8, getTotalY() + 32,
+                getWidth() - 16, getHeight() - 53, JobsTheme.INSET, JobsTheme.BORDER);
+        JobsTheme.text(graphics, Component.literal("드래그 이동  ·  스킬 선택  ·  ESC 돌아가기"),
+                getTotalX() + 10, getTotalY() + getHeight() - 12, getWidth() - 100, JobsTheme.MUTED);
     }
 
     private static boolean canUnlockPowerup(PowerupsScreenState state, PowerupsSkillTreeItem powerupItem, PowerupsSkillTreeItem parentItem)

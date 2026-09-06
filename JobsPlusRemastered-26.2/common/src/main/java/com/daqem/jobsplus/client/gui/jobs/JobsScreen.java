@@ -1,6 +1,7 @@
 package com.daqem.jobsplus.client.gui.jobs;
 
 import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.client.gui.jobs.components.JobsComponent;
 import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
 import com.daqem.jobsplus.client.gui.jobs.widgets.ShopTooltipState;
@@ -81,13 +82,8 @@ public class JobsScreen extends AbstractScreen
         if (x < 2) x = 2;
         if (y < 2) y = 2;
 
-        // 바닐라풍 최소 박스(이름만)
-        int bg = 0xF0100010;
-        int border = 0xA0000000;
-
-        g.fill(x - 1, y - 1, x + boxW + 1, y + boxH + 1, border);
-        g.fill(x, y, x + boxW, y + boxH, bg);
-        g.text(font, text, x + paddingX, y + paddingY, 0xFFFFFFFF, false);
+        JobsTheme.cutBox(g, x - 1, y - 1, boxW + 2, boxH + 2, JobsTheme.BACKGROUND, JobsTheme.CYAN);
+        g.text(font, text, x + paddingX, y + paddingY, JobsTheme.TEXT, false);
     }
 
     @Override

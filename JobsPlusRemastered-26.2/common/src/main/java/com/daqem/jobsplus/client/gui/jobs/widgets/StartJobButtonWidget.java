@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.client.gui.jobs.widgets;
 
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreen;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreenState;
@@ -13,9 +14,7 @@ import com.daqem.uilib.gui.widget.CustomButtonWidget;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.ARGB;
 
 public class StartJobButtonWidget extends CustomButtonWidget {
     private static final Component MESSAGE = JobsPlus.translatable("gui.jobs.start_job");
@@ -23,7 +22,7 @@ public class StartJobButtonWidget extends CustomButtonWidget {
     private final JobsScreenState state;
 
     public StartJobButtonWidget(JobsScreenState state) {
-        super(31, 192, Minecraft.getInstance().font.width(MESSAGE) + 20, 18, MESSAGE, null,
+        super(31, 192, Minecraft.getInstance().font.width(MESSAGE) + 14, JobsTheme.BUTTON_HEIGHT, MESSAGE, null,
                 button -> {
                     Job selectedJob = state.getSelectedJob();
                     if (selectedJob == null) {
@@ -75,26 +74,11 @@ public class StartJobButtonWidget extends CustomButtonWidget {
     }
 
     @Override
-    protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.blitSprite(
-                RenderPipelines.GUI_TEXTURED,
-                JobsPlus.getId("jobs/tab_bottom"),
-                this.getX(),
-                this.getY(),
-                this.getWidth(),
-                this.getHeight(),
-                ARGB.white(this.alpha));
-
-        guiGraphics.text(
-                Minecraft.getInstance().font,
-                this.getMessage(),
-                this.getX() + 10,
-                this.getY() + 6,
-                ARGB.color(
-                        this.alpha,
-                        isHoveredOrFocused()
-                                ? this.state.getSelectedJob().getJobInstance().getColorDecimal()
-                                : 0x1E1410),
-                false);
+    protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick)
+    {
+        JobsTheme.button(guiGraphics, getX(), getY(), getWidth(), getHeight(),
+                this.active, isHoveredOrFocused(), false, true);
+        JobsTheme.label(guiGraphics, getMessage(), getX(), getY(), getWidth(), getHeight(),
+                this.active ? JobsTheme.TEXT : JobsTheme.DISABLED);
     }
 }

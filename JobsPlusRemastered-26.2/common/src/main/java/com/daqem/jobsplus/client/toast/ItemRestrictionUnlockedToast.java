@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.client.toast;
 
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.itemrestrictions.data.ItemRestriction;
 import com.daqem.jobsplus.JobsPlus;
 import net.fabricmc.api.EnvType;
@@ -62,9 +63,9 @@ public class ItemRestrictionUnlockedToast implements Toast
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, Font font, long l)
     {
         ItemRestriction entry = this.itemRestrictions.get(this.displayedItemRestrictionIndex);
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, 0, 0, this.width(), this.height());
-        guiGraphics.text(font, entry.getIcon().getHoverName(), 30, 7, -11534256, false);
-        guiGraphics.text(font, JobsPlus.translatable("job.item_unlocked.toast"), 30, 18, -16777216, false);
+        JobsTheme.sprite(guiGraphics, BACKGROUND_SPRITE, 0, 0, this.width(), this.height());
+        guiGraphics.text(font, entry.getIcon().getHoverName(), 30, 7, JobsTheme.CYAN, false);
+        guiGraphics.text(font, JobsPlus.translatable("job.item_unlocked.toast"), 30, 18, JobsTheme.TEXT, false);
         guiGraphics.fakeItem(entry.getIcon(), 8, 8);
     }
 

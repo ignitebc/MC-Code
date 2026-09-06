@@ -1,14 +1,12 @@
 package com.daqem.jobsplus.client.gui.jobs.widgets;
 
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.player.job.Job;
 import com.daqem.uilib.gui.widget.CustomButtonWidget;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.WidgetSprites;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.util.Mth;
 
 public class JobSelectionItemWidget extends CustomButtonWidget
 {
@@ -18,9 +16,9 @@ public class JobSelectionItemWidget extends CustomButtonWidget
     private final Job job;
     private final JobsScreenState state;
 
-    public JobSelectionItemWidget(Job job, JobsScreenState state)
+    public JobSelectionItemWidget(Job job, JobsScreenState state, int width)
     {
-        super(0, 0, 99, 19, job.getJobInstance().getName(), SPRITES, button -> state.setSelectedJob(job));
+        super(0, 0, width, 19, job.getJobInstance().getName(), SPRITES, button -> state.setSelectedJob(job));
         this.job = job;
         this.state = state;
     }
@@ -28,21 +26,27 @@ public class JobSelectionItemWidget extends CustomButtonWidget
     @Override
     protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick)
     {
-        Minecraft minecraft = Minecraft.getInstance();
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITES.get(this.active, this.isHovered() || this.job == this.state.getSelectedJob()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        boolean selected = this.job == this.state.getSelectedJob();
+        JobsTheme.cutBox(guiGraphics, getX(), getY(), getWidth(), getHeight(),
+                selected || isHoveredOrFocused() ? JobsTheme.SELECTED : JobsTheme.INSET,
+                selected || isHoveredOrFocused() ? JobsTheme.CYAN : JobsTheme.DIVIDER);
+        if (selected)
+        {
+            guiGraphics.fill(getX(), getY() + 2, getX() + 2, getY() + getHeight() - 2, JobsTheme.CYAN);
+        }
         guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().translate(this.getX() + 5, (this.getY() + 3));
+        guiGraphics.pose().translate(getX() + 4, getY() + 3);
         guiGraphics.pose().scale(0.75f, 0.75f);
         guiGraphics.fakeItem(this.job.getJobInstance().getIconItem(), 0, 0);
         guiGraphics.pose().popMatrix();
-        guiGraphics.text(minecraft.font, this.getMessage().copy().withColor(this.job.getJobInstance().getColorDecimal()), this.getX() + 20, this.getY() + (this.job.getLevel() > 0 ? 4 : 5), 0xFF1E1410, false);
+        JobsTheme.text(guiGraphics, getMessage(), getX() + 19, getY() + 4, getWidth() - 34,
+                this.job.getLevel() > 0 ? JobsTheme.TEXT : JobsTheme.MUTED);
         if (this.job.getLevel() > 0)
         {
-            guiGraphics.text(minecraft.font, JobsPlus.literal(this.job.getLevel() + ""), this.getX() + this.getWidth() - 2 - minecraft.font.width(this.job.getLevel() + ""), this.getY() + 4, 0xFF1E1410, false);
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/exp_bar"), getX() + 20, getY() + 13, 76, 3);
-            double expPercentage = this.job.getExperiencePercentage();
-            int expWidth = (int) Mth.clamp(expPercentage / 100 * 75, 1, 75);
-            guiGraphics.fill(getX() + 21, getY() + 14, getX() + 21 + expWidth, getY() + 15, job.getJobInstance().getColorDecimal() | 0xFF000000);
+            JobsTheme.label(guiGraphics, JobsPlus.literal(Integer.toString(this.job.getLevel())),
+                    getX() + getWidth() - 16, getY() + 1, 14, 12, JobsTheme.CYAN);
+            JobsTheme.progress(guiGraphics, getX() + 19, getY() + 13, getWidth() - 24, 4,
+                    this.job.getExperiencePercentage());
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.arc.api.action.IAction;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.integration.arc.reward.rewards.job.JobBitcoinReward;
@@ -11,8 +12,8 @@ import net.minecraft.network.chat.Component;
 public class ActionItemComponent extends EmptyComponent
 {
 
-    private static final int HEADER_COLOR = 0xFFB22222;
-    private static final int CONTENT_COLOR = 0xFF1E1410;
+    private static final int HEADER_COLOR = JobsTheme.CYAN;
+    private static final int CONTENT_COLOR = JobsTheme.TEXT;
     private static final int CONTENT_GAP = 2;
     private static final int CONTENT_LINE_SPACING = 1;
 

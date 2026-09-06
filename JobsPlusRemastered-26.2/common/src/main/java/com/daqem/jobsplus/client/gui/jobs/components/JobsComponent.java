@@ -1,6 +1,9 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
 import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.client.gui.theme.JobsCloseButton;
+import com.daqem.jobsplus.client.gui.theme.JobsLayout;
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
 import com.daqem.jobsplus.client.gui.jobs.widgets.PowerupsButtonWidget;
@@ -10,7 +13,8 @@ import com.daqem.jobsplus.networking.c2s.ServerboundStockViewStatePacket;
 import dev.architectury.networking.NetworkManager;
 import com.daqem.uilib.gui.component.AbstractComponent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 
 public class JobsComponent extends AbstractComponent
 {
@@ -23,22 +27,41 @@ public class JobsComponent extends AbstractComponent
     private final PowerupsButtonWidget powerupsButtonWidget;
     private final ShopSellButtonWidget shopSellButtonWidget;
     private RightTab cachedRightTab;
+    private final JobsLayout layout;
 
     public JobsComponent(JobsScreenState state)
     {
-        super(0, 0, 390, 230);
+        this(state, JobsLayout.forScreen(Minecraft.getInstance().getWindow().getGuiScaledWidth(),
+                Minecraft.getInstance().getWindow().getGuiScaledHeight()));
+    }
+
+    private JobsComponent(JobsScreenState state, JobsLayout layout)
+    {
+        super(0, 0, layout.width(), layout.height());
+        this.layout = layout;
         this.state = state;
         this.cachedRightTab = state.getSelectedRightTab();
 
-        this.jobSelectionComponent = new JobSelectionComponent(state);
-        this.selectedJobComponent = new SelectedJobComponent(state);
+        this.jobSelectionComponent = new JobSelectionComponent(state, 14, layout.jobsY(),
+                layout.leftWidth() - 12, layout.jobsHeight());
+        this.selectedJobComponent = new SelectedJobComponent(state, layout);
         this.coinsComponent = new CoinsComponent(state);
-        this.stockTableComponent = new StockTableComponent(state);
+        this.coinsComponent.setX(getWidth() - this.coinsComponent.getWidth() - 8);
+        this.coinsComponent.setY(getHeight() - 17);
+        this.stockTableComponent = new StockTableComponent(state, 14, layout.bodyY() + 7,
+                layout.stockTradingX() - 28, layout.bodyHeight() - 14);
         this.stockTradingComponent = new StockTradingComponent(state);
-        TabSwitcherComponent tabSwitcherComponent = new TabSwitcherComponent(state);
+        this.stockTradingComponent.setX(layout.stockTradingX());
+        this.stockTradingComponent.setY(layout.bodyY());
+        this.stockTradingComponent.setHeight(layout.bodyHeight());
+        TabSwitcherComponent tabSwitcherComponent = new TabSwitcherComponent(state, layout);
 
         // 스킬 버튼(기존 유지)
         this.powerupsButtonWidget = new PowerupsButtonWidget(state);
+        this.powerupsButtonWidget.setWidth(Math.min(this.powerupsButtonWidget.getWidth(),
+                (layout.detailWidth() - 22) / 2));
+        this.powerupsButtonWidget.setX(layout.detailX() + 8);
+        this.powerupsButtonWidget.setY(layout.actionY());
 
         // 판매 버튼: 스킬 버튼과 동일한 크기(Width/Height)로 맞춤 + 스킬 버튼 오른쪽 배치
         int gap = 6;
@@ -60,6 +83,7 @@ public class JobsComponent extends AbstractComponent
 
         this.addWidget(this.powerupsButtonWidget);
         this.addWidget(this.shopSellButtonWidget);
+        this.addWidget(new JobsCloseButton(getWidth() - 22, 7));
 
         this.updateStockPageVisibility();
 
@@ -83,12 +107,36 @@ public class JobsComponent extends AbstractComponent
             this.updateParentPosition(getParentX(), getParentY(), parentWidth, parentHeight);
         }
 
-        guiGraphics.blitSprite(
-                RenderPipelines.GUI_TEXTURED,
-                JobsPlus.getId("jobs/background"),
-                this.getTotalX(), this.getTotalY(),
-                this.getWidth(), this.getHeight() - 2
-        );
+        int x = getTotalX();
+        int y = getTotalY();
+        JobsTheme.panel(guiGraphics, x, y, getWidth(), getHeight());
+        guiGraphics.fill(x + 2, y + 2, x + getWidth() - 2, y + 27, JobsTheme.PANEL);
+        guiGraphics.fill(x + 8, y + 27, x + getWidth() - 8, y + 28, JobsTheme.DIVIDER);
+        JobsTheme.text(guiGraphics, Component.literal("JOBSPLUS"), x + 10, y + 11, 57, JobsTheme.TEXT);
+        boolean stock = this.cachedRightTab == RightTab.UP_AND_DOWN;
+        if (stock)
+        {
+            JobsTheme.panel(guiGraphics, x + 8, y + layout.bodyY(),
+                    layout.stockTradingX() - 16, layout.bodyHeight());
+        }
+        else
+        {
+            JobsTheme.panel(guiGraphics, x + 8, y + layout.bodyY(), layout.leftWidth(), layout.bodyHeight());
+            if (layout.wide())
+            {
+                JobsTheme.panel(guiGraphics, x + layout.detailX(), y + layout.bodyY(),
+                        layout.detailWidth(), layout.bodyHeight());
+            }
+            JobsTheme.text(guiGraphics, JobsPlus.translatable("gui.jobs.job_selection"),
+                    x + 16, y + layout.jobsY() - 12, 70, JobsTheme.MUTED);
+            JobsTheme.panel(guiGraphics, x + layout.contentX(), y + layout.bodyY(),
+                    layout.contentWidth(), layout.bodyHeight());
+            JobsTheme.text(guiGraphics, this.cachedRightTab.getName(), x + layout.contentX() + 8,
+                    y + layout.bodyY() + 7, layout.contentWidth() - 16, JobsTheme.CYAN);
+        }
+        guiGraphics.fill(x + 8, y + getHeight() - 20, x + getWidth() - 8, y + getHeight() - 19, JobsTheme.DIVIDER);
+        JobsTheme.text(guiGraphics, Component.literal("ESC  닫기  ·  휠 스크롤"), x + 10,
+                y + getHeight() - 12, 110, JobsTheme.MUTED);
     }
 
     /**

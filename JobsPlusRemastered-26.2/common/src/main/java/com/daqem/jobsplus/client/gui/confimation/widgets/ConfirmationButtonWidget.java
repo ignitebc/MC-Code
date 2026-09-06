@@ -1,33 +1,27 @@
 package com.daqem.jobsplus.client.gui.confimation.widgets;
 
-import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.uilib.gui.widget.CustomButtonWidget;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.network.chat.Component;
 
 public class ConfirmationButtonWidget extends CustomButtonWidget
 {
+    private final boolean primary;
 
-    public ConfirmationButtonWidget(int x, int y, int width, int height, Component message, OnPress onPress)
+    public ConfirmationButtonWidget(int x, int y, int width, int height, Component message,
+                                    boolean primary, OnPress onPress)
     {
-        super(x, y, width, height, message, new WidgetSprites(JobsPlus.getId("confirmation/button"), JobsPlus.getId("confirmation/button_hovered")), onPress);
+        super(x, y, width, height, message, null, onPress);
+        this.primary = primary;
     }
 
     @Override
-    protected void extractLabel(GuiGraphicsExtractor guiGraphics)
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick)
     {
-        Font font = Minecraft.getInstance().font;
-        int textColor = 0xFFEAF0FF;
-        if (this.isHovered())
-        {
-            textColor = 0xFFFFFFFF;
-        }
-
-        int textX = this.getX() + (this.getWidth() - font.width(this.getMessage())) / 2 + 1;
-        int textY = this.getY() + (this.getHeight() - 6) / 2;
-        guiGraphics.text(font, this.getMessage(), textX, textY, textColor, false);
+        JobsTheme.button(graphics, getX(), getY(), getWidth(), getHeight(),
+                this.active, isHoveredOrFocused(), false, this.primary);
+        JobsTheme.label(graphics, getMessage(), getX(), getY(), getWidth(), getHeight(),
+                this.active ? JobsTheme.TEXT : JobsTheme.DISABLED);
     }
 }

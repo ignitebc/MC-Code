@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.stock.StockCatalog;
 import com.daqem.jobsplus.player.stock.StockTransaction;
@@ -19,8 +20,8 @@ public class StockHistoryContentComponent extends EmptyComponent
     private static final int MAX_TRANSACTIONS = 50;
     private static final int HEADER_HEIGHT = 22;
     private static final int ROW_HEIGHT = 10;
-    private static final int TEXT_COLOR = 0xFF1E1410;
-    private static final int GRID_COLOR = 0xFFD8BF96;
+    private static final int TEXT_COLOR = JobsTheme.TEXT;
+    private static final int GRID_COLOR = JobsTheme.DIVIDER;
     private static final DateTimeFormatter TIME_FORMAT =
             DateTimeFormatter.ofPattern("MM-dd HH:mm").withZone(ZoneId.systemDefault());
 
@@ -95,11 +96,11 @@ public class StockHistoryContentComponent extends EmptyComponent
         }
         if (transaction.returnRate() > 0)
         {
-            return 0xFFE53935;
+            return JobsTheme.SUCCESS;
         }
         if (transaction.returnRate() < 0)
         {
-            return 0xFF1976D2;
+            return JobsTheme.ERROR;
         }
         return TEXT_COLOR;
     }
