@@ -22,6 +22,7 @@ MODULES = [
     ("caramelChat-26.2", "fabric", "caramelchat"),
     ("FallingTree-minecraft-26.2", None, "fallingtree"),
     ("TACZ-Refabricated-26.2", None, "tacz"),
+    ("ServerUtilities-26.2", None, "serverutilities"),
 ]
 
 ROOT_BUILD_TASK_OVERRIDES = {
