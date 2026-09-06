@@ -50,7 +50,7 @@ public class JobsComponent extends AbstractComponent
         this.coinsComponent.setX(getWidth() - this.coinsComponent.getWidth() - 8);
         this.coinsComponent.setY(getHeight() - 17);
         this.stockTableComponent = new StockTableComponent(state, 14, layout.bodyY() + 7,
-                layout.stockTradingX() - 28, layout.bodyHeight() - 28);
+                layout.stockTradingX() - 28, layout.bodyHeight() - 14);
         this.stockTradingComponent = new StockTradingComponent(state, layout.stockTradingWidth(), layout.bodyHeight());
         this.stockTradingComponent.setX(layout.stockTradingX());
         this.stockTradingComponent.setY(layout.bodyY());
@@ -116,7 +116,6 @@ public class JobsComponent extends AbstractComponent
         JobsTheme.panel(guiGraphics, x, y, getWidth(), getHeight());
         JobsTheme.texture(guiGraphics, JobsTheme.Skin.HEADER, x + 2, y + 2, getWidth() - 4, 25);
         guiGraphics.fill(x + 8, y + 27, x + getWidth() - 8, y + 28, JobsTheme.DIVIDER);
-        JobsTheme.text(guiGraphics, Component.literal("JOBSPLUS"), x + 10, y + 11, 57, JobsTheme.TEXT);
         if (layout.wide()) {
             int badgeX = x + getWidth() - 169;
             JobsTheme.texture(guiGraphics, JobsTheme.Skin.INSET, badgeX, y + 6, 72, 16);
@@ -133,14 +132,15 @@ public class JobsComponent extends AbstractComponent
         {
             JobsTheme.panel(guiGraphics, x + 8, y + layout.bodyY(),
                     layout.stockTradingX() - 16, layout.bodyHeight());
-            String quoteStatus = switch (ClientStockMarket.getSnapshot().status()) {
-                case READY -> "● 시세 조회 완료";
-                case REFRESHING -> "● 갱신 중";
-                case FAILED -> "● 조회 실패";
-            };
-            JobsTheme.text(guiGraphics, Component.literal(quoteStatus), x + 16,
-                    y + layout.bodyY() + layout.bodyHeight() - 13,
-                    layout.stockTradingX() - 36, JobsTheme.MUTED);
+        }
+        else if (this.cachedRightTab == RightTab.SHOP || this.cachedRightTab == RightTab.GUN_GUIDE)
+        {
+            JobsTheme.panel(guiGraphics, x + layout.pageX(this.cachedRightTab), y + layout.bodyY(),
+                    layout.pageWidth(this.cachedRightTab), layout.bodyHeight());
+            JobsTheme.texture(guiGraphics, JobsTheme.Skin.HEADER, x + 9, y + layout.bodyY() + 1,
+                    layout.pageWidth(this.cachedRightTab) - 2, 18);
+            JobsTheme.text(guiGraphics, this.cachedRightTab.getName(), x + 16, y + layout.bodyY() + 7,
+                    layout.pageWidth(this.cachedRightTab) - 16, JobsTheme.CYAN);
         }
         else
         {
@@ -165,7 +165,7 @@ public class JobsComponent extends AbstractComponent
             JobsTheme.text(guiGraphics, this.cachedRightTab.getName(), x + layout.pageX(this.cachedRightTab) + 8,
                     y + layout.bodyY() + 7, layout.pageWidth(this.cachedRightTab) - 16, JobsTheme.CYAN);
         }
-        if (layout.expandedPage(this.cachedRightTab) && state.getSelectedJob() != null) {
+        if (this.cachedRightTab == RightTab.RECIPES && layout.wide() && state.getSelectedJob() != null) {
             JobsTheme.text(guiGraphics, state.getSelectedJob().getJobInstance().getName().copy()
                             .append(" · Lv. " + state.getSelectedJob().getLevel()),
                     x + 16, y + layout.bodyY() + layout.bodyHeight() - 35, layout.leftWidth() - 16, JobsTheme.TEXT);
@@ -231,9 +231,11 @@ public class JobsComponent extends AbstractComponent
         }
         boolean expandedPage = layout.expandedPage(this.cachedRightTab);
         this.jobSelectionComponent.resizeHeight(expandedPage ? layout.bodyHeight() - 59 : layout.jobsHeight());
-        this.powerupsButtonWidget.setX(expandedPage ? 16 : layout.detailX() + 8);
+        int actionWidth = Math.min(90, layout.detailWidth() - 16);
+        this.powerupsButtonWidget.setX(expandedPage ? 8 + (layout.leftWidth() - actionWidth) / 2
+                : layout.detailX() + (layout.detailWidth() - actionWidth) / 2);
         this.powerupsButtonWidget.setY(expandedPage ? layout.bodyY() + layout.bodyHeight() - 22 : layout.actionY());
-        this.powerupsButtonWidget.setWidth(expandedPage ? layout.leftWidth() - 16 : (layout.detailWidth() - 22) / 2);
+        this.powerupsButtonWidget.setWidth(actionWidth);
         boolean shopDetails = layout.wide() && this.cachedRightTab == RightTab.SHOP;
         this.shopSellButtonWidget.setX(shopDetails ? getWidth() - 150 : this.powerupsButtonWidget.getX() + this.powerupsButtonWidget.getWidth() + 6);
         this.shopSellButtonWidget.setY(shopDetails ? layout.bodyY() + layout.bodyHeight() - 26 : layout.actionY());
@@ -249,6 +251,18 @@ public class JobsComponent extends AbstractComponent
         if (!this.getWidgets().contains(this.shopSellButtonWidget))
         {
             this.addWidget(this.shopSellButtonWidget);
+        }
+        if (this.cachedRightTab == RightTab.SHOP || this.cachedRightTab == RightTab.GUN_GUIDE) {
+            this.removeComponent(this.jobSelectionComponent);
+            this.removeComponent(this.selectedJobComponent);
+            this.removeWidget(this.powerupsButtonWidget);
+            if (this.cachedRightTab == RightTab.GUN_GUIDE) {
+                this.removeWidget(this.shopSellButtonWidget);
+            } else if (!layout.wide()) {
+                this.shopSellButtonWidget.setWidth(Math.min(110, layout.pageWidth(this.cachedRightTab) - 16));
+                this.shopSellButtonWidget.setX(8 + (layout.pageWidth(this.cachedRightTab) - this.shopSellButtonWidget.getWidth()) / 2);
+                this.shopSellButtonWidget.setY(layout.bodyY() + layout.bodyHeight() - 22);
+            }
         }
     }
 }

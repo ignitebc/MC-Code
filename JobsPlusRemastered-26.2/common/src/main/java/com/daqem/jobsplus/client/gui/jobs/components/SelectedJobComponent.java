@@ -23,7 +23,7 @@ public class SelectedJobComponent extends EmptyComponent {
         this.wide = layout.wide();
         this.spacious = wide && getHeight() >= 225;
         this.startJobButtonWidget = new StartJobButtonWidget(state);
-        this.startJobButtonWidget.setWidth(Math.min(getWidth() - 16, this.startJobButtonWidget.getWidth()));
+        this.startJobButtonWidget.setWidth(Math.min(90, getWidth() - 16));
         this.startJobButtonWidget.setX((getWidth() - this.startJobButtonWidget.getWidth()) / 2);
         this.startJobButtonWidget.setY(wide ? getHeight() - 44 : 29);
         if (state.getSelectedJob().getLevel() == 0 && canStartNewJob()) {

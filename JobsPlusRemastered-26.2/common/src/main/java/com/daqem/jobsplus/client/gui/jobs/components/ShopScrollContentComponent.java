@@ -13,9 +13,7 @@ import java.util.List;
 public class ShopScrollContentComponent extends EmptyComponent
 {
 
-    private static final int START_X = 0;
-    private static final int START_Y = 0;
-    private static final int ROW_HEIGHT = 32;
+    private static final int ROW_HEIGHT = 49;
 
     public ShopScrollContentComponent(JobsScreenState state, int width)
     {
@@ -24,13 +22,15 @@ public class ShopScrollContentComponent extends EmptyComponent
 
         List<ShopOffer> offers = ShopComponent.getOffers();
 
+        int gap = 6;
+        int columnWidth = (getWidth() - gap) / 2;
         for (int i = 0; i < offers.size(); i++)
         {
             ShopOffer offer = offers.get(i);
-            this.addWidget(new ShopOfferEntryWidget(START_X, START_Y + (i * ROW_HEIGHT), getWidth(), state, offer));
+            this.addWidget(new ShopOfferEntryWidget((i % 2) * (columnWidth + gap), (i / 2) * ROW_HEIGHT, columnWidth, state, offer));
         }
 
         // 전체 컨텐츠 높이 = row 수 * row 높이
-        this.setHeight(offers.size() * ROW_HEIGHT);
+        this.setHeight(((offers.size() + 1) / 2) * ROW_HEIGHT);
     }
 }

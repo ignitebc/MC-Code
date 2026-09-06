@@ -40,7 +40,9 @@ public class RightPageContentComponent extends EmptyComponent
         case RECIPES -> this.addComponent(new RecipesComponent(state, contentWidth, contentHeight));
         case UP_AND_DOWN -> {
         }
-        case SHOP -> this.addComponent(new ShopComponent(state, contentWidth, contentHeight));
+        case GUN_GUIDE -> this.addComponent(new GunGuideComponent(contentWidth, contentHeight));
+        case SHOP -> this.addComponent(new ShopComponent(state, contentWidth,
+                layout.wide() ? contentHeight : Math.max(1, contentHeight - 22)));
         }
     }
 

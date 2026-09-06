@@ -58,12 +58,15 @@ public record JobsLayout(int width, int height) {
     }
 
     public int pageX(RightTab tab) {
+        if (tab == RightTab.SHOP || tab == RightTab.GUN_GUIDE) {
+            return 8;
+        }
         return expandedPage(tab) ? detailX() : contentX();
     }
 
     public int pageWidth(RightTab tab) {
         if (wide() && tab == RightTab.SHOP) {
-            return width - detailX() - 168;
+            return width - 176;
         }
         return width - pageX(tab) - 8;
     }
