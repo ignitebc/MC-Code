@@ -1,17 +1,16 @@
 package com.daqem.jobsplus.client.gui.jobs.widgets;
 
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.shop.ShopOffer;
 import com.daqem.uilib.gui.widget.CustomButtonWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.ARGB;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -24,21 +23,11 @@ public class ShopOfferEntryWidget extends CustomButtonWidget
     private final JobsScreenState state;
     private final ShopOffer offer;
 
-    // 선택 하이라이트(진한 보라)
-    private static final int SELECT_BG = 0xAA6F2DBD;     // 배경(알파 포함)
-    private static final int SELECT_BORDER = 0xFFE6CCFF; // 테두리
-
-    // 아이템 렌더 위치 (기존 UI 기준)
-    private static final int IN_ITEM_X_OFFSET = 1;
-    private static final int OUT_ITEM_X_OFFSET = 63;
-    private static final int ITEM_Y_OFFSET = 4;
-
-    // 슬롯/아이콘 히트박스 (슬롯 스프라이트가 18x18)
     private static final int HITBOX_SIZE = 18;
 
-    public ShopOfferEntryWidget(int x, int y, JobsScreenState state, ShopOffer offer)
+    public ShopOfferEntryWidget(int x, int y, int width, JobsScreenState state, ShopOffer offer)
     {
-        super(x, y, 98, 24, Component.empty(), null, button -> state.setSelectedShopOffer(offer));
+        super(x, y, width, 24, Component.empty(), null, button -> state.setSelectedShopOffer(offer));
         this.state = state;
         this.offer = offer;
     }
@@ -48,38 +37,30 @@ public class ShopOfferEntryWidget extends CustomButtonWidget
     {
         boolean selected = this.offer.equals(this.state.getSelectedShopOffer());
 
-        // 선택 강조: 배경 + 테두리(진하게)
+        JobsTheme.button(guiGraphics, getX(), getY(), getWidth(), getHeight(),
+                this.active, isHoveredOrFocused(), false, false);
         if (selected)
         {
-            guiGraphics.fill(this.getX() - 1, this.getY() - 1,
-                this.getX() + this.getWidth() + 1, this.getY() + this.getHeight() + 1, SELECT_BORDER);
-            guiGraphics.fill(this.getX(), this.getY(),
-                this.getX() + this.getWidth(), this.getY() + this.getHeight(), SELECT_BG);
+            JobsTheme.cutBox(guiGraphics, getX(), getY(), getWidth(), getHeight(),
+                    JobsTheme.SELECTED, JobsTheme.CYAN);
+            guiGraphics.fill(getX(), getY() + 3, getX() + 2, getY() + getHeight() - 3, JobsTheme.CYAN);
         }
-
-        // 슬롯 2개 + 화살표
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED,
-            JobsPlus.getId("jobs/item_slot_1"),
-            this.getX(), this.getY() + 3, 18, 18, ARGB.white(this.alpha));
-
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED,
-            JobsPlus.getId("jobs/pagination_arrow_right"),
-            this.getX() + 30, this.getY() + 7, 10, 10, ARGB.white(this.alpha));
-
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED,
-            JobsPlus.getId("jobs/item_slot_1"),
-            this.getX() + 62, this.getY() + 3, 18, 18, ARGB.white(this.alpha));
+        int inputSlotX = getX() + 5;
+        int outputSlotX = getX() + getWidth() - 23;
+        JobsTheme.sprite(guiGraphics, JobsPlus.getId("jobs/item_slot_1"), inputSlotX, getY() + 3, 18, 18);
+        JobsTheme.label(guiGraphics, Component.literal("→"), getX() + 25, getY(), getWidth() - 50, getHeight(), JobsTheme.CYAN);
+        JobsTheme.sprite(guiGraphics, JobsPlus.getId("jobs/item_slot_1"), outputSlotX, getY() + 3, 18, 18);
 
         // 입력/출력 아이템 스택
         ItemStack inStack = new ItemStack(resolveItem(this.offer.inputItemId()).orElse(Items.AIR), this.offer.inputAmount());
         ItemStack outStack = new ItemStack(resolveItem(this.offer.outputItemId()).orElse(Items.AIR), this.offer.outputAmount());
 
         // 아이템 렌더링 좌표(아이콘 기준)
-        int inX = this.getX() + IN_ITEM_X_OFFSET;
-        int inY = this.getY() + ITEM_Y_OFFSET;
+        int inX = inputSlotX + 1;
+        int inY = this.getY() + 4;
 
-        int outX = this.getX() + OUT_ITEM_X_OFFSET;
-        int outY = this.getY() + ITEM_Y_OFFSET;
+        int outX = outputSlotX + 1;
+        int outY = this.getY() + 4;
 
         // 아이템 렌더링
         guiGraphics.item(inStack, inX, inY);
@@ -92,11 +73,11 @@ public class ShopOfferEntryWidget extends CustomButtonWidget
         // 스크롤 컨테이너가 Scissor를 쓰고 있어서, 여기서 툴팁/disableScissor를 만지면 underflow로 터진다.
         // 따라서 "이름만" ShopTooltipState에 기록하고,
         // 실제 박스/표시는 JobsScreen.extractRenderState(...) 마지막에서 그린다.
-        if (!inStack.isEmpty() && isMouseOverSlot(mouseX, mouseY, this.getX(), this.getY() + 3))
+        if (!inStack.isEmpty() && isMouseOverSlot(mouseX, mouseY, inputSlotX, this.getY() + 3))
         {
             ShopTooltipState.setHoveredName(inStack.getHoverName(), mouseX, mouseY);
         }
-        else if (!outStack.isEmpty() && isMouseOverSlot(mouseX, mouseY, this.getX() + 62, this.getY() + 3))
+        else if (!outStack.isEmpty() && isMouseOverSlot(mouseX, mouseY, outputSlotX, this.getY() + 3))
         {
             ShopTooltipState.setHoveredName(outStack.getHoverName(), mouseX, mouseY);
         }

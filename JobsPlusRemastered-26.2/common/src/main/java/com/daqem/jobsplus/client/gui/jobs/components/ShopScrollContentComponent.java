@@ -13,22 +13,21 @@ import java.util.List;
 public class ShopScrollContentComponent extends EmptyComponent
 {
 
-    private static final int START_X = 9;
+    private static final int START_X = 0;
     private static final int START_Y = 0;
-    private static final int ROW_HEIGHT = 24;
+    private static final int ROW_HEIGHT = 26;
 
-    public ShopScrollContentComponent(JobsScreenState state)
+    public ShopScrollContentComponent(JobsScreenState state, int width)
     {
-        // 너비는 실제 row(98) + 좌우 여백(START_X) 기준으로 설정한다.
-        // ScrollWidget은 전체 width(117)를 가지며 스크롤바 영역까지 포함한다.
-        super(0, 0, 117, 0);
+        // The parent reserves a separate strip for the scrollbar.
+        super(0, 0, width, 0);
 
         List<ShopOffer> offers = ShopComponent.getOffers();
 
         for (int i = 0; i < offers.size(); i++)
         {
             ShopOffer offer = offers.get(i);
-            this.addWidget(new ShopOfferEntryWidget(START_X, START_Y + (i * ROW_HEIGHT), state, offer));
+            this.addWidget(new ShopOfferEntryWidget(START_X, START_Y + (i * ROW_HEIGHT), getWidth(), state, offer));
         }
 
         // 전체 컨텐츠 높이 = row 수 * row 높이

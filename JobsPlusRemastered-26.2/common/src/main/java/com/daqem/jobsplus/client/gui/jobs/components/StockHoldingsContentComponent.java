@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.stock.ClientStockMarket;
 import com.daqem.jobsplus.stock.SnapshotStatus;
@@ -20,13 +21,13 @@ import java.util.Locale;
 public class StockHoldingsContentComponent extends EmptyComponent
 {
     private static final int ROW_HEIGHT = 10;
-    private static final int TABLE_WIDTH = 146;
-    private static final int NAME_COLUMN_END = 37;
-    private static final int POSITION_COLUMN_END = 58;
-    private static final int AVERAGE_PRICE_COLUMN_END = 92;
-    private static final int QUANTITY_COLUMN_END = 113;
-    private static final int TEXT_COLOR = 0xFF1E1410;
-    private static final int GRID_COLOR = 0xFFD8BF96;
+    private static final int TABLE_WIDTH = 136;
+    private static final int NAME_COLUMN_END = 34;
+    private static final int POSITION_COLUMN_END = 54;
+    private static final int AVERAGE_PRICE_COLUMN_END = 86;
+    private static final int QUANTITY_COLUMN_END = 108;
+    private static final int TEXT_COLOR = JobsTheme.TEXT;
+    private static final int GRID_COLOR = JobsTheme.DIVIDER;
     private static final NumberFormat PRICE_FORMAT = NumberFormat.getIntegerInstance(Locale.KOREA);
 
     private final JobsScreenState state;
@@ -81,7 +82,7 @@ public class StockHoldingsContentComponent extends EmptyComponent
             boolean selected = position.stockId().equals(this.state.getSelectedHoldingStockId());
             if (selected)
             {
-                guiGraphics.fill(x, rowY, right, rowY + ROW_HEIGHT - 1, 0x55F2C94C);
+                guiGraphics.fill(x, rowY, right, rowY + ROW_HEIGHT - 1, JobsTheme.SELECTED);
             }
             StockQuote quote = snapshot.getQuote(position.stockId());
             String name = StockCatalog.getStockName(position.stockId());
@@ -99,16 +100,17 @@ public class StockHoldingsContentComponent extends EmptyComponent
                 returnRate = String.format(Locale.ROOT, "%+.2f%%", rate);
                 if (rate > 0)
                 {
-                    returnColor = 0xFFE53935;
+                    returnColor = JobsTheme.SUCCESS;
                 }
                 else if (rate < 0)
                 {
-                    returnColor = 0xFF1976D2;
+                    returnColor = JobsTheme.ERROR;
                 }
             }
 
             drawScaled(guiGraphics, selected ? "▶" : "", x + 1, rowY + 2, TEXT_COLOR);
-            drawScaled(guiGraphics, name, x + 6, rowY + 2, TEXT_COLOR);
+            JobsTheme.text(guiGraphics, Component.literal(name), x + 6, rowY + 2,
+                    NAME_COLUMN_END - 9, TEXT_COLOR);
             drawScaledCentered(guiGraphics, positionName, x + (NAME_COLUMN_END + POSITION_COLUMN_END) / 2,
                     rowY + 2, TEXT_COLOR);
             drawScaledRight(guiGraphics, averagePrice, x + AVERAGE_PRICE_COLUMN_END - 2, rowY + 2, TEXT_COLOR);

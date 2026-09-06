@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import java.lang.reflect.Method;
 
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
@@ -299,7 +300,7 @@ public class UserGuideScrollComponent extends EmptyComponent
 
     public UserGuideScrollComponent(JobsScreenState state, int width, int height)
     {
-        super(0, 43, width, height - 43);
+        super(0, 0, width, height);
 
         RecipesScrollWidget recipesScrollWidget =
                 new RecipesScrollWidget(getWidth(), getHeight(), state);
@@ -314,7 +315,7 @@ public class UserGuideScrollComponent extends EmptyComponent
         if (scrollContentComponent.getComponents().isEmpty())
         {
             int textWidth = Math.max(1, getWidth() - 10);
-            float textScale = 0.50f;
+            float textScale = 0.70f;
 
             /*
              * 화면에 실제로 표시되는 너비는
@@ -331,7 +332,7 @@ public class UserGuideScrollComponent extends EmptyComponent
                             0,
                             wrapWidth,
                             createGuideComponent(),
-                            0xFF000000,
+                            JobsTheme.TEXT,
                             textScale
                     );
 

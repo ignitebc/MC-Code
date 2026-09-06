@@ -8,11 +8,11 @@ import com.daqem.uilib.gui.component.EmptyComponent;
 public class JobSelectionItemComponent extends EmptyComponent
 {
 
-    public JobSelectionItemComponent(Job job, JobsScreenState state)
+    public JobSelectionItemComponent(Job job, JobsScreenState state, int width)
     {
-        super(0, 0, 99, 20);
+        super(0, 0, width, 20);
 
-        JobSelectionItemWidget jobSelectionItemWidget = new JobSelectionItemWidget(job, state);
+        JobSelectionItemWidget jobSelectionItemWidget = new JobSelectionItemWidget(job, state, width);
 
         this.addWidget(jobSelectionItemWidget);
     }

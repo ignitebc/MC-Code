@@ -2,41 +2,29 @@ package com.daqem.jobsplus.client.gui.powerups.components;
 
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.powerups.PowerupsScreenState;
-import com.daqem.uilib.gui.component.sprite.SpriteComponent;
-import com.daqem.uilib.gui.component.text.TextComponent;
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
+import com.daqem.uilib.gui.component.EmptyComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
 
-public class CoinsComponent extends SpriteComponent
+public class CoinsComponent extends EmptyComponent
 {
-
     private final PowerupsScreenState state;
-    private int cachedCoins;
 
     public CoinsComponent(PowerupsScreenState state)
     {
-        super(0, 24, 0, 15, JobsPlus.getId("powerups/coins_background"));
+        super(0, 0, (int) Math.ceil(Minecraft.getInstance().font.width(Integer.toString(state.getCoins()))
+                * JobsTheme.LABEL_SCALE) + 24, JobsTheme.BUTTON_HEIGHT);
         this.state = state;
-        this.cachedCoins = state.getCoins();
-
-        MutableComponent coinsText = JobsPlus.literal(this.cachedCoins + "");
-        int coinsTextWidth = Minecraft.getInstance().font.width(coinsText);
-        TextComponent coinsTextComponent = new TextComponent(6, 4, coinsText, 0xFFEAF0FF);
-        SpriteComponent coinIcon = new SpriteComponent(6 + coinsTextWidth + 2, 4, 7, 8, JobsPlus.getId("jobs/coins"));
-
-        this.addComponent(coinsTextComponent);
-        this.addComponent(coinIcon);
-        this.setWidth(6 + coinsTextWidth + 2 + 7 + 6);
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth, int parentHeight)
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY,
+                                   float partialTick, int parentWidth, int parentHeight)
     {
-        if (this.state.getCoins() != this.cachedCoins)
-        {
-
-        }
-        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick, parentWidth, parentHeight);
+        JobsTheme.sprite(graphics, JobsPlus.getId("jobs/coins"), getTotalX() + 4, getTotalY() + 3, 7, 8);
+        JobsTheme.label(graphics, Component.literal(Integer.toString(this.state.getCoins())),
+                getTotalX() + 14, getTotalY(), getWidth() - 14, getHeight(), JobsTheme.TEXT);
     }
 }

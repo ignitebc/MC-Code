@@ -3,100 +3,89 @@ package com.daqem.jobsplus.client.gui.jobs.components;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.jobs.widgets.StartJobButtonWidget;
+import com.daqem.jobsplus.client.gui.theme.JobsLayout;
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.player.job.Job;
 import com.daqem.uilib.gui.component.EmptyComponent;
-import com.daqem.uilib.gui.component.item.ItemComponent;
-import com.daqem.uilib.gui.component.sprite.SpriteComponent;
-import com.daqem.uilib.gui.component.text.TruncatedTextComponent;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.world.item.ItemStack;
 
 public class SelectedJobComponent extends EmptyComponent {
-
     private final JobsScreenState state;
-    private final TruncatedTextComponent jobTitleComponent;
-    private final ItemComponent jobIconComponent;
     private final StartJobButtonWidget startJobButtonWidget;
+    private final boolean wide;
 
-    public SelectedJobComponent(JobsScreenState state) {
-        super(31, 20, 117, 34);
+    public SelectedJobComponent(JobsScreenState state, JobsLayout layout) {
+        super(layout.detailX(), layout.bodyY(), layout.detailWidth(), layout.wide() ? layout.bodyHeight() : 46);
         this.state = state;
-        this.jobTitleComponent = new TruncatedTextComponent(26, 0, 90, Component.empty(), 0);
-        this.jobIconComponent = new ItemComponent(4, 4, ItemStack.EMPTY);
-        this.startJobButtonWidget = new StartJobButtonWidget(this.state);
-
-        SpriteComponent jobIconSlotComponent = new SpriteComponent(0, 0, 24, 24, JobsPlus.getId("jobs/job_icon_slot"));
-        SpriteComponent separatorComponent = new SpriteComponent(0, 27, 113, 7, JobsPlus.getId("jobs/separator_line"));
-
-        this.addComponent(this.jobTitleComponent);
-        this.addComponent(jobIconSlotComponent);
-        this.addComponent(separatorComponent);
-        this.addComponent(this.jobIconComponent);
-
-        if (this.state.getSelectedJob().getLevel() == 0 && canStartNewJob()) {
+        this.wide = layout.wide();
+        this.startJobButtonWidget = new StartJobButtonWidget(state);
+        this.startJobButtonWidget.setWidth(Math.min(getWidth() - 16, this.startJobButtonWidget.getWidth()));
+        this.startJobButtonWidget.setX((getWidth() - this.startJobButtonWidget.getWidth()) / 2);
+        this.startJobButtonWidget.setY(wide ? getHeight() - 44 : 29);
+        if (state.getSelectedJob().getLevel() == 0 && canStartNewJob()) {
             this.addWidget(this.startJobButtonWidget);
         }
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, int parentWidth,
-                       int parentHeight) {
-        Job selectedJob = this.state.getSelectedJob();
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY,
+                                   float partialTick, int parentWidth, int parentHeight) {
+        Job selectedJob = state.getSelectedJob();
         JobInstance jobInstance = selectedJob.getJobInstance();
-
-        this.jobTitleComponent.setText(jobInstance.getName().copy().withStyle(Style.EMPTY.withBold(true)));
-        this.jobTitleComponent.setColor(jobInstance.getColorDecimal() | 0xFF000000);
-        this.jobIconComponent.setItemStack(jobInstance.getIconItem());
+        int x = getTotalX();
+        int y = getTotalY();
+        if (wide) {
+            JobsTheme.text(graphics, Component.literal("직업 정보"), x + 8, y + 7, getWidth() - 16, JobsTheme.MUTED);
+            int iconX = x + (getWidth() - 42) / 2;
+            JobsTheme.cutBox(graphics, iconX, y + 24, 42, 42, JobsTheme.INSET, JobsTheme.BORDER);
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(iconX + 5, y + 29);
+            graphics.pose().scale(2.0f, 2.0f);
+            graphics.fakeItem(jobInstance.getIconItem(), 0, 0);
+            graphics.pose().popMatrix();
+            JobsTheme.label(graphics, jobInstance.getName(), x + 6, y + 72, getWidth() - 12, 14, JobsTheme.TEXT);
+        } else {
+            graphics.fakeItem(jobInstance.getIconItem(), x + 7, y + 5);
+            JobsTheme.text(graphics, jobInstance.getName(), x + 29, y + 7, getWidth() - 35, JobsTheme.TEXT);
+        }
 
         if (selectedJob.getLevel() > 0) {
-            guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate(getTotalX() + 26, getTotalY() + Minecraft.getInstance().font.lineHeight);
-            guiGraphics.pose().scale(0.50f, 0.50f);
-            guiGraphics.text(Minecraft.getInstance().font,
-                    JobsPlus.translatable("gui.jobs.level", selectedJob.getLevel()), 0, 0, 0xFF1E1410, false);
-            guiGraphics.text(Minecraft.getInstance().font,
-                    JobsPlus.translatable("gui.jobs.experience", selectedJob.getExperience(),
-                            selectedJob.getExperienceForNextLevel()),
-                    0, Minecraft.getInstance().font.lineHeight, 0xFF1E1410, false);
-            guiGraphics.pose().popMatrix();
-
+            if (wide) {
+                JobsTheme.label(graphics, JobsPlus.translatable("gui.jobs.level", selectedJob.getLevel()),
+                        x + 6, y + 87, getWidth() - 12, 12, JobsTheme.CYAN);
+                JobsTheme.progress(graphics, x + 8, y + 105, getWidth() - 16, 6, selectedJob.getExperiencePercentage());
+                JobsTheme.label(graphics, JobsPlus.translatable("gui.jobs.experience", selectedJob.getExperience(),
+                                selectedJob.getExperienceForNextLevel()), x + 4, y + 115, getWidth() - 8, 12, JobsTheme.MUTED);
+            } else {
+                JobsTheme.text(graphics, JobsPlus.translatable("gui.jobs.level", selectedJob.getLevel()),
+                        x + 29, y + 19, getWidth() - 35, JobsTheme.CYAN);
+                JobsTheme.label(graphics, JobsPlus.translatable("gui.jobs.experience", selectedJob.getExperience(),
+                                selectedJob.getExperienceForNextLevel()), x + 6, y + 27, getWidth() - 12, 10, JobsTheme.MUTED);
+                JobsTheme.progress(graphics, x + 8, y + 40, getWidth() - 16, 4, selectedJob.getExperiencePercentage());
+            }
             this.removeWidget(this.startJobButtonWidget);
         } else {
-            guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate(getTotalX() + 26, getTotalY() + Minecraft.getInstance().font.lineHeight);
-            guiGraphics.pose().scale(0.50f, 0.50f);
-
+            int infoY = y + (wide ? 100 : 20);
             if (canStartNewJob()) {
-                int remainingFreeJobs = Math.max(0, this.state.getMaxJobs() - this.state.getActiveJobCount());
+                int remainingFreeJobs = Math.max(0, state.getMaxJobs() - state.getActiveJobCount());
                 Component startCost = canStartFreeJob()
                         ? JobsPlus.translatable("gui.jobs.free_remaining", remainingFreeJobs)
                         : JobsPlus.translatable("gui.jobs.price", jobInstance.getPrice());
-                guiGraphics.text(Minecraft.getInstance().font, startCost, 0, 0, 0xFF1E1410, false);
+                JobsTheme.label(graphics, startCost, x + 6, infoY, getWidth() - 12, 9, JobsTheme.MUTED);
             } else {
-                guiGraphics.text(Minecraft.getInstance().font,
-                        JobsPlus.translatable("gui.jobs.max_jobs", this.state.getMaxJobs()), 0, 0, 0xFFFF5555, false);
+                JobsTheme.label(graphics, JobsPlus.translatable("gui.jobs.max_jobs", state.getMaxJobs()),
+                        x + 6, infoY, getWidth() - 12, 9, JobsTheme.ERROR);
             }
-
-            guiGraphics.pose().popMatrix();
-
-            // 핵심 수정:
-            // 티켓으로 늘린 슬롯도 "무료 선택 가능"으로 취급해야 하므로,
-            // amount_of_free_jobs(=2)로 막지 말고 state.getMaxJobs() 기준으로 무료판단
-            if (jobInstance.getPrice() > this.state.getCoins() && !canStartFreeJob()) {
+            // Keep the original eligibility and ticket-slot rules; only the presentation changes.
+            if (jobInstance.getPrice() > state.getCoins() && !canStartFreeJob()) {
                 this.removeWidget(this.startJobButtonWidget);
-            } else {
-                if (!this.getWidgets().contains(this.startJobButtonWidget) && canStartNewJob()) {
-                    this.addWidget(this.startJobButtonWidget);
-                    this.updateParentPosition(getParentX(), getParentY(), parentWidth, parentHeight);
-                }
+            } else if (!this.getWidgets().contains(this.startJobButtonWidget) && canStartNewJob()) {
+                this.addWidget(this.startJobButtonWidget);
+                this.updateParentPosition(getParentX(), getParentY(), parentWidth, parentHeight);
             }
         }
-
-        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick, parentWidth, parentHeight);
     }
 
     private boolean canStartNewJob() {
@@ -104,8 +93,6 @@ public class SelectedJobComponent extends EmptyComponent {
     }
 
     private boolean canStartFreeJob() {
-        // 기존: active < amount_of_free_jobs(=2)  -> 티켓으로 늘린 슬롯이 "유료"가 되어 버튼이 사라짐
-        // 수정: 티켓으로 늘어난 슬롯까지 무료로 취급 => active < state.getMaxJobs()
         return this.state.getActiveJobCount() < this.state.getMaxJobs();
     }
 }

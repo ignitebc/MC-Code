@@ -15,7 +15,7 @@ public class JobSelectionWidget extends AbstractScrollWidget
         List<Job> jobs = state.getJobs();
         for (Job job : jobs)
         {
-            this.addComponent(new JobSelectionItemComponent(job, state));
+            this.addComponent(new JobSelectionItemComponent(job, state, width - 10));
         }
     }
 }

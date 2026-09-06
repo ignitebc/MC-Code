@@ -2,30 +2,26 @@ package com.daqem.jobsplus.client.gui.jobs.components;
 
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
-import com.daqem.uilib.gui.component.sprite.SpriteComponent;
-import com.daqem.uilib.gui.component.text.TextAlign;
-import com.daqem.uilib.gui.component.text.TextComponent;
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
+import com.daqem.uilib.gui.component.EmptyComponent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.network.chat.Component;
 
-public class CoinsComponent extends SpriteComponent
-{
+public class CoinsComponent extends EmptyComponent {
+    private final JobsScreenState state;
 
-    public CoinsComponent(JobsScreenState state)
-    {
-        super(0, 27, 0, 16, JobsPlus.getId("jobs/tab_coins"));
+    public CoinsComponent(JobsScreenState state) {
+        super(0, 0, 20 + (int) Math.ceil(Minecraft.getInstance().font.width("직업 코인 " + state.getCoins())
+                * JobsTheme.LABEL_SCALE), 14);
+        this.state = state;
+    }
 
-        MutableComponent coinsText = JobsPlus.literal(state.getCoins() + "");
-        int coinsTextWidth = Minecraft.getInstance().font.width(coinsText);
-
-        this.setX(-coinsTextWidth + 2);
-        this.setWidth(coinsTextWidth + 16);
-
-        TextComponent coinsTextComponent = new TextComponent(getWidth() - 11, 5, coinsText, 0xFF1E1410);
-        coinsTextComponent.setTextAlign(TextAlign.RIGHT);
-        SpriteComponent coinsIconComponent = new SpriteComponent(getWidth() - 10, 4, 7, 8, JobsPlus.getId("jobs/coins"));
-
-        this.addComponent(coinsTextComponent);
-        this.addComponent(coinsIconComponent);
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY,
+                                   float partialTick, int parentWidth, int parentHeight) {
+        JobsTheme.sprite(graphics, JobsPlus.getId("jobs/coins"), getTotalX() + 3, getTotalY() + 3, 7, 8);
+        JobsTheme.text(graphics, Component.literal("직업 코인 " + state.getCoins()),
+                getTotalX() + 14, getTotalY() + 3, getWidth() - 16, JobsTheme.TEXT);
     }
 }

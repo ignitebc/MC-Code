@@ -4,16 +4,13 @@ import com.daqem.itemrestrictions.ItemRestrictions;
 import com.daqem.itemrestrictions.data.RestrictionType;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.uilib.gui.component.item.ItemComponent;
-import com.daqem.uilib.gui.component.sprite.SpriteComponent;
+import com.daqem.jobsplus.client.gui.theme.JobsSpriteComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -24,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class RecipeItemComponent extends SpriteComponent
+public class RecipeItemComponent extends JobsSpriteComponent
 {
 
     private static final int[] SPRITE_IDS = new int[] { 4, 1, 2, 3, 3, 1, 4, 3, 2, 4, 2, 4, 3, 1, 2, 1 };

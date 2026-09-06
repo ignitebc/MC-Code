@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.client.gui.jobs.widgets;
 
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.powerups.PowerupsScreen;
@@ -7,9 +8,7 @@ import com.daqem.jobsplus.client.gui.powerups.PowerupsScreenState;
 import com.daqem.uilib.gui.widget.CustomButtonWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.ARGB;
 
 public class PowerupsButtonWidget extends CustomButtonWidget
 {
@@ -20,14 +19,16 @@ public class PowerupsButtonWidget extends CustomButtonWidget
 
     public PowerupsButtonWidget(JobsScreenState state)
     {
-        super(211, 212, Minecraft.getInstance().font.width(MESSAGE) + 20, 18, MESSAGE, null, button -> Minecraft.getInstance().gui.setScreen(new PowerupsScreen(new PowerupsScreenState(state.getSelectedJob(), state.getCoins()), Minecraft.getInstance().gui.screen())));
+        super(211, 212, Minecraft.getInstance().font.width(MESSAGE) + 14, JobsTheme.BUTTON_HEIGHT, MESSAGE, null, button -> Minecraft.getInstance().gui.setScreen(new PowerupsScreen(new PowerupsScreenState(state.getSelectedJob(), state.getCoins()), Minecraft.getInstance().gui.screen())));
         this.state = state;
     }
 
     @Override
     protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick)
     {
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/tab_bottom"), this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
-        guiGraphics.text(Minecraft.getInstance().font, this.getMessage(), this.getX() + 10, this.getY() + 6, ARGB.color(this.alpha, isHoveredOrFocused() ? this.state.getSelectedJob().getJobInstance().getColorDecimal() : 0x1E1410), false);
+        JobsTheme.button(guiGraphics, getX(), getY(), getWidth(), getHeight(),
+                this.active, isHoveredOrFocused(), false, true);
+        JobsTheme.label(guiGraphics, getMessage(), getX(), getY(), getWidth(), getHeight(),
+                this.active ? JobsTheme.TEXT : JobsTheme.DISABLED);
     }
 }

@@ -1,11 +1,11 @@
 package com.daqem.jobsplus.client.gui.powerups.widgets;
 
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreen;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreenState;
 import com.daqem.jobsplus.client.gui.powerups.PowerupsScreen;
 import com.daqem.jobsplus.client.gui.powerups.PowerupsScreenState;
-import com.daqem.jobsplus.client.gui.powerups.components.PowerupsComponent;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
 import com.daqem.jobsplus.networking.c2s.ServerboundOpenPowerupsScreenPacket;
 import com.daqem.jobsplus.networking.c2s.ServerboundStartPowerupPacket;
@@ -21,7 +21,6 @@ import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonInfo;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
@@ -41,7 +40,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeItemWidget {
 
-    private static final float TEXT_SCALE = 0.50f;
+    private static final float TEXT_SCALE = 0.65f;
     private static final int BASE_LINE_HEIGHT = 9;
 
     private final ISkillTreeItem skillTreeItem;
@@ -49,7 +48,7 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
     private final Powerup powerup;
 
     public PowerupItemWidget(ISkillTreeItem skillTreeItem, PowerupsScreenState state, Powerup powerup) {
-        super(0, 0, 26, 26, powerup != null ? powerup.getPowerupInstance().getName() : state.getJob().getJobInstance().getName(), null, btn -> {
+        super(0, 0, 24, 24, powerup != null ? powerup.getPowerupInstance().getName() : state.getJob().getJobInstance().getName(), null, btn -> {
             if (btn instanceof PowerupItemWidget button && button.isActive()) {
                 Powerup powerUp = button.getPowerup();
                 PowerupInstance powerupInstance = powerUp.getPowerupInstance();
@@ -111,7 +110,7 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
     }
 
     private void blitSlot(GuiGraphicsExtractor guiGraphics) {
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.getSprite(), this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        JobsTheme.sprite(guiGraphics, this.getSprite(), this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
         ItemStack icon;
         String countText = null;
@@ -124,8 +123,8 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
         } else {
             icon = state.getJob().getJobInstance().getIconItem();
         }
-        guiGraphics.fakeItem(icon, this.getX() + 5, this.getY() + 5);
-        guiGraphics.itemDecorations(Minecraft.getInstance().font, icon, this.getX() + 5, this.getY() + 5, countText);
+        guiGraphics.fakeItem(icon, this.getX() + 4, this.getY() + 4);
+        guiGraphics.itemDecorations(Minecraft.getInstance().font, icon, this.getX() + 4, this.getY() + 4, countText);
     }
 
     @Override
@@ -141,14 +140,14 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
             // ① 설명 부분 가로폭만 넓힘
             //    기존: titleWidth + getWidth() + 10
             //    → 직업/스킬 설명이 너무 세로로 길어져서, 여유 있게 +60 정도 여유를 준다.
-            int descriptionWidth = titleWidth + getWidth() + 60;
+            int descriptionWidth = Math.min(guiGraphics.guiWidth() - 30, Math.min(210, titleWidth + getWidth() + 60));
 
             // ② 툴팁 전체 박스 폭 (좌우 여백 14px 유지)
             int tooltipWidth = descriptionWidth + 14;
 
             int descriptionWrapWidth = Math.max(1, (int) Math.ceil(descriptionWidth / TEXT_SCALE));
             ScaledMultiLineTextComponent descriptionComponent =
-                    new ScaledMultiLineTextComponent(0, 0, descriptionWrapWidth, description, 0xFF1E1410);
+                    new ScaledMultiLineTextComponent(0, 0, descriptionWrapWidth, description, JobsTheme.TEXT);
 
             int rightBgX = this.getX() - 6;
             int leftBgX = this.getX() + this.getWidth() + 6 - tooltipWidth;
@@ -158,26 +157,25 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
             int extraHeight = (this.powerup != null && requiredLevel > 0 ? 25 : 13);
             int tooltipHeight = 20 + descriptionComponent.getScaledHeight() + 6 + extraHeight;
             int tooltipY = this.getY();
-            int skillTreeBottom = (guiGraphics.guiHeight() - PowerupsComponent.BACKGROUND_HEIGHT) / 2
-                    + PowerupsComponent.SKILL_TREE_Y
-                    + PowerupsComponent.SKILL_TREE_HEIGHT;
+            int skillTreeBottom = guiGraphics.guiHeight() - 8;
 
             if (tooltipY + 7 + tooltipHeight > skillTreeBottom) {
                 tooltipY = this.getY() - tooltipHeight - 10;
             }
 
+            tooltipY = Math.max(0, Math.min(tooltipY, guiGraphics.guiHeight() - tooltipHeight - 10));
+            rightBgX = Math.max(0, Math.min(rightBgX, guiGraphics.guiWidth() - tooltipWidth));
+
             if (leftBgX >= 0) {
                 // ───── 왼쪽 공간이 확보되면 스킬 왼쪽으로 툴팁 표시
                 // 배경 및 상단 바
-                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED,
-                        JobsPlus.getId("powerups/text_background"),
+                JobsTheme.sprite(guiGraphics, JobsPlus.getId("powerups/text_background"),
                         leftBgX,
                         tooltipY + 7,
                         tooltipWidth,
                         tooltipHeight);
 
-                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED,
-                        JobsPlus.getId("powerups/bar"),
+                JobsTheme.sprite(guiGraphics, JobsPlus.getId("powerups/bar"),
                         leftBgX,
                         tooltipY + 3,
                         tooltipWidth,
@@ -188,9 +186,7 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
 
                 if (this.powerup != null) {
                     // 구분선
-                    guiGraphics.blitSprite(
-                            RenderPipelines.GUI_TEXTURED,
-                            JobsPlus.getId("powerups/line"),
+                    JobsTheme.sprite(guiGraphics, JobsPlus.getId("powerups/line"),
                             leftBgX + 6,
                             tooltipY + 29 + descriptionComponent.getScaledHeight() + 1,
                             30,
@@ -215,9 +211,7 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
                             tooltipY + 29 + descriptionComponent.getScaledHeight() + (requiredLevel > 0 ? 15 : 4)
                     );
 
-                    guiGraphics.blitSprite(
-                            RenderPipelines.GUI_TEXTURED,
-                            JobsPlus.getId("jobs/coins"),
+                    JobsTheme.sprite(guiGraphics, JobsPlus.getId("jobs/coins"),
                             leftBgX + 7 + getScaledTextWidth(price) + 2,
                             tooltipY + 29 + descriptionComponent.getScaledHeight() + (requiredLevel > 0 ? 15 : 4),
                             7,
@@ -232,18 +226,14 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
 
             } else {
                 // ───── 오른쪽으로 툴팁 표시 (기존 위치 유지하되 폭만 확대)
-                guiGraphics.blitSprite(
-                        RenderPipelines.GUI_TEXTURED,
-                        JobsPlus.getId("powerups/text_background"),
+                JobsTheme.sprite(guiGraphics, JobsPlus.getId("powerups/text_background"),
                         rightBgX,
                         tooltipY + 7,
                         tooltipWidth,
                         tooltipHeight
                 );
 
-                guiGraphics.blitSprite(
-                        RenderPipelines.GUI_TEXTURED,
-                        JobsPlus.getId("powerups/bar"),
+                JobsTheme.sprite(guiGraphics, JobsPlus.getId("powerups/bar"),
                         rightBgX,
                         tooltipY + 3,
                         tooltipWidth,
@@ -254,15 +244,13 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
                 drawScaledString(
                         guiGraphics,
                         title,
-                        rightBgX + this.getWidth() + 14,
+                        rightBgX + 12,
                         tooltipY + 9
                 );
 
                 if (this.powerup != null) {
                     // 구분선
-                    guiGraphics.blitSprite(
-                            RenderPipelines.GUI_TEXTURED,
-                            JobsPlus.getId("powerups/line"),
+                    JobsTheme.sprite(guiGraphics, JobsPlus.getId("powerups/line"),
                             rightBgX + 6,
                             tooltipY + 29 + descriptionComponent.getScaledHeight() + 1,
                             30,
@@ -287,9 +275,7 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
                             tooltipY + 29 + descriptionComponent.getScaledHeight() + (requiredLevel > 0 ? 15 : 4)
                     );
 
-                    guiGraphics.blitSprite(
-                            RenderPipelines.GUI_TEXTURED,
-                            JobsPlus.getId("jobs/coins"),
+                    JobsTheme.sprite(guiGraphics, JobsPlus.getId("jobs/coins"),
                             rightBgX + 7 + getScaledTextWidth(price) + 2,
                             tooltipY + 29 + descriptionComponent.getScaledHeight() + (requiredLevel > 0 ? 15 : 4),
                             7,
@@ -315,7 +301,7 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(x, y);
         guiGraphics.pose().scale(TEXT_SCALE, TEXT_SCALE);
-        guiGraphics.text(Minecraft.getInstance().font, text, 0, 0, 0xFF1E1410, false);
+        guiGraphics.text(Minecraft.getInstance().font, text, 0, 0, JobsTheme.TEXT, false);
         guiGraphics.pose().popMatrix();
     }
 

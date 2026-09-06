@@ -1,20 +1,19 @@
 package com.daqem.jobsplus.client.gui.jobs.widgets;
 
-import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.mixin.client.AbstractScrollAreaAccessor;
 import com.daqem.uilib.gui.widget.ScrollContainerWidget;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.Mth;
 
 public abstract class AbstractScrollWidget extends ScrollContainerWidget
 {
 
-    private final static int DEFAULT_SCROLL_HANDLE_WIDTH = 14;
-    private final static int DEFAULT_SCROLL_TRACK_WIDTH = 8;
-    private final static int SCROLL_HANDLE_HEIGHT = 15;
+    private final static int DEFAULT_SCROLL_HANDLE_WIDTH = 8;
+    private final static int DEFAULT_SCROLL_TRACK_WIDTH = 4;
+    private final static int SCROLL_HANDLE_HEIGHT = 13;
 
     private final int itemHeight;
 
@@ -71,8 +70,11 @@ public abstract class AbstractScrollWidget extends ScrollContainerWidget
             int scrollTrackX = scrollBarX + (scrollHandleWidth - scrollTrackWidth) / 2;
             int scrollerHeight = this.scrollerHeight();
             int scrollBarY = this.scrollBarY();
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/scroll_bar"), scrollTrackX, this.getY(), scrollTrackWidth, this.getHeight());
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, JobsPlus.getId("jobs/scroll_handle"), scrollBarX, Mth.clamp(scrollBarY, this.getY() + 4, this.getBottom() - scrollerHeight - 4), scrollHandleWidth, scrollerHeight);
+            JobsTheme.cutBox(guiGraphics, scrollTrackX, getY(), scrollTrackWidth, getHeight(), JobsTheme.INSET, JobsTheme.DIVIDER);
+            boolean dragging = ((AbstractScrollAreaAccessor) this).jobsplus$getScrolling();
+            int thumbColor = dragging || this.isOverScrollbar(mouseX, mouseY) ? JobsTheme.CYAN : JobsTheme.MUTED;
+            JobsTheme.cutBox(guiGraphics, scrollBarX, scrollBarY, scrollHandleWidth, scrollerHeight,
+                    thumbColor, dragging ? JobsTheme.TEXT : JobsTheme.BORDER);
             if (this.isOverScrollbar(mouseX, mouseY))
             {
                 guiGraphics.requestCursor(((AbstractScrollAreaAccessor) this).jobsplus$getScrolling() ? CursorTypes.RESIZE_NS : CursorTypes.POINTING_HAND);
