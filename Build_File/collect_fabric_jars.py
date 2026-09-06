@@ -10,7 +10,7 @@ from typing import Optional
 
 
 # (모듈 폴더, fabric 하위 폴더, 기대하는 mod ID)
-# fabric_dir가 None이면 루트 buildJar 태스크가 만든 병합 JAR(build/libs)을 수집한다.
+# fabric_dir가 None이면 루트 프로젝트의 JAR(build/libs)을 수집한다.
 MODULES = [
     ("UILib-26.2", "fabric", "uilib"),
     ("YamlConfig-26.2", "fabric", "yamlconfig"),
@@ -21,7 +21,12 @@ MODULES = [
     ("illagerinvasion-26.2.0-mc26.2-fabric/26.2", "Fabric", "illagerinvasion"),
     ("caramelChat-26.2", "fabric", "caramelchat"),
     ("FallingTree-minecraft-26.2", None, "fallingtree"),
+    ("TACZ-Refabricated-26.2", None, "tacz"),
 ]
+
+ROOT_BUILD_TASK_OVERRIDES = {
+    "FallingTree-minecraft-26.2": "buildJar",
+}
 
 EXPECTED_MINECRAFT_VERSION = "26.2"
 OUTDATED_NAME_PARTS = ("1.21.9", "1.21.10")
@@ -233,7 +238,7 @@ def get_environment_label(jar_path: Path) -> str:
 
 def build_fabric_module(module_root: Path, fabric_dir: Optional[str], java_home: Path) -> bool:
     if fabric_dir is None:
-        build_task = "buildJar"
+        build_task = ROOT_BUILD_TASK_OVERRIDES.get(module_root.name, "build")
     else:
         build_task = f":{fabric_dir}:build"
 
@@ -266,7 +271,7 @@ def build_fabric_module(module_root: Path, fabric_dir: Optional[str], java_home:
     build_environment["JAVA_HOME"] = str(java_home)
     build_environment["PATH"] = str(java_home / "bin") + os.pathsep + build_environment.get("PATH", "")
 
-    build_label = fabric_dir if fabric_dir else "buildJar"
+    build_label = fabric_dir if fabric_dir else build_task
     print(f"\nBuilding {module_root.name} ({build_label})...")
     result = None
     for attempt in range(1, BUILD_START_ATTEMPTS + 1):
