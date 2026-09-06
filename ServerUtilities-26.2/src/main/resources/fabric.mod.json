@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "serverutilities",
+  "version": "${version}",
+  "name": "Server Utilities",
+  "license": "GPL-3.0-only",
+  "description": "서버 공통 수면·전투·밸런스·사망 규칙",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.mcserver.serverutilities.ServerUtilities"]
+  },
+  "mixins": ["serverutilities.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "fabric-api": ">=0.154.2+26.2",
+    "minecraft": "26.2",
+    "java": ">=25"
+  }
+}

@@ -1,0 +1,9 @@
+pluginManagement {
+    repositories {
+        maven { url = 'https://maven.fabricmc.net/' }
+        maven { url = 'https://maven.fabricmc.net/snapshots/' }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+rootProject.name = 'ServerUtilities-26.2'

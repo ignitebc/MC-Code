@@ -1,0 +1,12 @@
+Server Utilities
+
+Combat and death rules were adapted from the local JobsPlusRemastered-26.2
+project, distributed under the Apache License 2.0 (LICENSE-APACHE-2.0).
+The Gradle wrapper scripts retain their original Apache License notices.
+
+Creeper damage and hunger rules were adapted from the local
+AdvancedNetherite-26.2 project, distributed under GNU GPL version 3 (LICENSE).
+
+This module changes configuration ownership, event registration, persistence
+ownership and server-side execution of those rules. Original project sources
+and notices remain in their respective directories in this workspace.
