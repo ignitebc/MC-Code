@@ -95,6 +95,8 @@ public class PowerupsComponent extends JobsSpriteComponent
                                    float partialTick, int parentWidth, int parentHeight)
     {
         super.extractRenderState(graphics, mouseX, mouseY, partialTick, parentWidth, parentHeight);
+        JobsTheme.texture(graphics, JobsTheme.Skin.HEADER, getTotalX() + 2, getTotalY() + 2,
+                getWidth() - 4, 25);
         JobsTheme.text(graphics, this.state.getJob().getJobInstance().getName().copy()
                         .append(Component.literal("  /  스킬  ·  Lv. " + this.state.getJob().getLevel())),
                 getTotalX() + 12, getTotalY() + 11, getWidth() - 48, JobsTheme.CYAN);

@@ -110,7 +110,7 @@ public class JobsComponent extends AbstractComponent
         int x = getTotalX();
         int y = getTotalY();
         JobsTheme.panel(guiGraphics, x, y, getWidth(), getHeight());
-        guiGraphics.fill(x + 2, y + 2, x + getWidth() - 2, y + 27, JobsTheme.PANEL);
+        JobsTheme.texture(guiGraphics, JobsTheme.Skin.HEADER, x + 2, y + 2, getWidth() - 4, 25);
         guiGraphics.fill(x + 8, y + 27, x + getWidth() - 8, y + 28, JobsTheme.DIVIDER);
         JobsTheme.text(guiGraphics, Component.literal("JOBSPLUS"), x + 10, y + 11, 57, JobsTheme.TEXT);
         boolean stock = this.cachedRightTab == RightTab.UP_AND_DOWN;

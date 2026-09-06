@@ -1,12 +1,13 @@
 package com.daqem.jobsplus.client.gui.theme;
 
+import com.daqem.jobsplus.JobsPlus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
-/** Shared, resolution-independent drawing for JobsPlus screens only. */
+/** PNG-backed JobsPlus skin; sprite metadata preserves borders at different GUI sizes. */
 public final class JobsTheme {
     public static final int BACKGROUND = 0xF208191F;
     public static final int PANEL = 0xF510272F;
@@ -29,84 +30,84 @@ public final class JobsTheme {
     private JobsTheme() {
     }
 
-    public static void panel(GuiGraphicsExtractor g, int x, int y, int width, int height) {
-        cutBox(g, x, y, width, height, BACKGROUND, BORDER);
-        // Restrained facets stay behind content and need no image scaling or atlas padding.
-        int facet = Math.min(26, Math.min(width / 3, height / 3));
-        for (int i = 0; i < facet; i++) {
-            g.fill(x + width - facet * 2 + i, y + 2 + i,
-                    x + width - facet + i, y + 3 + i, 0x101C6478);
+    public enum Skin {
+        PANEL, INSET, TOOLTIP, HEADER,
+        SECONDARY, SECONDARY_HOVER, PRIMARY, PRIMARY_HOVER,
+        DISABLED, TAB, TAB_HOVER, TAB_SELECTED,
+        SLOT, SLOT_ACTIVE, SLOT_INACTIVE, SLOT_LOCKED;
+
+        private final Identifier id = JobsPlus.getId("theme/" + name().toLowerCase(java.util.Locale.ROOT));
+    }
+
+    public static void texture(GuiGraphicsExtractor g, Skin skin, int x, int y, int width, int height) {
+        if (width > 0 && height > 0) {
+            g.blitSprite(RenderPipelines.GUI_TEXTURED, skin.id, x, y, width, height);
         }
-        corners(g, x, y, width, height, TEXT);
+    }
+
+    public static void panel(GuiGraphicsExtractor g, int x, int y, int width, int height) {
+        texture(g, Skin.PANEL, x, y, width, height);
     }
 
     public static void cutBox(GuiGraphicsExtractor g, int x, int y, int width, int height,
                               int fill, int border) {
-        if (width < 3 || height < 3) {
-            return;
+        Skin skin = Skin.INSET;
+        if (border == SUCCESS) {
+            skin = Skin.SLOT_ACTIVE;
+        } else if (border == WARNING) {
+            skin = Skin.SLOT_INACTIVE;
+        } else if (border == DISABLED) {
+            skin = Skin.SLOT_LOCKED;
+        } else if (border == CYAN) {
+            skin = fill == BACKGROUND ? Skin.TOOLTIP : Skin.SECONDARY_HOVER;
         }
-        g.fill(x + 1, y + 1, x + width - 1, y + height - 1, fill);
-        g.fill(x + 2, y, x + width - 2, y + 1, border);
-        g.fill(x + 2, y + height - 1, x + width - 2, y + height, border);
-        g.fill(x, y + 2, x + 1, y + height - 2, border);
-        g.fill(x + width - 1, y + 2, x + width, y + height - 2, border);
-        g.fill(x + 1, y + 1, x + 2, y + 2, border);
-        g.fill(x + width - 2, y + 1, x + width - 1, y + 2, border);
-        g.fill(x + 1, y + height - 2, x + 2, y + height - 1, border);
-        g.fill(x + width - 2, y + height - 2, x + width - 1, y + height - 1, border);
-    }
-
-    public static void corners(GuiGraphicsExtractor g, int x, int y, int width, int height, int color) {
-        int length = Math.min(4, Math.min(width, height) / 3);
-        if (length < 1) {
-            return;
+        if (border == ERROR) {
+            // Tint a neutral PNG so the close/error state also uses an image frame.
+            if (width > 0 && height > 0) {
+                g.blitSprite(RenderPipelines.GUI_TEXTURED, Skin.DISABLED.id, x, y, width, height,
+                        fill == 0xFF823B49 ? 0xFFFF8E9B : 0xFFDB6575);
+            }
+        } else {
+            texture(g, skin, x, y, width, height);
         }
-        g.fill(x, y, x + length, y + 1, color);
-        g.fill(x, y, x + 1, y + length, color);
-        g.fill(x + width - length, y, x + width, y + 1, color);
-        g.fill(x + width - 1, y, x + width, y + length, color);
-        g.fill(x, y + height - 1, x + length, y + height, color);
-        g.fill(x, y + height - length, x + 1, y + height, color);
-        g.fill(x + width - length, y + height - 1, x + width, y + height, color);
-        g.fill(x + width - 1, y + height - length, x + width, y + height, color);
     }
 
     public static void button(GuiGraphicsExtractor g, int x, int y, int width, int height,
                               boolean active, boolean hovered, boolean selected, boolean primary) {
-        int fill = PANEL;
-        int edge = DIVIDER;
-        if (active) {
-            fill = selected || primary ? PRIMARY : INSET;
-            edge = hovered || selected || primary ? CYAN : BORDER;
+        Skin skin;
+        if (!active) {
+            skin = Skin.DISABLED;
+        } else if (selected || primary) {
+            skin = hovered ? Skin.PRIMARY_HOVER : Skin.PRIMARY;
+        } else {
+            skin = hovered ? Skin.SECONDARY_HOVER : Skin.SECONDARY;
         }
-        if (hovered && active) {
-            fill = selected || primary ? 0xFF17BEEB : SELECTED;
-        }
-        cutBox(g, x, y, width, height, fill, edge);
-        if (selected && active) {
-            corners(g, x, y, width, height, CYAN);
-        }
+        texture(g, skin, x, y, width, height);
     }
 
     public static void tab(GuiGraphicsExtractor g, int x, int y, int width, int height,
                            boolean hovered, boolean selected) {
-        int edge = selected || hovered ? CYAN : BORDER;
-        int fill = PANEL;
+        Skin skin = Skin.TAB;
         if (selected) {
-            fill = PRIMARY;
+            skin = Skin.TAB_SELECTED;
         } else if (hovered) {
-            fill = SELECTED;
+            skin = Skin.TAB_HOVER;
         }
-        // The slant is rendered in GUI coordinates, so the visual and hit box share one scale.
-        int slant = Math.min(5, height / 3);
-        for (int row = 0; row < height; row++) {
-            int inset = slant * row / Math.max(1, height - 1);
-            g.fill(x + inset, y + row, x + width - slant + inset, y + row + 1,
-                    row == 0 || row == height - 1 ? edge : fill);
-            g.fill(x + inset, y + row, x + inset + 1, y + row + 1, edge);
-            g.fill(x + width - slant + inset - 1, y + row,
-                    x + width - slant + inset, y + row + 1, edge);
+        texture(g, skin, x, y, width, height);
+    }
+
+    public static void inputFrame(GuiGraphicsExtractor g, int x, int y, int width, int height, int color) {
+        if (width < 2 || height < 2) {
+            return;
         }
+        // Crop only the PNG border; leave native text, selection and caret unobscured.
+        Identifier id = Skin.INSET.id;
+        g.blitSprite(RenderPipelines.GUI_TEXTURED, id, width, height, 0, 0, x, y, width, 1, color);
+        g.blitSprite(RenderPipelines.GUI_TEXTURED, id, width, height, 0, height - 1,
+                x, y + height - 1, width, 1, color);
+        g.blitSprite(RenderPipelines.GUI_TEXTURED, id, width, height, 0, 0, x, y, 1, height, color);
+        g.blitSprite(RenderPipelines.GUI_TEXTURED, id, width, height, width - 1, 0,
+                x + width - 1, y, 1, height, color);
     }
 
     public static void label(GuiGraphicsExtractor g, Component text, int x, int y,
@@ -135,7 +136,7 @@ public final class JobsTheme {
         cutBox(g, x, y, width, height, INSET, BORDER);
         int filled = (int) Math.round(Math.clamp(percent, 0.0, 100.0) * Math.max(0, width - 2) / 100.0);
         if (filled > 0 && height > 2) {
-            g.fill(x + 1, y + 1, x + 1 + filled, y + height - 1, CYAN);
+            texture(g, Skin.PRIMARY, x + 1, y + 1, filled, height - 2);
         }
     }
 
@@ -146,18 +147,17 @@ public final class JobsTheme {
         } else if (path.contains("separator") || path.equals("powerups/line")) {
             g.fill(x, y + height / 2, x + width, y + height / 2 + 1, DIVIDER);
         } else if (path.contains("slot")) {
-            int edge = BORDER;
+            Skin skin = Skin.SLOT;
             if (path.endsWith("slot_active")) {
-                edge = SUCCESS;
+                skin = Skin.SLOT_ACTIVE;
             } else if (path.endsWith("slot_not_owned")) {
-                edge = CYAN;
+                skin = Skin.TOOLTIP;
             } else if (path.endsWith("slot_locked")) {
-                edge = DISABLED;
+                skin = Skin.SLOT_LOCKED;
             } else if (path.endsWith("slot_inactive")) {
-                edge = WARNING;
+                skin = Skin.SLOT_INACTIVE;
             }
-            cutBox(g, x, y, width, height, INSET, edge);
-            corners(g, x, y, width, height, edge);
+            texture(g, skin, x, y, width, height);
         } else if (path.equals("jobs/exp_bar")) {
             progress(g, x, y, width, height, 0);
         } else if (path.contains("pagination_arrow")) {

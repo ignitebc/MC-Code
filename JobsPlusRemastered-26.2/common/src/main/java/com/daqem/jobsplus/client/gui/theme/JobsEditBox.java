@@ -23,9 +23,6 @@ public class JobsEditBox extends EditBoxWidget {
         } else if (isFocused()) {
             color = JobsTheme.CYAN;
         }
-        graphics.fill(getX(), getY(), getX() + getWidth(), getY() + 1, color);
-        graphics.fill(getX(), getY() + getHeight() - 1, getX() + getWidth(), getY() + getHeight(), color);
-        graphics.fill(getX(), getY(), getX() + 1, getY() + getHeight(), color);
-        graphics.fill(getX() + getWidth() - 1, getY(), getX() + getWidth(), getY() + getHeight(), color);
+        JobsTheme.inputFrame(graphics, getX(), getY(), getWidth(), getHeight(), color);
     }
 }

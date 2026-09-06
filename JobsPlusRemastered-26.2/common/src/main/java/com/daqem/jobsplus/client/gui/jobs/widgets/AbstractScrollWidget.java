@@ -72,9 +72,9 @@ public abstract class AbstractScrollWidget extends ScrollContainerWidget
             int scrollBarY = this.scrollBarY();
             JobsTheme.cutBox(guiGraphics, scrollTrackX, getY(), scrollTrackWidth, getHeight(), JobsTheme.INSET, JobsTheme.DIVIDER);
             boolean dragging = ((AbstractScrollAreaAccessor) this).jobsplus$getScrolling();
-            int thumbColor = dragging || this.isOverScrollbar(mouseX, mouseY) ? JobsTheme.CYAN : JobsTheme.MUTED;
-            JobsTheme.cutBox(guiGraphics, scrollBarX, scrollBarY, scrollHandleWidth, scrollerHeight,
-                    thumbColor, dragging ? JobsTheme.TEXT : JobsTheme.BORDER);
+            JobsTheme.Skin thumb = dragging || this.isOverScrollbar(mouseX, mouseY)
+                    ? JobsTheme.Skin.PRIMARY_HOVER : JobsTheme.Skin.PRIMARY;
+            JobsTheme.texture(guiGraphics, thumb, scrollBarX, scrollBarY, scrollHandleWidth, scrollerHeight);
             if (this.isOverScrollbar(mouseX, mouseY))
             {
                 guiGraphics.requestCursor(((AbstractScrollAreaAccessor) this).jobsplus$getScrolling() ? CursorTypes.RESIZE_NS : CursorTypes.POINTING_HAND);
