@@ -3,14 +3,17 @@ package com.mcserver.serverutilities.mixin;
 import com.mcserver.serverutilities.death.DeathProtectedPlayer;
 import com.mcserver.serverutilities.death.DeathRules;
 import com.mojang.serialization.Codec;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.CombatTracker;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
@@ -25,6 +28,20 @@ public abstract class ServerPlayerDeathMixin implements DeathProtectedPlayer {
 
     @Override
     public void serverutilities$setDeathProtected(boolean value) { serverutilities$deathProtected = value; }
+
+    @Redirect(method = "die", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/damagesource/CombatTracker;getDeathMessage()Lnet/minecraft/network/chat/Component;"))
+    private Component serverutilities$pvpDeathMessage(CombatTracker tracker, DamageSource source) {
+        ServerPlayer victim = (ServerPlayer) (Object) this;
+        var attacker = source.getEntity();
+        // 투사체의 소유자 및 전투 직후 낙사 등 바닐라가 인정하는 플레이어 처치를 포함한다.
+        boolean killedByPlayer = attacker instanceof ServerPlayer && attacker != victim;
+        boolean combatAccident = attacker == null && victim.getKillCredit() instanceof ServerPlayer killer && killer != victim;
+        if (killedByPlayer || combatAccident) {
+            return Component.literal(victim.getName().getString() + " 님이 누군가에게 살해당했습니다.");
+        }
+        return tracker.getDeathMessage();
+    }
 
     // 취소 가능한 사망 허용 이벤트 대신, 실제 사망의 드롭 직전에 한 번만 처리한다.
     @Inject(method = "die", at = @At(value = "INVOKE",
