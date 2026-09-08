@@ -6,6 +6,7 @@
   "mixins": [
     "CreeperExplosionDamageMixin",
     "HungerExhaustionMixin",
+    "MonsterEquipmentMixin",
     "PlayerDeathItemProtectionMixin",
     "ServerPlayerDeathMixin"
   ],

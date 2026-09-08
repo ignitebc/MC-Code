@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "common.LivingEntityMixin",
+    "common.MonsterEquipmentGunMixin",
     "common.ServerGamePacketListenerImplMixin",
     "common.ServerPlayerMixin",
     "common.ServerPlayNetHandlerMixin"

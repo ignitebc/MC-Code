@@ -15,13 +15,13 @@ public class LivingEntityAmmoCheck {
         if (shooter instanceof Player player) {
             return !player.isCreative();
         }
-        return true;
+        return !MonsterGunController.isMonster(shooter);
     }
 
     public boolean consumesAmmoOrNot() {
         if (shooter instanceof Player player) {
             return !player.isCreative() || GunConfig.CREATIVE_PLAYER_CONSUME_AMMO.get();
         }
-        return true;
+        return !MonsterGunController.isMonster(shooter);
     }
 }

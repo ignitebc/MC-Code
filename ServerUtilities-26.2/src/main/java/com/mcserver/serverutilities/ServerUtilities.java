@@ -1,15 +1,19 @@
 package com.mcserver.serverutilities;
 
 import com.mcserver.serverutilities.combat.CombatRules;
+import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
+import com.mcserver.serverutilities.monster.MonsterEquipmentRules;
 import com.mcserver.serverutilities.config.UtilitiesConfig;
 import com.mcserver.serverutilities.sleep.SleepRuleManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.level.gamerules.GameRules;
@@ -28,6 +32,14 @@ public final class ServerUtilities implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        ServerEntityEvents.ALLOW_LOAD.register((entity, level, reason, loadedFromDisk) -> {
+            if (entity instanceof MonsterEquipmentAccess state) {
+                // 소환 명령·분열도 포함하고, 디스크 로드·차원 이동은 신규 생성과 구별한다.
+                boolean newSpawn = !loadedFromDisk && reason != EntitySpawnReason.DIMENSION_TRAVEL;
+                if (newSpawn || state.serverutilities$equipmentPending()) MonsterEquipmentRules.onSpawn(entity);
+            }
+            return true;
+        });
         rejectLegacyModule("jobsplus", "com/daqem/jobsplus/event/player/EventDeleteRandomItemOnDeath.class");
         rejectLegacyModule("advancednetherite", "com/autovw/advancednetherite/mixin/HungerExhaustionMixin.class");
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
