@@ -4,6 +4,7 @@ import com.autovw.advancednetherite.common.item.BackpackItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -48,19 +49,23 @@ public final class BackpackInventory
 
     public boolean canEquip(ItemStack replacement)
     {
-        if (!replacement.isEmpty() && (!(replacement.getItem() instanceof BackpackItem) || replacement.getCount() != 1))
+        return replacement.isEmpty() || (replacement.getItem() instanceof BackpackItem && replacement.getCount() == 1);
+    }
+
+    public void dropOverflow(Player player)
+    {
+        // 새 가방의 남는 공간에 먼저 합치고, 끝내 들어가지 않는 스택만 바닥에 떨어뜨린다.
+        for (int i = capacity(); i < MAX_CAPACITY; i++)
         {
-            return false;
-        }
-        int newCapacity = capacityOf(replacement);
-        for (int i = newCapacity; i < MAX_CAPACITY; i++)
-        {
-            if (!this.items.get(i + 1).isEmpty())
+            ItemStack overflow = removeItemNoUpdate(STORAGE_START + i);
+            if (overflow.isEmpty()) continue;
+            insert(overflow);
+            // 클릭 예측은 양쪽에서 처리하되 실제 드롭 엔티티는 서버에서만 생성한다.
+            if (!overflow.isEmpty() && !player.level().isClientSide())
             {
-                return false;
+                player.drop(overflow, false);
             }
         }
-        return true;
     }
 
     public boolean canPlace(int slot, ItemStack stack)
@@ -77,7 +82,7 @@ public final class BackpackInventory
         return this.items.get(slot - EQUIPMENT_SLOT);
     }
 
-    // 저장 복원·사망·서버 패킷은 슬롯 사용 권한과 분리한다. 강제 제거 후에도 내용물을 복구할 수 있어야 한다.
+    // 저장 복원·사망·서버 패킷에서는 교체 드롭을 실행하지 않는다. 사용자 조작은 BackpackSlot에서 처리한다.
     public void setItem(int slot, ItemStack stack)
     {
         this.items.set(slot - EQUIPMENT_SLOT, stack);

@@ -8,12 +8,14 @@ import net.minecraft.world.item.ItemStack;
 public final class BackpackSlot extends Slot
 {
     private final BackpackInventory backpack;
+    private final Player owner;
     private final boolean equipment;
 
     public BackpackSlot(Inventory inventory, int slot, int x, int y)
     {
         super(inventory, slot, x, y);
         this.backpack = BackpackInventory.get(inventory);
+        this.owner = inventory.player;
         this.equipment = slot == BackpackInventory.EQUIPMENT_SLOT;
     }
 
@@ -24,10 +26,15 @@ public final class BackpackSlot extends Slot
     }
 
     @Override
-    public boolean mayPickup(Player player)
+    public void setByPlayer(ItemStack stack, ItemStack previous)
     {
-        // 숫자키 교환·드래그·Shift 클릭도 같은 서버 측 해제 규칙을 적용한다.
-        return !this.equipment || this.backpack.canEquip(ItemStack.EMPTY);
+        super.setByPlayer(stack, previous);
+        if (this.equipment)
+        {
+            // 클릭 교체·숫자키 교환·Shift 해제·버리기는 최종 장착 상태를 기준으로 정리한다.
+            this.backpack.dropOverflow(this.owner);
+            setChanged();
+        }
     }
 
     @Override
@@ -39,7 +46,7 @@ public final class BackpackSlot extends Slot
     @Override
     public boolean isActive()
     {
-        // 명령어나 사망 규칙으로 가방만 제거되어도 남은 물건을 꺼낼 수 있다.
+        // 명령어나 이전 저장 데이터에 남은 비활성 칸의 물건은 복구할 수 있다.
         return this.equipment || getContainerSlot() < BackpackInventory.STORAGE_START + this.backpack.capacity() || hasItem();
     }
 }

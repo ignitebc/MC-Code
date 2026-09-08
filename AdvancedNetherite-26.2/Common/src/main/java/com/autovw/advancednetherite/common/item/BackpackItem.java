@@ -33,7 +33,9 @@ public final class BackpackItem extends AdvancedItem
     {
         tooltip.accept(Component.literal("가방 슬롯에 장착하면 기본 인벤토리가 " + this.capacity + "칸 늘어납니다.")
                 .withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.literal("가방을 해제하거나 교체하려면 추가 칸을 먼저 비워 주세요.")
+        tooltip.accept(Component.literal("가방 해제·교체 시 들어가지 않는 아이템은 바닥에 떨어집니다.")
                 .withStyle(ChatFormatting.YELLOW));
+        tooltip.accept(Component.literal("사망 손실로 장착한 가방이 삭제되면 내용물도 모두 삭제됩니다.")
+                .withStyle(ChatFormatting.RED));
     }
 }
