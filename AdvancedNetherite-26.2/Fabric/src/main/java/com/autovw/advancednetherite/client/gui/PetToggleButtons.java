@@ -22,9 +22,8 @@ import java.util.List;
  */
 public final class PetToggleButtons
 {
-    /** 바닐라 인벤토리 GUI 폭(176px)의 절반 + 여백 */
-    private static final int BUTTON_LEFT_OFFSET = 92;
-    private static final int BUTTON_TOP_OFFSET = -83;
+    /** 가방 패널까지 포함한 인벤토리 오른쪽에 배치한다. */
+    private static final int BUTTON_LEFT_OFFSET = 264;
     private static final int BUTTON_WIDTH = 80;
     private static final int BUTTON_HEIGHT = 20;
     private static final int BUTTON_SPACING = 22;
@@ -42,8 +41,9 @@ public final class PetToggleButtons
             }
 
             List<PetStatusEntry> pets = ClientPetData.getPets();
-            int left = scaledWidth / 2 + BUTTON_LEFT_OFFSET;
-            int top = scaledHeight / 2 + BUTTON_TOP_OFFSET;
+            BackpackScreenPosition position = (BackpackScreenPosition) screen;
+            int left = position.advancednetherite$getLeftPos() + BUTTON_LEFT_OFFSET;
+            int top = position.advancednetherite$getTopPos();
 
             for (int i = 0; i < pets.size(); i++)
             {

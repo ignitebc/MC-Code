@@ -3,6 +3,7 @@ package com.autovw.advancednetherite.core.registry;
 import com.autovw.advancednetherite.AdvancedNetherite;
 import com.autovw.advancednetherite.api.annotation.Internal;
 import com.autovw.advancednetherite.core.ModItems;
+import com.autovw.advancednetherite.core.ModBackpackItems;
 import com.autovw.advancednetherite.core.ModRewardCouponItems;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -24,6 +25,10 @@ public final class ModItemRegistry
         Registry.register(BuiltInRegistries.ITEM, id("bitcoin"), ModItems.BITCOIN);
         Registry.register(BuiltInRegistries.ITEM, id("experience_double_coupon"), ModRewardCouponItems.EXPERIENCE_DOUBLE_COUPON);
         Registry.register(BuiltInRegistries.ITEM, id("bitcoin_double_coupon"), ModRewardCouponItems.BITCOIN_DOUBLE_COUPON);
+        Registry.register(BuiltInRegistries.ITEM, id("bitcoin_triple_coupon"), ModRewardCouponItems.BITCOIN_TRIPLE_COUPON);
+        Registry.register(BuiltInRegistries.ITEM, id("backpack_level_1"), ModBackpackItems.LEVEL_1);
+        Registry.register(BuiltInRegistries.ITEM, id("backpack_level_2"), ModBackpackItems.LEVEL_2);
+        Registry.register(BuiltInRegistries.ITEM, id("backpack_level_3"), ModBackpackItems.LEVEL_3);
 
         Registry.register(BuiltInRegistries.ITEM, id("random_box_i"), ModItems.RANDOM_BOX_I);
         Registry.register(BuiltInRegistries.ITEM, id("random_box_ii"), ModItems.RANDOM_BOX_II);

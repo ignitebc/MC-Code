@@ -9,7 +9,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 
 /**
- * 직업 보상 2배 쿠폰의 HUD 표시용 상태 효과.
+ * 직업 보상 쿠폰의 HUD 표시용 상태 효과.
  * 실제 EXP/BTC 배율 판정은 RewardCouponLedger에서 수행하며 이 효과 자체는 능력치를 변경하지 않는다.
  */
 public final class JobsPlusMobEffects
@@ -22,7 +22,12 @@ public final class JobsPlusMobEffects
     public static final Holder<MobEffect> BITCOIN_DOUBLE = register(
             "bitcoin_double",
             0xF4B942,
-            "직업 비트코인 2배"
+            "비트코인 획득 확률 2배"
+    );
+    public static final Holder<MobEffect> BITCOIN_TRIPLE = register(
+            "bitcoin_triple",
+            0x9655D8,
+            "비트코인 획득 확률 3배"
     );
 
     private JobsPlusMobEffects()

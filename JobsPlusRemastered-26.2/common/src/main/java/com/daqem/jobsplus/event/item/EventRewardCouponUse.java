@@ -17,6 +17,7 @@ public final class EventRewardCouponUse
 {
     private static final Identifier EXPERIENCE_DOUBLE_COUPON = Identifier.fromNamespaceAndPath("advancednetherite", "experience_double_coupon");
     private static final Identifier BITCOIN_DOUBLE_COUPON = Identifier.fromNamespaceAndPath("advancednetherite", "bitcoin_double_coupon");
+    private static final Identifier BITCOIN_TRIPLE_COUPON = Identifier.fromNamespaceAndPath("advancednetherite", "bitcoin_triple_coupon");
 
     private EventRewardCouponUse()
     {
@@ -39,7 +40,8 @@ public final class EventRewardCouponUse
 
             Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
             boolean experienceCoupon = EXPERIENCE_DOUBLE_COUPON.equals(itemId);
-            boolean bitcoinCoupon = BITCOIN_DOUBLE_COUPON.equals(itemId);
+            boolean bitcoinTripleCoupon = BITCOIN_TRIPLE_COUPON.equals(itemId);
+            boolean bitcoinCoupon = BITCOIN_DOUBLE_COUPON.equals(itemId) || bitcoinTripleCoupon;
             if (!experienceCoupon && !bitcoinCoupon)
             {
                 return EventResult.pass();
@@ -66,8 +68,17 @@ public final class EventRewardCouponUse
             }
             else
             {
-                expiresAt = ledger.activateBitcoinDouble(serverPlayer.getUUID());
-                couponName = "비트코인 2배 쿠폰";
+                int multiplier = bitcoinTripleCoupon ? 3 : 2;
+                expiresAt = bitcoinTripleCoupon
+                        ? ledger.activateBitcoinTriple(serverPlayer.getUUID())
+                        : ledger.activateBitcoinDouble(serverPlayer.getUUID());
+                couponName = "비트코인 획득 확률 " + multiplier + "배 쿠폰";
+                if (expiresAt == 0L)
+                {
+                    serverPlayer.sendSystemMessage(Component.literal("다른 배율의 비트코인 쿠폰 효과가 끝난 후 사용해 주세요."), false);
+                    serverPlayer.getCooldowns().addCooldown(stack, 20);
+                    return EventResult.fromMinecraft(InteractionResult.CONSUME);
+                }
             }
 
             // 사용 즉시 HUD에 상태 효과와 남은 시간을 표시한다.

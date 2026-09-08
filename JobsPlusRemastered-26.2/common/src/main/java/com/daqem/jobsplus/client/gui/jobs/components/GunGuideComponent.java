@@ -316,7 +316,7 @@ public class GunGuideComponent extends EmptyComponent {
             int owned = 0;
             Minecraft client = Minecraft.getInstance();
             if (client.player != null && material.ingredient() != null) {
-                for (ItemStack stack : client.player.getInventory().getNonEquipmentItems()) {
+                for (ItemStack stack : client.player.getInventory()) {
                     if (material.ingredient().test(stack)) {
                         owned += stack.getCount();
                     }

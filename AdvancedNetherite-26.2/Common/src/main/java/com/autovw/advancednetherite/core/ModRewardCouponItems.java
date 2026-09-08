@@ -21,6 +21,11 @@ public final class ModRewardCouponItems
             new Item.Properties().setId(key("bitcoin_double_coupon")),
             RewardCouponItem.CouponType.BITCOIN
     );
+    public static final RewardCouponItem BITCOIN_TRIPLE_COUPON = new RewardCouponItem(
+            new Item.Properties().setId(key("bitcoin_triple_coupon")),
+            RewardCouponItem.CouponType.BITCOIN,
+            3
+    );
 
     private ModRewardCouponItems()
     {

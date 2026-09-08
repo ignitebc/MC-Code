@@ -59,6 +59,11 @@ public final class EventRewardCouponEffectSync
                 JobsPlusMobEffects.BITCOIN_DOUBLE,
                 ledger.getBitcoinDoubleRemainingMillis(serverPlayer.getUUID(), now)
         );
+        syncEffect(
+                serverPlayer,
+                JobsPlusMobEffects.BITCOIN_TRIPLE,
+                ledger.getBitcoinTripleRemainingMillis(serverPlayer.getUUID(), now)
+        );
     }
 
     private static void syncEffect(ServerPlayer player, Holder<MobEffect> effect, long remainingMillis)

@@ -49,6 +49,26 @@ public class JobBitcoinReward extends AbstractReward
     }
 
     @Override
+    public boolean passedChance(ActionData actionData)
+    {
+        double chance = getChance();
+        if (actionData.getPlayer() instanceof JobsServerPlayer jobsPlayer
+                && actionData.getSourceActionHolder() instanceof JobInstance job
+                && jobsPlayer.jobsplus$getJob(job) != null)
+        {
+            ServerPlayer player = jobsPlayer.jobsplus$getServerPlayer();
+            MinecraftServer server = player == null ? null : player.level().getServer();
+            if (server != null)
+            {
+                chance *= RewardCouponLedger.get(server).getBitcoinChanceMultiplier(player.getUUID());
+            }
+        }
+        if (!Double.isFinite(chance) || chance <= 0.0D) return false;
+        // Arc가 apply() 전에 호출하는 실제 추첨 지점에서 한 번만 판정한다.
+        return chance >= 100.0D || actionData.getPlayer().arc$nextRandomDouble() * 100.0D < chance;
+    }
+
+    @Override
     public ActionResult apply(ActionData actionData)
     {
         // Arc 쪽 플레이어 래퍼 가져오기
@@ -79,15 +99,6 @@ public class JobBitcoinReward extends AbstractReward
         }
 
         int rewardAmount = this.amount;
-        if (actionData.getSourceActionHolder() instanceof JobInstance jobInstance
-                && jobsServerPlayer.jobsplus$getJob(jobInstance) != null)
-        {
-            MinecraftServer server = serverPlayer.level().getServer();
-            if (server != null && RewardCouponLedger.get(server).isBitcoinDoubleActive(serverPlayer.getUUID()))
-            {
-                rewardAmount = (int) Math.min(Integer.MAX_VALUE, (long) rewardAmount * 2L);
-            }
-        }
 
         // Holder.Reference<Item> 에서 실제 Item 인스턴스 꺼내기
         Item bitcoinItem = optionalHolder.get().value();

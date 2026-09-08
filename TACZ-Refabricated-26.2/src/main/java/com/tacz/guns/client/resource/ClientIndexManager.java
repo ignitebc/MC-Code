@@ -186,9 +186,9 @@ public class ClientIndexManager {
     }
 
     private static void warmUpBackpackModels(LocalPlayer player) {
-        var items = player.getInventory().getNonEquipmentItems();
-        for (int i = Math.min(HOTBAR_SLOT_COUNT, items.size()); i < items.size(); i++) {
-            warmUpItemModel(items.get(i));
+        var inventory = player.getInventory();
+        for (int i = HOTBAR_SLOT_COUNT; i < inventory.getContainerSize(); i++) {
+            warmUpItemModel(inventory.getItem(i));
         }
     }
 

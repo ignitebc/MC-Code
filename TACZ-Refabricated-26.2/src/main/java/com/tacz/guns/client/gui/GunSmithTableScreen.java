@@ -292,7 +292,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
             // 第 14 轮：延迟解析后可能为 null，此时按「一个都没有」处理。
             Ingredient resolved = ingredient.getIngredient();
             if (resolved != null) {
-                for (ItemStack stack : inventory.getNonEquipmentItems()) {
+                for (ItemStack stack : inventory) {
                     if (!stack.isEmpty() && resolved.test(stack)) {
                         count = count + stack.getCount();
                     }

@@ -5,9 +5,18 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "EnderManMixin",
-    "PhantomMixin"
+    "PhantomMixin",
+    "BackpackInventoryMixin",
+    "BackpackMenuMixin",
+    "BackpackTransferMixin",
+    "BackpackSyncMixin",
+    "BackpackRecipePlacementMixin"
   ],
   "client": [
+    "client.BackpackScreenGeometryMixin",
+    "client.BackpackScreenMixin",
+    "client.BackpackCreativeScreenMixin",
+    "client.BackpackRecipeBookMixin"
   ],
   "injectors": {
     "defaultRequire": 1

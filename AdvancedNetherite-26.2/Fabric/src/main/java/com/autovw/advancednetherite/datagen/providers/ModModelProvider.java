@@ -2,6 +2,8 @@ package com.autovw.advancednetherite.datagen.providers;
 
 import com.autovw.advancednetherite.core.ModBlocks;
 import com.autovw.advancednetherite.core.ModItems;
+import com.autovw.advancednetherite.core.ModBackpackItems;
+import com.autovw.advancednetherite.core.ModRewardCouponItems;
 import com.autovw.advancednetherite.core.util.ModEquipmentAssets;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
@@ -57,6 +59,11 @@ public class ModModelProvider extends FabricModelProvider
         
         // bitcoin 추가
         itemModel(generator, ModItems.BITCOIN);
+        itemModel(generator, ModRewardCouponItems.BITCOIN_DOUBLE_COUPON);
+        itemModel(generator, ModRewardCouponItems.BITCOIN_TRIPLE_COUPON);
+        itemModel(generator, ModBackpackItems.LEVEL_1);
+        itemModel(generator, ModBackpackItems.LEVEL_2);
+        itemModel(generator, ModBackpackItems.LEVEL_3);
         
         // randomBox 1~4
         itemModel(generator, ModItems.RANDOM_BOX_I);

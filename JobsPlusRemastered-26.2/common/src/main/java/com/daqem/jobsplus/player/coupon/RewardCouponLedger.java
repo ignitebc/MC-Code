@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 플레이어별 직업 보상 2배 쿠폰 만료 시각을 월드에 저장한다.
+ * 플레이어별 경험치·비트코인 획득 확률 쿠폰 만료 시각을 월드에 저장한다.
  * 효과 시간은 실제 시간 기준이며 서버 재시작/재접속 후에도 만료 시각을 유지한다.
  */
 public final class RewardCouponLedger extends SavedData
@@ -24,15 +24,17 @@ public final class RewardCouponLedger extends SavedData
 
     private static final Identifier FILE_ID = JobsPlus.getId("reward_coupons");
 
-    public record CouponState(long experienceDoubleExpiresAt, long bitcoinDoubleExpiresAt)
+    public record CouponState(long experienceDoubleExpiresAt, long bitcoinDoubleExpiresAt, long bitcoinTripleExpiresAt)
     {
-        private static final CouponState EMPTY = new CouponState(0L, 0L);
+        private static final CouponState EMPTY = new CouponState(0L, 0L, 0L);
 
         public static final Codec<CouponState> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.LONG.optionalFieldOf("experience_double_expires_at", 0L)
                         .forGetter(CouponState::experienceDoubleExpiresAt),
                 Codec.LONG.optionalFieldOf("bitcoin_double_expires_at", 0L)
-                        .forGetter(CouponState::bitcoinDoubleExpiresAt)
+                        .forGetter(CouponState::bitcoinDoubleExpiresAt),
+                Codec.LONG.optionalFieldOf("bitcoin_triple_expires_at", 0L)
+                        .forGetter(CouponState::bitcoinTripleExpiresAt)
         ).apply(instance, CouponState::new));
     }
 
@@ -75,6 +77,13 @@ public final class RewardCouponLedger extends SavedData
         return getBitcoinDoubleRemainingMillis(playerId, System.currentTimeMillis()) > 0L;
     }
 
+    public int getBitcoinChanceMultiplier(UUID playerId)
+    {
+        long now = System.currentTimeMillis();
+        if (getBitcoinTripleRemainingMillis(playerId, now) > 0L) return 3;
+        return getBitcoinDoubleRemainingMillis(playerId, now) > 0L ? 2 : 1;
+    }
+
     public long getExperienceDoubleRemainingMillis(UUID playerId, long now)
     {
         return getRemainingMillis(getState(playerId).experienceDoubleExpiresAt(), now);
@@ -85,22 +94,46 @@ public final class RewardCouponLedger extends SavedData
         return getRemainingMillis(getState(playerId).bitcoinDoubleExpiresAt(), now);
     }
 
+    public long getBitcoinTripleRemainingMillis(UUID playerId, long now)
+    {
+        return getRemainingMillis(getState(playerId).bitcoinTripleExpiresAt(), now);
+    }
+
     public long activateExperienceDouble(UUID playerId)
     {
         long now = System.currentTimeMillis();
         CouponState state = getState(playerId);
         long expiresAt = extend(state.experienceDoubleExpiresAt(), now);
-        this.states.put(playerId, new CouponState(expiresAt, state.bitcoinDoubleExpiresAt()));
+        this.states.put(playerId, new CouponState(expiresAt, state.bitcoinDoubleExpiresAt(), state.bitcoinTripleExpiresAt()));
         this.setDirty();
         return expiresAt;
     }
 
     public long activateBitcoinDouble(UUID playerId)
     {
+        return activateBitcoin(playerId, 2);
+    }
+
+    public long activateBitcoinTriple(UUID playerId)
+    {
+        return activateBitcoin(playerId, 3);
+    }
+
+    private long activateBitcoin(UUID playerId, int multiplier)
+    {
         long now = System.currentTimeMillis();
         CouponState state = getState(playerId);
-        long expiresAt = extend(state.bitcoinDoubleExpiresAt(), now);
-        this.states.put(playerId, new CouponState(state.experienceDoubleExpiresAt(), expiresAt));
+        long otherExpiresAt = multiplier == 2 ? state.bitcoinTripleExpiresAt() : state.bitcoinDoubleExpiresAt();
+        if (otherExpiresAt > now)
+        {
+            // 저배율 쿠폰의 남은 시간을 고배율로 바꾸거나 2×3 중첩으로 악용하지 못하게 한다.
+            return 0L;
+        }
+        long currentExpiresAt = multiplier == 2 ? state.bitcoinDoubleExpiresAt() : state.bitcoinTripleExpiresAt();
+        long expiresAt = extend(currentExpiresAt, now);
+        this.states.put(playerId, new CouponState(state.experienceDoubleExpiresAt(),
+                multiplier == 2 ? expiresAt : state.bitcoinDoubleExpiresAt(),
+                multiplier == 3 ? expiresAt : state.bitcoinTripleExpiresAt()));
         this.setDirty();
         return expiresAt;
     }
