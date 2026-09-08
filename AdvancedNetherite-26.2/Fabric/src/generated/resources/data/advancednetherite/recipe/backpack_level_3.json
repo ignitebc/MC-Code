@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "advancednetherite:backpack_level_2",
+    "minecraft:netherite_ingot",
+    "minecraft:netherite_ingot",
+    "minecraft:diamond",
+    "minecraft:diamond",
+    "minecraft:blaze_rod",
+    "minecraft:blaze_rod",
+    "minecraft:leather",
+    "minecraft:leather"
+  ],
+  "result": {
+    "id": "advancednetherite:backpack_level_3"
+  }
+}

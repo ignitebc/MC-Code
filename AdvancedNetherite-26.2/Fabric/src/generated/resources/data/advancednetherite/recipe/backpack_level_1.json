@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:leather",
+    "minecraft:leather",
+    "minecraft:leather",
+    "minecraft:string",
+    "minecraft:string",
+    "minecraft:string",
+    "minecraft:gold_ingot",
+    "minecraft:gold_ingot",
+    "minecraft:gold_ingot"
+  ],
+  "result": {
+    "id": "advancednetherite:backpack_level_1"
+  }
+}

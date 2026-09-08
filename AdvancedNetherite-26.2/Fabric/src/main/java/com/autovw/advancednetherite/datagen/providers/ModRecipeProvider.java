@@ -1,6 +1,7 @@
 package com.autovw.advancednetherite.datagen.providers;
 
 import com.autovw.advancednetherite.AdvancedNetherite;
+import com.autovw.advancednetherite.core.ModBackpackItems;
 import com.autovw.advancednetherite.core.ModBlocks;
 import com.autovw.advancednetherite.core.ModItems;
 import com.autovw.advancednetherite.core.util.ModTags;
@@ -111,6 +112,7 @@ public class ModRecipeProvider extends FabricRecipeProvider
                 baseSmithingRecipe(registryLookup, output, ModTags.SPEAR_UPGRADE_TO_NETHERITE_DIAMOND, ModTags.UPGRADE_TO_NETHERITE_DIAMOND, ModItems.NETHERITE_DIAMOND_SPEAR);
 
                 /* Misc */
+                backpackRecipes(registryLookup, output);
                 lodestoneRecipe(registryLookup, output);
             }
 
@@ -150,6 +152,33 @@ public class ModRecipeProvider extends FabricRecipeProvider
                         .requires(result)
                         .unlockedBy("has_" + resultId.getPath(), has(result))
                         .save(output, Identifier.fromNamespaceAndPath(resultId.getNamespace(), ingredientId.getPath() + "_from_block").toString());
+            }
+
+            private void backpackRecipes(HolderLookup.RegistryLookup<Item> registryLookup, RecipeOutput output)
+            {
+                ShapelessRecipeBuilder.shapeless(registryLookup, RecipeCategory.MISC, ModBackpackItems.LEVEL_1)
+                        .requires(Items.LEATHER).requires(Items.LEATHER).requires(Items.LEATHER)
+                        .requires(Items.STRING).requires(Items.STRING).requires(Items.STRING)
+                        .requires(Items.GOLD_INGOT).requires(Items.GOLD_INGOT).requires(Items.GOLD_INGOT)
+                        .unlockedBy("has_leather", has(Items.LEATHER))
+                        .save(output);
+
+                ShapelessRecipeBuilder.shapeless(registryLookup, RecipeCategory.MISC, ModBackpackItems.LEVEL_2)
+                        .requires(ModBackpackItems.LEVEL_1)
+                        .requires(Items.DIAMOND).requires(Items.DIAMOND).requires(Items.DIAMOND).requires(Items.DIAMOND)
+                        .requires(Items.IRON_INGOT).requires(Items.IRON_INGOT)
+                        .requires(Items.LEATHER).requires(Items.LEATHER)
+                        .unlockedBy("has_backpack_level_1", has(ModBackpackItems.LEVEL_1))
+                        .save(output);
+
+                ShapelessRecipeBuilder.shapeless(registryLookup, RecipeCategory.MISC, ModBackpackItems.LEVEL_3)
+                        .requires(ModBackpackItems.LEVEL_2)
+                        .requires(Items.NETHERITE_INGOT).requires(Items.NETHERITE_INGOT)
+                        .requires(Items.DIAMOND).requires(Items.DIAMOND)
+                        .requires(Items.BLAZE_ROD).requires(Items.BLAZE_ROD)
+                        .requires(Items.LEATHER).requires(Items.LEATHER)
+                        .unlockedBy("has_backpack_level_2", has(ModBackpackItems.LEVEL_2))
+                        .save(output);
             }
 
             private void lodestoneRecipe(HolderLookup.RegistryLookup<Item> registryLookup, RecipeOutput output)
