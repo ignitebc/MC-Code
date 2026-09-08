@@ -98,7 +98,7 @@ public class SelectedJobComponent extends EmptyComponent {
         }
         if (spacious) {
             JobsTheme.sprite(graphics, JobsPlus.getId("jobs/coins"), x + 9, y + 159, 7, 8);
-            JobsTheme.text(graphics, Component.literal("직업 코인  " + state.getCoins()),
+            JobsTheme.text(graphics, Component.literal("직업코인  " + state.getCoins()),
                     x + 21, y + 159, getWidth() - 29, JobsTheme.TEXT);
             JobsTheme.text(graphics, jobInstance.getDescription(), x + 8, y + 179,
                     getWidth() - 16, JobsTheme.MUTED);

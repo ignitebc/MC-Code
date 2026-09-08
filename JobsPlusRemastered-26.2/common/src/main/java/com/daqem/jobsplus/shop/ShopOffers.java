@@ -52,7 +52,7 @@ public final class ShopOffers
         // 상점 물품 추가
         offers.add(new ShopOffer(Identifier.parse("advancednetherite:bitcoin"), 10, Identifier.parse("minecraft:diamond"), 5));
         offers.add(new ShopOffer(Identifier.parse("advancednetherite:bitcoin"), 50, Identifier.parse("minecraft:ancient_debris"), 1));
-        offers.add(new ShopOffer(Identifier.parse("advancednetherite:bitcoin"), 350, Identifier.parse("minecraft:elytra"), 1));
+        offers.add(new ShopOffer(Identifier.parse("advancednetherite:bitcoin"), 500, Identifier.parse("minecraft:elytra"), 1));
         offers.add(new ShopOffer(Identifier.parse("advancednetherite:bitcoin"), 1, Identifier.parse("advancednetherite:random_box_i"), 1));
         offers.add(new ShopOffer(Identifier.parse("advancednetherite:bitcoin"), 1, Identifier.parse("advancednetherite:random_box_ii"), 1));
         offers.add(new ShopOffer(Identifier.parse("advancednetherite:bitcoin"), 1, Identifier.parse("advancednetherite:random_box_iii"), 1));

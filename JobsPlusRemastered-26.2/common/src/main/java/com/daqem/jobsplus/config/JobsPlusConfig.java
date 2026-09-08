@@ -44,7 +44,7 @@ public class JobsPlusConfig
                 COINS_PER_LEVEL_UP,
                 COINS_PER_LEVEL_UP,
                 COINS_PER_LEVEL_UP
-        ).withComments("플레이어가 레벨업 시 얻는 직업 코인의 양");
+        ).withComments("플레이어가 레벨업 시 얻는 직업코인의 양");
         config.pop();
         config.pop();
 

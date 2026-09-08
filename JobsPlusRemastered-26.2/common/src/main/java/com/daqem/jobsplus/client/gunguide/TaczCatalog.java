@@ -2,6 +2,7 @@ package com.daqem.jobsplus.client.gunguide;
 
 import com.daqem.jobsplus.JobsPlus;
 import dev.architectury.platform.Platform;
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -12,11 +13,15 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
 /** Read-only optional integration: JobsPlus still loads when TACZ is absent. */
 public final class TaczCatalog {
+    private static final List<String> CATEGORIES = List.of("권총", "기관단총", "돌격소총", "산탄총", "저격소총",
+            "기관총", "발사기", "기타 총기", "탄약", "조준경", "소음기", "총구", "손잡이", "개머리판",
+            "레이저", "탄창 · 특수탄", "기타 파츠");
     public enum Kind {
         GUN("총기", "Gun", "IGun", "getGunId"),
         AMMO("탄약", "Ammo", "IAmmo", "getAmmoId"),
@@ -39,7 +44,7 @@ public final class TaczCatalog {
     public record Recipe(Identifier id, int outputCount, List<Material> materials) { }
     public record Link(String label, String target) { }
     public record Entry(String key, Kind kind, Identifier id, ItemStack icon, Component name,
-                        List<String> description, List<Recipe> recipes, List<Link> links) { }
+                        String category, List<String> description, List<Recipe> recipes, List<Link> links) { }
     public record Snapshot(List<Entry> entries, String message) { }
 
     private TaczCatalog() { }
@@ -79,7 +84,9 @@ public final class TaczCatalog {
                 }
                 List<String> description = new ArrayList<>();
                 List<Link> links = new ArrayList<>();
+                String category = "탄약";
                 if (kind == Kind.GUN) {
+                    category = gunCategory((String) call(common.get(), "getType"));
                     Object data = call(common.get(), "getGunData");
                     gunData.put(key, data);
                     description.add("기본 장탄수: " + call(data, "getAmmoAmount"));
@@ -97,6 +104,7 @@ public final class TaczCatalog {
                         description.add("추가 능력치 보정 없음");
                     }
                     Object type = call(common.get(), "getType");
+                    category = attachmentCategory(type, call(common.get(), "getData"));
                     attachmentTypes.put(key, type);
                     description.add("슬롯: " + slotName(type));
                     float[] zoom = (float[]) call(client, "getZoom");
@@ -112,7 +120,7 @@ public final class TaczCatalog {
                     }
                 }
                 entries.put(key, new Entry(key, kind, id, icon,
-                        Component.translatable((String) call(client, "getName")), description,
+                        Component.translatable((String) call(client, "getName")), category, description,
                         recipes.getOrDefault(key, List.of()), links));
             }
         }
@@ -153,7 +161,9 @@ public final class TaczCatalog {
             }
         }
         List<Entry> result = new ArrayList<>(entries.values());
-        result.sort(Comparator.comparing(Entry::kind).thenComparing(entry -> entry.name().getString()));
+        result.sort(Comparator.comparing(Entry::kind)
+                .thenComparingInt(entry -> CATEGORIES.indexOf(entry.category()))
+                .thenComparing(entry -> entry.name().getString()).thenComparing(Entry::key));
         return new Snapshot(List.copyOf(result), result.isEmpty() ? "총기 팩 데이터가 없습니다. 로딩 후 다시 열어 주세요." : "");
     }
 
@@ -194,6 +204,32 @@ public final class TaczCatalog {
 
     private static String key(Kind kind, Identifier id) {
         return kind.name() + ":" + id;
+    }
+
+    private static String gunCategory(String type) {
+        return switch (type.toLowerCase(Locale.ROOT)) {
+            case "pistol" -> "권총";
+            case "smg" -> "기관단총";
+            case "rifle" -> "돌격소총";
+            case "shotgun" -> "산탄총";
+            case "sniper" -> "저격소총";
+            case "mg" -> "기관총";
+            case "rpg" -> "발사기";
+            default -> "기타 총기";
+        };
+    }
+
+    private static String attachmentCategory(Object type, Object data) throws ReflectiveOperationException {
+        if (type.toString().equals("MUZZLE")) {
+            // 이름이 아닌 팩의 실제 소음기 효과를 기준으로 총구 부품을 나눈다.
+            Object silence = ((Map<?, ?>) call(data, "getModifier")).get("silence");
+            if (silence != null && call(silence, "getValue") instanceof Pair<?, ?> value
+                    && Boolean.TRUE.equals(value.right())) {
+                return "소음기";
+            }
+        }
+        String name = slotName(type);
+        return CATEGORIES.contains(name) ? name : "기타 파츠";
     }
 
     private static String slotName(Object type) {

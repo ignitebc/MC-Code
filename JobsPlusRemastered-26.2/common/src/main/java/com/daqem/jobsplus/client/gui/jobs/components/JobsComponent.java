@@ -120,7 +120,7 @@ public class JobsComponent extends AbstractComponent
             int badgeX = x + getWidth() - 169;
             JobsTheme.texture(guiGraphics, JobsTheme.Skin.INSET, badgeX, y + 6, 72, 16);
             JobsTheme.sprite(guiGraphics, JobsPlus.getId("jobs/coins"), badgeX + 4, y + 10, 7, 8);
-            JobsTheme.text(guiGraphics, Component.literal("직업 코인 " + state.getCoins()),
+            JobsTheme.text(guiGraphics, Component.literal("직업코인 " + state.getCoins()),
                     badgeX + 14, y + 10, 54, JobsTheme.TEXT);
             JobsTheme.texture(guiGraphics, JobsTheme.Skin.INSET, badgeX + 76, y + 6, 67, 16);
             StockIcons.draw(guiGraphics, "BTC", badgeX + 79, y + 9, 10);

@@ -19,6 +19,8 @@ import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 
 import java.util.List;
 import java.util.Map;
+import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
@@ -35,7 +37,9 @@ public class GunGuideComponent extends EmptyComponent {
     private String searchQuery = "";
     private String renderedQuery;
     private String revealEntry;
-    private final Map<String, Integer> cardRows = new java.util.HashMap<>();
+    private record CardRow(int top, int bottom) { }
+    private final Map<String, CardRow> cardRows = new java.util.HashMap<>();
+    private final Map<Kind, Double> categoryScroll = new EnumMap<>(Kind.class);
     private boolean searchOpen;
     private Kind category = Kind.GUN;
     private Kind renderedCategory;
@@ -87,6 +91,9 @@ public class GunGuideComponent extends EmptyComponent {
     }
 
     private void selectCategory(Kind kind) {
+        if (category != kind) {
+            categoryScroll.put(category, listScroll.scrollAmount());
+        }
         category = kind;
         searchOpen = false;
         searchInput.setFocused(false);
@@ -104,30 +111,53 @@ public class GunGuideComponent extends EmptyComponent {
             listScroll.clearComponents();
             listScroll.setScrollAmount(0);
             EmptyComponent content = new EmptyComponent(0, 0, listWidth - 10, 0);
-            List<Entry> visible = catalog.entries().stream().filter(entry -> entry.kind() == category).toList();
+            Map<String, List<Entry>> groups = catalog.entries().stream()
+                    .filter(entry -> entry.kind() == category)
+                    .collect(Collectors.groupingBy(Entry::category, LinkedHashMap::new, Collectors.toList()));
             int columns = 3;
             int cardWidth = (content.getWidth() - (columns - 1) * 4) / columns;
             int rowY = 0;
-            for (int first = 0; first < visible.size(); first += columns) {
-                int rowHeight = 0;
-                for (int i = first; i < Math.min(first + columns, visible.size()); i++) {
-                    rowHeight = Math.max(rowHeight, 35 + wrappedHeight(visible.get(i).name(), cardWidth - 6, 0.65f));
+            for (Map.Entry<String, List<Entry>> group : groups.entrySet()) {
+                LineComponent heading = new LineComponent(rowY, content.getWidth(), group.getKey(), JobsTheme.CYAN);
+                content.addComponent(heading);
+                rowY += heading.getHeight() + 7;
+                List<Entry> visible = group.getValue();
+                for (int first = 0; first < visible.size(); first += columns) {
+                    int rowHeight = 0;
+                    for (int i = first; i < Math.min(first + columns, visible.size()); i++) {
+                        rowHeight = Math.max(rowHeight, 35 + wrappedHeight(visible.get(i).name(), cardWidth - 6, 0.65f));
+                    }
+                    for (int i = first; i < Math.min(first + columns, visible.size()); i++) {
+                        Entry entry = visible.get(i);
+                        cardRows.put(entry.key(), new CardRow(rowY, rowY + rowHeight));
+                        content.addWidget(new GuideButton((i % columns) * (cardWidth + 4), rowY,
+                                cardWidth, rowHeight, entry.name(), entry.icon(), () -> selected == entry,
+                                () -> {
+                                    selected = entry;
+                                    revealEntry = null;
+                                    searchOpen = false;
+                                    searchInput.setFocused(false);
+                                }));
+                    }
+                    rowY += rowHeight + 4;
                 }
-                for (int i = first; i < Math.min(first + columns, visible.size()); i++) {
-                    Entry entry = visible.get(i);
-                    cardRows.put(entry.key(), rowY);
-                    content.addWidget(new GuideButton((i % columns) * (cardWidth + 4), rowY,
-                            cardWidth, rowHeight, entry.name(), entry.icon(), () -> selected == entry,
-                            () -> navigateTo(entry)));
-                }
-                rowY += rowHeight + 4;
+                rowY += 7;
             }
             content.setHeight(rowY);
             listScroll.addComponent(content);
+            listScroll.setScrollAmount(categoryScroll.getOrDefault(category, 0.0));
             renderedCategory = category;
         }
         if (revealEntry != null) {
-            listScroll.setScrollAmount(cardRows.getOrDefault(revealEntry, 0));
+            // 검색·호환 링크 이동도 이미 보이는 카드는 이동시키지 않는다.
+            CardRow row = cardRows.get(revealEntry);
+            if (row != null) {
+                double scroll = listScroll.scrollAmount();
+                if (row.top() < scroll) listScroll.setScrollAmount(row.top());
+                else if (row.bottom() > scroll + listScroll.getHeight()) {
+                    listScroll.setScrollAmount(row.bottom() - listScroll.getHeight());
+                }
+            }
             revealEntry = null;
         }
         if (!searchQuery.equals(renderedQuery)) {

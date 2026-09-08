@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class PowerupsComponent extends JobsSpriteComponent
 {
     private final PowerupsScreenState state;
+    private final Map<Identifier, PowerupsSkillTreeItem> powerupItems = new LinkedHashMap<>();
 
     public PowerupsComponent(PowerupsScreenState state)
     {
@@ -44,7 +45,6 @@ public class PowerupsComponent extends JobsSpriteComponent
         Map<Identifier, Powerup> allPowerups = state.getJob().getPowerupManager().getAllPowerups().stream().collect(Collectors.toMap(Powerup::getPowerupLocation, powerup -> powerup));
         List<PowerupInstance> powerupInstances = state.getJob().getJobInstance().getPowerups();
         PowerupsSkillTreeItem rootItem = new PowerupsSkillTreeItem(state, null, true, new ArrayList<>());
-        Map<Identifier, PowerupsSkillTreeItem> powerupItems = new HashMap<>();
         for (PowerupInstance powerupInstance : powerupInstances)
         {
             Powerup powerup = allPowerups.get(powerupInstance.getLocation());
@@ -91,6 +91,31 @@ public class PowerupsComponent extends JobsSpriteComponent
         this.addComponent(skillTreeComponent);
         if (layout.wide()) {
             this.addComponent(new PowerupDetailsComponent(state, getWidth() - 158, 32, 150, getHeight() - 53));
+        }
+    }
+
+    public void refreshPowerups()
+    {
+        Map<Identifier, Powerup> owned = this.state.getJob().getPowerupManager().getAllPowerups().stream()
+                .collect(Collectors.toMap(Powerup::getPowerupLocation, powerup -> powerup));
+        // 위젯이 참조하는 객체를 유지해야 선택·스크롤·포커스가 초기화되지 않는다.
+        for (PowerupsSkillTreeItem item : this.powerupItems.values())
+        {
+            Powerup powerup = item.getPowerup();
+            if (powerup == null) continue;
+            Powerup updated = owned.get(powerup.getPowerupLocation());
+            powerup.setState(updated == null ? PowerupState.LOCKED : updated.getState());
+        }
+        for (PowerupsSkillTreeItem item : this.powerupItems.values())
+        {
+            Powerup powerup = item.getPowerup();
+            if (powerup == null) continue;
+            Identifier parentId = powerup.getPowerupInstance().getParentLocation();
+            PowerupsSkillTreeItem parent = parentId == null ? null : this.powerupItems.get(parentId);
+            if ((parentId == null || parent != null) && canUnlockPowerup(this.state, item, parent))
+            {
+                powerup.setState(PowerupState.NOT_OWNED);
+            }
         }
     }
 

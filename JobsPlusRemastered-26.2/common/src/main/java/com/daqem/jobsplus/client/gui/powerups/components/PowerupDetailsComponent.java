@@ -75,7 +75,7 @@ public class PowerupDetailsComponent extends EmptyComponent {
         JobsTheme.texture(graphics, JobsTheme.Skin.INSET, x + 6, y + getHeight() - 74, getWidth() - 12, 26);
         JobsTheme.text(graphics, Component.literal("필요 레벨  " + instance.getRequiredLevel()),
                 x + 12, y + getHeight() - 69, getWidth() - 24, JobsTheme.MUTED);
-        JobsTheme.text(graphics, Component.literal("가격  " + instance.getPrice() + " 직업 코인"),
+        JobsTheme.text(graphics, Component.literal("가격  " + instance.getPrice() + " 직업코인"),
                 x + 12, y + getHeight() - 58, getWidth() - 24, JobsTheme.TEXT);
     }
 

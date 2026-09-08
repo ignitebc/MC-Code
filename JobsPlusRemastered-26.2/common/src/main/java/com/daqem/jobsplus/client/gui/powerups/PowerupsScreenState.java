@@ -6,7 +6,7 @@ import com.daqem.jobsplus.client.gui.powerups.widgets.PowerupItemWidget;
 public class PowerupsScreenState
 {
 
-    private final Job job;
+    private Job job;
     private int coins;
     private PowerupItemWidget previewWidget;
     private boolean detailsPanelVisible;
@@ -36,6 +36,12 @@ public class PowerupsScreenState
     public Job getJob()
     {
         return job;
+    }
+
+    public void update(Job job, int coins)
+    {
+        this.job = job;
+        this.coins = coins;
     }
 
     public int getCoins()
