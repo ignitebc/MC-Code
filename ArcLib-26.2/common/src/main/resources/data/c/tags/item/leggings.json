@@ -6,9 +6,9 @@
     "minecraft:golden_leggings",
     "minecraft:diamond_leggings",
     "minecraft:netherite_leggings",
-    "advancednetherite:netherite_iron_leggings",
-    "advancednetherite:netherite_gold_leggings",
-    "advancednetherite:netherite_emerald_leggings",
-    "advancednetherite:netherite_diamond_leggings"
+    "advancednetherite:ash_leggings",
+    "advancednetherite:solar_leggings",
+    "advancednetherite:soul_leggings",
+    "advancednetherite:frost_leggings"
   ]
 }

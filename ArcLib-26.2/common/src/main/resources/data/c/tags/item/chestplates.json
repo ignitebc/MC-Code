@@ -6,9 +6,9 @@
     "minecraft:golden_chestplate",
     "minecraft:diamond_chestplate",
     "minecraft:netherite_chestplate",
-    "advancednetherite:netherite_iron_chestplate",
-    "advancednetherite:netherite_gold_chestplate",
-    "advancednetherite:netherite_emerald_chestplate",
-    "advancednetherite:netherite_diamond_chestplate"
+    "advancednetherite:ash_chestplate",
+    "advancednetherite:solar_chestplate",
+    "advancednetherite:soul_chestplate",
+    "advancednetherite:frost_chestplate"
   ]
 }

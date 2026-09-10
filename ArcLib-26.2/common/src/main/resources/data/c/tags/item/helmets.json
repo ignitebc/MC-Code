@@ -6,9 +6,9 @@
     "minecraft:golden_helmet",
     "minecraft:diamond_helmet",
     "minecraft:netherite_helmet",
-    "advancednetherite:netherite_iron_helmet",
-    "advancednetherite:netherite_gold_helmet",
-    "advancednetherite:netherite_emerald_helmet",
-    "advancednetherite:netherite_diamond_helmet"
+    "advancednetherite:ash_helmet",
+    "advancednetherite:solar_helmet",
+    "advancednetherite:soul_helmet",
+    "advancednetherite:frost_helmet"
   ]
 }

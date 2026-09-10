@@ -6,9 +6,9 @@
     "minecraft:golden_boots",
     "minecraft:diamond_boots",
     "minecraft:netherite_boots",
-    "advancednetherite:netherite_iron_boots",
-    "advancednetherite:netherite_gold_boots",
-    "advancednetherite:netherite_emerald_boots",
-    "advancednetherite:netherite_diamond_boots"
+    "advancednetherite:ash_boots",
+    "advancednetherite:solar_boots",
+    "advancednetherite:soul_boots",
+    "advancednetherite:frost_boots"
   ]
 }
