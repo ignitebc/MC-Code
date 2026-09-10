@@ -49,13 +49,15 @@ public final class RewardCouponItem extends AdvancedItem
         }
     }
 
-    private static void addExperienceTooltips(Consumer<Component> tooltip)
+    private void addExperienceTooltips(Consumer<Component> tooltip)
     {
-        tooltip.accept(Component.literal("사용 시 10분 동안 직업 경험치 획득량이 2배가 됩니다.")
+        tooltip.accept(Component.literal("사용 시 10분 동안 직업 경험치 획득량이 " + this.multiplier + "배가 됩니다.")
                 .withStyle(ChatFormatting.GRAY));
         tooltip.accept(Component.literal("보유 중인 직업의 직업 보상에만 적용됩니다.")
                 .withStyle(ChatFormatting.DARK_GRAY));
         tooltip.accept(Component.literal("같은 쿠폰을 추가 사용하면 지속시간이 10분 연장됩니다.")
+                .withStyle(ChatFormatting.YELLOW));
+        tooltip.accept(Component.literal("다른 배율의 경험치 쿠폰과 동시에 사용할 수 없습니다.")
                 .withStyle(ChatFormatting.YELLOW));
         tooltip.accept(Component.literal("사망·로그아웃 중에도 남은 시간은 계속 흐릅니다.")
                 .withStyle(ChatFormatting.DARK_GRAY));

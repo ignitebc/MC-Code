@@ -106,6 +106,7 @@ public final class AdvancedNetheriteTab
 
                     // Reward coupons
                     entries.accept(ModRewardCouponItems.EXPERIENCE_DOUBLE_COUPON);
+                    entries.accept(ModRewardCouponItems.EXPERIENCE_TRIPLE_COUPON);
                     entries.accept(ModRewardCouponItems.BITCOIN_DOUBLE_COUPON);
                     entries.accept(ModRewardCouponItems.BITCOIN_TRIPLE_COUPON);
 

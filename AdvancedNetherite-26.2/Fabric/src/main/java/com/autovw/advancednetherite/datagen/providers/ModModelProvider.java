@@ -59,6 +59,7 @@ public class ModModelProvider extends FabricModelProvider
         
         // bitcoin 추가
         itemModel(generator, ModItems.BITCOIN);
+        itemModel(generator, ModRewardCouponItems.EXPERIENCE_TRIPLE_COUPON);
         itemModel(generator, ModRewardCouponItems.BITCOIN_DOUBLE_COUPON);
         itemModel(generator, ModRewardCouponItems.BITCOIN_TRIPLE_COUPON);
         itemModel(generator, ModBackpackItems.LEVEL_1);
