@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "#advancednetherite:upgrade_to_soul",
+  "base": "#advancednetherite:spear/upgrade_to_soul",
+  "result": {
+    "id": "advancednetherite:soul_spear"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

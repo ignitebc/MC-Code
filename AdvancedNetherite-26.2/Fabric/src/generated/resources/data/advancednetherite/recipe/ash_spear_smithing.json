@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "#advancednetherite:upgrade_to_ash",
+  "base": "#advancednetherite:spear/upgrade_to_ash",
+  "result": {
+    "id": "advancednetherite:ash_spear"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

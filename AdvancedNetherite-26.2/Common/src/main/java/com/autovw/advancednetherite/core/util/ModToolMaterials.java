@@ -10,10 +10,10 @@ import net.minecraft.world.level.block.Block;
  */
 public final class ModToolMaterials
 {
-    public static final ToolMaterial NETHERITE_IRON = material(ModTags.INCORRECT_FOR_NETHERITE_IRON_TOOL, 2281, 4.0F, 15, ModTags.REPAIRS_NETHERITE_IRON_TOOLS);
-    public static final ToolMaterial NETHERITE_GOLD = material(ModTags.INCORRECT_FOR_NETHERITE_GOLD_TOOL, 2313, 4.0F, 25, ModTags.REPAIRS_NETHERITE_GOLD_TOOLS);
-    public static final ToolMaterial NETHERITE_EMERALD = material(ModTags.INCORRECT_FOR_NETHERITE_EMERALD_TOOL, 2651, 5.0F, 20, ModTags.REPAIRS_NETHERITE_EMERALD_TOOLS);
-    public static final ToolMaterial NETHERITE_DIAMOND = material(ModTags.INCORRECT_FOR_NETHERITE_DIAMOND_TOOL, 3092, 5.0F, 15, ModTags.REPAIRS_NETHERITE_DIAMOND_TOOLS);
+    public static final ToolMaterial ASH = material(ModTags.INCORRECT_FOR_ASH_TOOL, 2281, 4.0F, 15, ModTags.REPAIRS_ASH_TOOLS);
+    public static final ToolMaterial SOLAR = material(ModTags.INCORRECT_FOR_SOLAR_TOOL, 2313, 4.0F, 25, ModTags.REPAIRS_SOLAR_TOOLS);
+    public static final ToolMaterial SOUL = material(ModTags.INCORRECT_FOR_SOUL_TOOL, 2651, 5.0F, 20, ModTags.REPAIRS_SOUL_TOOLS);
+    public static final ToolMaterial FROST = material(ModTags.INCORRECT_FOR_FROST_TOOL, 3092, 5.0F, 15, ModTags.REPAIRS_FROST_TOOLS);
 
     private static ToolMaterial material(TagKey<Block> incorrectBlocksForDrops, int durability, float attackDamageBonus, int enchantability, TagKey<Item> repairItems)
     {

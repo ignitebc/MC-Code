@@ -53,7 +53,7 @@ public final class ModLootTableModifiers
     private static final Identifier DEEPSLATE_EMERALD_ORE = Identifier.withDefaultNamespace("blocks/deepslate_emerald_ore");
     private static final Identifier DIAMOND_ORE = Identifier.withDefaultNamespace("blocks/diamond_ore");
     private static final Identifier DEEPSLATE_DIAMOND_ORE = Identifier.withDefaultNamespace("blocks/deepslate_diamond_ore");
-    private static final Identifier NETHER_GOLD_ORE = Identifier.withDefaultNamespace("blocks/netherite_gold_ore");
+    private static final Identifier NETHER_GOLD_ORE = Identifier.withDefaultNamespace("blocks/solar_ore");
 
     public static void modifyTables()
     {

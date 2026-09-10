@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_soul_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": "advancednetherite:soul_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "advancednetherite:soul_ingot_from_block"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_soul_block"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "advancednetherite:soul_ingot_from_block"
+    ]
+  }
+}

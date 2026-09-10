@@ -38,24 +38,24 @@ public class ModModelProvider extends FabricModelProvider
     @Override
     public void generateBlockStateModels(BlockModelGenerators generator)
     {
-        generator.createTrivialCube(ModBlocks.NETHERITE_IRON_BLOCK);
-        generator.createTrivialCube(ModBlocks.NETHERITE_GOLD_BLOCK);
-        generator.createTrivialCube(ModBlocks.NETHERITE_EMERALD_BLOCK);
-        generator.createTrivialCube(ModBlocks.NETHERITE_DIAMOND_BLOCK);
+        generator.createTrivialCube(ModBlocks.ASH_BLOCK);
+        generator.createTrivialCube(ModBlocks.SOLAR_BLOCK);
+        generator.createTrivialCube(ModBlocks.SOUL_BLOCK);
+        generator.createTrivialCube(ModBlocks.FROST_BLOCK);
 
-        generator.createFlatItemModel(ModBlocks.NETHERITE_IRON_BLOCK.asItem());
-        generator.createFlatItemModel(ModBlocks.NETHERITE_GOLD_BLOCK.asItem());
-        generator.createFlatItemModel(ModBlocks.NETHERITE_EMERALD_BLOCK.asItem());
-        generator.createFlatItemModel(ModBlocks.NETHERITE_DIAMOND_BLOCK.asItem());
+        generator.createFlatItemModel(ModBlocks.ASH_BLOCK.asItem());
+        generator.createFlatItemModel(ModBlocks.SOLAR_BLOCK.asItem());
+        generator.createFlatItemModel(ModBlocks.SOUL_BLOCK.asItem());
+        generator.createFlatItemModel(ModBlocks.FROST_BLOCK.asItem());
     }
 
     @Override
     public void generateItemModels(ItemModelGenerators generator)
     {
-        itemModel(generator, ModItems.NETHERITE_IRON_INGOT);
-        itemModel(generator, ModItems.NETHERITE_GOLD_INGOT);
-        itemModel(generator, ModItems.NETHERITE_EMERALD_INGOT);
-        itemModel(generator, ModItems.NETHERITE_DIAMOND_INGOT);
+        itemModel(generator, ModItems.ASH_INGOT);
+        itemModel(generator, ModItems.SOLAR_INGOT);
+        itemModel(generator, ModItems.SOUL_INGOT);
+        itemModel(generator, ModItems.FROST_INGOT);
         
         // bitcoin 추가
         itemModel(generator, ModItems.BITCOIN);
@@ -97,55 +97,55 @@ public class ModModelProvider extends FabricModelProvider
         itemModel(generator, ModItems.RARE_PETBOX);
         itemModel(generator, ModItems.LEGEND_PETBOX);
 
-        armorModel(generator, ModItems.NETHERITE_IRON_HELMET, ModEquipmentAssets.NETHERITE_IRON);
-        armorModel(generator, ModItems.NETHERITE_IRON_CHESTPLATE, ModEquipmentAssets.NETHERITE_IRON);
-        armorModel(generator, ModItems.NETHERITE_IRON_LEGGINGS, ModEquipmentAssets.NETHERITE_IRON);
-        armorModel(generator, ModItems.NETHERITE_IRON_BOOTS, ModEquipmentAssets.NETHERITE_IRON);
+        armorModel(generator, ModItems.ASH_HELMET, ModEquipmentAssets.ASH);
+        armorModel(generator, ModItems.ASH_CHESTPLATE, ModEquipmentAssets.ASH);
+        armorModel(generator, ModItems.ASH_LEGGINGS, ModEquipmentAssets.ASH);
+        armorModel(generator, ModItems.ASH_BOOTS, ModEquipmentAssets.ASH);
 
-        armorModel(generator, ModItems.NETHERITE_GOLD_HELMET, ModEquipmentAssets.NETHERITE_GOLD);
-        armorModel(generator, ModItems.NETHERITE_GOLD_CHESTPLATE, ModEquipmentAssets.NETHERITE_GOLD);
-        armorModel(generator, ModItems.NETHERITE_GOLD_LEGGINGS, ModEquipmentAssets.NETHERITE_GOLD);
-        armorModel(generator, ModItems.NETHERITE_GOLD_BOOTS, ModEquipmentAssets.NETHERITE_GOLD);
+        armorModel(generator, ModItems.SOLAR_HELMET, ModEquipmentAssets.SOLAR);
+        armorModel(generator, ModItems.SOLAR_CHESTPLATE, ModEquipmentAssets.SOLAR);
+        armorModel(generator, ModItems.SOLAR_LEGGINGS, ModEquipmentAssets.SOLAR);
+        armorModel(generator, ModItems.SOLAR_BOOTS, ModEquipmentAssets.SOLAR);
 
-        armorModel(generator, ModItems.NETHERITE_EMERALD_HELMET, ModEquipmentAssets.NETHERITE_EMERALD);
-        armorModel(generator, ModItems.NETHERITE_EMERALD_CHESTPLATE, ModEquipmentAssets.NETHERITE_EMERALD);
-        armorModel(generator, ModItems.NETHERITE_EMERALD_LEGGINGS, ModEquipmentAssets.NETHERITE_EMERALD);
-        armorModel(generator, ModItems.NETHERITE_EMERALD_BOOTS, ModEquipmentAssets.NETHERITE_EMERALD);
+        armorModel(generator, ModItems.SOUL_HELMET, ModEquipmentAssets.SOUL);
+        armorModel(generator, ModItems.SOUL_CHESTPLATE, ModEquipmentAssets.SOUL);
+        armorModel(generator, ModItems.SOUL_LEGGINGS, ModEquipmentAssets.SOUL);
+        armorModel(generator, ModItems.SOUL_BOOTS, ModEquipmentAssets.SOUL);
 
-        armorModel(generator, ModItems.NETHERITE_DIAMOND_HELMET, ModEquipmentAssets.NETHERITE_DIAMOND);
-        armorModel(generator, ModItems.NETHERITE_DIAMOND_CHESTPLATE, ModEquipmentAssets.NETHERITE_DIAMOND);
-        armorModel(generator, ModItems.NETHERITE_DIAMOND_LEGGINGS, ModEquipmentAssets.NETHERITE_DIAMOND);
-        armorModel(generator, ModItems.NETHERITE_DIAMOND_BOOTS, ModEquipmentAssets.NETHERITE_DIAMOND);
+        armorModel(generator, ModItems.FROST_HELMET, ModEquipmentAssets.FROST);
+        armorModel(generator, ModItems.FROST_CHESTPLATE, ModEquipmentAssets.FROST);
+        armorModel(generator, ModItems.FROST_LEGGINGS, ModEquipmentAssets.FROST);
+        armorModel(generator, ModItems.FROST_BOOTS, ModEquipmentAssets.FROST);
 
-        toolModel(generator, ModItems.NETHERITE_IRON_AXE);
-        toolModel(generator, ModItems.NETHERITE_GOLD_AXE);
-        toolModel(generator, ModItems.NETHERITE_EMERALD_AXE);
-        toolModel(generator, ModItems.NETHERITE_DIAMOND_AXE);
+        toolModel(generator, ModItems.ASH_AXE);
+        toolModel(generator, ModItems.SOLAR_AXE);
+        toolModel(generator, ModItems.SOUL_AXE);
+        toolModel(generator, ModItems.FROST_AXE);
 
-        toolModel(generator, ModItems.NETHERITE_IRON_HOE);
-        toolModel(generator, ModItems.NETHERITE_GOLD_HOE);
-        toolModel(generator, ModItems.NETHERITE_EMERALD_HOE);
-        toolModel(generator, ModItems.NETHERITE_DIAMOND_HOE);
+        toolModel(generator, ModItems.ASH_HOE);
+        toolModel(generator, ModItems.SOLAR_HOE);
+        toolModel(generator, ModItems.SOUL_HOE);
+        toolModel(generator, ModItems.FROST_HOE);
 
-        toolModel(generator, ModItems.NETHERITE_IRON_PICKAXE);
-        toolModel(generator, ModItems.NETHERITE_GOLD_PICKAXE);
-        toolModel(generator, ModItems.NETHERITE_EMERALD_PICKAXE);
-        toolModel(generator, ModItems.NETHERITE_DIAMOND_PICKAXE);
+        toolModel(generator, ModItems.ASH_PICKAXE);
+        toolModel(generator, ModItems.SOLAR_PICKAXE);
+        toolModel(generator, ModItems.SOUL_PICKAXE);
+        toolModel(generator, ModItems.FROST_PICKAXE);
 
-        toolModel(generator, ModItems.NETHERITE_IRON_SHOVEL);
-        toolModel(generator, ModItems.NETHERITE_GOLD_SHOVEL);
-        toolModel(generator, ModItems.NETHERITE_EMERALD_SHOVEL);
-        toolModel(generator, ModItems.NETHERITE_DIAMOND_SHOVEL);
+        toolModel(generator, ModItems.ASH_SHOVEL);
+        toolModel(generator, ModItems.SOLAR_SHOVEL);
+        toolModel(generator, ModItems.SOUL_SHOVEL);
+        toolModel(generator, ModItems.FROST_SHOVEL);
 
-        toolModel(generator, ModItems.NETHERITE_IRON_SWORD);
-        toolModel(generator, ModItems.NETHERITE_GOLD_SWORD);
-        toolModel(generator, ModItems.NETHERITE_EMERALD_SWORD);
-        toolModel(generator, ModItems.NETHERITE_DIAMOND_SWORD);
+        toolModel(generator, ModItems.ASH_SWORD);
+        toolModel(generator, ModItems.SOLAR_SWORD);
+        toolModel(generator, ModItems.SOUL_SWORD);
+        toolModel(generator, ModItems.FROST_SWORD);
 
-        spearModel(generator, ModItems.NETHERITE_IRON_SPEAR);
-        spearModel(generator, ModItems.NETHERITE_GOLD_SPEAR);
-        spearModel(generator, ModItems.NETHERITE_EMERALD_SPEAR);
-        spearModel(generator, ModItems.NETHERITE_DIAMOND_SPEAR);
+        spearModel(generator, ModItems.ASH_SPEAR);
+        spearModel(generator, ModItems.SOLAR_SPEAR);
+        spearModel(generator, ModItems.SOUL_SPEAR);
+        spearModel(generator, ModItems.FROST_SPEAR);
     }
 
     public void itemModel(ItemModelGenerators itemModels, Item item)

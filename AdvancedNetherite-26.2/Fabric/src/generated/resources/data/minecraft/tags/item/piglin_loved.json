@@ -1,16 +1,16 @@
 {
   "values": [
-    "advancednetherite:netherite_gold_block",
-    "advancednetherite:netherite_gold_ingot",
-    "advancednetherite:netherite_gold_helmet",
-    "advancednetherite:netherite_gold_chestplate",
-    "advancednetherite:netherite_gold_leggings",
-    "advancednetherite:netherite_gold_boots",
-    "advancednetherite:netherite_gold_axe",
-    "advancednetherite:netherite_gold_hoe",
-    "advancednetherite:netherite_gold_pickaxe",
-    "advancednetherite:netherite_gold_shovel",
-    "advancednetherite:netherite_gold_sword",
-    "advancednetherite:netherite_gold_spear"
+    "advancednetherite:solar_block",
+    "advancednetherite:solar_ingot",
+    "advancednetherite:solar_helmet",
+    "advancednetherite:solar_chestplate",
+    "advancednetherite:solar_leggings",
+    "advancednetherite:solar_boots",
+    "advancednetherite:solar_axe",
+    "advancednetherite:solar_hoe",
+    "advancednetherite:solar_pickaxe",
+    "advancednetherite:solar_shovel",
+    "advancednetherite:solar_sword",
+    "advancednetherite:solar_spear"
   ]
 }

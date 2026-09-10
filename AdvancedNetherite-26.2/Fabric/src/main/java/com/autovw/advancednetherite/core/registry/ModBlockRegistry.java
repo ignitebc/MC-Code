@@ -15,10 +15,10 @@ public final class ModBlockRegistry
 {
     public static void registerBlocks()
     {
-        Registry.register(BuiltInRegistries.BLOCK, id("netherite_iron_block"), ModBlocks.NETHERITE_IRON_BLOCK);
-        Registry.register(BuiltInRegistries.BLOCK, id("netherite_gold_block"), ModBlocks.NETHERITE_GOLD_BLOCK);
-        Registry.register(BuiltInRegistries.BLOCK, id("netherite_emerald_block"), ModBlocks.NETHERITE_EMERALD_BLOCK);
-        Registry.register(BuiltInRegistries.BLOCK, id("netherite_diamond_block"), ModBlocks.NETHERITE_DIAMOND_BLOCK);
+        Registry.register(BuiltInRegistries.BLOCK, id("ash_block"), ModBlocks.ASH_BLOCK);
+        Registry.register(BuiltInRegistries.BLOCK, id("solar_block"), ModBlocks.SOLAR_BLOCK);
+        Registry.register(BuiltInRegistries.BLOCK, id("soul_block"), ModBlocks.SOUL_BLOCK);
+        Registry.register(BuiltInRegistries.BLOCK, id("frost_block"), ModBlocks.FROST_BLOCK);
     }
 
     private static Identifier id(String name)

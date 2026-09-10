@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:nether/obtain_ancient_debris",
+  "criteria": {
+    "ash_ingot": {
+      "conditions": {
+        "items": [
+          {
+            "items": "advancednetherite:ash_ingot"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.advancednetherite.nether.obtain_ash_ingot.description"
+    },
+    "icon": {
+      "id": "advancednetherite:ash_ingot"
+    },
+    "title": {
+      "translate": "advancements.advancednetherite.nether.obtain_ash_ingot.title"
+    }
+  },
+  "requirements": [
+    [
+      "ash_ingot"
+    ]
+  ],
+  "rewards": {
+    "experience": 20
+  },
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,45 @@
+{
+  "parent": "advancednetherite:nether/ash_armor",
+  "criteria": {
+    "solar_armor": {
+      "conditions": {
+        "items": [
+          {
+            "items": "advancednetherite:solar_helmet"
+          },
+          {
+            "items": "advancednetherite:solar_chestplate"
+          },
+          {
+            "items": "advancednetherite:solar_leggings"
+          },
+          {
+            "items": "advancednetherite:solar_boots"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.advancednetherite.nether.solar_armor.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "advancednetherite:solar_chestplate"
+    },
+    "title": {
+      "translate": "advancements.advancednetherite.nether.solar_armor.title"
+    }
+  },
+  "requirements": [
+    [
+      "solar_armor"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  },
+  "sends_telemetry_event": true
+}

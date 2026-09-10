@@ -31,13 +31,13 @@ public class AdvancedUtil
      */
     public static int getArmorDurabilityMultiplier(ArmorMaterial material)
     {
-        if (material == ModArmorMaterials.NETHERITE_IRON)
+        if (material == ModArmorMaterials.ASH)
             return 39;
-        if (material == ModArmorMaterials.NETHERITE_GOLD)
+        if (material == ModArmorMaterials.SOLAR)
             return 41;
-        if (material == ModArmorMaterials.NETHERITE_EMERALD)
+        if (material == ModArmorMaterials.SOUL)
             return 43;
-        if (material == ModArmorMaterials.NETHERITE_DIAMOND)
+        if (material == ModArmorMaterials.FROST)
             return 47;
         return 0;
     }
@@ -57,26 +57,26 @@ public class AdvancedUtil
             // Tools
             if (stack.getItem() instanceof IToolMaterial material)
             {
-                if (material.isMaterial(ModToolMaterials.NETHERITE_IRON))
+                if (material.isMaterial(ModToolMaterials.ASH))
                     newColor = getColor(ChatFormatting.GRAY);
-                if (material.isMaterial(ModToolMaterials.NETHERITE_GOLD))
+                if (material.isMaterial(ModToolMaterials.SOLAR))
                     newColor = getColor(ChatFormatting.GOLD);
-                if (material.isMaterial(ModToolMaterials.NETHERITE_EMERALD))
+                if (material.isMaterial(ModToolMaterials.SOUL))
                     newColor = getColor(ChatFormatting.DARK_GREEN);
-                if (material.isMaterial(ModToolMaterials.NETHERITE_DIAMOND))
+                if (material.isMaterial(ModToolMaterials.FROST))
                     newColor = getColor(ChatFormatting.AQUA);
             }
 
             // Armor
             if (stack.getItem() instanceof IArmorMaterial material)
             {
-                if (material.isMaterial(ModArmorMaterials.NETHERITE_IRON))
+                if (material.isMaterial(ModArmorMaterials.ASH))
                     newColor = getColor(ChatFormatting.GRAY);
-                if (material.isMaterial(ModArmorMaterials.NETHERITE_GOLD))
+                if (material.isMaterial(ModArmorMaterials.SOLAR))
                     newColor = getColor(ChatFormatting.GOLD);
-                if (material.isMaterial(ModArmorMaterials.NETHERITE_EMERALD))
+                if (material.isMaterial(ModArmorMaterials.SOUL))
                     newColor = getColor(ChatFormatting.DARK_GREEN);
-                if (material.isMaterial(ModArmorMaterials.NETHERITE_DIAMOND))
+                if (material.isMaterial(ModArmorMaterials.FROST))
                     newColor = getColor(ChatFormatting.AQUA);
             }
         }
@@ -105,13 +105,13 @@ public class AdvancedUtil
         {
             if (stack.getItem().isCorrectToolForDrops(stack, state))
             {
-                if (material.isMaterial(ModToolMaterials.NETHERITE_IRON))
+                if (material.isMaterial(ModToolMaterials.ASH))
                     newSpeed *= ConfigHelper.get().getServer().getToolProperties().getIronBreakingSpeedMultiplier();
-                if (material.isMaterial(ModToolMaterials.NETHERITE_GOLD))
+                if (material.isMaterial(ModToolMaterials.SOLAR))
                     newSpeed *= ConfigHelper.get().getServer().getToolProperties().getGoldBreakingSpeedMultiplier();
-                if (material.isMaterial(ModToolMaterials.NETHERITE_EMERALD))
+                if (material.isMaterial(ModToolMaterials.SOUL))
                     newSpeed *= ConfigHelper.get().getServer().getToolProperties().getEmeraldBreakingSpeedMultiplier();
-                if (material.isMaterial(ModToolMaterials.NETHERITE_DIAMOND))
+                if (material.isMaterial(ModToolMaterials.FROST))
                     newSpeed *= ConfigHelper.get().getServer().getToolProperties().getDiamondBreakingSpeedMultiplier();
             }
         }

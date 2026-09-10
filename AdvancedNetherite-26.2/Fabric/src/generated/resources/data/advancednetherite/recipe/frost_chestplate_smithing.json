@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "#advancednetherite:upgrade_to_frost",
+  "base": "#advancednetherite:chestplate/upgrade_to_frost",
+  "result": {
+    "id": "advancednetherite:frost_chestplate"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}
