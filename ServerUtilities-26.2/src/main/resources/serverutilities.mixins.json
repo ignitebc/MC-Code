@@ -4,6 +4,7 @@
   "package": "com.mcserver.serverutilities.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "ArmorAttributeLimitMixin",
     "CreeperExplosionDamageMixin",
     "HungerExhaustionMixin",
     "MonsterEquipmentMixin",
