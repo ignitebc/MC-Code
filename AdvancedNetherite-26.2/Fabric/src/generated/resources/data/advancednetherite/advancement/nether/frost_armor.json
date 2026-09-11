@@ -1,0 +1,45 @@
+{
+  "parent": "advancednetherite:nether/soul_armor",
+  "criteria": {
+    "frost_armor": {
+      "conditions": {
+        "items": [
+          {
+            "items": "advancednetherite:frost_helmet"
+          },
+          {
+            "items": "advancednetherite:frost_chestplate"
+          },
+          {
+            "items": "advancednetherite:frost_leggings"
+          },
+          {
+            "items": "advancednetherite:frost_boots"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.advancednetherite.nether.frost_armor.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "advancednetherite:frost_chestplate"
+    },
+    "title": {
+      "translate": "advancements.advancednetherite.nether.frost_armor.title"
+    }
+  },
+  "requirements": [
+    [
+      "frost_armor"
+    ]
+  ],
+  "rewards": {
+    "experience": 200
+  },
+  "sends_telemetry_event": true
+}

@@ -52,6 +52,13 @@ Build_File/.jar-collection-*/
 # 서버 반영용 수정 파일 전달 폴더
 mc수정한파일/
 
+# 문서/데이터 작업 파일 (저장소에 올리지 않음)
+*.xlsx
+*.xls
+*.xlsm
+*.csv
+~$*
+
 # OS
 Thumbs.db
 desktop.ini

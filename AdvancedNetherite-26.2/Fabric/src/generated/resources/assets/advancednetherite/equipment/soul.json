@@ -1,0 +1,19 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "advancednetherite:soul"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "advancednetherite:soul"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "advancednetherite:soul"
+      }
+    ]
+  }
+}

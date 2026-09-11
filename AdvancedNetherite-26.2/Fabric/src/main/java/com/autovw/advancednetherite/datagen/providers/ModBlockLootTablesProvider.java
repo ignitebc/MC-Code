@@ -20,9 +20,9 @@ public class ModBlockLootTablesProvider extends FabricBlockLootSubProvider
     @Override
     public void generate()
     {
-        this.dropSelf(ModBlocks.NETHERITE_IRON_BLOCK);
-        this.dropSelf(ModBlocks.NETHERITE_GOLD_BLOCK);
-        this.dropSelf(ModBlocks.NETHERITE_EMERALD_BLOCK);
-        this.dropSelf(ModBlocks.NETHERITE_DIAMOND_BLOCK);
+        this.dropSelf(ModBlocks.ASH_BLOCK);
+        this.dropSelf(ModBlocks.SUNLIGHT_BLOCK);
+        this.dropSelf(ModBlocks.SOUL_BLOCK);
+        this.dropSelf(ModBlocks.FROST_BLOCK);
     }
 }

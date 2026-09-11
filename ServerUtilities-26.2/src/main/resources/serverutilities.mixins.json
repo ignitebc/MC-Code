@@ -4,9 +4,15 @@
   "package": "com.mcserver.serverutilities.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "ArmorAttributeLimitMixin",
+    "ArmorDamageCurveMixin",
+    "ArmorPrecisionMixin",
     "CreeperExplosionDamageMixin",
+    "EquipmentTierTooltipMixin",
     "HungerExhaustionMixin",
     "MonsterEquipmentMixin",
+    "NetherHostilityMixin",
+    "NetheriteKnockbackMixin",
     "PlayerDeathItemProtectionMixin",
     "ServerPlayerDeathMixin"
   ],

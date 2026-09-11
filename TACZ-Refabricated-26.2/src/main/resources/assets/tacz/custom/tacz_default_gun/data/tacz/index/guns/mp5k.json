@@ -1,0 +1,8 @@
+{
+  "name": "tacz.gun.mp5k.name",
+  "display": "tacz:mp5k_display",
+  "data": "tacz:mp5k_data",
+  "tooltip": "tacz.gun.mp5k.desc",
+  "type": "smg",
+  "sort": 1
+}

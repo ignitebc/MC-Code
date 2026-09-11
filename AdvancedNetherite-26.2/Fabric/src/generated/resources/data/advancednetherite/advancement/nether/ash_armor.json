@@ -1,0 +1,45 @@
+{
+  "parent": "minecraft:nether/netherite_armor",
+  "criteria": {
+    "ash_armor": {
+      "conditions": {
+        "items": [
+          {
+            "items": "advancednetherite:ash_helmet"
+          },
+          {
+            "items": "advancednetherite:ash_chestplate"
+          },
+          {
+            "items": "advancednetherite:ash_leggings"
+          },
+          {
+            "items": "advancednetherite:ash_boots"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.advancednetherite.nether.ash_armor.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "advancednetherite:ash_chestplate"
+    },
+    "title": {
+      "translate": "advancements.advancednetherite.nether.ash_armor.title"
+    }
+  },
+  "requirements": [
+    [
+      "ash_armor"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  },
+  "sends_telemetry_event": true
+}

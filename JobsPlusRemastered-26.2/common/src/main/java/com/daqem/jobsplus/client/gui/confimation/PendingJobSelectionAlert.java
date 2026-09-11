@@ -33,6 +33,18 @@ public class PendingJobSelectionAlert
     }
 
     /**
+     * 보류 중인 직업 선택 완료 알림을 취소한다.
+     * <p>
+     * 서버가 실패 알림을 보냈다는 것은 이번 선택이 성사되지 않았다는 뜻이다. 이때 보류 상태를
+     * 비우지 않으면 나중에 다른 이유로 화면이 갱신될 때 엉뚱한 완료 알림이 뜬다.
+     */
+    public static void clear()
+    {
+        pendingJobLocation = null;
+        pendingJobName = null;
+    }
+
+    /**
      * 갱신된 직업 목록에서 보류 중인 직업이 실제로 선택됐으면 직업명을 돌려주고,
      * 아니면 {@code null}을 돌려준다. 어느 쪽이든 보류 상태는 비운다.
      */

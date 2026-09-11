@@ -13,10 +13,10 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
  */
 public final class ModBlocks
 {
-    public static final Block NETHERITE_IRON_BLOCK = new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(key("netherite_iron_block")));
-    public static final Block NETHERITE_GOLD_BLOCK = new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(key("netherite_gold_block")));
-    public static final Block NETHERITE_EMERALD_BLOCK = new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(key("netherite_emerald_block")));
-    public static final Block NETHERITE_DIAMOND_BLOCK = new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(key("netherite_diamond_block")));
+    public static final Block ASH_BLOCK = new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(key("ash_block")));
+    public static final Block SUNLIGHT_BLOCK = new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(key("sunlight_block")));
+    public static final Block SOUL_BLOCK = new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(key("soul_block")));
+    public static final Block FROST_BLOCK = new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(key("frost_block")));
 
     private static ResourceKey<Block> key(String name)
     {

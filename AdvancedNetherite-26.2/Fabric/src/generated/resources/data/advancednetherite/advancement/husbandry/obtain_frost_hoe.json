@@ -1,0 +1,36 @@
+{
+  "parent": "minecraft:husbandry/obtain_netherite_hoe",
+  "criteria": {
+    "frost_hoe": {
+      "conditions": {
+        "items": [
+          {
+            "items": "advancednetherite:frost_hoe"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.advancednetherite.husbandry.frost_hoe.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "advancednetherite:frost_hoe"
+    },
+    "title": {
+      "translate": "advancements.advancednetherite.husbandry.frost_hoe.title"
+    }
+  },
+  "requirements": [
+    [
+      "frost_hoe"
+    ]
+  ],
+  "rewards": {
+    "experience": 200
+  },
+  "sends_telemetry_event": true
+}

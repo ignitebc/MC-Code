@@ -5,6 +5,7 @@ import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
 import com.mcserver.serverutilities.monster.MonsterEquipmentRules;
 import com.mcserver.serverutilities.config.UtilitiesConfig;
 import com.mcserver.serverutilities.sleep.SleepRuleManager;
+import com.mcserver.serverutilities.tier.EquipmentTierRules;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -51,7 +52,10 @@ public final class ServerUtilities implements ModInitializer {
         });
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> config = UtilitiesConfig.DEFAULT);
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            for (var player : server.getPlayerList().getPlayers()) CombatRules.tick(player);
+            for (var player : server.getPlayerList().getPlayers()) {
+                CombatRules.tick(player);
+                EquipmentTierRules.tick(player);
+            }
         });
         CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) ->
                 dispatcher.register(Commands.literal("serverutilities")
@@ -65,6 +69,8 @@ public final class ServerUtilities implements ModInitializer {
                                     + ", 전투 범위=" + settings.combatRange()
                                     + ", 크리퍼=" + settings.creeperDamage() + " ×" + settings.creeperMultiplier()
                                     + ", 피로도=" + settings.hunger() + " ×" + settings.hungerMultiplier()
+                                    + ", 방어도 곡선=" + settings.armorCurve()
+                                    + ", 장비 등급=" + settings.equipmentTiers()
                                     + ", 사망 손실=" + settings.deathPenalty() + ", 보존권=" + settings.deathProtection()), false);
                             return 1;
                         }))

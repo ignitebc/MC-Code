@@ -1,0 +1,35 @@
+{
+  "parent": "advancednetherite:nether/obtain_ash_ingot",
+  "criteria": {
+    "frost_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": "advancednetherite:frost_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.advancednetherite.nether.obtain_frost_block.description"
+    },
+    "icon": {
+      "id": "advancednetherite:frost_block"
+    },
+    "title": {
+      "translate": "advancements.advancednetherite.nether.obtain_frost_block.title"
+    }
+  },
+  "requirements": [
+    [
+      "frost_block"
+    ]
+  ],
+  "rewards": {
+    "experience": 20
+  },
+  "sends_telemetry_event": true
+}

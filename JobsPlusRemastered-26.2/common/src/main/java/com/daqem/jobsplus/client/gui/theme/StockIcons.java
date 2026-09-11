@@ -15,6 +15,11 @@ public final class StockIcons {
             Collectors.toUnmodifiableMap(StockCatalog.StockDefinition::id,
                     stock -> JobsPlus.getId("stocks/" + stock.id().toLowerCase(Locale.ROOT))));
 
+    // The uploaded company marks are rectangular; preserve their proportions in square UI slots.
+    private static final Map<String, Float> ICON_HEIGHT_RATIOS = Map.of(
+            "009150", 347.0F / 576.0F,
+            "006400", 407.0F / 513.0F);
+
     private StockIcons() {
     }
 
@@ -24,7 +29,10 @@ public final class StockIcons {
         }
         Identifier icon = ICONS.get(stockId);
         if (icon != null) {
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, x, y, size, size);
+            float heightRatio = ICON_HEIGHT_RATIOS.getOrDefault(stockId, 1.0F);
+            int iconHeight = Math.max(1, Math.round(size * heightRatio));
+            int iconY = y + (size - iconHeight) / 2;
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, x, iconY, size, iconHeight);
         }
     }
 }

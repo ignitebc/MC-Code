@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 public final class EventRewardCouponUse
 {
     private static final Identifier EXPERIENCE_DOUBLE_COUPON = Identifier.fromNamespaceAndPath("advancednetherite", "experience_double_coupon");
+    private static final Identifier EXPERIENCE_TRIPLE_COUPON = Identifier.fromNamespaceAndPath("advancednetherite", "experience_triple_coupon");
     private static final Identifier BITCOIN_DOUBLE_COUPON = Identifier.fromNamespaceAndPath("advancednetherite", "bitcoin_double_coupon");
     private static final Identifier BITCOIN_TRIPLE_COUPON = Identifier.fromNamespaceAndPath("advancednetherite", "bitcoin_triple_coupon");
 
@@ -39,7 +40,8 @@ public final class EventRewardCouponUse
             }
 
             Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
-            boolean experienceCoupon = EXPERIENCE_DOUBLE_COUPON.equals(itemId);
+            boolean experienceTripleCoupon = EXPERIENCE_TRIPLE_COUPON.equals(itemId);
+            boolean experienceCoupon = EXPERIENCE_DOUBLE_COUPON.equals(itemId) || experienceTripleCoupon;
             boolean bitcoinTripleCoupon = BITCOIN_TRIPLE_COUPON.equals(itemId);
             boolean bitcoinCoupon = BITCOIN_DOUBLE_COUPON.equals(itemId) || bitcoinTripleCoupon;
             if (!experienceCoupon && !bitcoinCoupon)
@@ -63,8 +65,17 @@ public final class EventRewardCouponUse
             String couponName;
             if (experienceCoupon)
             {
-                expiresAt = ledger.activateExperienceDouble(serverPlayer.getUUID());
-                couponName = "직업 경험치 2배 쿠폰";
+                int multiplier = experienceTripleCoupon ? 3 : 2;
+                expiresAt = experienceTripleCoupon
+                        ? ledger.activateExperienceTriple(serverPlayer.getUUID())
+                        : ledger.activateExperienceDouble(serverPlayer.getUUID());
+                couponName = "직업 경험치 " + multiplier + "배 쿠폰";
+                if (expiresAt == 0L)
+                {
+                    serverPlayer.sendSystemMessage(Component.literal("다른 배율의 경험치 쿠폰 효과가 끝난 후 사용해 주세요."), false);
+                    serverPlayer.getCooldowns().addCooldown(stack, 20);
+                    return EventResult.fromMinecraft(InteractionResult.CONSUME);
+                }
             }
             else
             {

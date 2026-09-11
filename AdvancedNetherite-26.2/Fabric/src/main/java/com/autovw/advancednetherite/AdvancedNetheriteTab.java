@@ -28,84 +28,85 @@ public final class AdvancedNetheriteTab
     {
         ResourceKey<CreativeModeTab> tab = ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "tab"));
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, tab, FabricCreativeModeTab.builder()
-                .icon(ModItems.NETHERITE_GOLD_INGOT::getDefaultInstance)
+                .icon(ModItems.SUNLIGHT_INGOT::getDefaultInstance)
                 .title(Component.translatable("itemGroup." + AdvancedNetherite.MOD_ID + ".tab"))
                 .displayItems((context, entries) ->
                 {
                     // Ingots
-                    entries.accept(ModItems.NETHERITE_IRON_INGOT);
-                    entries.accept(ModItems.NETHERITE_GOLD_INGOT);
-                    entries.accept(ModItems.NETHERITE_EMERALD_INGOT);
-                    entries.accept(ModItems.NETHERITE_DIAMOND_INGOT);
+                    entries.accept(ModItems.ASH_INGOT);
+                    entries.accept(ModItems.SUNLIGHT_INGOT);
+                    entries.accept(ModItems.SOUL_INGOT);
+                    entries.accept(ModItems.FROST_INGOT);
 
                     // Armor
-                    entries.accept(ModItems.NETHERITE_IRON_HELMET);
-                    entries.accept(ModItems.NETHERITE_IRON_CHESTPLATE);
-                    entries.accept(ModItems.NETHERITE_IRON_LEGGINGS);
-                    entries.accept(ModItems.NETHERITE_IRON_BOOTS);
+                    entries.accept(ModItems.ASH_HELMET);
+                    entries.accept(ModItems.ASH_CHESTPLATE);
+                    entries.accept(ModItems.ASH_LEGGINGS);
+                    entries.accept(ModItems.ASH_BOOTS);
 
-                    entries.accept(ModItems.NETHERITE_GOLD_HELMET);
-                    entries.accept(ModItems.NETHERITE_GOLD_CHESTPLATE);
-                    entries.accept(ModItems.NETHERITE_GOLD_LEGGINGS);
-                    entries.accept(ModItems.NETHERITE_GOLD_BOOTS);
+                    entries.accept(ModItems.SUNLIGHT_HELMET);
+                    entries.accept(ModItems.SUNLIGHT_CHESTPLATE);
+                    entries.accept(ModItems.SUNLIGHT_LEGGINGS);
+                    entries.accept(ModItems.SUNLIGHT_BOOTS);
 
-                    entries.accept(ModItems.NETHERITE_EMERALD_HELMET);
-                    entries.accept(ModItems.NETHERITE_EMERALD_CHESTPLATE);
-                    entries.accept(ModItems.NETHERITE_EMERALD_LEGGINGS);
-                    entries.accept(ModItems.NETHERITE_EMERALD_BOOTS);
+                    entries.accept(ModItems.SOUL_HELMET);
+                    entries.accept(ModItems.SOUL_CHESTPLATE);
+                    entries.accept(ModItems.SOUL_LEGGINGS);
+                    entries.accept(ModItems.SOUL_BOOTS);
 
-                    entries.accept(ModItems.NETHERITE_DIAMOND_HELMET);
-                    entries.accept(ModItems.NETHERITE_DIAMOND_CHESTPLATE);
-                    entries.accept(ModItems.NETHERITE_DIAMOND_LEGGINGS);
-                    entries.accept(ModItems.NETHERITE_DIAMOND_BOOTS);
+                    entries.accept(ModItems.FROST_HELMET);
+                    entries.accept(ModItems.FROST_CHESTPLATE);
+                    entries.accept(ModItems.FROST_LEGGINGS);
+                    entries.accept(ModItems.FROST_BOOTS);
 
                     // Axes
-                    entries.accept(ModItems.NETHERITE_IRON_AXE);
-                    entries.accept(ModItems.NETHERITE_GOLD_AXE);
-                    entries.accept(ModItems.NETHERITE_EMERALD_AXE);
-                    entries.accept(ModItems.NETHERITE_DIAMOND_AXE);
+                    entries.accept(ModItems.ASH_AXE);
+                    entries.accept(ModItems.SUNLIGHT_AXE);
+                    entries.accept(ModItems.SOUL_AXE);
+                    entries.accept(ModItems.FROST_AXE);
 
                     // Hoes
-                    entries.accept(ModItems.NETHERITE_IRON_HOE);
-                    entries.accept(ModItems.NETHERITE_GOLD_HOE);
-                    entries.accept(ModItems.NETHERITE_EMERALD_HOE);
-                    entries.accept(ModItems.NETHERITE_DIAMOND_HOE);
+                    entries.accept(ModItems.ASH_HOE);
+                    entries.accept(ModItems.SUNLIGHT_HOE);
+                    entries.accept(ModItems.SOUL_HOE);
+                    entries.accept(ModItems.FROST_HOE);
 
                     // Pickaxes
-                    entries.accept(ModItems.NETHERITE_IRON_PICKAXE);
-                    entries.accept(ModItems.NETHERITE_GOLD_PICKAXE);
-                    entries.accept(ModItems.NETHERITE_EMERALD_PICKAXE);
-                    entries.accept(ModItems.NETHERITE_DIAMOND_PICKAXE);
+                    entries.accept(ModItems.ASH_PICKAXE);
+                    entries.accept(ModItems.SUNLIGHT_PICKAXE);
+                    entries.accept(ModItems.SOUL_PICKAXE);
+                    entries.accept(ModItems.FROST_PICKAXE);
 
                     // Shovels
-                    entries.accept(ModItems.NETHERITE_IRON_SHOVEL);
-                    entries.accept(ModItems.NETHERITE_GOLD_SHOVEL);
-                    entries.accept(ModItems.NETHERITE_EMERALD_SHOVEL);
-                    entries.accept(ModItems.NETHERITE_DIAMOND_SHOVEL);
+                    entries.accept(ModItems.ASH_SHOVEL);
+                    entries.accept(ModItems.SUNLIGHT_SHOVEL);
+                    entries.accept(ModItems.SOUL_SHOVEL);
+                    entries.accept(ModItems.FROST_SHOVEL);
 
                     // Swords
-                    entries.accept(ModItems.NETHERITE_IRON_SWORD);
-                    entries.accept(ModItems.NETHERITE_GOLD_SWORD);
-                    entries.accept(ModItems.NETHERITE_EMERALD_SWORD);
-                    entries.accept(ModItems.NETHERITE_DIAMOND_SWORD);
+                    entries.accept(ModItems.ASH_SWORD);
+                    entries.accept(ModItems.SUNLIGHT_SWORD);
+                    entries.accept(ModItems.SOUL_SWORD);
+                    entries.accept(ModItems.FROST_SWORD);
 
                     // Spears
-                    entries.accept(ModItems.NETHERITE_IRON_SPEAR);
-                    entries.accept(ModItems.NETHERITE_GOLD_SPEAR);
-                    entries.accept(ModItems.NETHERITE_EMERALD_SPEAR);
-                    entries.accept(ModItems.NETHERITE_DIAMOND_SPEAR);
+                    entries.accept(ModItems.ASH_SPEAR);
+                    entries.accept(ModItems.SUNLIGHT_SPEAR);
+                    entries.accept(ModItems.SOUL_SPEAR);
+                    entries.accept(ModItems.FROST_SPEAR);
 
                     // Blocks
-                    entries.accept(ModItems.NETHERITE_IRON_BLOCK);
-                    entries.accept(ModItems.NETHERITE_GOLD_BLOCK);
-                    entries.accept(ModItems.NETHERITE_EMERALD_BLOCK);
-                    entries.accept(ModItems.NETHERITE_DIAMOND_BLOCK);
+                    entries.accept(ModItems.ASH_BLOCK);
+                    entries.accept(ModItems.SUNLIGHT_BLOCK);
+                    entries.accept(ModItems.SOUL_BLOCK);
+                    entries.accept(ModItems.FROST_BLOCK);
 
                     // BitCoin
                     entries.accept(ModItems.BITCOIN);
 
                     // Reward coupons
                     entries.accept(ModRewardCouponItems.EXPERIENCE_DOUBLE_COUPON);
+                    entries.accept(ModRewardCouponItems.EXPERIENCE_TRIPLE_COUPON);
                     entries.accept(ModRewardCouponItems.BITCOIN_DOUBLE_COUPON);
                     entries.accept(ModRewardCouponItems.BITCOIN_TRIPLE_COUPON);
 

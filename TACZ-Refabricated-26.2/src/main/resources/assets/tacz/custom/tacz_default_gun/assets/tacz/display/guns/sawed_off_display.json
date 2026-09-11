@@ -1,0 +1,47 @@
+{
+  "state_machine": "tacz:sawed_off_state_machine",
+  "model": "tacz:gun/sawed_off_geo",
+  "texture": "tacz:gun/uv/sawed_off",
+  "lod": {
+    "model": "tacz:gun/lod/sawed_off",
+    "texture": "tacz:gun/lod/sawed_off"
+  },
+  "hud": "tacz:gun/hud/sawed_off",
+  "slot": "tacz:gun/slot/sawed_off",
+  "animation": "tacz:sawed_off",
+  "use_default_animation": "rifle",
+  "third_person_animation": "default",
+  "transform": {
+    "scale": {
+      "thirdperson": [0.6, 0.6, 0.6],
+      "ground": [0.6, 0.6, 0.6],
+      "fixed": [1.2, 1.2, 1.2]
+    }
+  },
+  "muzzle_flash": {
+    "texture": "tacz:flash/common_muzzle_flash",
+    "scale": 0.75
+  },
+  "sounds": {
+    "reload_empty": "tacz:sawed_off/sawed_off_reload_empty",
+    "reload_tactical": "tacz:sawed_off/sawed_off_reload_tactical",
+    "inspect": "tacz:sawed_off/sawed_off_inspect",
+    "inspect_empty": "tacz:sawed_off/sawed_off_inspect_empty",
+    "draw": "tacz:sawed_off/sawed_off_draw",
+    "put_away": "tacz:sawed_off/sawed_off_put_away",
+    "shoot": "tacz:sawed_off/sawed_off_shoot",
+    "shoot_3p": "tacz:sawed_off/sawed_off_shoot_3p"
+  },
+  "offhand_show": {
+    "pos": [1, 22, 4],
+    "rotate": [0, 0, 60],
+    "scale": [0.5, 0.5, 0.5]
+  },
+  "hotbar_show": {
+    "0": {
+      "pos": [-1, 22, 3],
+      "rotate": [-180, 0, 120],
+      "scale": [0.5, 0.5, 0.5]
+    }
+  }
+}

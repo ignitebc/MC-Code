@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_sunlight_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": "advancednetherite:sunlight_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "advancednetherite:sunlight_ingot_from_block"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_sunlight_block"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "advancednetherite:sunlight_ingot_from_block"
+    ]
+  }
+}

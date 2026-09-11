@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_frost_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": "advancednetherite:frost_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "advancednetherite:frost_ingot_from_block"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_frost_block"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "advancednetherite:frost_ingot_from_block"
+    ]
+  }
+}

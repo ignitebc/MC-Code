@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "advancednetherite:soul_block"
+  ],
+  "result": {
+    "count": 9,
+    "id": "advancednetherite:soul_ingot"
+  }
+}

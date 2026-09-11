@@ -1,0 +1,45 @@
+{
+  "parent": "advancednetherite:nether/sunlight_armor",
+  "criteria": {
+    "soul_armor": {
+      "conditions": {
+        "items": [
+          {
+            "items": "advancednetherite:soul_helmet"
+          },
+          {
+            "items": "advancednetherite:soul_chestplate"
+          },
+          {
+            "items": "advancednetherite:soul_leggings"
+          },
+          {
+            "items": "advancednetherite:soul_boots"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.advancednetherite.nether.soul_armor.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "advancednetherite:soul_chestplate"
+    },
+    "title": {
+      "translate": "advancements.advancednetherite.nether.soul_armor.title"
+    }
+  },
+  "requirements": [
+    [
+      "soul_armor"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  },
+  "sends_telemetry_event": true
+}

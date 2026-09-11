@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "#advancednetherite:upgrade_to_frost",
+  "base": "#advancednetherite:hoe/upgrade_to_frost",
+  "result": {
+    "id": "advancednetherite:frost_hoe"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

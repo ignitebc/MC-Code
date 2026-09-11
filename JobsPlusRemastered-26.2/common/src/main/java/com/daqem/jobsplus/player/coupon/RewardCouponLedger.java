@@ -24,9 +24,10 @@ public final class RewardCouponLedger extends SavedData
 
     private static final Identifier FILE_ID = JobsPlus.getId("reward_coupons");
 
-    public record CouponState(long experienceDoubleExpiresAt, long bitcoinDoubleExpiresAt, long bitcoinTripleExpiresAt)
+    public record CouponState(long experienceDoubleExpiresAt, long bitcoinDoubleExpiresAt, long bitcoinTripleExpiresAt,
+                              long experienceTripleExpiresAt)
     {
-        private static final CouponState EMPTY = new CouponState(0L, 0L, 0L);
+        private static final CouponState EMPTY = new CouponState(0L, 0L, 0L, 0L);
 
         public static final Codec<CouponState> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.LONG.optionalFieldOf("experience_double_expires_at", 0L)
@@ -34,7 +35,10 @@ public final class RewardCouponLedger extends SavedData
                 Codec.LONG.optionalFieldOf("bitcoin_double_expires_at", 0L)
                         .forGetter(CouponState::bitcoinDoubleExpiresAt),
                 Codec.LONG.optionalFieldOf("bitcoin_triple_expires_at", 0L)
-                        .forGetter(CouponState::bitcoinTripleExpiresAt)
+                        .forGetter(CouponState::bitcoinTripleExpiresAt),
+                // 기존 저장 데이터에는 이 필드가 없으므로 비활성 상태로 읽는다.
+                Codec.LONG.optionalFieldOf("experience_triple_expires_at", 0L)
+                        .forGetter(CouponState::experienceTripleExpiresAt)
         ).apply(instance, CouponState::new));
     }
 
@@ -72,6 +76,13 @@ public final class RewardCouponLedger extends SavedData
         return getExperienceDoubleRemainingMillis(playerId, System.currentTimeMillis()) > 0L;
     }
 
+    public int getExperienceMultiplier(UUID playerId)
+    {
+        long now = System.currentTimeMillis();
+        if (getExperienceTripleRemainingMillis(playerId, now) > 0L) return 3;
+        return getExperienceDoubleRemainingMillis(playerId, now) > 0L ? 2 : 1;
+    }
+
     public boolean isBitcoinDoubleActive(UUID playerId)
     {
         return getBitcoinDoubleRemainingMillis(playerId, System.currentTimeMillis()) > 0L;
@@ -89,6 +100,11 @@ public final class RewardCouponLedger extends SavedData
         return getRemainingMillis(getState(playerId).experienceDoubleExpiresAt(), now);
     }
 
+    public long getExperienceTripleRemainingMillis(UUID playerId, long now)
+    {
+        return getRemainingMillis(getState(playerId).experienceTripleExpiresAt(), now);
+    }
+
     public long getBitcoinDoubleRemainingMillis(UUID playerId, long now)
     {
         return getRemainingMillis(getState(playerId).bitcoinDoubleExpiresAt(), now);
@@ -101,10 +117,30 @@ public final class RewardCouponLedger extends SavedData
 
     public long activateExperienceDouble(UUID playerId)
     {
+        return activateExperience(playerId, 2);
+    }
+
+    public long activateExperienceTriple(UUID playerId)
+    {
+        return activateExperience(playerId, 3);
+    }
+
+    private long activateExperience(UUID playerId, int multiplier)
+    {
         long now = System.currentTimeMillis();
         CouponState state = getState(playerId);
-        long expiresAt = extend(state.experienceDoubleExpiresAt(), now);
-        this.states.put(playerId, new CouponState(expiresAt, state.bitcoinDoubleExpiresAt(), state.bitcoinTripleExpiresAt()));
+        long otherExpiresAt = multiplier == 2 ? state.experienceTripleExpiresAt() : state.experienceDoubleExpiresAt();
+        if (otherExpiresAt > now)
+        {
+            // 배율 교체로 기존 시간을 승급하거나 2×3배로 중첩하는 것을 막는다.
+            return 0L;
+        }
+        long currentExpiresAt = multiplier == 2 ? state.experienceDoubleExpiresAt() : state.experienceTripleExpiresAt();
+        long expiresAt = extend(currentExpiresAt, now);
+        this.states.put(playerId, new CouponState(
+                multiplier == 2 ? expiresAt : state.experienceDoubleExpiresAt(),
+                state.bitcoinDoubleExpiresAt(), state.bitcoinTripleExpiresAt(),
+                multiplier == 3 ? expiresAt : state.experienceTripleExpiresAt()));
         this.setDirty();
         return expiresAt;
     }
@@ -133,7 +169,8 @@ public final class RewardCouponLedger extends SavedData
         long expiresAt = extend(currentExpiresAt, now);
         this.states.put(playerId, new CouponState(state.experienceDoubleExpiresAt(),
                 multiplier == 2 ? expiresAt : state.bitcoinDoubleExpiresAt(),
-                multiplier == 3 ? expiresAt : state.bitcoinTripleExpiresAt()));
+                multiplier == 3 ? expiresAt : state.bitcoinTripleExpiresAt(),
+                state.experienceTripleExpiresAt()));
         this.setDirty();
         return expiresAt;
     }

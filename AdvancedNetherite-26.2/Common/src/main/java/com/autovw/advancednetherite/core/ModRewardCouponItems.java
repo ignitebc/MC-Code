@@ -17,6 +17,11 @@ public final class ModRewardCouponItems
             new Item.Properties().setId(key("experience_double_coupon")),
             RewardCouponItem.CouponType.EXPERIENCE
     );
+    public static final RewardCouponItem EXPERIENCE_TRIPLE_COUPON = new RewardCouponItem(
+            new Item.Properties().setId(key("experience_triple_coupon")),
+            RewardCouponItem.CouponType.EXPERIENCE,
+            3
+    );
     public static final RewardCouponItem BITCOIN_DOUBLE_COUPON = new RewardCouponItem(
             new Item.Properties().setId(key("bitcoin_double_coupon")),
             RewardCouponItem.CouponType.BITCOIN

@@ -17,10 +17,10 @@ public final class ModEquipmentAssets
 {
     private static final ResourceKey<? extends Registry<EquipmentAsset>> ROOT_ID = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("equipment_asset"));
 
-    public static final ResourceKey<EquipmentAsset> NETHERITE_IRON = id("netherite_iron");
-    public static final ResourceKey<EquipmentAsset> NETHERITE_GOLD = id("netherite_gold");
-    public static final ResourceKey<EquipmentAsset> NETHERITE_EMERALD = id("netherite_emerald");
-    public static final ResourceKey<EquipmentAsset> NETHERITE_DIAMOND = id("netherite_diamond");
+    public static final ResourceKey<EquipmentAsset> ASH = id("ash");
+    public static final ResourceKey<EquipmentAsset> SUNLIGHT = id("sunlight");
+    public static final ResourceKey<EquipmentAsset> SOUL = id("soul");
+    public static final ResourceKey<EquipmentAsset> FROST = id("frost");
 
     private static ResourceKey<EquipmentAsset> id(String name)
     {
@@ -29,10 +29,10 @@ public final class ModEquipmentAssets
 
     public static void bootstrap(BiConsumer<ResourceKey<EquipmentAsset>, EquipmentClientInfo> consumer)
     {
-        consumer.accept(ModEquipmentAssets.NETHERITE_IRON, onlyHumanoid("netherite_iron"));
-        consumer.accept(ModEquipmentAssets.NETHERITE_GOLD, onlyHumanoid("netherite_gold"));
-        consumer.accept(ModEquipmentAssets.NETHERITE_EMERALD, onlyHumanoid("netherite_emerald"));
-        consumer.accept(ModEquipmentAssets.NETHERITE_DIAMOND, onlyHumanoid("netherite_diamond"));
+        consumer.accept(ModEquipmentAssets.ASH, onlyHumanoid("ash"));
+        consumer.accept(ModEquipmentAssets.SUNLIGHT, onlyHumanoid("sunlight"));
+        consumer.accept(ModEquipmentAssets.SOUL, onlyHumanoid("soul"));
+        consumer.accept(ModEquipmentAssets.FROST, onlyHumanoid("frost"));
     }
 
     private static EquipmentClientInfo onlyHumanoid(String name)

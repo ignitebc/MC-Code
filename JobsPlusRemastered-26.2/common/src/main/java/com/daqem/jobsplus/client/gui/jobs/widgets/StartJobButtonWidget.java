@@ -33,13 +33,13 @@ public class StartJobButtonWidget extends CustomButtonWidget {
 
                     // maxJobs는 서버가 내려준 "유효 최대 직업 수" (무료 2 + 티켓 누적, 단 상한 8)
                     if (activeJobCount >= state.getMaxJobs()) {
+                        // 알릴 내용만 있으므로 예/취소가 아니라 닫기 버튼 하나인 알림으로 띄운다.
                         Minecraft.getInstance().gui.setScreen(
                                 new ConfirmationScreen(
                                         Minecraft.getInstance().gui.screen(),
-                                        new ConfirmationScreenState(
+                                        ConfirmationScreenState.alert(
                                                 JobsPlus.translatable("gui.jobs.max_jobs", state.getMaxJobs()),
-                                                () -> {
-                                                })));
+                                                JobsPlus.translatable("gui.confirmation.ok"))));
                         return;
                     }
 

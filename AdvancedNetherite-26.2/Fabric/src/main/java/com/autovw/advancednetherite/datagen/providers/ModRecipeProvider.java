@@ -40,76 +40,76 @@ public class ModRecipeProvider extends FabricRecipeProvider
             {
                 HolderLookup.RegistryLookup<Item> registryLookup = provider.lookupOrThrow(Registries.ITEM);
                 /* Blocks */
-                baseBlockRecipe(registryLookup, output, ModItems.NETHERITE_IRON_INGOT, ModBlocks.NETHERITE_IRON_BLOCK);
-                baseBlockRecipe(registryLookup, output, ModItems.NETHERITE_GOLD_INGOT, ModBlocks.NETHERITE_GOLD_BLOCK);
-                baseBlockRecipe(registryLookup, output, ModItems.NETHERITE_EMERALD_INGOT, ModBlocks.NETHERITE_EMERALD_BLOCK);
-                baseBlockRecipe(registryLookup, output, ModItems.NETHERITE_DIAMOND_INGOT, ModBlocks.NETHERITE_DIAMOND_BLOCK);
+                baseBlockRecipe(registryLookup, output, ModItems.ASH_INGOT, ModBlocks.ASH_BLOCK);
+                baseBlockRecipe(registryLookup, output, ModItems.SUNLIGHT_INGOT, ModBlocks.SUNLIGHT_BLOCK);
+                baseBlockRecipe(registryLookup, output, ModItems.SOUL_INGOT, ModBlocks.SOUL_BLOCK);
+                baseBlockRecipe(registryLookup, output, ModItems.FROST_INGOT, ModBlocks.FROST_BLOCK);
 
                 /* Ingots */
-                baseIngotRecipe(registryLookup, output, ModTags.INGOTS_UPGRADE_TO_NETHERITE_IRON, Items.IRON_INGOT, ModItems.NETHERITE_IRON_INGOT);
-                baseIngotRecipe(registryLookup, output, ModTags.INGOTS_UPGRADE_TO_NETHERITE_GOLD, Items.GOLD_INGOT, ModItems.NETHERITE_GOLD_INGOT);
-                baseIngotRecipe(registryLookup, output, ModTags.INGOTS_UPGRADE_TO_NETHERITE_EMERALD, Items.EMERALD, ModItems.NETHERITE_EMERALD_INGOT);
-                baseIngotRecipe(registryLookup, output, ModTags.INGOTS_UPGRADE_TO_NETHERITE_DIAMOND, Items.DIAMOND, ModItems.NETHERITE_DIAMOND_INGOT);
+                baseIngotRecipe(registryLookup, output, ModTags.INGOTS_UPGRADE_TO_ASH, Items.IRON_INGOT, ModItems.ASH_INGOT);
+                baseIngotRecipe(registryLookup, output, ModTags.INGOTS_UPGRADE_TO_SUNLIGHT, Items.GOLD_INGOT, ModItems.SUNLIGHT_INGOT);
+                baseIngotRecipe(registryLookup, output, ModTags.INGOTS_UPGRADE_TO_SOUL, Items.EMERALD, ModItems.SOUL_INGOT);
+                baseIngotRecipe(registryLookup, output, ModTags.INGOTS_UPGRADE_TO_FROST, Items.DIAMOND, ModItems.FROST_INGOT);
 
                 /* Axes */
-                baseSmithingRecipe(registryLookup, output, ModTags.AXE_UPGRADE_TO_NETHERITE_IRON, ModTags.UPGRADE_TO_NETHERITE_IRON, ModItems.NETHERITE_IRON_AXE);
-                baseSmithingRecipe(registryLookup, output, ModTags.AXE_UPGRADE_TO_NETHERITE_GOLD, ModTags.UPGRADE_TO_NETHERITE_GOLD, ModItems.NETHERITE_GOLD_AXE);
-                baseSmithingRecipe(registryLookup, output, ModTags.AXE_UPGRADE_TO_NETHERITE_EMERALD, ModTags.UPGRADE_TO_NETHERITE_EMERALD, ModItems.NETHERITE_EMERALD_AXE);
-                baseSmithingRecipe(registryLookup, output, ModTags.AXE_UPGRADE_TO_NETHERITE_DIAMOND, ModTags.UPGRADE_TO_NETHERITE_DIAMOND, ModItems.NETHERITE_DIAMOND_AXE);
+                baseSmithingRecipe(registryLookup, output, ModTags.AXE_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_AXE);
+                baseSmithingRecipe(registryLookup, output, ModTags.AXE_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_AXE);
+                baseSmithingRecipe(registryLookup, output, ModTags.AXE_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_AXE);
+                baseSmithingRecipe(registryLookup, output, ModTags.AXE_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_AXE);
 
                 /* Boots */
-                baseSmithingRecipe(registryLookup, output, ModTags.BOOTS_UPGRADE_TO_NETHERITE_IRON, ModTags.UPGRADE_TO_NETHERITE_IRON, ModItems.NETHERITE_IRON_BOOTS);
-                baseSmithingRecipe(registryLookup, output, ModTags.BOOTS_UPGRADE_TO_NETHERITE_GOLD, ModTags.UPGRADE_TO_NETHERITE_GOLD, ModItems.NETHERITE_GOLD_BOOTS);
-                baseSmithingRecipe(registryLookup, output, ModTags.BOOTS_UPGRADE_TO_NETHERITE_EMERALD, ModTags.UPGRADE_TO_NETHERITE_EMERALD, ModItems.NETHERITE_EMERALD_BOOTS);
-                baseSmithingRecipe(registryLookup, output, ModTags.BOOTS_UPGRADE_TO_NETHERITE_DIAMOND, ModTags.UPGRADE_TO_NETHERITE_DIAMOND, ModItems.NETHERITE_DIAMOND_BOOTS);
+                baseSmithingRecipe(registryLookup, output, ModTags.BOOTS_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_BOOTS);
+                baseSmithingRecipe(registryLookup, output, ModTags.BOOTS_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_BOOTS);
+                baseSmithingRecipe(registryLookup, output, ModTags.BOOTS_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_BOOTS);
+                baseSmithingRecipe(registryLookup, output, ModTags.BOOTS_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_BOOTS);
 
                 /* Chestplates */
-                baseSmithingRecipe(registryLookup, output, ModTags.CHESTPLATE_UPGRADE_TO_NETHERITE_IRON, ModTags.UPGRADE_TO_NETHERITE_IRON, ModItems.NETHERITE_IRON_CHESTPLATE);
-                baseSmithingRecipe(registryLookup, output, ModTags.CHESTPLATE_UPGRADE_TO_NETHERITE_GOLD, ModTags.UPGRADE_TO_NETHERITE_GOLD, ModItems.NETHERITE_GOLD_CHESTPLATE);
-                baseSmithingRecipe(registryLookup, output, ModTags.CHESTPLATE_UPGRADE_TO_NETHERITE_EMERALD, ModTags.UPGRADE_TO_NETHERITE_EMERALD, ModItems.NETHERITE_EMERALD_CHESTPLATE);
-                baseSmithingRecipe(registryLookup, output, ModTags.CHESTPLATE_UPGRADE_TO_NETHERITE_DIAMOND, ModTags.UPGRADE_TO_NETHERITE_DIAMOND, ModItems.NETHERITE_DIAMOND_CHESTPLATE);
+                baseSmithingRecipe(registryLookup, output, ModTags.CHESTPLATE_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_CHESTPLATE);
+                baseSmithingRecipe(registryLookup, output, ModTags.CHESTPLATE_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_CHESTPLATE);
+                baseSmithingRecipe(registryLookup, output, ModTags.CHESTPLATE_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_CHESTPLATE);
+                baseSmithingRecipe(registryLookup, output, ModTags.CHESTPLATE_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_CHESTPLATE);
 
                 /* Helmets */
-                baseSmithingRecipe(registryLookup, output, ModTags.HELMET_UPGRADE_TO_NETHERITE_IRON, ModTags.UPGRADE_TO_NETHERITE_IRON, ModItems.NETHERITE_IRON_HELMET);
-                baseSmithingRecipe(registryLookup, output, ModTags.HELMET_UPGRADE_TO_NETHERITE_GOLD, ModTags.UPGRADE_TO_NETHERITE_GOLD, ModItems.NETHERITE_GOLD_HELMET);
-                baseSmithingRecipe(registryLookup, output, ModTags.HELMET_UPGRADE_TO_NETHERITE_EMERALD, ModTags.UPGRADE_TO_NETHERITE_EMERALD, ModItems.NETHERITE_EMERALD_HELMET);
-                baseSmithingRecipe(registryLookup, output, ModTags.HELMET_UPGRADE_TO_NETHERITE_DIAMOND, ModTags.UPGRADE_TO_NETHERITE_DIAMOND, ModItems.NETHERITE_DIAMOND_HELMET);
+                baseSmithingRecipe(registryLookup, output, ModTags.HELMET_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_HELMET);
+                baseSmithingRecipe(registryLookup, output, ModTags.HELMET_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_HELMET);
+                baseSmithingRecipe(registryLookup, output, ModTags.HELMET_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_HELMET);
+                baseSmithingRecipe(registryLookup, output, ModTags.HELMET_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_HELMET);
 
                 /* Hoes */
-                baseSmithingRecipe(registryLookup, output, ModTags.HOE_UPGRADE_TO_NETHERITE_IRON, ModTags.UPGRADE_TO_NETHERITE_IRON, ModItems.NETHERITE_IRON_HOE);
-                baseSmithingRecipe(registryLookup, output, ModTags.HOE_UPGRADE_TO_NETHERITE_GOLD, ModTags.UPGRADE_TO_NETHERITE_GOLD, ModItems.NETHERITE_GOLD_HOE);
-                baseSmithingRecipe(registryLookup, output, ModTags.HOE_UPGRADE_TO_NETHERITE_EMERALD, ModTags.UPGRADE_TO_NETHERITE_EMERALD, ModItems.NETHERITE_EMERALD_HOE);
-                baseSmithingRecipe(registryLookup, output, ModTags.HOE_UPGRADE_TO_NETHERITE_DIAMOND, ModTags.UPGRADE_TO_NETHERITE_DIAMOND, ModItems.NETHERITE_DIAMOND_HOE);
+                baseSmithingRecipe(registryLookup, output, ModTags.HOE_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_HOE);
+                baseSmithingRecipe(registryLookup, output, ModTags.HOE_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_HOE);
+                baseSmithingRecipe(registryLookup, output, ModTags.HOE_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_HOE);
+                baseSmithingRecipe(registryLookup, output, ModTags.HOE_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_HOE);
 
                 /* Leggings */
-                baseSmithingRecipe(registryLookup, output, ModTags.LEGGINGS_UPGRADE_TO_NETHERITE_IRON, ModTags.UPGRADE_TO_NETHERITE_IRON, ModItems.NETHERITE_IRON_LEGGINGS);
-                baseSmithingRecipe(registryLookup, output, ModTags.LEGGINGS_UPGRADE_TO_NETHERITE_GOLD, ModTags.UPGRADE_TO_NETHERITE_GOLD, ModItems.NETHERITE_GOLD_LEGGINGS);
-                baseSmithingRecipe(registryLookup, output, ModTags.LEGGINGS_UPGRADE_TO_NETHERITE_EMERALD, ModTags.UPGRADE_TO_NETHERITE_EMERALD, ModItems.NETHERITE_EMERALD_LEGGINGS);
-                baseSmithingRecipe(registryLookup, output, ModTags.LEGGINGS_UPGRADE_TO_NETHERITE_DIAMOND, ModTags.UPGRADE_TO_NETHERITE_DIAMOND, ModItems.NETHERITE_DIAMOND_LEGGINGS);
+                baseSmithingRecipe(registryLookup, output, ModTags.LEGGINGS_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_LEGGINGS);
+                baseSmithingRecipe(registryLookup, output, ModTags.LEGGINGS_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_LEGGINGS);
+                baseSmithingRecipe(registryLookup, output, ModTags.LEGGINGS_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_LEGGINGS);
+                baseSmithingRecipe(registryLookup, output, ModTags.LEGGINGS_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_LEGGINGS);
 
                 /* Pickaxes */
-                baseSmithingRecipe(registryLookup, output, ModTags.PICKAXE_UPGRADE_TO_NETHERITE_IRON, ModTags.UPGRADE_TO_NETHERITE_IRON, ModItems.NETHERITE_IRON_PICKAXE);
-                baseSmithingRecipe(registryLookup, output, ModTags.PICKAXE_UPGRADE_TO_NETHERITE_GOLD, ModTags.UPGRADE_TO_NETHERITE_GOLD, ModItems.NETHERITE_GOLD_PICKAXE);
-                baseSmithingRecipe(registryLookup, output, ModTags.PICKAXE_UPGRADE_TO_NETHERITE_EMERALD, ModTags.UPGRADE_TO_NETHERITE_EMERALD, ModItems.NETHERITE_EMERALD_PICKAXE);
-                baseSmithingRecipe(registryLookup, output, ModTags.PICKAXE_UPGRADE_TO_NETHERITE_DIAMOND, ModTags.UPGRADE_TO_NETHERITE_DIAMOND, ModItems.NETHERITE_DIAMOND_PICKAXE);
+                baseSmithingRecipe(registryLookup, output, ModTags.PICKAXE_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_PICKAXE);
+                baseSmithingRecipe(registryLookup, output, ModTags.PICKAXE_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_PICKAXE);
+                baseSmithingRecipe(registryLookup, output, ModTags.PICKAXE_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_PICKAXE);
+                baseSmithingRecipe(registryLookup, output, ModTags.PICKAXE_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_PICKAXE);
 
                 /* Shovels */
-                baseSmithingRecipe(registryLookup, output, ModTags.SHOVEL_UPGRADE_TO_NETHERITE_IRON, ModTags.UPGRADE_TO_NETHERITE_IRON, ModItems.NETHERITE_IRON_SHOVEL);
-                baseSmithingRecipe(registryLookup, output, ModTags.SHOVEL_UPGRADE_TO_NETHERITE_GOLD, ModTags.UPGRADE_TO_NETHERITE_GOLD, ModItems.NETHERITE_GOLD_SHOVEL);
-                baseSmithingRecipe(registryLookup, output, ModTags.SHOVEL_UPGRADE_TO_NETHERITE_EMERALD, ModTags.UPGRADE_TO_NETHERITE_EMERALD, ModItems.NETHERITE_EMERALD_SHOVEL);
-                baseSmithingRecipe(registryLookup, output, ModTags.SHOVEL_UPGRADE_TO_NETHERITE_DIAMOND, ModTags.UPGRADE_TO_NETHERITE_DIAMOND, ModItems.NETHERITE_DIAMOND_SHOVEL);
+                baseSmithingRecipe(registryLookup, output, ModTags.SHOVEL_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_SHOVEL);
+                baseSmithingRecipe(registryLookup, output, ModTags.SHOVEL_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_SHOVEL);
+                baseSmithingRecipe(registryLookup, output, ModTags.SHOVEL_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_SHOVEL);
+                baseSmithingRecipe(registryLookup, output, ModTags.SHOVEL_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_SHOVEL);
 
                 /* Swords */
-                baseSmithingRecipe(registryLookup, output, ModTags.SWORD_UPGRADE_TO_NETHERITE_IRON, ModTags.UPGRADE_TO_NETHERITE_IRON, ModItems.NETHERITE_IRON_SWORD);
-                baseSmithingRecipe(registryLookup, output, ModTags.SWORD_UPGRADE_TO_NETHERITE_GOLD, ModTags.UPGRADE_TO_NETHERITE_GOLD, ModItems.NETHERITE_GOLD_SWORD);
-                baseSmithingRecipe(registryLookup, output, ModTags.SWORD_UPGRADE_TO_NETHERITE_EMERALD, ModTags.UPGRADE_TO_NETHERITE_EMERALD, ModItems.NETHERITE_EMERALD_SWORD);
-                baseSmithingRecipe(registryLookup, output, ModTags.SWORD_UPGRADE_TO_NETHERITE_DIAMOND, ModTags.UPGRADE_TO_NETHERITE_DIAMOND, ModItems.NETHERITE_DIAMOND_SWORD);
+                baseSmithingRecipe(registryLookup, output, ModTags.SWORD_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_SWORD);
+                baseSmithingRecipe(registryLookup, output, ModTags.SWORD_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_SWORD);
+                baseSmithingRecipe(registryLookup, output, ModTags.SWORD_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_SWORD);
+                baseSmithingRecipe(registryLookup, output, ModTags.SWORD_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_SWORD);
 
                 /* Spears */
-                baseSmithingRecipe(registryLookup, output, ModTags.SPEAR_UPGRADE_TO_NETHERITE_IRON, ModTags.UPGRADE_TO_NETHERITE_IRON, ModItems.NETHERITE_IRON_SPEAR);
-                baseSmithingRecipe(registryLookup, output, ModTags.SPEAR_UPGRADE_TO_NETHERITE_GOLD, ModTags.UPGRADE_TO_NETHERITE_GOLD, ModItems.NETHERITE_GOLD_SPEAR);
-                baseSmithingRecipe(registryLookup, output, ModTags.SPEAR_UPGRADE_TO_NETHERITE_EMERALD, ModTags.UPGRADE_TO_NETHERITE_EMERALD, ModItems.NETHERITE_EMERALD_SPEAR);
-                baseSmithingRecipe(registryLookup, output, ModTags.SPEAR_UPGRADE_TO_NETHERITE_DIAMOND, ModTags.UPGRADE_TO_NETHERITE_DIAMOND, ModItems.NETHERITE_DIAMOND_SPEAR);
+                baseSmithingRecipe(registryLookup, output, ModTags.SPEAR_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_SPEAR);
+                baseSmithingRecipe(registryLookup, output, ModTags.SPEAR_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_SPEAR);
+                baseSmithingRecipe(registryLookup, output, ModTags.SPEAR_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_SPEAR);
+                baseSmithingRecipe(registryLookup, output, ModTags.SPEAR_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_SPEAR);
 
                 /* Misc */
                 backpackRecipes(registryLookup, output);

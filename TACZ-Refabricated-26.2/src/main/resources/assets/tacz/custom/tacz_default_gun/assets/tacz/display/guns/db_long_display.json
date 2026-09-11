@@ -22,12 +22,12 @@
     "scale": 0.75
   },
   "sounds": {
-    "reload_empty": "tacz:db_short/db_short_reload_empty",
-    "reload_tactical": "tacz:db_short/db_short_reload_tactical",
-    "inspect": "tacz:db_short/db_short_inspect",
-    "inspect_empty": "tacz:db_short/db_short_inspect_empty",
-    "draw": "tacz:db_short/db_short_draw",
-    "put_away": "tacz:db_short/db_short_put_away",
+    "reload_empty": "tacz:sawed_off/sawed_off_reload_empty",
+    "reload_tactical": "tacz:sawed_off/sawed_off_reload_tactical",
+    "inspect": "tacz:sawed_off/sawed_off_inspect",
+    "inspect_empty": "tacz:sawed_off/sawed_off_inspect_empty",
+    "draw": "tacz:sawed_off/sawed_off_draw",
+    "put_away": "tacz:sawed_off/sawed_off_put_away",
     "shoot": "tacz:db_long/dbl_shoot",
     "shoot_3p": "tacz:db_long/dbl_shoot_3p",
     "melee_push": "tacz:melee_stock/melee_stock_01",

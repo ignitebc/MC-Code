@@ -69,9 +69,9 @@ public class JobExpReward extends AbstractReward
 
                     ServerPlayer serverPlayer = jobsServerPlayer.jobsplus$getServerPlayer();
                     MinecraftServer server = serverPlayer.level().getServer();
-                    if (server != null && RewardCouponLedger.get(server).isExperienceDoubleActive(serverPlayer.getUUID()))
+                    if (server != null)
                     {
-                        exp *= 2.0D;
+                        exp *= RewardCouponLedger.get(server).getExperienceMultiplier(serverPlayer.getUUID());
                     }
 
                     job.addExperience(exp);

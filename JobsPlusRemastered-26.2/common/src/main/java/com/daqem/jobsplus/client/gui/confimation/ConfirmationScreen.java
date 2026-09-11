@@ -33,6 +33,16 @@ public class ConfirmationScreen extends AbstractScreen
         return previousScreen;
     }
 
+    public ConfirmationScreenState getState()
+    {
+        return state;
+    }
+
+    public boolean isAlert()
+    {
+        return state.isAlert();
+    }
+
     @Override
     public void onClose()
     {

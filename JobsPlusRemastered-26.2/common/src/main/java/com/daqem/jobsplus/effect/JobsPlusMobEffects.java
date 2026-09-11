@@ -19,6 +19,11 @@ public final class JobsPlusMobEffects
             0x4CD8FF,
             "직업 경험치 2배"
     );
+    public static final Holder<MobEffect> EXPERIENCE_TRIPLE = register(
+            "experience_triple",
+            0x8755F4,
+            "직업 경험치 3배"
+    );
     public static final Holder<MobEffect> BITCOIN_DOUBLE = register(
             "bitcoin_double",
             0xF4B942,

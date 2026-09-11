@@ -24,34 +24,34 @@ public final class ModArmorMaterials
     // toughness : 강한 공격에서 방어관통을 줄여주는 능력
     // knockbackResistance : 넉백 저항
 
-    public static final ArmorMaterial NETHERITE_IRON = register(37, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
+    public static final ArmorMaterial ASH = register(37, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
         attribute.put(ArmorType.BOOTS, 4);   
-        attribute.put(ArmorType.LEGGINGS, 6);
-        attribute.put(ArmorType.CHESTPLATE, 8);
-        attribute.put(ArmorType.HELMET, 4);
-        attribute.put(ArmorType.BODY, 11);
-    }), 15, 3.5F, 0.1F, ModTags.REPAIRS_NETHERITE_IRON_ARMOR, ModEquipmentAssets.NETHERITE_IRON);
-    public static final ArmorMaterial NETHERITE_GOLD = register(38, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
-        attribute.put(ArmorType.BOOTS, 5);
         attribute.put(ArmorType.LEGGINGS, 7);
         attribute.put(ArmorType.CHESTPLATE, 9);
-        attribute.put(ArmorType.HELMET, 5);
-        attribute.put(ArmorType.BODY, 12);
-    }), 20, 4.0F, 0.2F, ModTags.REPAIRS_NETHERITE_GOLD_ARMOR, ModEquipmentAssets.NETHERITE_GOLD);
-    public static final ArmorMaterial NETHERITE_EMERALD = register(39, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
-        attribute.put(ArmorType.BOOTS, 6);
+        attribute.put(ArmorType.HELMET, 4);
+        attribute.put(ArmorType.BODY, 11);
+    }), 20, 3.5F, 0.06F, ModTags.REPAIRS_ASH_ARMOR, ModEquipmentAssets.ASH);
+    public static final ArmorMaterial SUNLIGHT = register(38, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
+        attribute.put(ArmorType.BOOTS, 5);
         attribute.put(ArmorType.LEGGINGS, 8);
         attribute.put(ArmorType.CHESTPLATE, 10);
-        attribute.put(ArmorType.HELMET, 6);
-        attribute.put(ArmorType.BODY, 13);
-    }), 25, 4.5F, 0.3F, ModTags.REPAIRS_NETHERITE_EMERALD_ARMOR, ModEquipmentAssets.NETHERITE_EMERALD);
-    public static final ArmorMaterial NETHERITE_DIAMOND = register(40, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
-        attribute.put(ArmorType.BOOTS, 7);
+        attribute.put(ArmorType.HELMET, 5);
+        attribute.put(ArmorType.BODY, 12);
+    }), 25, 4.0F, 0.07F, ModTags.REPAIRS_SUNLIGHT_ARMOR, ModEquipmentAssets.SUNLIGHT);
+    public static final ArmorMaterial SOUL = register(39, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
+        attribute.put(ArmorType.BOOTS, 6);
         attribute.put(ArmorType.LEGGINGS, 9);
         attribute.put(ArmorType.CHESTPLATE, 11);
+        attribute.put(ArmorType.HELMET, 6);
+        attribute.put(ArmorType.BODY, 13);
+    }), 30, 4.5F, 0.08F, ModTags.REPAIRS_SOUL_ARMOR, ModEquipmentAssets.SOUL);
+    public static final ArmorMaterial FROST = register(40, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
+        attribute.put(ArmorType.BOOTS, 7);
+        attribute.put(ArmorType.LEGGINGS, 10);
+        attribute.put(ArmorType.CHESTPLATE, 12);
         attribute.put(ArmorType.HELMET, 7);
         attribute.put(ArmorType.BODY, 14);
-    }), 30, 5.0F, 0.4F, ModTags.REPAIRS_NETHERITE_DIAMOND_ARMOR, ModEquipmentAssets.NETHERITE_DIAMOND);
+    }), 35, 5.0F, 0.09F, ModTags.REPAIRS_FROST_ARMOR, ModEquipmentAssets.FROST);
 
     /**
      * @param typeProtections       The amount of protection per slot

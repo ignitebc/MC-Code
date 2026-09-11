@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "#advancednetherite:upgrade_to_soul",
+  "base": "#advancednetherite:pickaxe/upgrade_to_soul",
+  "result": {
+    "id": "advancednetherite:soul_pickaxe"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

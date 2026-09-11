@@ -43,7 +43,7 @@ public class ModLanguageProvider extends AbstractLanguageProvider {
         builder.add("container.imbue.slot.protectionScroll", "방지권");
         builder.add(ImbuingMenu.EnhanceState.EQUIPMENT_MISSING.getComponent(), "강화할 장비를 넣어 주세요.");
         builder.add(ImbuingMenu.EnhanceState.EQUIPMENT_NOT_SUPPORTED.getComponent(),
-                "서리빛 네더라이트 장비만 강화할 수 있습니다.");
+                "서리빛 장비만 강화할 수 있습니다.");
         builder.add(ImbuingMenu.EnhanceState.ENHANCEMENT_GEM_MISSING.getComponent(), "강화 원석이 필요합니다.");
         builder.add(ImbuingMenu.EnhanceState.MAX_LEVEL_REACHED.getComponent(), "이미 최대 강화 단계입니다.");
         builder.add(ModItems.LOST_CANDLE_ITEM.value().getDescriptionId() + ".foundNearby", "근처에서 %s 발견");

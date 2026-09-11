@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "#advancednetherite:upgrade_to_soul",
+  "base": "#advancednetherite:axe/upgrade_to_soul",
+  "result": {
+    "id": "advancednetherite:soul_axe"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

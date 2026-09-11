@@ -2,39 +2,39 @@
   "replace": false,
   "values": [
     {
-      "id": "advancednetherite:netherite_diamond_sword",
+      "id": "advancednetherite:frost_sword",
       "required": false
     },
     {
-      "id": "advancednetherite:netherite_diamond_axe",
+      "id": "advancednetherite:frost_axe",
       "required": false
     },
     {
-      "id": "advancednetherite:netherite_diamond_pickaxe",
+      "id": "advancednetherite:frost_pickaxe",
       "required": false
     },
     {
-      "id": "advancednetherite:netherite_diamond_shovel",
+      "id": "advancednetherite:frost_shovel",
       "required": false
     },
     {
-      "id": "advancednetherite:netherite_diamond_hoe",
+      "id": "advancednetherite:frost_hoe",
       "required": false
     },
     {
-      "id": "advancednetherite:netherite_diamond_helmet",
+      "id": "advancednetherite:frost_helmet",
       "required": false
     },
     {
-      "id": "advancednetherite:netherite_diamond_chestplate",
+      "id": "advancednetherite:frost_chestplate",
       "required": false
     },
     {
-      "id": "advancednetherite:netherite_diamond_leggings",
+      "id": "advancednetherite:frost_leggings",
       "required": false
     },
     {
-      "id": "advancednetherite:netherite_diamond_boots",
+      "id": "advancednetherite:frost_boots",
       "required": false
     }
   ]

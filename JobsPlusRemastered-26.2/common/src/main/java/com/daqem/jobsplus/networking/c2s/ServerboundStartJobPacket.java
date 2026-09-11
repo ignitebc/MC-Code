@@ -3,6 +3,7 @@ package com.daqem.jobsplus.networking.c2s;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
+import com.daqem.jobsplus.networking.s2c.ClientboundAlertPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.job.Job;
@@ -55,23 +56,19 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
 
         JobInstance jobInstance = JobInstance.of(packet.jobLocation);
         if (jobInstance == null) {
-            serverPlayer.jobsplus$getServerPlayer().sendSystemMessage(
-                    JobsPlus.translatable("error.job_not_found", packet.jobLocation.toString())
-            );
+            sendAlert(serverPlayer, JobsPlus.translatable("error.job_not_found", packet.jobLocation.toString()));
             return;
         }
 
         // 1) 최대 직업 수 제한: "유효 최대 직업 수"(무료 2 + 티켓 누적, 단 config max_jobs로 상한) 기준
         if (serverPlayer.jobsplus$getJobs().size() >= serverPlayer.jobsplus$getEffectiveMaxJobs()) {
-            serverPlayer.jobsplus$getServerPlayer()
-                    .sendSystemMessage(JobsPlus.translatable("error.max_jobs_reached"));
+            sendAlert(serverPlayer, JobsPlus.translatable("error.max_jobs_reached"));
             return;
         }
 
         // 2) 이미 보유한 직업은 코인 차감 전에 거절한다.
         if (serverPlayer.jobsplus$getJob(jobInstance) != null) {
-            serverPlayer.jobsplus$getServerPlayer()
-                    .sendSystemMessage(JobsPlus.translatable("error.job_already_owned"));
+            sendAlert(serverPlayer, JobsPlus.translatable("error.job_already_owned"));
             return;
         }
 
@@ -82,8 +79,7 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
         boolean coinsDeducted = false;
         if (serverPlayer.jobsplus$getJobs().size() >= serverPlayer.jobsplus$getEffectiveFreeJobs()) {
             if (serverPlayer.jobsplus$getCoins() < jobInstance.getPrice()) {
-                serverPlayer.jobsplus$getServerPlayer()
-                        .sendSystemMessage(JobsPlus.translatable("error.not_enough_coins"));
+                sendAlert(serverPlayer, JobsPlus.translatable("error.not_enough_coins"));
                 return;
             }
             serverPlayer.jobsplus$setCoins(serverPlayer.jobsplus$getCoins() - jobInstance.getPrice());
@@ -96,8 +92,7 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
             if (coinsDeducted) {
                 serverPlayer.jobsplus$setCoins(serverPlayer.jobsplus$getCoins() + jobInstance.getPrice());
             }
-            serverPlayer.jobsplus$getServerPlayer()
-                    .sendSystemMessage(JobsPlus.translatable("error.could_not_add_job"));
+            sendAlert(serverPlayer, JobsPlus.translatable("error.could_not_add_job"));
             return;
         }
 
@@ -116,6 +111,13 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
                         serverPlayer.jobsplus$getStockAccount()
                 )
         );
+    }
+
+    /** 직업 선택 실패 사유는 화면을 열어 둔 채로 확인하므로 채팅이 아니라 모달 알림으로 알린다. */
+    private static void sendAlert(JobsServerPlayer serverPlayer, Component message)
+    {
+        NetworkManager.sendToPlayer(
+                serverPlayer.jobsplus$getServerPlayer(), new ClientboundAlertPacket(message));
     }
 
     private static void broadcastJobSelection(JobsServerPlayer serverPlayer, JobInstance jobInstance) {
