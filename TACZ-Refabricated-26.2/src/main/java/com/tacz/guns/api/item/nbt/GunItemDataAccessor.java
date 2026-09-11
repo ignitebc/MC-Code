@@ -10,6 +10,7 @@ import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.client.resource.GunDisplayInstance;
 import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
 import com.tacz.guns.resource.index.CommonGunIndex;
+import com.tacz.guns.util.GunIdAliases;
 import com.tacz.guns.util.ItemNbtUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
@@ -114,16 +115,17 @@ public interface GunItemDataAccessor extends IGun {
         CompoundTag nbt = ItemNbtUtils.getTag(gun);
         if (nbt.contains(GUN_ID_TAG)) {
             Identifier gunId = Identifier.tryParse(nbt.getStringOr(GUN_ID_TAG, ""));
-            return Objects.requireNonNullElse(gunId, DefaultAssets.EMPTY_GUN_ID);
+            return Objects.requireNonNullElse(GunIdAliases.canonicalGunId(gunId), DefaultAssets.EMPTY_GUN_ID);
         }
         return DefaultAssets.EMPTY_GUN_ID;
     }
 
     @Override
     default void setGunId(ItemStack gun, @Nullable Identifier gunId) {
+        Identifier canonicalId = GunIdAliases.canonicalGunId(gunId);
         ItemNbtUtils.updateTag(gun, nbt -> {
-            if (gunId != null) {
-                nbt.putString(GUN_ID_TAG, gunId.toString());
+            if (canonicalId != null) {
+                nbt.putString(GUN_ID_TAG, canonicalId.toString());
             }
         });
     }
@@ -134,16 +136,17 @@ public interface GunItemDataAccessor extends IGun {
         CompoundTag nbt = ItemNbtUtils.getTag(gun);
         if (nbt.contains(GUN_DISPLAY_ID_TAG)) {
             Identifier gunDisplayId = Identifier.tryParse(nbt.getStringOr(GUN_DISPLAY_ID_TAG, ""));
-            return Objects.requireNonNullElse(gunDisplayId, DefaultAssets.DEFAULT_GUN_DISPLAY_ID);
+            return Objects.requireNonNullElse(GunIdAliases.canonicalDisplayId(gunDisplayId), DefaultAssets.DEFAULT_GUN_DISPLAY_ID);
         }
         return DefaultAssets.DEFAULT_GUN_DISPLAY_ID;
     }
 
     @Override
     default void setGunDisplayId(ItemStack gun, Identifier displayId) {
+        Identifier canonicalId = GunIdAliases.canonicalDisplayId(displayId);
         ItemNbtUtils.updateTag(gun, nbt -> {
-            if (displayId != null) {
-                nbt.putString(GUN_DISPLAY_ID_TAG, displayId.toString());
+            if (canonicalId != null) {
+                nbt.putString(GUN_DISPLAY_ID_TAG, canonicalId.toString());
             }
         });
     }

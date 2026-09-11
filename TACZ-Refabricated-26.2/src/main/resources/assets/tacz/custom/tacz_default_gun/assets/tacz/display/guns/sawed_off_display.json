@@ -1,13 +1,14 @@
 {
-  "model": "tacz:gun/db_long_geo",
-  "texture": "tacz:gun/uv/db_long",
+  "state_machine": "tacz:sawed_off_state_machine",
+  "model": "tacz:gun/sawed_off_geo",
+  "texture": "tacz:gun/uv/sawed_off",
   "lod": {
-    "model": "tacz:gun/lod/db_long",
-    "texture": "tacz:gun/lod/db_long"
+    "model": "tacz:gun/lod/sawed_off",
+    "texture": "tacz:gun/lod/sawed_off"
   },
-  "hud": "tacz:gun/hud/db_long",
-  "slot": "tacz:gun/slot/db_long",
-  "animation": "tacz:db_long",
+  "hud": "tacz:gun/hud/sawed_off",
+  "slot": "tacz:gun/slot/sawed_off",
+  "animation": "tacz:sawed_off",
   "use_default_animation": "rifle",
   "third_person_animation": "default",
   "transform": {
@@ -28,19 +29,17 @@
     "inspect_empty": "tacz:sawed_off/sawed_off_inspect_empty",
     "draw": "tacz:sawed_off/sawed_off_draw",
     "put_away": "tacz:sawed_off/sawed_off_put_away",
-    "shoot": "tacz:db_long/dbl_shoot",
-    "shoot_3p": "tacz:db_long/dbl_shoot_3p",
-    "melee_push": "tacz:melee_stock/melee_stock_01",
-    "melee_stock": "tacz:melee_stock/melee_stock_03"
+    "shoot": "tacz:sawed_off/sawed_off_shoot",
+    "shoot_3p": "tacz:sawed_off/sawed_off_shoot_3p"
   },
   "offhand_show": {
-    "pos": [0, 20, 4],
+    "pos": [1, 22, 4],
     "rotate": [0, 0, 60],
     "scale": [0.5, 0.5, 0.5]
   },
   "hotbar_show": {
     "0": {
-      "pos": [0, 20, 3],
+      "pos": [-1, 22, 3],
       "rotate": [-180, 0, 120],
       "scale": [0.5, 0.5, 0.5]
     }

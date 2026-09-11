@@ -72,7 +72,7 @@ public class ModCreativeTabs {
 
     public static CreativeModeTab GUN_PISTOL_TAB = regiser("pistol", CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
             .title(Component.translatable("tacz.type.pistol.name"))
-            .icon(() -> GunItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "glock_17")).build())
+            .icon(() -> GunItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "p18c")).build())
             .displayItems((parameters, output) -> output.acceptAll(AbstractGunItem.fillItemCategory(GunTabType.PISTOL))).build());
 
     public static CreativeModeTab GUN_SNIPER_TAB = regiser("sniper", CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
@@ -87,12 +87,12 @@ public class ModCreativeTabs {
 
     public static CreativeModeTab GUN_SHOTGUN_TAB = regiser("shotgun", CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
             .title(Component.translatable("tacz.type.shotgun.name"))
-            .icon(() -> GunItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "db_short")).build())
+            .icon(() -> GunItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "sawed_off")).build())
             .displayItems((parameters, output) -> output.acceptAll(AbstractGunItem.fillItemCategory(GunTabType.SHOTGUN))).build());
 
     public static CreativeModeTab GUN_SMG_TAB = regiser("smg", CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
             .title(Component.translatable("tacz.type.smg.name"))
-            .icon(() -> GunItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "hk_mp5a5")).build())
+            .icon(() -> GunItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "mp5k")).build())
             .displayItems((parameters, output) -> output.acceptAll(AbstractGunItem.fillItemCategory(GunTabType.SMG))).build());
 
     public static CreativeModeTab GUN_RPG_TAB = regiser("rpg", CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)

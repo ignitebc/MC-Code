@@ -1,0 +1,8 @@
+{
+  "name": "tacz.gun.m416.name",
+  "display": "tacz:m416_display",
+  "data": "tacz:m416_data",
+  "type": "rifle",
+  "tooltip": "tacz.gun.m416.desc",
+  "sort": 9
+}
