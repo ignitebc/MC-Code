@@ -16,6 +16,7 @@ import com.tacz.guns.resource.index.CommonAttachmentIndex;
 import com.tacz.guns.resource.index.CommonBlockIndex;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.recipe.TableRecipe;
+import com.tacz.guns.util.GunIdAliases;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resources.Identifier;
@@ -46,7 +47,7 @@ public final class TimelessAPI {
 
     @Environment(EnvType.CLIENT)
     public static Optional<ClientGunIndex> getClientGunIndex(Identifier gunId) {
-        return Optional.ofNullable(ClientIndexManager.GUN_INDEX.get(gunId));
+        return Optional.ofNullable(ClientIndexManager.GUN_INDEX.get(GunIdAliases.canonicalGunId(gunId)));
     }
 
     @Environment(EnvType.CLIENT)
@@ -55,7 +56,7 @@ public final class TimelessAPI {
             return getClientGunIndex(fallbackGunId).map(ClientGunIndex::getDefaultDisplay);
         }
 
-        GunDisplayInstance instance = ClientIndexManager.getOrCreateGunDisplay(displayId);
+        GunDisplayInstance instance = ClientIndexManager.getOrCreateGunDisplay(GunIdAliases.canonicalDisplayId(displayId));
         if (instance == null) {
             return getClientGunIndex(fallbackGunId).map(ClientGunIndex::getDefaultDisplay);
         }
@@ -97,7 +98,7 @@ public final class TimelessAPI {
     }
 
     public static Optional<CommonGunIndex> getCommonGunIndex(Identifier gunId) {
-        return Optional.ofNullable(CommonAssetsManager.get().getGunIndex(gunId));
+        return Optional.ofNullable(CommonAssetsManager.get().getGunIndex(GunIdAliases.canonicalGunId(gunId)));
     }
 
     public static Optional<CommonAttachmentIndex> getCommonAttachmentIndex(Identifier attachmentId) {

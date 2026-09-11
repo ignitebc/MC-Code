@@ -1,0 +1,7 @@
+{
+  "name": "tacz.gun.sawed_off.name",
+  "display": "tacz:sawed_off_display",
+  "data": "tacz:sawed_off_data",
+  "tooltip": "tacz.gun.sawed_off.desc",
+  "type": "shotgun"
+}
