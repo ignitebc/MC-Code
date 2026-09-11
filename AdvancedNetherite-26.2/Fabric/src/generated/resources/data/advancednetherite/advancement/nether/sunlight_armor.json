@@ -1,0 +1,45 @@
+{
+  "parent": "advancednetherite:nether/ash_armor",
+  "criteria": {
+    "sunlight_armor": {
+      "conditions": {
+        "items": [
+          {
+            "items": "advancednetherite:sunlight_helmet"
+          },
+          {
+            "items": "advancednetherite:sunlight_chestplate"
+          },
+          {
+            "items": "advancednetherite:sunlight_leggings"
+          },
+          {
+            "items": "advancednetherite:sunlight_boots"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.advancednetherite.nether.sunlight_armor.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "advancednetherite:sunlight_chestplate"
+    },
+    "title": {
+      "translate": "advancements.advancednetherite.nether.sunlight_armor.title"
+    }
+  },
+  "requirements": [
+    [
+      "sunlight_armor"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  },
+  "sends_telemetry_event": true
+}

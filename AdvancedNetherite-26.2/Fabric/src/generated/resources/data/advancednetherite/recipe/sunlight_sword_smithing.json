@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "#advancednetherite:upgrade_to_sunlight",
+  "base": "#advancednetherite:sword/upgrade_to_sunlight",
+  "result": {
+    "id": "advancednetherite:sunlight_sword"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

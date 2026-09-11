@@ -18,7 +18,7 @@ public final class ModItemRegistry
     public static void registerItems()
     {
         Registry.register(BuiltInRegistries.ITEM, id("ash_ingot"), ModItems.ASH_INGOT);
-        Registry.register(BuiltInRegistries.ITEM, id("solar_ingot"), ModItems.SOLAR_INGOT);
+        Registry.register(BuiltInRegistries.ITEM, id("sunlight_ingot"), ModItems.SUNLIGHT_INGOT);
         Registry.register(BuiltInRegistries.ITEM, id("soul_ingot"), ModItems.SOUL_INGOT);
         Registry.register(BuiltInRegistries.ITEM, id("frost_ingot"), ModItems.FROST_INGOT);
 
@@ -61,10 +61,10 @@ public final class ModItemRegistry
         Registry.register(BuiltInRegistries.ITEM, id("ash_chestplate"), ModItems.ASH_CHESTPLATE);
         Registry.register(BuiltInRegistries.ITEM, id("ash_leggings"), ModItems.ASH_LEGGINGS);
         Registry.register(BuiltInRegistries.ITEM, id("ash_boots"), ModItems.ASH_BOOTS);
-        Registry.register(BuiltInRegistries.ITEM, id("solar_helmet"), ModItems.SOLAR_HELMET);
-        Registry.register(BuiltInRegistries.ITEM, id("solar_chestplate"), ModItems.SOLAR_CHESTPLATE);
-        Registry.register(BuiltInRegistries.ITEM, id("solar_leggings"), ModItems.SOLAR_LEGGINGS);
-        Registry.register(BuiltInRegistries.ITEM, id("solar_boots"), ModItems.SOLAR_BOOTS);
+        Registry.register(BuiltInRegistries.ITEM, id("sunlight_helmet"), ModItems.SUNLIGHT_HELMET);
+        Registry.register(BuiltInRegistries.ITEM, id("sunlight_chestplate"), ModItems.SUNLIGHT_CHESTPLATE);
+        Registry.register(BuiltInRegistries.ITEM, id("sunlight_leggings"), ModItems.SUNLIGHT_LEGGINGS);
+        Registry.register(BuiltInRegistries.ITEM, id("sunlight_boots"), ModItems.SUNLIGHT_BOOTS);
         Registry.register(BuiltInRegistries.ITEM, id("soul_helmet"), ModItems.SOUL_HELMET);
         Registry.register(BuiltInRegistries.ITEM, id("soul_chestplate"), ModItems.SOUL_CHESTPLATE);
         Registry.register(BuiltInRegistries.ITEM, id("soul_leggings"), ModItems.SOUL_LEGGINGS);
@@ -75,37 +75,37 @@ public final class ModItemRegistry
         Registry.register(BuiltInRegistries.ITEM, id("frost_boots"), ModItems.FROST_BOOTS);
 
         Registry.register(BuiltInRegistries.ITEM, id("ash_axe"), ModItems.ASH_AXE);
-        Registry.register(BuiltInRegistries.ITEM, id("solar_axe"), ModItems.SOLAR_AXE);
+        Registry.register(BuiltInRegistries.ITEM, id("sunlight_axe"), ModItems.SUNLIGHT_AXE);
         Registry.register(BuiltInRegistries.ITEM, id("soul_axe"), ModItems.SOUL_AXE);
         Registry.register(BuiltInRegistries.ITEM, id("frost_axe"), ModItems.FROST_AXE);
 
         Registry.register(BuiltInRegistries.ITEM, id("ash_hoe"), ModItems.ASH_HOE);
-        Registry.register(BuiltInRegistries.ITEM, id("solar_hoe"), ModItems.SOLAR_HOE);
+        Registry.register(BuiltInRegistries.ITEM, id("sunlight_hoe"), ModItems.SUNLIGHT_HOE);
         Registry.register(BuiltInRegistries.ITEM, id("soul_hoe"), ModItems.SOUL_HOE);
         Registry.register(BuiltInRegistries.ITEM, id("frost_hoe"), ModItems.FROST_HOE);
 
         Registry.register(BuiltInRegistries.ITEM, id("ash_pickaxe"), ModItems.ASH_PICKAXE);
-        Registry.register(BuiltInRegistries.ITEM, id("solar_pickaxe"), ModItems.SOLAR_PICKAXE);
+        Registry.register(BuiltInRegistries.ITEM, id("sunlight_pickaxe"), ModItems.SUNLIGHT_PICKAXE);
         Registry.register(BuiltInRegistries.ITEM, id("soul_pickaxe"), ModItems.SOUL_PICKAXE);
         Registry.register(BuiltInRegistries.ITEM, id("frost_pickaxe"), ModItems.FROST_PICKAXE);
 
         Registry.register(BuiltInRegistries.ITEM, id("ash_shovel"), ModItems.ASH_SHOVEL);
-        Registry.register(BuiltInRegistries.ITEM, id("solar_shovel"), ModItems.SOLAR_SHOVEL);
+        Registry.register(BuiltInRegistries.ITEM, id("sunlight_shovel"), ModItems.SUNLIGHT_SHOVEL);
         Registry.register(BuiltInRegistries.ITEM, id("soul_shovel"), ModItems.SOUL_SHOVEL);
         Registry.register(BuiltInRegistries.ITEM, id("frost_shovel"), ModItems.FROST_SHOVEL);
 
         Registry.register(BuiltInRegistries.ITEM, id("ash_sword"), ModItems.ASH_SWORD);
-        Registry.register(BuiltInRegistries.ITEM, id("solar_sword"), ModItems.SOLAR_SWORD);
+        Registry.register(BuiltInRegistries.ITEM, id("sunlight_sword"), ModItems.SUNLIGHT_SWORD);
         Registry.register(BuiltInRegistries.ITEM, id("soul_sword"), ModItems.SOUL_SWORD);
         Registry.register(BuiltInRegistries.ITEM, id("frost_sword"), ModItems.FROST_SWORD);
 
         Registry.register(BuiltInRegistries.ITEM, id("ash_spear"), ModItems.ASH_SPEAR);
-        Registry.register(BuiltInRegistries.ITEM, id("solar_spear"), ModItems.SOLAR_SPEAR);
+        Registry.register(BuiltInRegistries.ITEM, id("sunlight_spear"), ModItems.SUNLIGHT_SPEAR);
         Registry.register(BuiltInRegistries.ITEM, id("soul_spear"), ModItems.SOUL_SPEAR);
         Registry.register(BuiltInRegistries.ITEM, id("frost_spear"), ModItems.FROST_SPEAR);
 
         Registry.register(BuiltInRegistries.ITEM, id("ash_block"), ModItems.ASH_BLOCK);
-        Registry.register(BuiltInRegistries.ITEM, id("solar_block"), ModItems.SOLAR_BLOCK);
+        Registry.register(BuiltInRegistries.ITEM, id("sunlight_block"), ModItems.SUNLIGHT_BLOCK);
         Registry.register(BuiltInRegistries.ITEM, id("soul_block"), ModItems.SOUL_BLOCK);
         Registry.register(BuiltInRegistries.ITEM, id("frost_block"), ModItems.FROST_BLOCK);
     }

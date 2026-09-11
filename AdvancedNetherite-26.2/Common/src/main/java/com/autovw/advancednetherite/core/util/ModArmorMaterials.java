@@ -31,13 +31,13 @@ public final class ModArmorMaterials
         attribute.put(ArmorType.HELMET, 4);
         attribute.put(ArmorType.BODY, 11);
     }), 15, 3.5F, 0.1F, ModTags.REPAIRS_ASH_ARMOR, ModEquipmentAssets.ASH);
-    public static final ArmorMaterial SOLAR = register(38, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
+    public static final ArmorMaterial SUNLIGHT = register(38, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
         attribute.put(ArmorType.BOOTS, 5);
         attribute.put(ArmorType.LEGGINGS, 7);
         attribute.put(ArmorType.CHESTPLATE, 9);
         attribute.put(ArmorType.HELMET, 5);
         attribute.put(ArmorType.BODY, 12);
-    }), 20, 4.0F, 0.2F, ModTags.REPAIRS_SOLAR_ARMOR, ModEquipmentAssets.SOLAR);
+    }), 20, 4.0F, 0.2F, ModTags.REPAIRS_SUNLIGHT_ARMOR, ModEquipmentAssets.SUNLIGHT);
     public static final ArmorMaterial SOUL = register(39, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
         attribute.put(ArmorType.BOOTS, 6);
         attribute.put(ArmorType.LEGGINGS, 8);

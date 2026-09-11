@@ -39,12 +39,12 @@ public class ModModelProvider extends FabricModelProvider
     public void generateBlockStateModels(BlockModelGenerators generator)
     {
         generator.createTrivialCube(ModBlocks.ASH_BLOCK);
-        generator.createTrivialCube(ModBlocks.SOLAR_BLOCK);
+        generator.createTrivialCube(ModBlocks.SUNLIGHT_BLOCK);
         generator.createTrivialCube(ModBlocks.SOUL_BLOCK);
         generator.createTrivialCube(ModBlocks.FROST_BLOCK);
 
         generator.createFlatItemModel(ModBlocks.ASH_BLOCK.asItem());
-        generator.createFlatItemModel(ModBlocks.SOLAR_BLOCK.asItem());
+        generator.createFlatItemModel(ModBlocks.SUNLIGHT_BLOCK.asItem());
         generator.createFlatItemModel(ModBlocks.SOUL_BLOCK.asItem());
         generator.createFlatItemModel(ModBlocks.FROST_BLOCK.asItem());
     }
@@ -53,7 +53,7 @@ public class ModModelProvider extends FabricModelProvider
     public void generateItemModels(ItemModelGenerators generator)
     {
         itemModel(generator, ModItems.ASH_INGOT);
-        itemModel(generator, ModItems.SOLAR_INGOT);
+        itemModel(generator, ModItems.SUNLIGHT_INGOT);
         itemModel(generator, ModItems.SOUL_INGOT);
         itemModel(generator, ModItems.FROST_INGOT);
         
@@ -102,10 +102,10 @@ public class ModModelProvider extends FabricModelProvider
         armorModel(generator, ModItems.ASH_LEGGINGS, ModEquipmentAssets.ASH);
         armorModel(generator, ModItems.ASH_BOOTS, ModEquipmentAssets.ASH);
 
-        armorModel(generator, ModItems.SOLAR_HELMET, ModEquipmentAssets.SOLAR);
-        armorModel(generator, ModItems.SOLAR_CHESTPLATE, ModEquipmentAssets.SOLAR);
-        armorModel(generator, ModItems.SOLAR_LEGGINGS, ModEquipmentAssets.SOLAR);
-        armorModel(generator, ModItems.SOLAR_BOOTS, ModEquipmentAssets.SOLAR);
+        armorModel(generator, ModItems.SUNLIGHT_HELMET, ModEquipmentAssets.SUNLIGHT);
+        armorModel(generator, ModItems.SUNLIGHT_CHESTPLATE, ModEquipmentAssets.SUNLIGHT);
+        armorModel(generator, ModItems.SUNLIGHT_LEGGINGS, ModEquipmentAssets.SUNLIGHT);
+        armorModel(generator, ModItems.SUNLIGHT_BOOTS, ModEquipmentAssets.SUNLIGHT);
 
         armorModel(generator, ModItems.SOUL_HELMET, ModEquipmentAssets.SOUL);
         armorModel(generator, ModItems.SOUL_CHESTPLATE, ModEquipmentAssets.SOUL);
@@ -118,32 +118,32 @@ public class ModModelProvider extends FabricModelProvider
         armorModel(generator, ModItems.FROST_BOOTS, ModEquipmentAssets.FROST);
 
         toolModel(generator, ModItems.ASH_AXE);
-        toolModel(generator, ModItems.SOLAR_AXE);
+        toolModel(generator, ModItems.SUNLIGHT_AXE);
         toolModel(generator, ModItems.SOUL_AXE);
         toolModel(generator, ModItems.FROST_AXE);
 
         toolModel(generator, ModItems.ASH_HOE);
-        toolModel(generator, ModItems.SOLAR_HOE);
+        toolModel(generator, ModItems.SUNLIGHT_HOE);
         toolModel(generator, ModItems.SOUL_HOE);
         toolModel(generator, ModItems.FROST_HOE);
 
         toolModel(generator, ModItems.ASH_PICKAXE);
-        toolModel(generator, ModItems.SOLAR_PICKAXE);
+        toolModel(generator, ModItems.SUNLIGHT_PICKAXE);
         toolModel(generator, ModItems.SOUL_PICKAXE);
         toolModel(generator, ModItems.FROST_PICKAXE);
 
         toolModel(generator, ModItems.ASH_SHOVEL);
-        toolModel(generator, ModItems.SOLAR_SHOVEL);
+        toolModel(generator, ModItems.SUNLIGHT_SHOVEL);
         toolModel(generator, ModItems.SOUL_SHOVEL);
         toolModel(generator, ModItems.FROST_SHOVEL);
 
         toolModel(generator, ModItems.ASH_SWORD);
-        toolModel(generator, ModItems.SOLAR_SWORD);
+        toolModel(generator, ModItems.SUNLIGHT_SWORD);
         toolModel(generator, ModItems.SOUL_SWORD);
         toolModel(generator, ModItems.FROST_SWORD);
 
         spearModel(generator, ModItems.ASH_SPEAR);
-        spearModel(generator, ModItems.SOLAR_SPEAR);
+        spearModel(generator, ModItems.SUNLIGHT_SPEAR);
         spearModel(generator, ModItems.SOUL_SPEAR);
         spearModel(generator, ModItems.FROST_SPEAR);
     }

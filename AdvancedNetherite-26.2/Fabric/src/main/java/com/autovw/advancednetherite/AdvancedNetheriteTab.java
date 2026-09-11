@@ -28,13 +28,13 @@ public final class AdvancedNetheriteTab
     {
         ResourceKey<CreativeModeTab> tab = ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "tab"));
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, tab, FabricCreativeModeTab.builder()
-                .icon(ModItems.SOLAR_INGOT::getDefaultInstance)
+                .icon(ModItems.SUNLIGHT_INGOT::getDefaultInstance)
                 .title(Component.translatable("itemGroup." + AdvancedNetherite.MOD_ID + ".tab"))
                 .displayItems((context, entries) ->
                 {
                     // Ingots
                     entries.accept(ModItems.ASH_INGOT);
-                    entries.accept(ModItems.SOLAR_INGOT);
+                    entries.accept(ModItems.SUNLIGHT_INGOT);
                     entries.accept(ModItems.SOUL_INGOT);
                     entries.accept(ModItems.FROST_INGOT);
 
@@ -44,10 +44,10 @@ public final class AdvancedNetheriteTab
                     entries.accept(ModItems.ASH_LEGGINGS);
                     entries.accept(ModItems.ASH_BOOTS);
 
-                    entries.accept(ModItems.SOLAR_HELMET);
-                    entries.accept(ModItems.SOLAR_CHESTPLATE);
-                    entries.accept(ModItems.SOLAR_LEGGINGS);
-                    entries.accept(ModItems.SOLAR_BOOTS);
+                    entries.accept(ModItems.SUNLIGHT_HELMET);
+                    entries.accept(ModItems.SUNLIGHT_CHESTPLATE);
+                    entries.accept(ModItems.SUNLIGHT_LEGGINGS);
+                    entries.accept(ModItems.SUNLIGHT_BOOTS);
 
                     entries.accept(ModItems.SOUL_HELMET);
                     entries.accept(ModItems.SOUL_CHESTPLATE);
@@ -61,43 +61,43 @@ public final class AdvancedNetheriteTab
 
                     // Axes
                     entries.accept(ModItems.ASH_AXE);
-                    entries.accept(ModItems.SOLAR_AXE);
+                    entries.accept(ModItems.SUNLIGHT_AXE);
                     entries.accept(ModItems.SOUL_AXE);
                     entries.accept(ModItems.FROST_AXE);
 
                     // Hoes
                     entries.accept(ModItems.ASH_HOE);
-                    entries.accept(ModItems.SOLAR_HOE);
+                    entries.accept(ModItems.SUNLIGHT_HOE);
                     entries.accept(ModItems.SOUL_HOE);
                     entries.accept(ModItems.FROST_HOE);
 
                     // Pickaxes
                     entries.accept(ModItems.ASH_PICKAXE);
-                    entries.accept(ModItems.SOLAR_PICKAXE);
+                    entries.accept(ModItems.SUNLIGHT_PICKAXE);
                     entries.accept(ModItems.SOUL_PICKAXE);
                     entries.accept(ModItems.FROST_PICKAXE);
 
                     // Shovels
                     entries.accept(ModItems.ASH_SHOVEL);
-                    entries.accept(ModItems.SOLAR_SHOVEL);
+                    entries.accept(ModItems.SUNLIGHT_SHOVEL);
                     entries.accept(ModItems.SOUL_SHOVEL);
                     entries.accept(ModItems.FROST_SHOVEL);
 
                     // Swords
                     entries.accept(ModItems.ASH_SWORD);
-                    entries.accept(ModItems.SOLAR_SWORD);
+                    entries.accept(ModItems.SUNLIGHT_SWORD);
                     entries.accept(ModItems.SOUL_SWORD);
                     entries.accept(ModItems.FROST_SWORD);
 
                     // Spears
                     entries.accept(ModItems.ASH_SPEAR);
-                    entries.accept(ModItems.SOLAR_SPEAR);
+                    entries.accept(ModItems.SUNLIGHT_SPEAR);
                     entries.accept(ModItems.SOUL_SPEAR);
                     entries.accept(ModItems.FROST_SPEAR);
 
                     // Blocks
                     entries.accept(ModItems.ASH_BLOCK);
-                    entries.accept(ModItems.SOLAR_BLOCK);
+                    entries.accept(ModItems.SUNLIGHT_BLOCK);
                     entries.accept(ModItems.SOUL_BLOCK);
                     entries.accept(ModItems.FROST_BLOCK);
 

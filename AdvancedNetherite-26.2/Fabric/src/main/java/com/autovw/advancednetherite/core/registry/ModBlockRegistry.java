@@ -16,7 +16,7 @@ public final class ModBlockRegistry
     public static void registerBlocks()
     {
         Registry.register(BuiltInRegistries.BLOCK, id("ash_block"), ModBlocks.ASH_BLOCK);
-        Registry.register(BuiltInRegistries.BLOCK, id("solar_block"), ModBlocks.SOLAR_BLOCK);
+        Registry.register(BuiltInRegistries.BLOCK, id("sunlight_block"), ModBlocks.SUNLIGHT_BLOCK);
         Registry.register(BuiltInRegistries.BLOCK, id("soul_block"), ModBlocks.SOUL_BLOCK);
         Registry.register(BuiltInRegistries.BLOCK, id("frost_block"), ModBlocks.FROST_BLOCK);
     }

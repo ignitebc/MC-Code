@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "#advancednetherite:upgrade_to_sunlight",
+  "base": "#advancednetherite:leggings/upgrade_to_sunlight",
+  "result": {
+    "id": "advancednetherite:sunlight_leggings"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

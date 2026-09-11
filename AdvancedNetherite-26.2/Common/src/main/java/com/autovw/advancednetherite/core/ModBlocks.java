@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 public final class ModBlocks
 {
     public static final Block ASH_BLOCK = new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(key("ash_block")));
-    public static final Block SOLAR_BLOCK = new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(key("solar_block")));
+    public static final Block SUNLIGHT_BLOCK = new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(key("sunlight_block")));
     public static final Block SOUL_BLOCK = new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(key("soul_block")));
     public static final Block FROST_BLOCK = new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(key("frost_block")));
 

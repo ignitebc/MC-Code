@@ -43,15 +43,15 @@ public class ModAdvancementProvider extends FabricAdvancementProvider
                 .addCriterion("ash_armor", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.ASH_HELMET, ModItems.ASH_CHESTPLATE, ModItems.ASH_LEGGINGS, ModItems.ASH_BOOTS))
                 .save(consumer, Identifier.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "nether/ash_armor").toString());
 
-        AdvancementHolder solarArmor = Advancement.Builder.advancement()
+        AdvancementHolder sunlightArmor = Advancement.Builder.advancement()
                 .parent(ashArmor)
-                .display(ModItems.SOLAR_CHESTPLATE, Component.translatable("advancements.advancednetherite.nether.solar_armor.title"), Component.translatable("advancements.advancednetherite.nether.solar_armor.description"), null, AdvancementType.CHALLENGE, true, true, false)
+                .display(ModItems.SUNLIGHT_CHESTPLATE, Component.translatable("advancements.advancednetherite.nether.sunlight_armor.title"), Component.translatable("advancements.advancednetherite.nether.sunlight_armor.description"), null, AdvancementType.CHALLENGE, true, true, false)
                 .rewards(AdvancementRewards.Builder.experience(100))
-                .addCriterion("solar_armor", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SOLAR_HELMET, ModItems.SOLAR_CHESTPLATE, ModItems.SOLAR_LEGGINGS, ModItems.SOLAR_BOOTS))
-                .save(consumer, Identifier.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "nether/solar_armor").toString());
+                .addCriterion("sunlight_armor", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SUNLIGHT_HELMET, ModItems.SUNLIGHT_CHESTPLATE, ModItems.SUNLIGHT_LEGGINGS, ModItems.SUNLIGHT_BOOTS))
+                .save(consumer, Identifier.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "nether/sunlight_armor").toString());
 
         AdvancementHolder soulArmor = Advancement.Builder.advancement()
-                .parent(solarArmor)
+                .parent(sunlightArmor)
                 .display(ModItems.SOUL_CHESTPLATE, Component.translatable("advancements.advancednetherite.nether.soul_armor.title"), Component.translatable("advancements.advancednetherite.nether.soul_armor.description"), null, AdvancementType.CHALLENGE, true, true, false)
                 .rewards(AdvancementRewards.Builder.experience(100))
                 .addCriterion("soul_armor", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SOUL_HELMET, ModItems.SOUL_CHESTPLATE, ModItems.SOUL_LEGGINGS, ModItems.SOUL_BOOTS))

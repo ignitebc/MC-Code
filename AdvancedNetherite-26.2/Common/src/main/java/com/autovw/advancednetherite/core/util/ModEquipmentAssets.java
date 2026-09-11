@@ -18,7 +18,7 @@ public final class ModEquipmentAssets
     private static final ResourceKey<? extends Registry<EquipmentAsset>> ROOT_ID = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("equipment_asset"));
 
     public static final ResourceKey<EquipmentAsset> ASH = id("ash");
-    public static final ResourceKey<EquipmentAsset> SOLAR = id("solar");
+    public static final ResourceKey<EquipmentAsset> SUNLIGHT = id("sunlight");
     public static final ResourceKey<EquipmentAsset> SOUL = id("soul");
     public static final ResourceKey<EquipmentAsset> FROST = id("frost");
 
@@ -30,7 +30,7 @@ public final class ModEquipmentAssets
     public static void bootstrap(BiConsumer<ResourceKey<EquipmentAsset>, EquipmentClientInfo> consumer)
     {
         consumer.accept(ModEquipmentAssets.ASH, onlyHumanoid("ash"));
-        consumer.accept(ModEquipmentAssets.SOLAR, onlyHumanoid("solar"));
+        consumer.accept(ModEquipmentAssets.SUNLIGHT, onlyHumanoid("sunlight"));
         consumer.accept(ModEquipmentAssets.SOUL, onlyHumanoid("soul"));
         consumer.accept(ModEquipmentAssets.FROST, onlyHumanoid("frost"));
     }

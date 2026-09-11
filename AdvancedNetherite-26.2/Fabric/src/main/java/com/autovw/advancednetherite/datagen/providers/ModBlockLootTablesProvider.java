@@ -21,7 +21,7 @@ public class ModBlockLootTablesProvider extends FabricBlockLootSubProvider
     public void generate()
     {
         this.dropSelf(ModBlocks.ASH_BLOCK);
-        this.dropSelf(ModBlocks.SOLAR_BLOCK);
+        this.dropSelf(ModBlocks.SUNLIGHT_BLOCK);
         this.dropSelf(ModBlocks.SOUL_BLOCK);
         this.dropSelf(ModBlocks.FROST_BLOCK);
     }

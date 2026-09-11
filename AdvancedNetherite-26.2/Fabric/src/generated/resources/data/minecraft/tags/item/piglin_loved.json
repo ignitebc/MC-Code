@@ -1,16 +1,16 @@
 {
   "values": [
-    "advancednetherite:solar_block",
-    "advancednetherite:solar_ingot",
-    "advancednetherite:solar_helmet",
-    "advancednetherite:solar_chestplate",
-    "advancednetherite:solar_leggings",
-    "advancednetherite:solar_boots",
-    "advancednetherite:solar_axe",
-    "advancednetherite:solar_hoe",
-    "advancednetherite:solar_pickaxe",
-    "advancednetherite:solar_shovel",
-    "advancednetherite:solar_sword",
-    "advancednetherite:solar_spear"
+    "advancednetherite:sunlight_block",
+    "advancednetherite:sunlight_ingot",
+    "advancednetherite:sunlight_helmet",
+    "advancednetherite:sunlight_chestplate",
+    "advancednetherite:sunlight_leggings",
+    "advancednetherite:sunlight_boots",
+    "advancednetherite:sunlight_axe",
+    "advancednetherite:sunlight_hoe",
+    "advancednetherite:sunlight_pickaxe",
+    "advancednetherite:sunlight_shovel",
+    "advancednetherite:sunlight_sword",
+    "advancednetherite:sunlight_spear"
   ]
 }

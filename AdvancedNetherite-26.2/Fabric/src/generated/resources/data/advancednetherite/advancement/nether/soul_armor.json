@@ -1,5 +1,5 @@
 {
-  "parent": "advancednetherite:nether/solar_armor",
+  "parent": "advancednetherite:nether/sunlight_armor",
   "criteria": {
     "soul_armor": {
       "conditions": {

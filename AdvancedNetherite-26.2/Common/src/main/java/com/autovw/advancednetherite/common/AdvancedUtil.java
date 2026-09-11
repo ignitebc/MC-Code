@@ -33,7 +33,7 @@ public class AdvancedUtil
     {
         if (material == ModArmorMaterials.ASH)
             return 39;
-        if (material == ModArmorMaterials.SOLAR)
+        if (material == ModArmorMaterials.SUNLIGHT)
             return 41;
         if (material == ModArmorMaterials.SOUL)
             return 43;
@@ -59,7 +59,7 @@ public class AdvancedUtil
             {
                 if (material.isMaterial(ModToolMaterials.ASH))
                     newColor = getColor(ChatFormatting.GRAY);
-                if (material.isMaterial(ModToolMaterials.SOLAR))
+                if (material.isMaterial(ModToolMaterials.SUNLIGHT))
                     newColor = getColor(ChatFormatting.GOLD);
                 if (material.isMaterial(ModToolMaterials.SOUL))
                     newColor = getColor(ChatFormatting.DARK_GREEN);
@@ -72,7 +72,7 @@ public class AdvancedUtil
             {
                 if (material.isMaterial(ModArmorMaterials.ASH))
                     newColor = getColor(ChatFormatting.GRAY);
-                if (material.isMaterial(ModArmorMaterials.SOLAR))
+                if (material.isMaterial(ModArmorMaterials.SUNLIGHT))
                     newColor = getColor(ChatFormatting.GOLD);
                 if (material.isMaterial(ModArmorMaterials.SOUL))
                     newColor = getColor(ChatFormatting.DARK_GREEN);
@@ -107,7 +107,7 @@ public class AdvancedUtil
             {
                 if (material.isMaterial(ModToolMaterials.ASH))
                     newSpeed *= ConfigHelper.get().getServer().getToolProperties().getIronBreakingSpeedMultiplier();
-                if (material.isMaterial(ModToolMaterials.SOLAR))
+                if (material.isMaterial(ModToolMaterials.SUNLIGHT))
                     newSpeed *= ConfigHelper.get().getServer().getToolProperties().getGoldBreakingSpeedMultiplier();
                 if (material.isMaterial(ModToolMaterials.SOUL))
                     newSpeed *= ConfigHelper.get().getServer().getToolProperties().getEmeraldBreakingSpeedMultiplier();

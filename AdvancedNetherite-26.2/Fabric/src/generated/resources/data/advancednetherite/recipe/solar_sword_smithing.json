@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:smithing_transform",
-  "addition": "#advancednetherite:upgrade_to_solar",
-  "base": "#advancednetherite:sword/upgrade_to_solar",
-  "result": {
-    "id": "advancednetherite:solar_sword"
-  },
-  "template": "minecraft:netherite_upgrade_smithing_template"
-}
