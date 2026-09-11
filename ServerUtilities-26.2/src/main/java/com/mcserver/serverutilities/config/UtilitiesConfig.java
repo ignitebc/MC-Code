@@ -7,10 +7,10 @@ import java.util.Properties;
 
 public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, boolean combatGolems,
                               double combatRange, boolean creeperDamage, float creeperMultiplier,
-                              boolean hunger, float hungerMultiplier, boolean deathPenalty,
-                              boolean deathProtection) {
+                              boolean hunger, float hungerMultiplier, boolean armorCurve,
+                              boolean deathPenalty, boolean deathProtection) {
     public static final UtilitiesConfig DEFAULT = new UtilitiesConfig(
-            true, true, true, 80.0, true, 4.0F / 3.0F, true, 1.5F, true, true);
+            true, true, true, 80.0, true, 4.0F / 3.0F, true, 1.5F, true, true, true);
 
     public static UtilitiesConfig load(Path path) throws IOException {
         Properties defaults = DEFAULT.toProperties();
@@ -31,6 +31,7 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
                 bool(merged, "combat.golems.enabled"), number(merged, "combat.range", 1, 128),
                 bool(merged, "balance.creeper.enabled"), (float) number(merged, "balance.creeper.multiplier", 0, 100),
                 bool(merged, "balance.hunger.enabled"), (float) number(merged, "balance.hunger.multiplier", 0, 100),
+                bool(merged, "balance.armor.enabled"),
                 bool(merged, "death.penalty.enabled"), bool(merged, "death.protection.enabled"));
     }
 
@@ -44,6 +45,7 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
         values.setProperty("balance.creeper.multiplier", Float.toString(creeperMultiplier));
         values.setProperty("balance.hunger.enabled", Boolean.toString(hunger));
         values.setProperty("balance.hunger.multiplier", Float.toString(hungerMultiplier));
+        values.setProperty("balance.armor.enabled", Boolean.toString(armorCurve));
         values.setProperty("death.penalty.enabled", Boolean.toString(deathPenalty));
         values.setProperty("death.protection.enabled", Boolean.toString(deathProtection));
         return values;

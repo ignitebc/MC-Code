@@ -65,6 +65,7 @@ public final class ServerUtilities implements ModInitializer {
                                     + ", 전투 범위=" + settings.combatRange()
                                     + ", 크리퍼=" + settings.creeperDamage() + " ×" + settings.creeperMultiplier()
                                     + ", 피로도=" + settings.hunger() + " ×" + settings.hungerMultiplier()
+                                    + ", 방어도 곡선=" + settings.armorCurve()
                                     + ", 사망 손실=" + settings.deathPenalty() + ", 보존권=" + settings.deathProtection()), false);
                             return 1;
                         }))
