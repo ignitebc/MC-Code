@@ -6,8 +6,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Slice;
 
+// 26.2에서 ArmorMaterials가 인터페이스로 바뀌어 Mixin도 인터페이스로 선언한다.
 @Mixin(ArmorMaterials.class)
-public abstract class NetheriteKnockbackMixin {
+public interface NetheriteKnockbackMixin {
     /**
      * 바닐라 네더라이트 방어구의 부위당 넉백 저항을 낮춘다.
      *
