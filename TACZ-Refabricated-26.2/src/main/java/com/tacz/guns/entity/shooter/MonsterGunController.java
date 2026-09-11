@@ -53,8 +53,6 @@ public final class MonsterGunController {
             this.chargeProgress = 0;
             gun.setBulletInBarrel(stack, true);
         }
-        // 스크립트가 장탄수를 직접 바꾸더라도 몬스터는 탄약 아이템 없이 계속 사용할 수 있다.
-        if (gun.getCurrentAmmoCount(stack) < data.getAmmoAmount()) gun.setCurrentAmmoCount(stack, data.getAmmoAmount());
         var followRange = this.mob.getAttribute(Attributes.FOLLOW_RANGE);
         double range = followRange == null ? 32.0 : Math.clamp(followRange.getValue(), 16.0, 64.0);
         LivingEntity target = findTarget(range);
@@ -63,6 +61,11 @@ public final class MonsterGunController {
                 && this.mob.distanceToSqr(target) <= range * range && this.mob.hasLineOfSight(target);
         operator.aim(canShoot);
         if (!canShoot) {
+            this.chargeProgress = 0;
+            return;
+        }
+        // 몬스터는 탄약 아이템 없이 장전하지만, 장전 시간은 플레이어와 똑같이 기다린다.
+        if (operator.getDataHolder().reloadStateType.isReloading()) {
             this.chargeProgress = 0;
             return;
         }
@@ -86,6 +89,7 @@ public final class MonsterGunController {
         ShootResult result = operator.shoot(() -> pitch, () -> yaw,
                 System.currentTimeMillis() - operator.getDataHolder().baseTimestamp, this.chargeProgress);
         if (result == ShootResult.NEED_BOLT) operator.bolt();
+        if (result == ShootResult.NO_AMMO) operator.reload();
         if (result == ShootResult.SUCCESS && charge != null) {
             this.chargeProgress = charge.getChargeType() == ChargeType.DELAY ? 0
                     : Math.max(0, this.chargeProgress - charge.getDecreaseOnFire());
