@@ -86,38 +86,38 @@ public final class ModItems
     // Axes
     public static final AdvancedAxeItem ASH_AXE = new AdvancedAxeItem(ModToolMaterials.ASH, 5, -3.0f, new Item.Properties().setId(key("ash_axe")));
     public static final AdvancedAxeItem SUNLIGHT_AXE = new AdvancedAxeItem(ModToolMaterials.SUNLIGHT, 6, -3.0f, new Item.Properties().setId(key("sunlight_axe")));
-    public static final AdvancedAxeItem SOUL_AXE = new AdvancedAxeItem(ModToolMaterials.SOUL, 6, -3.0f, new Item.Properties().setId(key("soul_axe")));
-    public static final AdvancedAxeItem FROST_AXE = new AdvancedAxeItem(ModToolMaterials.FROST, 7, -3.0f, new Item.Properties().setId(key("frost_axe")));
+    public static final AdvancedAxeItem SOUL_AXE = new AdvancedAxeItem(ModToolMaterials.SOUL, 7, -3.0f, new Item.Properties().setId(key("soul_axe")));
+    public static final AdvancedAxeItem FROST_AXE = new AdvancedAxeItem(ModToolMaterials.FROST, 8, -3.0f, new Item.Properties().setId(key("frost_axe")));
 
     // Hoes
-    public static final AdvancedHoeItem ASH_HOE = new AdvancedHoeItem(ModToolMaterials.ASH, -4, 0.0F, new Item.Properties().setId(key("ash_hoe")));
-    public static final AdvancedHoeItem SUNLIGHT_HOE = new AdvancedHoeItem(ModToolMaterials.SUNLIGHT, -4, 0.0F, new Item.Properties().setId(key("sunlight_hoe")));
+    public static final AdvancedHoeItem ASH_HOE = new AdvancedHoeItem(ModToolMaterials.ASH, -5, 0.0F, new Item.Properties().setId(key("ash_hoe")));
+    public static final AdvancedHoeItem SUNLIGHT_HOE = new AdvancedHoeItem(ModToolMaterials.SUNLIGHT, -5, 0.0F, new Item.Properties().setId(key("sunlight_hoe")));
     public static final AdvancedHoeItem SOUL_HOE = new AdvancedHoeItem(ModToolMaterials.SOUL, -5, 0.0F, new Item.Properties().setId(key("soul_hoe")));
     public static final AdvancedHoeItem FROST_HOE = new AdvancedHoeItem(ModToolMaterials.FROST, -5, 0.0F, new Item.Properties().setId(key("frost_hoe")));
 
     // Pickaxes
-    public static final AdvancedPickaxeItem ASH_PICKAXE = new AdvancedPickaxeItem(ModToolMaterials.ASH, 1, -2.8F, new Item.Properties().setId(key("ash_pickaxe")));
-    public static final AdvancedPickaxeItem SUNLIGHT_PICKAXE = new AdvancedPickaxeItem(ModToolMaterials.SUNLIGHT, 1, -2.8F, new Item.Properties().setId(key("sunlight_pickaxe")));
-    public static final AdvancedPickaxeItem SOUL_PICKAXE = new AdvancedPickaxeItem(ModToolMaterials.SOUL, 1, -2.8F, new Item.Properties().setId(key("soul_pickaxe")));
-    public static final AdvancedPickaxeItem FROST_PICKAXE = new AdvancedPickaxeItem(ModToolMaterials.FROST, 1, -2.8F, new Item.Properties().setId(key("frost_pickaxe")));
+    public static final AdvancedPickaxeItem ASH_PICKAXE = new AdvancedPickaxeItem(ModToolMaterials.ASH, 0, -2.8F, new Item.Properties().setId(key("ash_pickaxe")));
+    public static final AdvancedPickaxeItem SUNLIGHT_PICKAXE = new AdvancedPickaxeItem(ModToolMaterials.SUNLIGHT, 0, -2.8F, new Item.Properties().setId(key("sunlight_pickaxe")));
+    public static final AdvancedPickaxeItem SOUL_PICKAXE = new AdvancedPickaxeItem(ModToolMaterials.SOUL, 0, -2.8F, new Item.Properties().setId(key("soul_pickaxe")));
+    public static final AdvancedPickaxeItem FROST_PICKAXE = new AdvancedPickaxeItem(ModToolMaterials.FROST, 0, -2.8F, new Item.Properties().setId(key("frost_pickaxe")));
 
     // Shovels
-    public static final AdvancedShovelItem ASH_SHOVEL = new AdvancedShovelItem(ModToolMaterials.ASH, 1.5F, -3.0F, new Item.Properties().setId(key("ash_shovel")));
-    public static final AdvancedShovelItem SUNLIGHT_SHOVEL = new AdvancedShovelItem(ModToolMaterials.SUNLIGHT, 1.5F, -3.0F, new Item.Properties().setId(key("sunlight_shovel")));
-    public static final AdvancedShovelItem SOUL_SHOVEL = new AdvancedShovelItem(ModToolMaterials.SOUL, 1, -3.0F, new Item.Properties().setId(key("soul_shovel")));
-    public static final AdvancedShovelItem FROST_SHOVEL = new AdvancedShovelItem(ModToolMaterials.FROST, 1, -3.0F, new Item.Properties().setId(key("frost_shovel")));
+    public static final AdvancedShovelItem ASH_SHOVEL = new AdvancedShovelItem(ModToolMaterials.ASH, 0, -3.0F, new Item.Properties().setId(key("ash_shovel")));
+    public static final AdvancedShovelItem SUNLIGHT_SHOVEL = new AdvancedShovelItem(ModToolMaterials.SUNLIGHT, 0, -3.0F, new Item.Properties().setId(key("sunlight_shovel")));
+    public static final AdvancedShovelItem SOUL_SHOVEL = new AdvancedShovelItem(ModToolMaterials.SOUL, 0, -3.0F, new Item.Properties().setId(key("soul_shovel")));
+    public static final AdvancedShovelItem FROST_SHOVEL = new AdvancedShovelItem(ModToolMaterials.FROST, 0, -3.0F, new Item.Properties().setId(key("frost_shovel")));
 
     // Swords
-    public static final AdvancedSwordItem ASH_SWORD = new AdvancedSwordItem(ModToolMaterials.ASH, 3, -2.4F, new Item.Properties().setId(key("ash_sword")));
-    public static final AdvancedSwordItem SUNLIGHT_SWORD = new AdvancedSwordItem(ModToolMaterials.SUNLIGHT, 4, -2.4F, new Item.Properties().setId(key("sunlight_sword")));
-    public static final AdvancedSwordItem SOUL_SWORD = new AdvancedSwordItem(ModToolMaterials.SOUL, 4, -2.4F, new Item.Properties().setId(key("soul_sword")));
-    public static final AdvancedSwordItem FROST_SWORD = new AdvancedSwordItem(ModToolMaterials.FROST, 5, -2.4F, new Item.Properties().setId(key("frost_sword")));
+    public static final AdvancedSwordItem ASH_SWORD = new AdvancedSwordItem(ModToolMaterials.ASH, 2, -2.3F, new Item.Properties().setId(key("ash_sword")));
+    public static final AdvancedSwordItem SUNLIGHT_SWORD = new AdvancedSwordItem(ModToolMaterials.SUNLIGHT, 2, -2.2F, new Item.Properties().setId(key("sunlight_sword")));
+    public static final AdvancedSwordItem SOUL_SWORD = new AdvancedSwordItem(ModToolMaterials.SOUL, 2, -2.1F, new Item.Properties().setId(key("soul_sword")));
+    public static final AdvancedSwordItem FROST_SWORD = new AdvancedSwordItem(ModToolMaterials.FROST, 2, -2.0F, new Item.Properties().setId(key("frost_sword")));
 
     // Spears
-    public static final Item ASH_SPEAR = new AdvancedSpearItem(ModToolMaterials.ASH, 1.1F, 1.25F, 0.4F, 2.5F, 7.0F, 5.5F, 5.1F, 8.75F, 4.6F, new Item.Properties().setId(key("ash_spear")));
-    public static final Item SUNLIGHT_SPEAR = new AdvancedSpearItem(ModToolMaterials.SUNLIGHT, 1.05F, 1.05F, 0.4F, 2.5F, 7.0F, 5.5F, 5.1F, 8.75F, 4.6F, new Item.Properties().setId(key("sunlight_spear")));
-    public static final Item SOUL_SPEAR = new AdvancedSpearItem(ModToolMaterials.SOUL, 1.35F, 1.15F, 0.4F, 2.5F, 7.0F, 5.5F, 5.1F, 8.75F, 4.6F, new Item.Properties().setId(key("soul_spear")));
-    public static final Item FROST_SPEAR = new AdvancedSpearItem(ModToolMaterials.FROST, 1.25F, 1.25F, 0.4F, 2.5F, 7.0F, 5.5F, 5.1F, 8.75F, 4.6F, new Item.Properties().setId(key("frost_spear")));
+    public static final Item ASH_SPEAR = new AdvancedSpearItem(ModToolMaterials.ASH, 1.2F, 1.25F, 0.4F, 2.5F, 7.0F, 5.5F, 5.1F, 8.75F, 4.6F, new Item.Properties().setId(key("ash_spear")));
+    public static final Item SUNLIGHT_SPEAR = new AdvancedSpearItem(ModToolMaterials.SUNLIGHT, 1.25F, 1.3F, 0.4F, 2.5F, 7.0F, 5.5F, 5.1F, 8.75F, 4.6F, new Item.Properties().setId(key("sunlight_spear")));
+    public static final Item SOUL_SPEAR = new AdvancedSpearItem(ModToolMaterials.SOUL, 1.3F, 1.35F, 0.4F, 2.5F, 7.0F, 5.5F, 5.1F, 8.75F, 4.6F, new Item.Properties().setId(key("soul_spear")));
+    public static final Item FROST_SPEAR = new AdvancedSpearItem(ModToolMaterials.FROST, 1.35F, 1.4F, 0.4F, 2.5F, 7.0F, 5.5F, 5.1F, 8.75F, 4.6F, new Item.Properties().setId(key("frost_spear")));
 
     // Blocks
     public static final AdvancedBlockItem ASH_BLOCK = new AdvancedBlockItem(ModBlocks.ASH_BLOCK, new Item.Properties().useBlockDescriptionPrefix().setId(key("ash_block")));

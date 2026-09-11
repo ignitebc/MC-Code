@@ -103,19 +103,19 @@ public class TempConfig
             @Override
             public int getGoldBreakingSpeedMultiplier()
             {
-                return 20;
+                return 15;
             }
 
             @Override
             public int getEmeraldBreakingSpeedMultiplier()
             {
-                return 29;
+                return 18;
             }
 
             @Override
             public int getDiamondBreakingSpeedMultiplier()
             {
-                return 39;
+                return 21;
             }
         }
 

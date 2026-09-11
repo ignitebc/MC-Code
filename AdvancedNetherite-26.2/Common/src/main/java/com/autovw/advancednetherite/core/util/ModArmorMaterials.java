@@ -26,32 +26,32 @@ public final class ModArmorMaterials
 
     public static final ArmorMaterial ASH = register(37, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
         attribute.put(ArmorType.BOOTS, 4);   
-        attribute.put(ArmorType.LEGGINGS, 6);
-        attribute.put(ArmorType.CHESTPLATE, 8);
-        attribute.put(ArmorType.HELMET, 4);
-        attribute.put(ArmorType.BODY, 11);
-    }), 15, 3.5F, 0.06F, ModTags.REPAIRS_ASH_ARMOR, ModEquipmentAssets.ASH);
-    public static final ArmorMaterial SUNLIGHT = register(38, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
-        attribute.put(ArmorType.BOOTS, 5);
         attribute.put(ArmorType.LEGGINGS, 7);
         attribute.put(ArmorType.CHESTPLATE, 9);
-        attribute.put(ArmorType.HELMET, 5);
-        attribute.put(ArmorType.BODY, 12);
-    }), 20, 4.0F, 0.07F, ModTags.REPAIRS_SUNLIGHT_ARMOR, ModEquipmentAssets.SUNLIGHT);
-    public static final ArmorMaterial SOUL = register(39, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
-        attribute.put(ArmorType.BOOTS, 6);
+        attribute.put(ArmorType.HELMET, 4);
+        attribute.put(ArmorType.BODY, 11);
+    }), 20, 3.5F, 0.06F, ModTags.REPAIRS_ASH_ARMOR, ModEquipmentAssets.ASH);
+    public static final ArmorMaterial SUNLIGHT = register(38, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
+        attribute.put(ArmorType.BOOTS, 5);
         attribute.put(ArmorType.LEGGINGS, 8);
         attribute.put(ArmorType.CHESTPLATE, 10);
-        attribute.put(ArmorType.HELMET, 6);
-        attribute.put(ArmorType.BODY, 13);
-    }), 25, 4.5F, 0.08F, ModTags.REPAIRS_SOUL_ARMOR, ModEquipmentAssets.SOUL);
-    public static final ArmorMaterial FROST = register(40, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
-        attribute.put(ArmorType.BOOTS, 7);
+        attribute.put(ArmorType.HELMET, 5);
+        attribute.put(ArmorType.BODY, 12);
+    }), 25, 4.0F, 0.07F, ModTags.REPAIRS_SUNLIGHT_ARMOR, ModEquipmentAssets.SUNLIGHT);
+    public static final ArmorMaterial SOUL = register(39, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
+        attribute.put(ArmorType.BOOTS, 6);
         attribute.put(ArmorType.LEGGINGS, 9);
         attribute.put(ArmorType.CHESTPLATE, 11);
+        attribute.put(ArmorType.HELMET, 6);
+        attribute.put(ArmorType.BODY, 13);
+    }), 30, 4.5F, 0.08F, ModTags.REPAIRS_SOUL_ARMOR, ModEquipmentAssets.SOUL);
+    public static final ArmorMaterial FROST = register(40, Util.make(new EnumMap<>(ArmorType.class), (attribute) -> {
+        attribute.put(ArmorType.BOOTS, 7);
+        attribute.put(ArmorType.LEGGINGS, 10);
+        attribute.put(ArmorType.CHESTPLATE, 12);
         attribute.put(ArmorType.HELMET, 7);
         attribute.put(ArmorType.BODY, 14);
-    }), 30, 5.0F, 0.09F, ModTags.REPAIRS_FROST_ARMOR, ModEquipmentAssets.FROST);
+    }), 35, 5.0F, 0.09F, ModTags.REPAIRS_FROST_ARMOR, ModEquipmentAssets.FROST);
 
     /**
      * @param typeProtections       The amount of protection per slot

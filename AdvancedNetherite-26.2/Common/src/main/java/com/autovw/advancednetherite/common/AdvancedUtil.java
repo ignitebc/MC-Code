@@ -32,13 +32,13 @@ public class AdvancedUtil
     public static int getArmorDurabilityMultiplier(ArmorMaterial material)
     {
         if (material == ModArmorMaterials.ASH)
-            return 39;
+            return 38;
         if (material == ModArmorMaterials.SUNLIGHT)
-            return 41;
+            return 39;
         if (material == ModArmorMaterials.SOUL)
-            return 43;
+            return 40;
         if (material == ModArmorMaterials.FROST)
-            return 47;
+            return 41;
         return 0;
     }
 
