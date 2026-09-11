@@ -196,28 +196,34 @@ public class ImbuingMenu extends AbstractContainerMenu {
             this.input.removeItem(SUCCESS_SCROLL_SLOT, 1);
         }
 
-        int roll = level.getRandom().nextInt(100);
-        if (roll < successChance) {
+        // 성공 판정을 먼저 하고, 실패했을 때만 파괴 판정을 따로 굴린다.
+        // 한 번의 난수를 구간으로 나누면 파괴가 성공 확률까지 잠식해 실제 파괴율이 표시값보다 높아진다.
+        if (level.getRandom().nextInt(100) < successChance) {
             EnhancementHelper.setEnhancementLevel(equipment, attemptLevel);
             this.input.setItem(EQUIPMENT_SLOT, equipment);
             this.setEnhanceResult(EnhanceResult.SUCCESS, attemptLevel);
             this.broadcastEnhanceResult(player, level, equipmentName, EnhanceResult.SUCCESS, attemptLevel);
             level.playSound(null, blockPos, ModSoundEvents.SORCERER_COMPLETE_CAST_SOUND_EVENT.value(), SoundSource.BLOCKS, 1.0f, 1.0f);
-        } else if (roll < successChance + destroyChance && !protectionPresent) {
+            this.updateEnhanceInfo();
+            this.broadcastChanges();
+            return;
+        }
+
+        boolean destroyRolled = level.getRandom().nextInt(100) < destroyChance;
+        if (destroyRolled && !protectionPresent) {
             this.input.setItem(EQUIPMENT_SLOT, ItemStack.EMPTY);
             this.setEnhanceResult(EnhanceResult.DESTROYED, 0);
             this.broadcastEnhanceResult(player, level, equipmentName, EnhanceResult.DESTROYED, 0);
             level.playSound(null, blockPos, SoundEvents.ITEM_BREAK.value(), SoundSource.BLOCKS, 1.0f, 1.0f);
         } else {
-            boolean destructionPrevented = roll < successChance + destroyChance;
-            if (destructionPrevented) {
+            if (destroyRolled) {
                 this.input.removeItem(PROTECTION_SCROLL_SLOT, 1);
             }
             int failedLevel = Math.max(0, currentLevel - 1);
             EnhancementHelper.setEnhancementLevel(equipment, failedLevel);
             this.input.setItem(EQUIPMENT_SLOT, equipment);
             this.setEnhanceResult(EnhanceResult.FAILURE, failedLevel);
-            if (destructionPrevented) {
+            if (destroyRolled) {
                 this.broadcastProtectionResult(player, level, equipmentName, failedLevel);
             } else {
                 this.broadcastEnhanceResult(player, level, equipmentName, EnhanceResult.FAILURE, failedLevel);
