@@ -19,7 +19,6 @@ import dev.architectury.networking.NetworkManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
@@ -140,7 +139,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         Optional<Holder.Reference<Item>> bitcoinHolder = BuiltInRegistries.ITEM.get(BITCOIN_ID);
         if (bitcoinHolder.isEmpty())
         {
-            player.sendSystemMessage(Component.literal("비트코인 아이템을 찾을 수 없습니다."));
+            NetworkManager.sendToPlayer(player, new ClientboundAlertPacket("비트코인 아이템을 찾을 수 없습니다."));
             return;
         }
 
@@ -151,12 +150,12 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
             case DEPOSIT -> {
                 if (!isValidTransferAmount(packet.amount))
                 {
-                    player.sendSystemMessage(Component.literal("입금은 10개 단위로만 가능합니다."));
+                    NetworkManager.sendToPlayer(player, new ClientboundAlertPacket("입금은 10개 단위로만 가능합니다."));
                     return;
                 }
                 if (countItem(player.getInventory(), bitcoinItem) < packet.amount)
                 {
-                    player.sendSystemMessage(Component.literal("소지품에 비트코인이 부족합니다."));
+                    NetworkManager.sendToPlayer(player, new ClientboundAlertPacket("소지품에 비트코인이 부족합니다."));
                     return;
                 }
                 removeItem(player.getInventory(), bitcoinItem, packet.amount);
@@ -166,7 +165,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
             case WITHDRAW -> {
                 if (!isValidTransferAmount(packet.amount))
                 {
-                    player.sendSystemMessage(Component.literal("출금은 10개 단위로만 가능합니다."));
+                    NetworkManager.sendToPlayer(player, new ClientboundAlertPacket("출금은 10개 단위로만 가능합니다."));
                     return;
                 }
                 double taxAmount = packet.amount * WITHDRAW_TAX_RATE;
@@ -253,7 +252,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                 if (account.getPosition(packet.stockId) == null
                         || account.getPosition(packet.stockId).investedAmount() + 0.00000001 < packet.amount)
                 {
-                    player.sendSystemMessage(Component.literal("판매 가능한 투자 금액이 부족합니다."));
+                    NetworkManager.sendToPlayer(player, new ClientboundAlertPacket("판매 가능한 투자 금액이 부족합니다."));
                     return;
                 }
                 account = account.sell(packet.stockId, packet.amount, quote.priceKrw(), SELL_FEE_RATE);
