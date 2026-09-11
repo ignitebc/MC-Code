@@ -1,7 +1,6 @@
 package fuzs.illagerinvasion.common.world.item.enhancement;
 
 import fuzs.illagerinvasion.common.IllagerInvasion;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -10,7 +9,6 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
@@ -32,19 +30,15 @@ public final class EnhancementHelper {
     /** 강화 시도 1회당 소모되는 강화 원석 수 */
     public static final int ENHANCEMENT_GEM_COST = 1;
     /** 파괴 판정이 처음 생기는 강화 단계 */
-    public static final int DESTROY_CHANCE_START_LEVEL = 3;
-    /** 파괴 판정이 처음 생기는 단계의 파괴 확률 */
-    public static final int DESTROY_CHANCE_AT_START_LEVEL = 1;
-    /** 한 단계 오를 때마다 늘어나는 파괴 확률 */
-    public static final int DESTROY_CHANCE_STEP = 2;
-    /** 무기 한 단계당 오르는 공격력 */
-    public static final double ATTACK_DAMAGE_PER_LEVEL = 1.0D;
+    public static final int DESTROY_CHANCE_START_LEVEL = 1;
     /** 방어구 한 단계당 오르는 최대 체력. 하트 반 칸이 1이다. */
     public static final double MAX_HEALTH_PER_LEVEL = 1.0D;
     /** 도구 한 단계당 오르는 채굴 효율 */
     public static final double MINING_EFFICIENCY_PER_LEVEL = 0.1D;
-    /** 무기와 도구에 붙는 강화 속성 수정자 식별자 */
+    /** 무기와 도구의 공격력에 붙는 강화 속성 수정자 식별자 */
     public static final Identifier ENHANCEMENT_MODIFIER_ID = IllagerInvasion.id("enhancement");
+    /** 굴착 도구의 채굴 효율에 붙는 강화 속성 수정자 식별자 */
+    public static final Identifier ENHANCEMENT_MINING_MODIFIER_ID = IllagerInvasion.id("enhancement_mining");
     /** 방어구 부위별 강화 속성 수정자 식별자 */
     public static final Identifier HELMET_ENHANCEMENT_MODIFIER_ID = IllagerInvasion.id("enhancement_helmet");
     public static final Identifier CHESTPLATE_ENHANCEMENT_MODIFIER_ID = IllagerInvasion.id(
@@ -54,6 +48,17 @@ public final class EnhancementHelper {
     /** 강화 대상 장비를 데이터로 조정할 수 있도록 태그로 관리한다. */
     public static final TagKey<Item> ENHANCEABLE_EQUIPMENT = TagKey.create(Registries.ITEM,
             IllagerInvasion.id("enhanceable_equipment"));
+
+    /**
+     * 단계별 공격력 증가량. 도구 종류마다 곡선이 다르므로 계산식 대신 표로 둔다.
+     * 배열의 n번째 값이 n+1강의 증가량이다.
+     */
+    private static final int[] SWORD_AXE_ATTACK_BONUS = {1, 2, 3, 4, 5, 7, 9, 11, 13, 15};
+    private static final int[] PICKAXE_SHOVEL_ATTACK_BONUS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 12};
+    private static final int[] HOE_ATTACK_BONUS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 11};
+    /** 해당 단계를 시도할 때의 성공률과 파괴 확률 */
+    private static final int[] SUCCESS_CHANCE = {90, 80, 70, 60, 50, 40, 30, 20, 10, 5};
+    private static final int[] DESTROY_CHANCE = {1, 2, 3, 5, 7, 9, 11, 15, 25, 30};
 
     private static final String ENHANCEMENT_LEVEL_KEY = "EnhancementLevel";
     private static final Identifier ENHANCEMENT_GEM_ID = Identifier.fromNamespaceAndPath(
@@ -109,34 +114,57 @@ public final class EnhancementHelper {
         }
 
         if (enhancementLevel > 0) {
-            Holder<Attribute> attribute = null;
-            EquipmentSlotGroup slotGroup = null;
-            Identifier modifierId = ENHANCEMENT_MODIFIER_ID;
-            double amount = 0.0D;
-
-            if (itemStack.is(ItemTags.SWORDS)) {
-                attribute = Attributes.ATTACK_DAMAGE;
-                slotGroup = EquipmentSlotGroup.MAINHAND;
-                amount = ATTACK_DAMAGE_PER_LEVEL * enhancementLevel;
-            } else if (isEnhanceableTool(itemStack)) {
-                attribute = Attributes.MINING_EFFICIENCY;
-                slotGroup = EquipmentSlotGroup.MAINHAND;
-                amount = getMiningEfficiencyBonus(enhancementLevel);
-            } else if (isEnhanceableArmor(itemStack)) {
-                attribute = Attributes.MAX_HEALTH;
-                slotGroup = getArmorSlotGroup(itemStack);
-                modifierId = getArmorModifierId(itemStack);
-                amount = MAX_HEALTH_PER_LEVEL * enhancementLevel;
-            }
-
-            if (attribute != null) {
-                builder.add(attribute,
-                        new AttributeModifier(modifierId, amount, AttributeModifier.Operation.ADD_VALUE),
-                        slotGroup);
+            if (isEnhanceableArmor(itemStack)) {
+                builder.add(Attributes.MAX_HEALTH,
+                        new AttributeModifier(getArmorModifierId(itemStack),
+                                MAX_HEALTH_PER_LEVEL * enhancementLevel,
+                                AttributeModifier.Operation.ADD_VALUE),
+                        getArmorSlotGroup(itemStack));
+            } else {
+                int attackBonus = getAttackDamageBonus(itemStack, enhancementLevel);
+                if (attackBonus > 0) {
+                    builder.add(Attributes.ATTACK_DAMAGE,
+                            new AttributeModifier(ENHANCEMENT_MODIFIER_ID, attackBonus,
+                                    AttributeModifier.Operation.ADD_VALUE),
+                            EquipmentSlotGroup.MAINHAND);
+                }
+                if (isEnhanceableTool(itemStack)) {
+                    builder.add(Attributes.MINING_EFFICIENCY,
+                            new AttributeModifier(ENHANCEMENT_MINING_MODIFIER_ID,
+                                    getMiningEfficiencyBonus(enhancementLevel),
+                                    AttributeModifier.Operation.ADD_VALUE),
+                            EquipmentSlotGroup.MAINHAND);
+                }
             }
         }
 
         itemStack.set(DataComponents.ATTRIBUTE_MODIFIERS, builder.build());
+    }
+
+    /**
+     * 강화 단계에 해당하는 공격력 증가량.
+     *
+     * <p>검과 도끼, 곡괭이와 삽, 괭이가 서로 다른 곡선을 쓴다. 강화 대상이 아닌 아이템은 0을 돌려준다.
+     */
+    public static int getAttackDamageBonus(ItemStack itemStack, int enhancementLevel) {
+        int[] bonuses = getAttackBonusTable(itemStack);
+        if (bonuses == null || enhancementLevel <= 0) {
+            return 0;
+        }
+        return bonuses[Mth.clamp(enhancementLevel, 1, MAX_ENHANCEMENT_LEVEL) - 1];
+    }
+
+    private static int[] getAttackBonusTable(ItemStack itemStack) {
+        if (itemStack.is(ItemTags.SWORDS) || itemStack.is(ItemTags.AXES)) {
+            return SWORD_AXE_ATTACK_BONUS;
+        }
+        if (itemStack.is(ItemTags.PICKAXES) || itemStack.is(ItemTags.SHOVELS)) {
+            return PICKAXE_SHOVEL_ATTACK_BONUS;
+        }
+        if (itemStack.is(ItemTags.HOES)) {
+            return HOE_ATTACK_BONUS;
+        }
+        return null;
     }
 
     public static boolean isEnhanceableTool(ItemStack itemStack) {
@@ -155,6 +183,7 @@ public final class EnhancementHelper {
 
     private static boolean isEnhancementModifier(Identifier modifierId) {
         return ENHANCEMENT_MODIFIER_ID.equals(modifierId)
+                || ENHANCEMENT_MINING_MODIFIER_ID.equals(modifierId)
                 || HELMET_ENHANCEMENT_MODIFIER_ID.equals(modifierId)
                 || CHESTPLATE_ENHANCEMENT_MODIFIER_ID.equals(modifierId)
                 || LEGGINGS_ENHANCEMENT_MODIFIER_ID.equals(modifierId)
@@ -218,23 +247,21 @@ public final class EnhancementHelper {
     }
 
     /**
-     * 1강 100%에서 시작해 한 단계마다 10%씩 낮아져 10강에서 10%가 된다.
-     * 성공률 주문서 보너스를 더한 뒤 100%를 넘지 않도록 자른다.
+     * 단계별 성공률 표를 따른다. 성공률 주문서 보너스를 더한 뒤 100%를 넘지 않도록 자른다.
      */
     public static int getSuccessChance(int attemptLevel, int successScrollBonus) {
-        int baseChance = 100 - (attemptLevel - 1) * 10;
+        int baseChance = SUCCESS_CHANCE[Mth.clamp(attemptLevel, 1, MAX_ENHANCEMENT_LEVEL) - 1];
         return Mth.clamp(baseChance + successScrollBonus, 0, 100);
     }
 
     /**
-     * 3강 시도의 1%에서 시작해 한 단계마다 2%씩 올라가 10강 시도에서 15%가 된다.
-     * 1강과 2강 시도에서는 장비가 파괴되지 않는다.
+     * 단계별 파괴 확률 표를 따른다. 1강 시도부터 파괴 판정이 있다.
      */
     public static int getBaseDestroyChance(int attemptLevel) {
         if (attemptLevel < DESTROY_CHANCE_START_LEVEL) {
             return 0;
         }
-        return (attemptLevel - DESTROY_CHANCE_START_LEVEL) * DESTROY_CHANCE_STEP + DESTROY_CHANCE_AT_START_LEVEL;
+        return DESTROY_CHANCE[Mth.clamp(attemptLevel, 1, MAX_ENHANCEMENT_LEVEL) - 1];
     }
 
     /**
