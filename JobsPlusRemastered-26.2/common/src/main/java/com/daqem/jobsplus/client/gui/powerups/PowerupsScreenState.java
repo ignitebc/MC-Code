@@ -1,6 +1,7 @@
 package com.daqem.jobsplus.client.gui.powerups;
 
 import com.daqem.jobsplus.player.job.Job;
+import com.daqem.jobsplus.client.gui.powerups.tab.PowerupTab;
 import com.daqem.jobsplus.client.gui.powerups.widgets.PowerupItemWidget;
 
 public class PowerupsScreenState
@@ -10,6 +11,7 @@ public class PowerupsScreenState
     private int coins;
     private PowerupItemWidget previewWidget;
     private boolean detailsPanelVisible;
+    private PowerupTab selectedTab = PowerupTab.NORMAL;
 
     public PowerupsScreenState(Job job, int coins)
     {
@@ -23,6 +25,14 @@ public class PowerupsScreenState
 
     public void setPreviewWidget(PowerupItemWidget widget) {
         this.previewWidget = widget;
+    }
+
+    public PowerupTab getSelectedTab() {
+        return selectedTab;
+    }
+
+    public void setSelectedTab(PowerupTab selectedTab) {
+        this.selectedTab = selectedTab;
     }
 
     public boolean isDetailsPanelVisible() {
