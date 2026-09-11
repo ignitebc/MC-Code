@@ -3,10 +3,12 @@ package com.daqem.jobsplus.networking.c2s;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
+import com.daqem.jobsplus.networking.s2c.ClientboundAlertPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.job.Job;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
@@ -51,47 +53,53 @@ public class ServerboundStartPowerupPacket implements CustomPacketPayload {
             PowerupInstance powerupInstance = PowerupInstance.of(packet.powerupLocation);
 
             if (job == null) {
-                serverPlayer.jobsplus$getServerPlayer()
-                        .sendSystemMessage(JobsPlus.translatable("error.job_not_found", packet.jobLocation.toString()));
+                sendAlert(serverPlayer, JobsPlus.translatable("error.job_not_found", packet.jobLocation.toString()));
                 return;
             }
             if (powerupInstance == null) {
-                serverPlayer.jobsplus$getServerPlayer().sendSystemMessage(
+                sendAlert(serverPlayer,
                         JobsPlus.translatable("error.powerup_not_found", packet.powerupLocation.toString()));
                 return;
             }
             if (!powerupInstance.getJobLocation().equals(job.getJobInstance().getLocation())) {
-                serverPlayer.jobsplus$getServerPlayer().sendSystemMessage(
+                sendAlert(serverPlayer,
                         JobsPlus.translatable("error.could_not_add_powerup", powerupInstance.getName()));
                 return;
             }
             if (serverPlayer.jobsplus$getCoins() < powerupInstance.getPrice()) {
-                serverPlayer.jobsplus$getServerPlayer()
-                        .sendSystemMessage(JobsPlus.translatable("error.not_enough_coins"));
+                sendAlert(serverPlayer, JobsPlus.translatable("error.not_enough_coins"));
                 return;
             }
             if (job.getLevel() < powerupInstance.getRequiredLevel()) {
-                serverPlayer.jobsplus$getServerPlayer()
-                        .sendSystemMessage(JobsPlus.translatable("error.not_high_enough_level"));
+                sendAlert(serverPlayer, JobsPlus.translatable("error.not_high_enough_level"));
                 return;
             }
             if (job.getPowerupManager().getPowerup(powerupInstance).isPresent()) {
-                serverPlayer.jobsplus$getServerPlayer().sendSystemMessage(
+                sendAlert(serverPlayer,
                         JobsPlus.translatable("error.powerup_already_owned", powerupInstance.getName()));
                 return;
             }
             if (powerupInstance.getParent() != null && job.getPowerupManager().getPowerup(powerupInstance.getParent()).isEmpty()) {
-                serverPlayer.jobsplus$getServerPlayer().sendSystemMessage(
+                sendAlert(serverPlayer,
                         JobsPlus.translatable("error.could_not_add_powerup", powerupInstance.getName()));
                 return;
             }
 
             if (job.getPowerupManager().addPowerup(serverPlayer, job, powerupInstance)) {
                 serverPlayer.jobsplus$setCoins(serverPlayer.jobsplus$getCoins() - powerupInstance.getPrice());
+                sendAlert(serverPlayer,
+                        JobsPlus.translatable("gui.confirmation.powerup_purchased", powerupInstance.getName()));
             } else {
-                serverPlayer.jobsplus$getServerPlayer().sendSystemMessage(
+                sendAlert(serverPlayer,
                         JobsPlus.translatable("error.could_not_add_powerup", powerupInstance.getName()));
             }
         }
+    }
+
+    /** 스킬 구매 결과는 화면을 열어 둔 채로 확인하므로 채팅이 아니라 모달 알림으로 알린다. */
+    private static void sendAlert(JobsServerPlayer serverPlayer, Component message)
+    {
+        NetworkManager.sendToPlayer(
+                serverPlayer.jobsplus$getServerPlayer(), new ClientboundAlertPacket(message));
     }
 }

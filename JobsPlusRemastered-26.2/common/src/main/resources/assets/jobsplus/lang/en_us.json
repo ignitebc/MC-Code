@@ -99,6 +99,7 @@
   "jobsplus.gui.confirmation.select_job": "정말 %s%s 선택하시겠습니까?",
   "jobsplus.gui.confirmation.job_selected": "%s%s 선택하였습니다.",
   "jobsplus.gui.confirmation.purchase_powerup": "정말로 %s 스킬을 %s 코인으로 구매하시겠습니까?",
+  "jobsplus.gui.confirmation.powerup_purchased": "%s 스킬을 구매하였습니다.",
   "jobsplus.gui.confirmation.yes": "예",
   "jobsplus.gui.confirmation.select": "선택",
   "jobsplus.gui.confirmation.ok": "확인",
