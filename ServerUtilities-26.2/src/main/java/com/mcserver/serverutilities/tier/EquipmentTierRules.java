@@ -3,6 +3,7 @@ package com.mcserver.serverutilities.tier;
 import com.mcserver.serverutilities.ServerUtilities;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
@@ -17,8 +18,10 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.Tool;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * 장비 등급의 추첨과 수치 적용을 담당한다.
@@ -35,6 +38,8 @@ import java.util.Optional;
 public final class EquipmentTierRules {
     /** 등급을 커스텀 데이터에 기록할 때 쓰는 키 */
     private static final String TIER_KEY = "EquipmentTier";
+    /** 등급을 적용할 당시의 아이템. 업그레이드로 재질이 바뀐 것을 알아내는 데 쓴다. */
+    private static final String TIER_ITEM_KEY = "EquipmentTierItem";
 
     /** 플레이어의 기본 공격력. 기준표의 공격력은 이 값을 포함하므로 배율도 함께 적용한다. */
     private static final double PLAYER_BASE_ATTACK_DAMAGE = 1.0D;
@@ -60,19 +65,42 @@ public final class EquipmentTierRules {
         RandomSource random = player.getRandom();
         var inventory = player.getInventory();
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
-            assignIfMissing(inventory.getItem(slot), random);
+            ensureTier(inventory.getItem(slot), random);
         }
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            assignIfMissing(player.getItemBySlot(slot), random);
+            ensureTier(player.getItemBySlot(slot), random);
         }
     }
 
-    /** 등급이 없는 장비에 등급을 추첨해 붙인다. 이미 있으면 그대로 둔다. */
-    public static void assignIfMissing(ItemStack stack, RandomSource random) {
-        if (!isTierable(stack) || readTier(stack) != null) return;
+    /**
+     * 등급이 없으면 추첨해 붙이고, 이미 있으면 현재 아이템 기준으로 수치가 맞는지 확인한다.
+     *
+     * <p>대장장이 작업대로 상위 재질이 되면 등급 기록은 그대로 따라오지만 내구도와 속성은
+     * 이전 재질에서 계산한 값이 남는다. 그래서 기록해 둔 아이템과 달라졌으면 같은 등급으로
+     * 다시 계산한다. 등급 자체는 바뀌지 않으므로 1티어 다이아몬드를 올리면 계속 1티어로 남는다.
+     */
+    public static void ensureTier(ItemStack stack, RandomSource random) {
+        if (!isTierable(stack)) return;
 
-        EquipmentTier[] tiers = EquipmentTier.values();
-        setTier(stack, tiers[random.nextInt(tiers.length)]);
+        EquipmentTier tier = readTier(stack);
+        if (tier == null) {
+            EquipmentTier[] tiers = EquipmentTier.values();
+            setTier(stack, tiers[random.nextInt(tiers.length)]);
+            return;
+        }
+
+        if (!itemId(stack).equals(readTierItemId(stack))) {
+            setTier(stack, tier);
+        }
+    }
+
+    private static String itemId(ItemStack stack) {
+        return BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+    }
+
+    private static String readTierItemId(ItemStack stack) {
+        CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        return customData.copyTag().getStringOr(TIER_ITEM_KEY, "");
     }
 
     /**
@@ -87,9 +115,13 @@ public final class EquipmentTierRules {
         return EquipmentTier.byLevel(customData.copyTag().getIntOr(TIER_KEY, 0));
     }
 
-    /** 등급을 기록하고 해당 배율을 수치에 반영한다. */
+    /** 등급과 적용 대상 아이템을 기록하고 해당 배율을 수치에 반영한다. */
     public static void setTier(ItemStack stack, EquipmentTier tier) {
-        CustomData.update(DataComponents.CUSTOM_DATA, stack, (CompoundTag tag) -> tag.putInt(TIER_KEY, tier.level()));
+        String appliedTo = itemId(stack);
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, (CompoundTag tag) -> {
+            tag.putInt(TIER_KEY, tier.level());
+            tag.putString(TIER_ITEM_KEY, appliedTo);
+        });
         applyTier(stack, tier);
     }
 
@@ -152,11 +184,19 @@ public final class EquipmentTierRules {
                 defaults.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
         ItemAttributeModifiers current = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, baseModifiers);
 
+        // 아이템 기본 수정자는 언제나 현재 아이템의 것을 쓴다. 대장장이 작업대로 재질이 바뀌면
+        // 이전 재질의 기본 수정자가 그대로 남아 있으므로 같은 식별자는 새 것으로 덮는다.
+        Set<Identifier> baseModifierIds = new HashSet<>();
         ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
+        for (ItemAttributeModifiers.Entry entry : baseModifiers.modifiers()) {
+            baseModifierIds.add(entry.modifier().id());
+            builder.add(entry.attribute(), entry.modifier(), entry.slot());
+        }
+        // 강화 같은 다른 출처의 수정자는 그대로 둔다.
         for (ItemAttributeModifiers.Entry entry : current.modifiers()) {
-            if (!isTierModifier(entry.modifier().id())) {
-                builder.add(entry.attribute(), entry.modifier(), entry.slot());
-            }
+            Identifier modifierId = entry.modifier().id();
+            if (isTierModifier(modifierId) || baseModifierIds.contains(modifierId)) continue;
+            builder.add(entry.attribute(), entry.modifier(), entry.slot());
         }
 
         for (ItemAttributeModifiers.Entry entry : baseModifiers.modifiers()) {
