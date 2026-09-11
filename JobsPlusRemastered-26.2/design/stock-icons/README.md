@@ -31,15 +31,6 @@ centers these rectangular images vertically within the existing square icon
 slots and derives the displayed height from the original aspect ratio.
 Other stock icons keep their existing square rendering.
 
-The previous `samsung-sdi.svg` and `samsung-electro-mechanics.svg` files are
-retained for provenance; they are no longer the mapped sources for these IDs.
-Their original references are:
-
-- Samsung SDI CI: https://www.samsungsdi.com/about-sdi/ci.html
-  SVG: https://www.samsungsdi.com/resources/images/about_sdi/ci_img_09.svg
-- Samsung Electro-Mechanics: https://www.samsungsem.com/global/index.do
-  SVG: https://www.samsungsem.com/resources/images/global/common/logo_oval.svg
-
 Brand names and marks remain the property of their respective owners.
 
 The remaining SVG artwork was fitted into a square with transparent padding and
