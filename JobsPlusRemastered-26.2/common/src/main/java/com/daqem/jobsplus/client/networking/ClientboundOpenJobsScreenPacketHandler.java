@@ -33,49 +33,55 @@ public class ClientboundOpenJobsScreenPacketHandler {
             return;
         }
 
+        // 알림 창이 떠 있는 동안에도 주식 정산 등으로 화면 갱신 패킷이 올 수 있다.
+        // 갱신 대상은 알림에 가려진 직업 화면이므로 그 화면을 먼저 찾는다.
+        @Nullable
+        ConfirmationScreen openAlert = findOpenAlert(mc.gui.screen());
+        @Nullable
+        JobsScreen currentJobsScreen = findJobsScreen(mc.gui.screen());
         @Nullable
         Screen previousScreen = null;
-        if (mc.gui.screen() instanceof JobsScreen jobsScreen) {
-            previousScreen = jobsScreen.getPreviousScreen();
+        if (currentJobsScreen != null) {
+            previousScreen = currentJobsScreen.getPreviousScreen();
         }
 
-        if (mc.gui.screen() instanceof JobsScreen jobsScreen) {
-            JobsScreenState oldState = jobsScreen.getState();
+        JobsScreenState newState;
+        if (currentJobsScreen != null) {
+            newState = copyViewState(currentJobsScreen.getState(), jobs, coins, maxJobs, packet);
+        } else {
+            newState = new JobsScreenState(jobs, coins, maxJobs, null, RightTab.EXPERIENCE, packet.getStockAccount());
+        }
 
-            RightTab keepTab = oldState.getSelectedRightTab();
-            Job keepJob = findSameJobOrFirst(jobs, oldState.getSelectedJob());
-            @Nullable
-            ShopOffer keepOffer = oldState.getSelectedShopOffer();
-            String keepStockId = oldState.getSelectedStockId();
-            String keepHoldingStockId = oldState.getSelectedHoldingStockId();
-            var keepStockPanelMode = oldState.getStockPanelMode();
-            var keepStockPositionSide = oldState.getSelectedStockPositionSide();
-            int keepStockLeverage = oldState.getSelectedStockLeverage();
-
-            JobsScreenState newState = new JobsScreenState(
-                    jobs, coins, maxJobs, keepJob, keepTab, packet.getStockAccount());
-            newState.setSelectedShopOffer(keepOffer);
-            newState.setSelectedStockId(keepStockId);
-            newState.setSelectedHoldingStockId(keepHoldingStockId);
-            newState.setStockPanelMode(keepStockPanelMode);
-            newState.setSelectedStockPositionSide(keepStockPositionSide);
-            newState.setSelectedStockLeverage(keepStockLeverage);
-
-            mc.gui.setScreen(new JobsScreen(newState, previousScreen));
-            showPendingSelectionAlert(mc, jobs);
+        mc.gui.setScreen(new JobsScreen(newState, previousScreen));
+        if (showPendingSelectionAlert(mc, jobs)) {
             return;
         }
-
-        mc.gui.setScreen(new JobsScreen(
-                new JobsScreenState(jobs, coins, maxJobs, null, RightTab.EXPERIENCE, packet.getStockAccount()),
-                previousScreen));
-        showPendingSelectionAlert(mc, jobs);
+        restoreOpenAlert(mc, openAlert);
     }
 
-    private static void showPendingSelectionAlert(Minecraft mc, List<Job> jobs) {
+    private static JobsScreenState copyViewState(JobsScreenState oldState, List<Job> jobs, int coins, int maxJobs,
+            ClientboundOpenJobsScreenPacket packet) {
+        RightTab keepTab = oldState.getSelectedRightTab();
+        Job keepJob = findSameJobOrFirst(jobs, oldState.getSelectedJob());
+        @Nullable
+        ShopOffer keepOffer = oldState.getSelectedShopOffer();
+
+        JobsScreenState newState = new JobsScreenState(
+                jobs, coins, maxJobs, keepJob, keepTab, packet.getStockAccount());
+        newState.setSelectedShopOffer(keepOffer);
+        newState.setSelectedStockId(oldState.getSelectedStockId());
+        newState.setSelectedHoldingStockId(oldState.getSelectedHoldingStockId());
+        newState.setStockPanelMode(oldState.getStockPanelMode());
+        newState.setSelectedStockPositionSide(oldState.getSelectedStockPositionSide());
+        newState.setSelectedStockLeverage(oldState.getSelectedStockLeverage());
+        return newState;
+    }
+
+    /** @return 완료 알림을 띄웠으면 {@code true} */
+    private static boolean showPendingSelectionAlert(Minecraft mc, List<Job> jobs) {
         String jobName = PendingJobSelectionAlert.consumeIfSelected(jobs);
         if (jobName == null) {
-            return;
+            return false;
         }
 
         Component message = JobsPlus.translatable(
@@ -83,6 +89,35 @@ public class ClientboundOpenJobsScreenPacketHandler {
         mc.gui.setScreen(new ConfirmationScreen(
                 mc.gui.screen(),
                 ConfirmationScreenState.alert(message, JobsPlus.translatable("gui.confirmation.ok"))));
+        return true;
+    }
+
+    /** 갱신 전에 떠 있던 알림은 갱신된 화면 위에 그대로 다시 올려 준다. */
+    private static void restoreOpenAlert(Minecraft mc, @Nullable ConfirmationScreen openAlert) {
+        if (openAlert == null) {
+            return;
+        }
+        mc.gui.setScreen(new ConfirmationScreen(mc.gui.screen(), openAlert.getState()));
+    }
+
+    @Nullable
+    private static ConfirmationScreen findOpenAlert(@Nullable Screen currentScreen) {
+        if (currentScreen instanceof ConfirmationScreen confirmationScreen && confirmationScreen.isAlert()) {
+            return confirmationScreen;
+        }
+        return null;
+    }
+
+    @Nullable
+    private static JobsScreen findJobsScreen(@Nullable Screen currentScreen) {
+        Screen screen = currentScreen;
+        while (screen instanceof ConfirmationScreen confirmationScreen) {
+            screen = confirmationScreen.getPreviousScreen();
+        }
+        if (screen instanceof JobsScreen jobsScreen) {
+            return jobsScreen;
+        }
+        return null;
     }
 
     private static Job findSameJobOrFirst(List<Job> newJobs, @Nullable Job oldSelected) {
