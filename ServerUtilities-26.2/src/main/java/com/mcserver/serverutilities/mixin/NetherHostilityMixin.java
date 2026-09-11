@@ -2,6 +2,7 @@ package com.mcserver.serverutilities.mixin;
 
 import com.mcserver.serverutilities.monster.NetherPlayerTargetGoal;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.GoalSelector;
 import org.spongepowered.asm.mixin.Final;
@@ -26,8 +27,8 @@ public abstract class NetherHostilityMixin {
         }
 
         EntityType<?> entityType = mob.getType();
-        boolean affectedMob = entityType == EntityType.ZOMBIFIED_PIGLIN
-                || entityType == EntityType.ENDERMAN;
+        boolean affectedMob = entityType == EntityTypes.ZOMBIFIED_PIGLIN
+                || entityType == EntityTypes.ENDERMAN;
 
         if (!affectedMob) {
             return;
