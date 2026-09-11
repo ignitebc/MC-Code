@@ -32,7 +32,7 @@ abstract class EquipmentTierTooltipMixin {
 
         // 반환된 목록이 수정 가능하다고 보장되지 않으므로 새 목록에 담아 돌려준다.
         List<Component> lines = new ArrayList<>(callback.getReturnValue());
-        Component tierLine = Component.literal(tier.label() + "티어").withStyle(ChatFormatting.YELLOW);
+        Component tierLine = Component.literal(tier.label() + "티어").withStyle(ChatFormatting.RED);
         lines.add(Math.min(TIER_LINE_INDEX, lines.size()), tierLine);
         callback.setReturnValue(lines);
     }
