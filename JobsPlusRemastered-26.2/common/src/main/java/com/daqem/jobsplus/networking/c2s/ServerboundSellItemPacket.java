@@ -2,6 +2,7 @@ package com.daqem.jobsplus.networking.c2s;
 
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
+import com.daqem.jobsplus.networking.s2c.ClientboundAlertPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.PlayerItemDelivery;
@@ -11,6 +12,7 @@ import dev.architectury.networking.NetworkManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
@@ -107,7 +109,7 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
                     packet.outputItemId,
                     packet.outputAmount,
                     player.getName().getString());
-            player.sendSystemMessage(JobsPlus.translatable("error.shop_offer_not_found"));
+            sendAlert(player, JobsPlus.translatable("error.shop_offer_not_found"));
             return;
         }
 
@@ -115,12 +117,12 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
         Optional<Holder.Reference<Item>> outputHolder = BuiltInRegistries.ITEM.get(packet.outputItemId);
 
         if (inputHolder.isEmpty()) {
-            player.sendSystemMessage(JobsPlus.translatable("error.shop_input_item_not_found", packet.inputItemId.toString()));
+            sendAlert(player, JobsPlus.translatable("error.shop_input_item_not_found", packet.inputItemId.toString()));
             return;
         }
 
         if (outputHolder.isEmpty()) {
-            player.sendSystemMessage(JobsPlus.translatable("error.shop_output_item_not_found", packet.outputItemId.toString()));
+            sendAlert(player, JobsPlus.translatable("error.shop_output_item_not_found", packet.outputItemId.toString()));
             return;
         }
 
@@ -139,7 +141,7 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
         }
 
         if (inputCount < packet.inputAmount) {
-            player.sendSystemMessage(JobsPlus.translatable(
+            sendAlert(player, JobsPlus.translatable(
                     "error.not_enough_items",
                     inputItem.getName(new ItemStack(inputItem)),
                     packet.inputAmount));
@@ -182,12 +184,19 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
                         serverPlayer.jobsplus$getEffectiveMaxJobs(),
                         serverPlayer.jobsplus$getStockAccount())) ;
 
-        player.sendSystemMessage(JobsPlus.translatable(
+        // 화면 갱신 패킷보다 뒤에 보내야 새로 만들어진 상점 화면 위에 알림이 남는다.
+        sendAlert(player, JobsPlus.translatable(
                 "gui.jobs.shop.sold",
                 inputItem.getName(new ItemStack(inputItem)),
                 packet.inputAmount,
                 outputItem.getName(new ItemStack(outputItem)),
                 packet.outputAmount));
+    }
+
+    /** 상점 결과는 화면을 열어 둔 채로 확인하므로 채팅이 아니라 모달 알림으로 알린다. */
+    private static void sendAlert(ServerPlayer player, Component message)
+    {
+        NetworkManager.sendToPlayer(player, new ClientboundAlertPacket(message));
     }
 
 }
