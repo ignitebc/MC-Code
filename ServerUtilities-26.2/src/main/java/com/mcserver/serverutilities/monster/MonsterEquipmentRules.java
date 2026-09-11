@@ -15,6 +15,9 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 public final class MonsterEquipmentRules {
+    /** 방어구와 무기 각각의 지급 확률. 두 추첨은 서로 영향을 주지 않는다. */
+    private static final int EQUIPMENT_CHANCE_DENOMINATOR = 5;
+
     private static final EquipmentSlot[] ARMOR_SLOTS = {
             EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
     };
@@ -54,26 +57,34 @@ public final class MonsterEquipmentRules {
         if (state.serverutilities$equipmentRolled()) return;
 
         if (!isEquippableMonster(mob)) {
-            state.serverutilities$finishEquipmentRoll(false);
+            state.serverutilities$finishEquipmentRoll(false, false);
             return;
         }
 
-        // 부위별 추첨이 아니라 개체당 한 번 추첨하여 당첨 개체에 풀세트를 지급한다.
-        boolean equipped = mob.getRandom().nextInt(5) == 0;
-        state.serverutilities$finishEquipmentRoll(equipped);
-        if (!equipped) return;
+        // 방어구와 무기를 따로 추첨하므로 한쪽만 갖춘 개체도 나온다.
+        boolean armorEquipped = rollEquipment(mob);
+        boolean weaponEquipped = rollEquipment(mob);
+        state.serverutilities$finishEquipmentRoll(armorEquipped, weaponEquipped);
 
-        Item[] armor = ARMOR_SETS[mob.getRandom().nextInt(ARMOR_SETS.length)];
-        for (int i = 0; i < ARMOR_SLOTS.length; i++) {
-            mob.setItemSlot(ARMOR_SLOTS[i], new ItemStack(armor[i]));
+        if (armorEquipped) {
+            Item[] armor = ARMOR_SETS[mob.getRandom().nextInt(ARMOR_SETS.length)];
+            for (int i = 0; i < ARMOR_SLOTS.length; i++) {
+                mob.setItemSlot(ARMOR_SLOTS[i], new ItemStack(armor[i]));
+            }
         }
-        mob.setItemSlot(EquipmentSlot.MAINHAND, createWeapon(mob, MELEE_WEAPONS));
-        mob.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
-        preventEquipmentDrops(mob);
+        if (weaponEquipped) {
+            mob.setItemSlot(EquipmentSlot.MAINHAND, createWeapon(mob, MELEE_WEAPONS));
+            mob.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+        }
+        preventEquipmentDrops(mob, armorEquipped, weaponEquipped);
     }
 
     private static boolean isOverworld(Mob mob) {
         return Level.OVERWORLD.equals(mob.level().dimension());
+    }
+
+    private static boolean rollEquipment(Mob mob) {
+        return mob.getRandom().nextInt(EQUIPMENT_CHANCE_DENOMINATOR) == 0;
     }
 
     // TACZ의 선택적 Mixin이 로드된 총기를 이 무기 후보군에 함께 넣는다.
@@ -81,11 +92,15 @@ public final class MonsterEquipmentRules {
         return new ItemStack(meleeWeapons.get(mob.getRandom().nextInt(meleeWeapons.size())));
     }
 
-    public static void preventEquipmentDrops(Mob mob) {
-        for (EquipmentSlot slot : ARMOR_SLOTS) mob.setDropChance(slot, 0.0f);
-        mob.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
-        mob.setDropChance(EquipmentSlot.OFFHAND, 0.0f);
+    public static void preventEquipmentDrops(Mob mob, boolean armorEquipped, boolean weaponEquipped) {
+        if (armorEquipped) {
+            for (EquipmentSlot slot : ARMOR_SLOTS) mob.setDropChance(slot, 0.0f);
+        }
+        if (weaponEquipped) {
+            mob.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
+            mob.setDropChance(EquipmentSlot.OFFHAND, 0.0f);
+        }
         // 줍기로 지급 장비를 교체해 확정 드롭 상태가 되는 것을 방지한다.
-        mob.setCanPickUpLoot(false);
+        if (armorEquipped || weaponEquipped) mob.setCanPickUpLoot(false);
     }
 }
