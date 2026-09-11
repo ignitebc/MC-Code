@@ -6,7 +6,7 @@ import com.daqem.jobsplus.stock.StockMarketSnapshot;
 import com.daqem.jobsplus.stock.StockQuote;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import com.daqem.jobsplus.networking.StockScreenSync;
-import com.daqem.jobsplus.networking.s2c.ClientboundStockAlertPacket;
+import com.daqem.jobsplus.networking.s2c.ClientboundAlertPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundStockSnapshotPacket;
 import com.daqem.jobsplus.stock.SnapshotStatus;
 import com.daqem.jobsplus.stock.StockCatalog;
@@ -131,7 +131,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
             {
                 amountType = "입출금";
             }
-            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+            NetworkManager.sendToPlayer(player, new ClientboundAlertPacket(
                     "단일 " + amountType + " 수량은 최대 1,000개입니다."));
             return;
         }
@@ -173,7 +173,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                 double requiredBalance = packet.amount + taxAmount;
                 if (account.balance() + 0.00000001 < requiredBalance)
                 {
-                    NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                    NetworkManager.sendToPlayer(player, new ClientboundAlertPacket(
                             "0.2% 소득세를 포함한 보유 자산이 부족하여 출금할 수 없습니다."));
                     return;
                 }
@@ -185,7 +185,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
             case BUY -> {
                 if (!StockPosition.isAllowedLeverage(packet.leverage))
                 {
-                    NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                    NetworkManager.sendToPlayer(player, new ClientboundAlertPacket(
                             "주식 배율은 기본, X2, X3, X5, X10, X15, X20만 선택할 수 있습니다."));
                     return;
                 }
@@ -201,7 +201,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                 account = jobsServerPlayer.jobsplus$getStockAccount();
                 if (account.balance() + 0.00000001 < packet.amount)
                 {
-                    NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                    NetworkManager.sendToPlayer(player, new ClientboundAlertPacket(
                             "주식 계좌의 비트코인이 부족합니다.\n입출금 메뉴에서 먼저 입금해 주세요."));
                     return;
                 }
@@ -210,7 +210,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                         && (existingPosition.side() != packet.positionSide
                         || existingPosition.leverage() != packet.leverage))
                 {
-                    NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                    NetworkManager.sendToPlayer(player, new ClientboundAlertPacket(
                             "같은 종목에는 하나의 포지션만 보유할 수 있습니다.\n"
                                     + "기존 포지션을 모두 판매한 후 변경해 주세요."));
                     return;
@@ -226,7 +226,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                 );
                 if (!queued)
                 {
-                    NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+                    NetworkManager.sendToPlayer(player, new ClientboundAlertPacket(
                             "이 종목은 이미 구매 예약을 확인하고 있습니다.\n"
                                     + "예약 결과가 나온 뒤 다시 거래해 주세요."));
                     return;
@@ -282,7 +282,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         StockScreenSync.send(jobsServerPlayer);
         if (completedMessage != null)
         {
-            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(completedMessage, "확인"));
+            NetworkManager.sendToPlayer(player, new ClientboundAlertPacket(completedMessage, "확인"));
         }
     }
 
@@ -306,7 +306,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         // 시청 상태와 무관하게 조작된 패킷으로 거래하지 못하도록 실제 주식 탭 진입 여부를 확인한다.
         if (!StockMarketTicker.isViewing(player))
         {
-            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+            NetworkManager.sendToPlayer(player, new ClientboundAlertPacket(
                     "주식 탭을 연 상태에서만 거래할 수 있습니다."));
             return null;
         }
@@ -315,7 +315,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
 
         if (StockMarketTicker.hasPendingBuyOrder(player, packet.stockId))
         {
-            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+            NetworkManager.sendToPlayer(player, new ClientboundAlertPacket(
                     "이 종목의 구매 예약을 안전하게 확인하고 있습니다.\n"
                             + "확인이 끝날 때까지 추가 구매와 판매는 잠시 기다려 주세요."));
             return null;
@@ -353,7 +353,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         }
         if (quote == null)
         {
-            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket("거래할 수 없는 종목입니다."));
+            NetworkManager.sendToPlayer(player, new ClientboundAlertPacket("거래할 수 없는 종목입니다."));
             return null;
         }
 
@@ -365,7 +365,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
         }
         if (!StockMarketTicker.isPositionCaughtUp(player, packet.stockId, snapshot.marketMinute()))
         {
-            NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(
+            NetworkManager.sendToPlayer(player, new ClientboundAlertPacket(
                     "안전한 정산을 위해 아직 확인하지 못한 가격 변동을 점검하고 있습니다.\n"
                             + "점검이 끝나면 다시 거래할 수 있습니다."));
             return null;
@@ -376,7 +376,7 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
     private static void rejectAndResync(ServerPlayer player, StockMarketSnapshot snapshot, String reason)
     {
         NetworkManager.sendToPlayer(player, new ClientboundStockSnapshotPacket(snapshot));
-        NetworkManager.sendToPlayer(player, new ClientboundStockAlertPacket(reason));
+        NetworkManager.sendToPlayer(player, new ClientboundAlertPacket(reason));
     }
 
     private static boolean isValidTransferAmount(int amount)
