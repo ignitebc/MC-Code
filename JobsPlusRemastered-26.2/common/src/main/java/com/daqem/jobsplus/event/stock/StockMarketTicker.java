@@ -4,6 +4,7 @@ import com.daqem.jobsplus.networking.StockScreenSync;
 import com.daqem.jobsplus.networking.c2s.ShopTransactionRateLimiter;
 import com.daqem.jobsplus.networking.c2s.StockTransactionRateLimiter;
 import com.daqem.jobsplus.networking.c2s.StockViewRateLimiter;
+import com.daqem.jobsplus.networking.s2c.ClientboundAlertPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundStockSnapshotPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.stock.StockAccount;
@@ -531,18 +532,31 @@ public final class StockMarketTicker
         String stockName = StockCatalog.getStockName(result.stockId());
         if (result.filled())
         {
-            player.sendSystemMessage(Component.literal(
-                    "[주식] " + stockName + " " + result.side().getDisplayName() + " "
-                            + StockPosition.getLeverageDisplayName(result.leverage())
-                            + " 구매 예약의 진입 가격이 확정되었습니다."
-            ));
+            sendBuyOrderResult(player, stockName + " " + result.side().getDisplayName() + " "
+                    + StockPosition.getLeverageDisplayName(result.leverage())
+                    + " 구매 예약의 진입 가격이 확정되었습니다.");
         }
         else
         {
-            player.sendSystemMessage(Component.literal(
-                    "[주식] " + stockName + " 구매 예약이 취소되었습니다. 투자금은 계좌로 반환되었습니다."
-            ));
+            sendBuyOrderResult(player,
+                    stockName + " 구매 예약이 취소되었습니다.\n투자금은 계좌로 반환되었습니다.");
         }
+    }
+
+    /**
+     * 구매 예약 결과는 주문한 지 한참 뒤에 나온다.
+     * <p>
+     * 주식 탭을 보고 있으면 화면 뒤의 채팅을 놓치기 쉬우므로 모달 알림으로 알리고,
+     * 화면을 닫고 다른 일을 하는 중이라면 게임을 끊지 않도록 채팅으로 알린다.
+     */
+    private static void sendBuyOrderResult(ServerPlayer player, String message)
+    {
+        if (isViewing(player))
+        {
+            NetworkManager.sendToPlayer(player, new ClientboundAlertPacket(message, "확인"));
+            return;
+        }
+        player.sendSystemMessage(Component.literal("[주식] " + message.replace('\n', ' ')));
     }
 
     /**
