@@ -196,10 +196,10 @@ Java 25 환경에서 모듈 폴더 안에서 실행합니다.
 작업 공간 루트에서 수집기 회귀 검사는 다음과 같습니다. 임시 폴더와 대체 빌드 함수를 사용하므로 실제 수집 폴더나 전체 모드를 빌드하지 않습니다.
 
 ```powershell
-python -m unittest discover -s Build_File -p test_collect_fabric_jars.py
+python -m unittest discover -s Build_File-26.2 -p test_collect_fabric_jars.py
 ```
 
-전체 빌드·수집은 `python Build_File/collect_fabric_jars.py`로 수행합니다. 대상은 11개이며, 빌드·검증·임시 복사가 성공한 후 결과를 교체합니다.
+전체 빌드·수집은 `python Build_File-26.2/collect_fabric_jars.py`로 수행합니다. 대상은 11개이며, 빌드·검증·임시 복사가 성공한 후 결과를 교체합니다.
 
 실제 게임에서 확인할 항목:
 

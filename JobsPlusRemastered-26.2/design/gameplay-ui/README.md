@@ -30,7 +30,7 @@ Minecraft 26.2 / Java 25 기준입니다. 의존 모듈의 JAR이 준비되어 �
 의존 모듈까지 순서대로 빌드·수집하려면 저장소 루트에서 기존 수집기를 사용합니다.
 
 ```powershell
-python Build_File/collect_fabric_jars.py
+python Build_File-26.2/collect_fabric_jars.py
 ```
 
 ## 게임에서 확인할 항목

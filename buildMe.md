@@ -1,6 +1,6 @@
 # 빌드 가이드
 
-배포용 전체 빌드는 `Build_File`의 수집 스크립트로 실행합니다.
+배포용 전체 빌드는 `Build_File-26.2`의 수집 스크립트로 실행합니다.
 개발 중 변경 모듈의 컴파일·회귀 검사에는 해당 모듈의 Gradle 작업을 사용할 수 있으며,
 배포할 때는 수집 스크립트로 최종 조합을 확인합니다.
 
@@ -32,10 +32,10 @@
 저장소 루트에서 다음 명령 하나만 실행합니다.
 
 ```bash
-python Build_File/collect_fabric_jars.py
+python Build_File-26.2/collect_fabric_jars.py
 ```
 
-스크립트가 등록된 모든 모듈을 순서대로 빌드하고, 배포용 JAR을 `Build_File/build_files/`에 모읍니다.
+스크립트가 등록된 모든 모듈을 순서대로 빌드하고, 배포용 JAR을 `Build_File-26.2/build_files/`에 모읍니다.
 
 ## 빌드 대상 모듈
 
@@ -62,11 +62,11 @@ python Build_File/collect_fabric_jars.py
 
 ## 일부 모듈만 빌드하기
 
-`Build_File/collect_fabric_jars.py`의 `MODULES` 목록에서 필요 없는 항목을 주석 처리하면
+`Build_File-26.2/collect_fabric_jars.py`의 `MODULES` 목록에서 필요 없는 항목을 주석 처리하면
 남은 모듈만 빌드됩니다.
 
 > [!NOTE]
-> 전체 빌드·검증·임시 복사 성공 후 `Build_File/build_files/` 폴더를 교체합니다.
+> 전체 빌드·검증·임시 복사 성공 후 `Build_File-26.2/build_files/` 폴더를 교체합니다.
 > 일부만 빌드해 성공하면 그 모듈들의 JAR만 남으며, 실패하면 이전 수집본을 유지합니다.
 
 Server Utilities 배포 시에는 같은 작업에서 수정한 Jobs+·Advanced Netherite도 함께
@@ -74,11 +74,11 @@ Server Utilities 배포 시에는 같은 작업에서 수정한 Jobs+·Advanced 
 
 ## 빌드 결과
 
-수집된 배포용 JAR은 `Build_File/build_files/`에 저장됩니다.
+수집된 배포용 JAR은 `Build_File-26.2/build_files/`에 저장됩니다.
 
 수집 스크립트는 프로젝트에서 직접 빌드하는 JAR만 모읍니다. Fabric API, Architectury API,
 Puzzles Lib, Forge Config API Port 같은 외부 필수 모드는 별도로 준비해야 합니다.
-전체 목록은 `Build_File/FABRIC_DEPENDENCIES.md`를 확인하십시오.
+전체 목록은 `Build_File-26.2/FABRIC_DEPENDENCIES.md`를 확인하십시오.
 
 ## 빌드 오류 확인
 

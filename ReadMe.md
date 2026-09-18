@@ -131,10 +131,10 @@ Jobs+를 실행하려면 다음 모드가 필요합니다.
 빌드는 개별 모듈 폴더가 아니라 저장소 루트의 수집 스크립트로만 실행합니다.
 
 ```bash
-python Build_File/collect_fabric_jars.py
+python Build_File-26.2/collect_fabric_jars.py
 ```
 
-등록된 모든 모드가 순서대로 빌드되고, 배포용 JAR이 `Build_File/build_files/`에 모입니다.
+등록된 모든 모드가 순서대로 빌드되고, 배포용 JAR이 `Build_File-26.2/build_files/`에 모입니다.
 
 자세한 내용은 [buildMe.md](buildMe.md)를 참고하십시오.
 

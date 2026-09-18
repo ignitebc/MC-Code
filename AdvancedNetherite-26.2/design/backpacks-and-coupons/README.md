@@ -67,7 +67,7 @@
 저장소 루트에서 프로젝트 표준 전체 빌드:
 
 ```bash
-python Build_File/collect_fabric_jars.py
+python Build_File-26.2/collect_fabric_jars.py
 ```
 
 게임 확인용 명령:
