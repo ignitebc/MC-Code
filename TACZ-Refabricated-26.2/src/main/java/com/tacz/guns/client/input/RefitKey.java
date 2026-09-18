@@ -17,7 +17,7 @@ import static com.tacz.guns.util.InputExtraCheck.isInGame;
 public class RefitKey {
     public static final KeyMapping REFIT_KEY = new KeyMapping("key.tacz.refit.desc",
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_Z,
+            GLFW.GLFW_KEY_I,
             TaCZKeyCategory.TACZ);
 
     public static void onRefitPress(InputEvent.Key event) {
