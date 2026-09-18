@@ -46,7 +46,8 @@ public final class RegressionTests {
                 {"balance.creeper.multiplier", "-1"}, {"balance.creeper.multiplier", "101"},
                 {"balance.creeper.multiplier", "text"}, {"sleep.enable", "true"},
                 {"spawn.scatter.enabled", "on"}, {"spawn.scatter.radius", "0"},
-                {"spawn.scatter.radius", "1.5"}, {"spawn.scatter.radius", "1000001"}
+                {"spawn.scatter.radius", "1.5"}, {"spawn.scatter.radius", "1000001"},
+                {"starter.kit.enabled", "1"}
         };
         for (String[] entry : invalid) {
             values = new Properties();
@@ -70,6 +71,11 @@ public final class RegressionTests {
         check(UtilitiesConfig.load(path).spawnScatterRadius() == 1_000_000, "largest scatter radius");
         check(UtilitiesConfig.DEFAULT.spawnScatter() && UtilitiesConfig.DEFAULT.spawnScatterRadius() == 2000,
                 "scatter defaults");
+        check(UtilitiesConfig.DEFAULT.starterKit(), "starter kit default");
+        values = new Properties();
+        values.setProperty("starter.kit.enabled", "false");
+        AtomicProperties.write(path, values, "test");
+        check(!UtilitiesConfig.load(path).starterKit(), "starter kit can be disabled");
     }
 
     private static void spawnTests(Path directory) throws Exception {
