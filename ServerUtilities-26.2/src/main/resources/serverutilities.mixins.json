@@ -15,7 +15,8 @@
     "NetheriteKnockbackMixin",
     "PersonalSpawnMixin",
     "PlayerDeathItemProtectionMixin",
-    "ServerPlayerDeathMixin"
+    "ServerPlayerDeathMixin",
+    "StarterKitMixin"
   ],
   "injectors": { "defaultRequire": 1 }
 }

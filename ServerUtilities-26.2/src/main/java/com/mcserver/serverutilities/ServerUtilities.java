@@ -6,6 +6,7 @@ import com.mcserver.serverutilities.monster.MonsterEquipmentRules;
 import com.mcserver.serverutilities.config.UtilitiesConfig;
 import com.mcserver.serverutilities.sleep.SleepRuleManager;
 import com.mcserver.serverutilities.spawn.SpawnScatterRules;
+import com.mcserver.serverutilities.starter.StarterKitRules;
 import com.mcserver.serverutilities.tier.EquipmentTierRules;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -57,6 +58,7 @@ public final class ServerUtilities implements ModInitializer {
             config = UtilitiesConfig.DEFAULT;
         });
         ServerPlayerEvents.JOIN.register(SpawnScatterRules::onJoin);
+        ServerPlayerEvents.JOIN.register(StarterKitRules::onJoin);
         ServerPlayerEvents.AFTER_RESPAWN.register(SpawnScatterRules::onRespawn);
         ServerPlayerEvents.LEAVE.register(SpawnScatterRules::onLeave);
         ServerTickEvents.END_SERVER_TICK.register(server -> {
@@ -83,7 +85,8 @@ public final class ServerUtilities implements ModInitializer {
                                     + ", 사망 손실=" + settings.deathPenalty() + ", 보존권=" + settings.deathProtection()
                                     + ", 시작 위치 분산=" + settings.spawnScatter()
                                     + " ±" + settings.spawnScatterRadius()
-                                    + " (기준=" + describeAnchor() + ")"), false);
+                                    + " (기준=" + describeAnchor() + ")"
+                                    + ", 시작 장비=" + settings.starterKit()), false);
                             return 1;
                         }))
                         .then(Commands.literal("reload").executes(ctx -> {
