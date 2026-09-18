@@ -8,9 +8,10 @@ import java.util.Properties;
 public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, boolean combatGolems,
                               double combatRange, boolean creeperDamage, float creeperMultiplier,
                               boolean hunger, float hungerMultiplier, boolean armorCurve,
-                              boolean equipmentTiers, boolean deathPenalty, boolean deathProtection) {
+                              boolean equipmentTiers, boolean deathPenalty, boolean deathProtection,
+                              boolean spawnScatter, int spawnScatterRadius) {
     public static final UtilitiesConfig DEFAULT = new UtilitiesConfig(
-            true, true, true, 80.0, true, 4.0F / 3.0F, true, 1.5F, true, true, true, true);
+            true, true, true, 80.0, true, 4.0F / 3.0F, true, 1.5F, true, true, true, true, true, 2000);
 
     public static UtilitiesConfig load(Path path) throws IOException {
         Properties defaults = DEFAULT.toProperties();
@@ -32,7 +33,8 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
                 bool(merged, "balance.creeper.enabled"), (float) number(merged, "balance.creeper.multiplier", 0, 100),
                 bool(merged, "balance.hunger.enabled"), (float) number(merged, "balance.hunger.multiplier", 0, 100),
                 bool(merged, "balance.armor.enabled"), bool(merged, "balance.tier.enabled"),
-                bool(merged, "death.penalty.enabled"), bool(merged, "death.protection.enabled"));
+                bool(merged, "death.penalty.enabled"), bool(merged, "death.protection.enabled"),
+                bool(merged, "spawn.scatter.enabled"), integer(merged, "spawn.scatter.radius", 1, 1_000_000));
     }
 
     public Properties toProperties() {
@@ -49,6 +51,8 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
         values.setProperty("balance.tier.enabled", Boolean.toString(equipmentTiers));
         values.setProperty("death.penalty.enabled", Boolean.toString(deathPenalty));
         values.setProperty("death.protection.enabled", Boolean.toString(deathProtection));
+        values.setProperty("spawn.scatter.enabled", Boolean.toString(spawnScatter));
+        values.setProperty("spawn.scatter.radius", Integer.toString(spawnScatterRadius));
         return values;
     }
 
@@ -57,6 +61,12 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
         if (value.equalsIgnoreCase("true")) return true;
         if (value.equalsIgnoreCase("false")) return false;
         throw new IllegalArgumentException(key + ": true 또는 false여야 합니다.");
+    }
+
+    private static int integer(Properties values, String key, int min, int max) {
+        double value = number(values, key, min, max);
+        if (value != Math.floor(value)) throw new IllegalArgumentException(key + ": 정수여야 합니다.");
+        return (int) value;
     }
 
     private static double number(Properties values, String key, double min, double max) {

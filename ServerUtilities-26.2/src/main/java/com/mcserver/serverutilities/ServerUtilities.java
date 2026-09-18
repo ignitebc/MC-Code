@@ -5,9 +5,11 @@ import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
 import com.mcserver.serverutilities.monster.MonsterEquipmentRules;
 import com.mcserver.serverutilities.config.UtilitiesConfig;
 import com.mcserver.serverutilities.sleep.SleepRuleManager;
+import com.mcserver.serverutilities.spawn.SpawnScatterRules;
 import com.mcserver.serverutilities.tier.EquipmentTierRules;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
@@ -50,11 +52,18 @@ public final class ServerUtilities implements ModInitializer {
                 throw new IllegalStateException("Server Utilities 설정 또는 수면 복원 기록을 확인하세요.", exception);
             }
         });
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> config = UtilitiesConfig.DEFAULT);
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            SpawnScatterRules.shutdown();
+            config = UtilitiesConfig.DEFAULT;
+        });
+        ServerPlayerEvents.JOIN.register(SpawnScatterRules::onJoin);
+        ServerPlayerEvents.AFTER_RESPAWN.register(SpawnScatterRules::onRespawn);
+        ServerPlayerEvents.LEAVE.register(SpawnScatterRules::onLeave);
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             for (var player : server.getPlayerList().getPlayers()) {
                 CombatRules.tick(player);
                 EquipmentTierRules.tick(player);
+                SpawnScatterRules.tick(player);
             }
         });
         CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) ->
@@ -71,7 +80,10 @@ public final class ServerUtilities implements ModInitializer {
                                     + ", 피로도=" + settings.hunger() + " ×" + settings.hungerMultiplier()
                                     + ", 방어도 곡선=" + settings.armorCurve()
                                     + ", 장비 등급=" + settings.equipmentTiers()
-                                    + ", 사망 손실=" + settings.deathPenalty() + ", 보존권=" + settings.deathProtection()), false);
+                                    + ", 사망 손실=" + settings.deathPenalty() + ", 보존권=" + settings.deathProtection()
+                                    + ", 시작 위치 분산=" + settings.spawnScatter()
+                                    + " ±" + settings.spawnScatterRadius()
+                                    + " (기준=" + describeAnchor() + ")"), false);
                             return 1;
                         }))
                         .then(Commands.literal("reload").executes(ctx -> {
@@ -94,7 +106,14 @@ public final class ServerUtilities implements ModInitializer {
         SleepRuleManager.apply(state, candidate.singlePlayerSleep(),
                 () -> server.getGameRules().get(GameRules.PLAYERS_SLEEPING_PERCENTAGE),
                 value -> server.getGameRules().set(GameRules.PLAYERS_SLEEPING_PERCENTAGE, value, server));
+        SpawnScatterRules.initialize(server);
         config = candidate;
+    }
+
+    private static String describeAnchor() {
+        var anchor = SpawnScatterRules.anchor();
+        if (anchor == null) return "최초 접속 대기";
+        return anchor.x() + ", " + anchor.y() + ", " + anchor.z();
     }
 
     private static void rejectLegacyModule(String modId, String legacyClass) {

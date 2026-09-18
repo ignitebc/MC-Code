@@ -13,6 +13,7 @@
     "MonsterEquipmentMixin",
     "NetherHostilityMixin",
     "NetheriteKnockbackMixin",
+    "PersonalSpawnMixin",
     "PlayerDeathItemProtectionMixin",
     "ServerPlayerDeathMixin"
   ],
