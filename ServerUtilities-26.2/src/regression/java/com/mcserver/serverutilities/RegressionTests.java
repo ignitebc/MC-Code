@@ -3,6 +3,7 @@ package com.mcserver.serverutilities;
 import com.mcserver.serverutilities.config.AtomicProperties;
 import com.mcserver.serverutilities.config.UtilitiesConfig;
 import com.mcserver.serverutilities.sleep.SleepRuleManager;
+import com.mcserver.serverutilities.spawn.SpawnAnchor;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +21,7 @@ public final class RegressionTests {
         try {
             configTests(directory);
             sleepTests(directory);
+            spawnTests(directory);
             System.out.println("Server Utilities regression checks passed: " + checks);
         } finally {
             try (var files = Files.walk(directory)) {
@@ -42,7 +44,9 @@ public final class RegressionTests {
                 {"sleep.enabled", "yes"}, {"combat.range", "0"}, {"combat.range", "129"},
                 {"combat.range", "NaN"}, {"balance.hunger.multiplier", "Infinity"},
                 {"balance.creeper.multiplier", "-1"}, {"balance.creeper.multiplier", "101"},
-                {"balance.creeper.multiplier", "text"}, {"sleep.enable", "true"}
+                {"balance.creeper.multiplier", "text"}, {"sleep.enable", "true"},
+                {"spawn.scatter.enabled", "on"}, {"spawn.scatter.radius", "0"},
+                {"spawn.scatter.radius", "1.5"}, {"spawn.scatter.radius", "1000001"}
         };
         for (String[] entry : invalid) {
             values = new Properties();
@@ -56,6 +60,49 @@ public final class RegressionTests {
         AtomicProperties.write(path, values, "test");
         check(UtilitiesConfig.load(path).creeperMultiplier() == 0, "zero damage multiplier");
         check(UtilitiesConfig.load(path).combatRange() == 128, "range boundary");
+
+        values = UtilitiesConfig.DEFAULT.toProperties();
+        values.setProperty("spawn.scatter.radius", "1");
+        AtomicProperties.write(path, values, "test");
+        check(UtilitiesConfig.load(path).spawnScatterRadius() == 1, "smallest scatter radius");
+        values.setProperty("spawn.scatter.radius", "1000000");
+        AtomicProperties.write(path, values, "test");
+        check(UtilitiesConfig.load(path).spawnScatterRadius() == 1_000_000, "largest scatter radius");
+        check(UtilitiesConfig.DEFAULT.spawnScatter() && UtilitiesConfig.DEFAULT.spawnScatterRadius() == 2000,
+                "scatter defaults");
+    }
+
+    private static void spawnTests(Path directory) throws Exception {
+        Path path = directory.resolve("world-c/spawn.properties");
+        check(SpawnAnchor.read(path).isEmpty(), "no anchor before first join");
+        SpawnAnchor anchor = new SpawnAnchor(120, 71, -340);
+        SpawnAnchor.write(path, anchor);
+        // 파일을 다시 읽어 프로세스 내 캐시에 의존하지 않는 재시작을 재현한다.
+        check(SpawnAnchor.read(path).orElseThrow().equals(anchor), "anchor survives restart");
+
+        check(anchor.scatteredX(2000, 0) == 120 - 2000, "lowest roll hits minus radius");
+        check(anchor.scatteredX(2000, 4000) == 120 + 2000, "highest roll hits plus radius");
+        check(anchor.scatteredZ(2000, 2000) == -340, "middle roll keeps anchor");
+        check(anchor.scatteredZ(1, 0) == -341, "smallest radius");
+        for (int roll = 0; roll <= 4000; roll += 137) {
+            int scattered = anchor.scatteredX(2000, roll);
+            check(scattered >= 120 - 2000 && scattered <= 120 + 2000, "roll " + roll + " stays in range");
+        }
+
+        SpawnAnchor edge = new SpawnAnchor(SpawnAnchor.WORLD_LIMIT, 64, -SpawnAnchor.WORLD_LIMIT);
+        check(edge.scatteredX(2000, 4000) == SpawnAnchor.WORLD_LIMIT, "clamped to world limit");
+        check(edge.scatteredZ(2000, 0) == -SpawnAnchor.WORLD_LIMIT, "clamped to negative world limit");
+
+        expectFailure(() -> anchor.scatteredX(0, 0), "radius below one");
+        expectFailure(() -> anchor.scatteredX(2000, -1), "roll below zero");
+        expectFailure(() -> anchor.scatteredX(2000, 4001), "roll above radius");
+
+        Files.writeString(path, "x=1");
+        expectFailure(() -> SpawnAnchor.read(path), "incomplete anchor record");
+        Files.writeString(path, "x=1\ny=2\nz=broken");
+        expectFailure(() -> SpawnAnchor.read(path), "corrupt anchor record");
+        Files.writeString(path, "x=99999999\ny=64\nz=0");
+        expectFailure(() -> SpawnAnchor.read(path), "anchor outside world limit");
     }
 
     private static void sleepTests(Path directory) throws Exception {
