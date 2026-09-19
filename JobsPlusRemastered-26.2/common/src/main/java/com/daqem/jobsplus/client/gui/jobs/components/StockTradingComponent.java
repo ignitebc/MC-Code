@@ -186,7 +186,7 @@ public class StockTradingComponent extends EmptyComponent
         }
         this.styledButtons.forEach(StyledButton::updateVisibility);
         this.leverageButton.setMessage(Component.literal(
-                "배율 " + getLeverageOptionName(this.state.getSelectedStockLeverage()) + " ▼"
+                "배율 : " + getLeverageOptionName(this.state.getSelectedStockLeverage()) + " ▼"
         ));
         this.buyAmountInput.visible = panelMode == StockPanelMode.BUY && !this.leverageDropdownOpen;
         this.sellAmountInput.visible = panelMode == StockPanelMode.SELL;
