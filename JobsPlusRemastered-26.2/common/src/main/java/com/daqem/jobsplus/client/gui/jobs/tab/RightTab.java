@@ -7,6 +7,7 @@ public enum RightTab implements ITab {
     UP_AND_DOWN(Component.literal("주식")),
     SHOP(Component.literal("상점")),
     GUN_GUIDE(Component.literal("총기 도감")),
+    PET_CARE(Component.literal("펫관리")),
     RECIPES(Component.literal("게임안내"));
 
     private final Component name;

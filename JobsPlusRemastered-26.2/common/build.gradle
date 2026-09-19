@@ -18,6 +18,8 @@ dependencies {
     implementation files(rootProject.file("../ArcLib-26.2/fabric/build/libs/arc-1.9.7-26.2-fabric.jar"))
     implementation files(rootProject.file("../ItemRestrictions-26.2/fabric/build/libs/itemrestrictions-1.3.4-26.2-fabric.jar"))
     implementation files(rootProject.file("../UILib-26.2/fabric/build/libs/uilib-2.1.4-26.2-fabric.jar"))
+    // 펫관리 탭이 펫 목록·패킷을 직접 쓴다. 수집 스크립트가 Advanced Netherite를 먼저 빌드한다.
+    implementation files(rootProject.file("../AdvancedNetherite-26.2/Fabric/build/libs/advancednetherite-fabric-2.4.2-26.2.jar"))
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${project.jUnitVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${project.jUnitVersion}"

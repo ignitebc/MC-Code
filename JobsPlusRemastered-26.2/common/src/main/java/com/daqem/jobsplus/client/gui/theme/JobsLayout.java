@@ -60,7 +60,8 @@ public record JobsLayout(int width, int height) {
 
     /** 직업 목록 없이 화면 전체를 쓰는 탭. 왼쪽 8px부터 시작한다. */
     public boolean fullPage(RightTab tab) {
-        return tab == RightTab.SHOP || tab == RightTab.GUN_GUIDE || tab == RightTab.RECIPES;
+        return tab == RightTab.SHOP || tab == RightTab.GUN_GUIDE || tab == RightTab.PET_CARE
+                || tab == RightTab.RECIPES;
     }
 
     public int pageX(RightTab tab) {
