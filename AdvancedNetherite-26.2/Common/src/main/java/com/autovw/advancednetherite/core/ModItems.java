@@ -2,6 +2,7 @@ package com.autovw.advancednetherite.core;
 
 import com.autovw.advancednetherite.AdvancedNetherite;
 import com.autovw.advancednetherite.common.item.*;
+import com.autovw.advancednetherite.common.pet.PetRarity;
 import com.autovw.advancednetherite.core.util.ModArmorMaterials;
 import com.autovw.advancednetherite.core.util.ModToolMaterials;
 import net.minecraft.core.registries.Registries;
@@ -10,7 +11,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.equipment.ArmorType;
 
-import java.util.List;
 
 /**
  * @author Autovw
@@ -53,9 +53,10 @@ public final class ModItems
     public static final AdvancedItem ENHANCE_SUCCESS_SCROLL_10 = new AdvancedItem(new Item.Properties().setId(key("enhance_success_scroll_10")));
 
     // petbox
-    public static final PetBoxItem NOMAL_PETBOX = new PetBoxItem(List.of(() -> ModEntityTypes.DIALGA_PET, () -> ModEntityTypes.KIRBY_PET, () -> ModEntityTypes.GOMI_PET), 1.0, new Item.Properties().setId(key("nomal_petbox")));
-    public static final PetBoxItem RARE_PETBOX = new PetBoxItem(List.of(() -> ModEntityTypes.UNICORN_PET, () -> ModEntityTypes.GAZELLE_PET), 3.0, new Item.Properties().setId(key("rare_petbox")));
-    public static final PetBoxItem LEGEND_PETBOX = new PetBoxItem(List.of(() -> ModEntityTypes.FAIRLINS_PET, () -> ModEntityTypes.DARK_DRAGON_PET, () -> ModEntityTypes.SCULKEN_RAVEN_PET, () -> ModEntityTypes.SUPER_GOMI_PET), 5.0, new Item.Properties().setId(key("legend_petbox")));
+    // 어떤 펫이 어느 상자에서 나오는지와 공격력은 PetRarity가 한 곳에서 정한다. 펫 도감도 같은 표를 읽는다.
+    public static final PetBoxItem NOMAL_PETBOX = new PetBoxItem(PetRarity.NORMAL.petTypes(), PetRarity.NORMAL.attackDamage(), new Item.Properties().setId(key("nomal_petbox")));
+    public static final PetBoxItem RARE_PETBOX = new PetBoxItem(PetRarity.RARE.petTypes(), PetRarity.RARE.attackDamage(), new Item.Properties().setId(key("rare_petbox")));
+    public static final PetBoxItem LEGEND_PETBOX = new PetBoxItem(PetRarity.LEGEND.petTypes(), PetRarity.LEGEND.attackDamage(), new Item.Properties().setId(key("legend_petbox")));
 
     // ARMOR SETS
     // Netherite-Iron
