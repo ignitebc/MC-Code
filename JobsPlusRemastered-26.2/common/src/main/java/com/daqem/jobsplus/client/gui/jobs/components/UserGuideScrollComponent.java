@@ -4,8 +4,7 @@ import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import java.lang.reflect.Method;
 
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
-import com.daqem.jobsplus.client.gui.jobs.widgets.RecipesScrollWidget;
-import com.daqem.uilib.api.component.IComponent;
+import com.daqem.jobsplus.client.gui.jobs.widgets.GuideScrollWidget;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import com.daqem.uilib.gui.component.text.multiline.MultiLineTextComponent;
 
@@ -304,62 +303,38 @@ public class UserGuideScrollComponent extends EmptyComponent
     {
         super(0, 0, width, height);
 
-        RecipesScrollWidget recipesScrollWidget =
-                new RecipesScrollWidget(getWidth(), getHeight(), state);
+        GuideScrollWidget scrollWidget = new GuideScrollWidget(getWidth(), getHeight());
 
-        IComponent scrollContentComponent =
-                recipesScrollWidget.getComponents().getFirst();
+        int textWidth = Math.max(1, getWidth() - 10);
+        float textScale = 0.70f;
 
         /*
-         * 표시할 레시피가 없는 경우 기존 레시피 영역을
-         * 사용자 게임 안내 화면으로 교체한다.
+         * 화면에 실제로 표시되는 너비는
+         * wrapWidth × textScale이므로 스케일만큼 역보정한다.
          */
-        if (scrollContentComponent.getComponents().isEmpty())
-        {
-            int textWidth = Math.max(1, getWidth() - 10);
-            float textScale = 0.70f;
+        int wrapWidth = Math.max(
+                1,
+                (int) Math.ceil(textWidth / textScale)
+        );
 
-            /*
-             * 화면에 실제로 표시되는 너비는
-             * wrapWidth × textScale이므로 스케일만큼 역보정한다.
-             */
-            int wrapWidth = Math.max(
-                    1,
-                    (int) Math.ceil(textWidth / textScale)
-            );
+        ScaledMultiLineTextComponent guideText =
+                new ScaledMultiLineTextComponent(
+                        0,
+                        0,
+                        wrapWidth,
+                        createGuideComponent(),
+                        JobsTheme.TEXT,
+                        textScale
+                );
 
-            ScaledMultiLineTextComponent guideText =
-                    new ScaledMultiLineTextComponent(
-                            0,
-                            0,
-                            wrapWidth,
-                            createGuideComponent(),
-                            JobsTheme.TEXT,
-                            textScale
-                    );
+        EmptyComponent guideContainer =
+                new EmptyComponent(0, 0, textWidth, 0);
 
-            EmptyComponent guideContainer =
-                    new EmptyComponent(0, 0, textWidth, 0);
+        guideContainer.addComponent(guideText);
+        guideContainer.setHeight(guideText.getScaledHeight());
 
-            guideContainer.addComponent(guideText);
-            guideContainer.setHeight(guideText.getScaledHeight());
-
-            recipesScrollWidget.getComponents().clear();
-            recipesScrollWidget.addComponent(guideContainer);
-
-            if (guideContainer.getWidth() <= getWidth())
-            {
-                this.setWidth(guideContainer.getWidth());
-                this.centerHorizontally();
-            }
-        }
-        else if (scrollContentComponent.getHeight() <= getHeight())
-        {
-            this.setWidth(scrollContentComponent.getWidth());
-            this.centerHorizontally();
-        }
-
-        this.addWidget(recipesScrollWidget);
+        scrollWidget.addComponent(guideContainer);
+        this.addWidget(scrollWidget);
     }
 
     private static Component styleSections(String text) {

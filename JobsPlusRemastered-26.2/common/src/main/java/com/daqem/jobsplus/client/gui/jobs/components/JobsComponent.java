@@ -133,7 +133,7 @@ public class JobsComponent extends AbstractComponent
             JobsTheme.panel(guiGraphics, x + 8, y + layout.bodyY(),
                     layout.stockTradingX() - 16, layout.bodyHeight());
         }
-        else if (this.cachedRightTab == RightTab.SHOP || this.cachedRightTab == RightTab.GUN_GUIDE)
+        else if (layout.fullPage(this.cachedRightTab))
         {
             JobsTheme.panel(guiGraphics, x + layout.pageX(this.cachedRightTab), y + layout.bodyY(),
                     layout.pageWidth(this.cachedRightTab), layout.bodyHeight());
@@ -164,11 +164,6 @@ public class JobsComponent extends AbstractComponent
                     y + layout.bodyY() + 1, layout.pageWidth(this.cachedRightTab) - 2, 18);
             JobsTheme.text(guiGraphics, this.cachedRightTab.getName(), x + layout.pageX(this.cachedRightTab) + 8,
                     y + layout.bodyY() + 7, layout.pageWidth(this.cachedRightTab) - 16, JobsTheme.CYAN);
-        }
-        if (this.cachedRightTab == RightTab.RECIPES && layout.wide() && state.getSelectedJob() != null) {
-            JobsTheme.text(guiGraphics, state.getSelectedJob().getJobInstance().getName().copy()
-                            .append(" · Lv. " + state.getSelectedJob().getLevel()),
-                    x + 16, y + layout.bodyY() + layout.bodyHeight() - 35, layout.leftWidth() - 16, JobsTheme.TEXT);
         }
         guiGraphics.fill(x + 8, y + getHeight() - 20, x + getWidth() - 8, y + getHeight() - 19, JobsTheme.DIVIDER);
         JobsTheme.text(guiGraphics, Component.literal("ESC  닫기  ·  휠 스크롤"), x + 10,
@@ -252,11 +247,12 @@ public class JobsComponent extends AbstractComponent
         {
             this.addWidget(this.shopSellButtonWidget);
         }
-        if (this.cachedRightTab == RightTab.SHOP || this.cachedRightTab == RightTab.GUN_GUIDE) {
+        // 직업 목록과 스킬 단추는 직업정보 탭에서만 쓴다.
+        if (layout.fullPage(this.cachedRightTab)) {
             this.removeComponent(this.jobSelectionComponent);
             this.removeComponent(this.selectedJobComponent);
             this.removeWidget(this.powerupsButtonWidget);
-            if (this.cachedRightTab == RightTab.GUN_GUIDE) {
+            if (this.cachedRightTab != RightTab.SHOP) {
                 this.removeWidget(this.shopSellButtonWidget);
             } else if (!layout.wide()) {
                 this.shopSellButtonWidget.setWidth(Math.min(110, layout.pageWidth(this.cachedRightTab) - 16));

@@ -54,11 +54,16 @@ public record JobsLayout(int width, int height) {
     }
 
     public boolean expandedPage(RightTab tab) {
-        return wide() && (tab == RightTab.RECIPES || tab == RightTab.SHOP);
+        return wide() && tab == RightTab.SHOP;
+    }
+
+    /** 직업 목록 없이 화면 전체를 쓰는 탭. 왼쪽 8px부터 시작한다. */
+    public boolean fullPage(RightTab tab) {
+        return tab == RightTab.SHOP || tab == RightTab.GUN_GUIDE || tab == RightTab.RECIPES;
     }
 
     public int pageX(RightTab tab) {
-        if (tab == RightTab.SHOP || tab == RightTab.GUN_GUIDE) {
+        if (fullPage(tab)) {
             return 8;
         }
         return expandedPage(tab) ? detailX() : contentX();
