@@ -116,17 +116,6 @@ public class JobsComponent extends AbstractComponent
         JobsTheme.panel(guiGraphics, x, y, getWidth(), getHeight());
         JobsTheme.texture(guiGraphics, JobsTheme.Skin.HEADER, x + 2, y + 2, getWidth() - 4, 25);
         guiGraphics.fill(x + 8, y + 27, x + getWidth() - 8, y + 28, JobsTheme.DIVIDER);
-        if (layout.wide()) {
-            int badgeX = x + getWidth() - 169;
-            JobsTheme.texture(guiGraphics, JobsTheme.Skin.INSET, badgeX, y + 6, 72, 16);
-            JobsTheme.sprite(guiGraphics, JobsPlus.getId("jobs/coins"), badgeX + 4, y + 10, 7, 8);
-            JobsTheme.text(guiGraphics, Component.literal("직업코인 " + state.getCoins()),
-                    badgeX + 14, y + 10, 54, JobsTheme.TEXT);
-            JobsTheme.texture(guiGraphics, JobsTheme.Skin.INSET, badgeX + 76, y + 6, 67, 16);
-            StockIcons.draw(guiGraphics, "BTC", badgeX + 79, y + 9, 10);
-            JobsTheme.text(guiGraphics, Component.literal("계좌 " + java.math.BigDecimal.valueOf(state.getStockAccount().balance()).stripTrailingZeros().toPlainString()),
-                    badgeX + 91, y + 10, 48, JobsTheme.TEXT);
-        }
         boolean stock = this.cachedRightTab == RightTab.UP_AND_DOWN;
         if (stock)
         {
@@ -166,8 +155,21 @@ public class JobsComponent extends AbstractComponent
                     y + layout.bodyY() + 7, layout.pageWidth(this.cachedRightTab) - 16, JobsTheme.CYAN);
         }
         guiGraphics.fill(x + 8, y + getHeight() - 20, x + getWidth() - 8, y + getHeight() - 19, JobsTheme.DIVIDER);
-        JobsTheme.text(guiGraphics, Component.literal("ESC  닫기  ·  휠 스크롤"), x + 10,
-                y + getHeight() - 12, 110, JobsTheme.MUTED);
+        JobsTheme.text(guiGraphics, Component.literal("ESC(닫기)"), x + 10,
+                y + getHeight() - 14, 60, JobsTheme.MUTED);
+        if (layout.wide()) {
+            // 직업코인과 계좌는 아래 띠의 오른쪽 끝에 붙인다.
+            int badgeX = x + getWidth() - 151;
+            int badgeY = y + getHeight() - 18;
+            JobsTheme.texture(guiGraphics, JobsTheme.Skin.INSET, badgeX, badgeY, 72, 16);
+            JobsTheme.sprite(guiGraphics, JobsPlus.getId("jobs/coins"), badgeX + 4, badgeY + 4, 7, 8);
+            JobsTheme.text(guiGraphics, Component.literal("직업코인 " + state.getCoins()),
+                    badgeX + 14, badgeY + 4, 54, JobsTheme.TEXT);
+            JobsTheme.texture(guiGraphics, JobsTheme.Skin.INSET, badgeX + 76, badgeY, 67, 16);
+            StockIcons.draw(guiGraphics, "BTC", badgeX + 79, badgeY + 3, 10);
+            JobsTheme.text(guiGraphics, Component.literal("계좌 " + java.math.BigDecimal.valueOf(state.getStockAccount().balance()).stripTrailingZeros().toPlainString()),
+                    badgeX + 91, badgeY + 4, 48, JobsTheme.TEXT);
+        }
     }
 
     /**

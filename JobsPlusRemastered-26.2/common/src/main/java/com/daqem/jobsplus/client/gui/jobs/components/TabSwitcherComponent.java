@@ -13,7 +13,8 @@ public class TabSwitcherComponent extends EmptyComponent
         super(0, 0, layout.width(), layout.height());
 
         int tabGap = 1;
-        int availableWidth = layout.width() - (layout.wide() ? 180 : 36);
+        // 머리글에는 이제 닫기 단추만 남으므로 그만큼만 비워 둔다.
+        int availableWidth = layout.width() - 36;
         int tabWidth = (availableWidth - tabGap * (RightTab.values().length - 1)) / RightTab.values().length;
         int tabX = 8;
         for (RightTab tab : RightTab.values()) {
