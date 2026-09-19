@@ -42,6 +42,16 @@ public enum EquipmentTier {
         return this.label;
     }
 
+    /** 기본 내구도에 곱하는 백분율. S는 100이다. */
+    public int durabilityPercent() {
+        return this.durabilityPercent;
+    }
+
+    /** 채굴 속도, 공격력, 방어도에 곱하는 백분율. S는 100이다. */
+    public int performancePercent() {
+        return this.performancePercent;
+    }
+
     /**
      * 기본 최대 내구도에 등급을 적용한 값. 소수점은 반올림하고 최소 1을 보장한다.
      *

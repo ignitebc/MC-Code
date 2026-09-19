@@ -2,6 +2,7 @@ package com.mcserver.serverutilities.mixin;
 
 import com.mcserver.serverutilities.tier.EquipmentTier;
 import com.mcserver.serverutilities.tier.EquipmentTierRules;
+import com.mcserver.serverutilities.tier.EquipmentTierSummary;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +19,7 @@ import java.util.List;
 
 @Mixin(ItemStack.class)
 abstract class EquipmentTierTooltipMixin {
-    /** 아이템 이름 바로 아래, 능력치 줄보다 위에 등급을 넣는다. */
+    /** 아이템 이름 바로 아래, 능력치 줄보다 위에 등급과 그 등급이 바꾼 수치를 넣는다. */
     private static final int TIER_LINE_INDEX = 1;
 
     @Inject(method = "getTooltipLines", at = @At("RETURN"), cancellable = true)
@@ -32,8 +33,10 @@ abstract class EquipmentTierTooltipMixin {
 
         // 반환된 목록이 수정 가능하다고 보장되지 않으므로 새 목록에 담아 돌려준다.
         List<Component> lines = new ArrayList<>(callback.getReturnValue());
+        int tierLineIndex = Math.min(TIER_LINE_INDEX, lines.size());
         Component tierLine = Component.literal(tier.label() + "티어").withStyle(ChatFormatting.RED);
-        lines.add(Math.min(TIER_LINE_INDEX, lines.size()), tierLine);
+        lines.add(tierLineIndex, tierLine);
+        lines.addAll(tierLineIndex + 1, EquipmentTierSummary.describe(itemStack, tier));
         callback.setReturnValue(lines);
     }
 }

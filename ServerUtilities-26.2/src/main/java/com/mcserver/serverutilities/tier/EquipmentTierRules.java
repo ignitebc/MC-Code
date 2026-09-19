@@ -42,7 +42,7 @@ public final class EquipmentTierRules {
     private static final String TIER_ITEM_KEY = "EquipmentTierItem";
 
     /** 플레이어의 기본 공격력. 기준표의 공격력은 이 값을 포함하므로 배율도 함께 적용한다. */
-    private static final double PLAYER_BASE_ATTACK_DAMAGE = 1.0D;
+    static final double PLAYER_BASE_ATTACK_DAMAGE = 1.0D;
 
     /** 인벤토리 전체를 훑는 주기. 매 틱 확인할 필요가 없다. */
     private static final int SCAN_INTERVAL_TICKS = 20;
@@ -134,13 +134,13 @@ public final class EquipmentTierRules {
     }
 
     /** 곡괭이, 도끼, 삽, 괭이. 기준표에서 내구도와 채굴 속도만 다루는 부류다. */
-    private static boolean isDiggingTool(ItemStack stack) {
+    static boolean isDiggingTool(ItemStack stack) {
         return stack.is(ItemTags.PICKAXES) || stack.is(ItemTags.AXES)
                 || stack.is(ItemTags.SHOVELS) || stack.is(ItemTags.HOES);
     }
 
     /** 사람이 입는 방어구 4부위. 늑대 갑옷 같은 몸통 방어구는 여기에 들지 않는다. */
-    private static boolean isHumanoidArmor(ItemStack stack) {
+    static boolean isHumanoidArmor(ItemStack stack) {
         return stack.is(ItemTags.HEAD_ARMOR) || stack.is(ItemTags.CHEST_ARMOR)
                 || stack.is(ItemTags.LEG_ARMOR) || stack.is(ItemTags.FOOT_ARMOR);
     }
