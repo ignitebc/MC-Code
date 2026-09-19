@@ -15,7 +15,10 @@ import static com.tacz.guns.util.InputExtraCheck.isInGame;
 
 @Environment(EnvType.CLIENT)
 public class RefitKey {
-    public static final KeyMapping REFIT_KEY = new KeyMapping("key.tacz.refit.desc",
+    // 키 ID를 예전 "key.tacz.refit.desc"에서 바꿨다. 기본 키를 Z에서 P로 옮겼지만, 이미 게임을 한 번이라도
+    // 실행한 클라이언트는 options.txt에 예전 ID로 Z가 저장돼 있어 기본값 변경이 먹히지 않았다.
+    // ID가 다르면 저장된 값과 짝이 맞지 않아 모든 클라이언트가 새 기본값(P)으로 시작한다.
+    public static final KeyMapping REFIT_KEY = new KeyMapping("key.tacz.refit_screen.desc",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_P,
             TaCZKeyCategory.TACZ);

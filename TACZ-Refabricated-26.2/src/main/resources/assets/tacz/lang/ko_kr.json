@@ -44,7 +44,7 @@
   "key.tacz.shoot.desc": "사격",
   "key.tacz.fire_select.desc": "조정간",
   "key.tacz.aim.desc": "조준",
-  "key.tacz.refit.desc": "개조",
+  "key.tacz.refit_screen.desc": "개조",
   "key.tacz.open_config.desc": "TAC 설정 열기",
   "key.tacz.zoom.desc": "확대",
   "key.tacz.melee.desc": "근접 공격",
