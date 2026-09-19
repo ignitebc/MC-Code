@@ -67,19 +67,7 @@ public abstract class BackpackScreenMixin extends AbstractContainerScreen<Invent
         int capacityX = left + (BackpackInventory.PANEL_WIDTH - this.font.width(capacityText)) / 2;
         graphics.text(this.font, capacityText, capacityX, this.topPos + 49, 0xFF404040, false);
         graphics.text(this.font, Component.literal("추가 인벤토리"), left + 8, this.topPos + 70, 0xFF404040, false);
-        int petHeight = PetPanelLayout.panelHeight();
-        if (petHeight > 0)
-        {
-            int petLeft = this.leftPos;
-            int petRight = petLeft + PetPanelLayout.width();
-            int petTop = this.topPos + PetPanelLayout.panelTop();
-            int petBottom = petTop + petHeight;
-            graphics.fill(petLeft, petTop, petRight, petBottom, 0xFF373737);
-            graphics.fill(petLeft, petTop + 1, petRight - 1, petBottom - 1, 0xFFC6C6C6);
-            graphics.fill(petLeft, petTop + 1, petRight - 1, petTop + 3, 0xFFFFFFFF);
-            graphics.fill(petRight - 3, petTop + 3, petRight - 1, petBottom - 1, 0xFF555555);
-        }
-
+        // 펫 줄은 PetPanelWidget이 스스로 그린다. 레시피 책을 여닫아 화면이 밀려도 따라가야 해서다.
         for (Slot slot : this.menu.slots)
         {
             if (!(slot instanceof BackpackSlot)) continue;
