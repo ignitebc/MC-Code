@@ -8,6 +8,7 @@
     "ArmorDamageCurveMixin",
     "ArmorPrecisionMixin",
     "CreeperExplosionDamageMixin",
+    "DeathChestProtectionMixin",
     "EquipmentTierTooltipMixin",
     "HungerExhaustionMixin",
     "MonsterEquipmentMixin",
