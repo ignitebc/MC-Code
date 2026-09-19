@@ -261,7 +261,7 @@
   "tacz.attachment.stock_m4ss.name": "M4SS 개머리판",
   "tacz.attachment.stock_heavy_spas_12.name": "프랑키 중형 개머리판",
   "tacz.attachment.stock_tactical_spas_12.name": "프랑키 전술 개머리판",
-  "tacz.block.gun_smith_table.name": "TaCZ 총기 작업대",
+  "tacz.block.gun_smith_table.name": "총기 작업대",
   "tacz.block.ammo_workbench.name": "TaCZ 탄약 작업대",
   "tacz.block.attachment_workbench.name": "TaCZ 부착물 작업대",
   "tacz.block.gun_smith_table.desc": "모든 것이 시작된 곳",
