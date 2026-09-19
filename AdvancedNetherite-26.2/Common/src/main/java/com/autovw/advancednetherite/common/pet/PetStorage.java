@@ -126,7 +126,9 @@ public final class PetStorage
                             UUID.fromString(pet.get("id").getAsString()),
                             pet.get("type").getAsString(),
                             pet.get("attackDamage").getAsDouble(),
-                            pet.get("enabled").getAsBoolean()));
+                            pet.get("enabled").getAsBoolean(),
+                            // 이름은 나중에 생긴 항목이라 이전 파일에는 없다.
+                            pet.has("name") && !pet.get("name").isJsonNull() ? pet.get("name").getAsString() : ""));
                 });
                 loadedPets.put(UUID.fromString(playerId), records);
             }
@@ -151,6 +153,7 @@ public final class PetStorage
                 pet.addProperty("type", record.petTypeId());
                 pet.addProperty("attackDamage", record.attackDamage());
                 pet.addProperty("enabled", record.enabled());
+                if (!record.name().isEmpty()) pet.addProperty("name", record.name());
                 entries.add(pet);
             }
             root.add(playerId.toString(), entries);
@@ -311,6 +314,41 @@ public final class PetStorage
             records.set(i, updated);
             dirty = true;
             return updated;
+        }
+        return null;
+    }
+
+    /**
+     * 기록의 이름을 바꾸고 갱신된 기록을 돌려준다. 대상이 없거나 기록에 실패하면 null.
+     * <p>
+     * 이름 변경은 드물고 되돌리기 번거로우므로 획득처럼 즉시 파일에 기록한다.
+     */
+    public static synchronized PetRecord setName(UUID playerId, UUID recordId, String name)
+    {
+        if (!saveEnabled)
+        {
+            return null;
+        }
+        List<PetRecord> records = PETS.get(playerId);
+        if (records == null)
+        {
+            return null;
+        }
+        for (int i = 0; i < records.size(); i++)
+        {
+            PetRecord previous = records.get(i);
+            if (!previous.id().equals(recordId))
+            {
+                continue;
+            }
+            PetRecord updated = previous.withName(name);
+            records.set(i, updated);
+            if (save())
+            {
+                return updated;
+            }
+            records.set(i, previous);
+            return null;
         }
         return null;
     }

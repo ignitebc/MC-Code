@@ -10,11 +10,27 @@ import java.util.UUID;
  * @param petTypeId    펫 엔티티 타입의 레지스트리 ID (예: advancednetherite:dialga_pet)
  * @param attackDamage 펫 상자 등급에 따라 정해진 공격력
  * @param enabled      ON/OFF 상태. OFF면 접속해도 소환되지 않는다.
+ * @param name         플레이어가 붙인 이름. 비어 있으면 종류 이름과 번호로 부른다.
  */
-public record PetRecord(UUID id, String petTypeId, double attackDamage, boolean enabled)
+public record PetRecord(UUID id, String petTypeId, double attackDamage, boolean enabled, String name)
 {
+    public PetRecord
+    {
+        if (name == null) name = "";
+    }
+
+    public PetRecord(UUID id, String petTypeId, double attackDamage, boolean enabled)
+    {
+        this(id, petTypeId, attackDamage, enabled, "");
+    }
+
     public PetRecord withEnabled(boolean newEnabled)
     {
-        return new PetRecord(this.id, this.petTypeId, this.attackDamage, newEnabled);
+        return new PetRecord(this.id, this.petTypeId, this.attackDamage, newEnabled, this.name);
+    }
+
+    public PetRecord withName(String newName)
+    {
+        return new PetRecord(this.id, this.petTypeId, this.attackDamage, this.enabled, newName);
     }
 }

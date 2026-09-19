@@ -4,6 +4,7 @@ import com.autovw.advancednetherite.common.entity.DialgaPetEntity;
 import com.autovw.advancednetherite.core.ModEntityTypes;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -54,10 +55,57 @@ public final class PetManager
 
     public static void syncPets(ServerPlayer player)
     {
+        // 펫이 늘거나 이름이 바뀌면 번호가 달라질 수 있으므로 살아 있는 펫의 이름표도 같이 맞춘다.
+        refreshNameTags(player);
         if (syncHandler != null)
         {
             syncHandler.accept(player);
         }
+    }
+
+    /** 살아 있는 펫의 머리 위 이름표를 현재 기록 기준으로 다시 붙인다. */
+    private static void refreshNameTags(ServerPlayer player)
+    {
+        List<PetRecord> records = PetStorage.getPets(player.getUUID());
+        for (PetRecord record : records)
+        {
+            DialgaPetEntity livePet = LIVE_PETS.get(record.id());
+            if (livePet != null && !livePet.isRemoved())
+            {
+                applyNameTag(livePet, records, record);
+            }
+        }
+    }
+
+    private static void applyNameTag(DialgaPetEntity pet, List<PetRecord> records, PetRecord record)
+    {
+        Component name = PetNames.displayName(records, record);
+        pet.setCustomName(name);
+        pet.setCustomNameVisible(true);
+    }
+
+    /**
+     * 펫 이름을 바꾼다. 빈 이름은 붙인 이름을 지우고 종류 이름으로 되돌린다.
+     * 다듬은 뒤에도 이전과 같은 이름이면 아무것도 하지 않는다.
+     */
+    public static void renamePet(ServerPlayer player, UUID recordId, String requestedName)
+    {
+        PetRecord record = PetStorage.findPet(player.getUUID(), recordId);
+        if (record == null)
+        {
+            return;
+        }
+
+        if (passedToggleCooldown(player))
+        {
+            String name = PetNames.sanitize(requestedName);
+            if (!name.equals(record.name()))
+            {
+                PetStorage.setName(player.getUUID(), recordId, name);
+            }
+        }
+        // 거부되었거나 이름이 그대로여도 클라이언트가 먼저 바꿔 둔 표시를 실제 상태로 되돌린다.
+        syncPets(player);
     }
 
     /** 펫 상자 사용 시 호출된다. 기록을 만들고 즉시 소환한다. */
@@ -96,7 +144,7 @@ public final class PetManager
     /**
      * 주인이 죽으면 데리고 있던 펫을 모두 회수하고 기록을 OFF로 돌린다.
      *
-     * <p>부활해도 저절로 따라 나오지 않는다. 인벤토리 화면에서 다시 켜야 소환된다.
+     * <p>부활해도 저절로 따라 나오지 않는다. 직업 화면(J키)의 펫관리 탭에서 다시 켜야 소환된다.
      * 접속 종료와 달리 기록까지 끄는 이유는, 죽은 자리에 두고 온 펫이 부활 지점으로
      * 순간이동해 따라오는 것을 의도한 동작으로 보지 않기 때문이다.
      */
@@ -324,6 +372,8 @@ public final class PetManager
         pet.snapTo(player.getX() + 1.0, player.getY(), player.getZ() + 1.0, player.getYRot(), 0.0F);
         pet.tame(player);
         pet.setRecordId(record.id());
+        // 엔티티는 저장되지 않으므로 소환할 때마다 이름표를 다시 붙인다.
+        applyNameTag(pet, PetStorage.getPets(player.getUUID()), record);
 
         AttributeInstance attackAttribute = pet.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attackAttribute != null)

@@ -5,11 +5,10 @@ import com.autovw.advancednetherite.client.model.GazellePetModel;
 import com.autovw.advancednetherite.common.entity.DialgaPetEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.Identifier;
 
-public class GazellePetRenderer extends MobRenderer<DialgaPetEntity, LivingEntityRenderState, GazellePetModel>
+public class GazellePetRenderer extends PetRenderer< GazellePetModel>
 {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(
             AdvancedNetherite.MOD_ID,

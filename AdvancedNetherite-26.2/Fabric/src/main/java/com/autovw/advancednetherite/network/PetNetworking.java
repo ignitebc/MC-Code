@@ -31,9 +31,12 @@ public final class PetNetworking
     {
         PayloadTypeRegistry.clientboundPlay().register(PetListSyncPayload.TYPE, PetListSyncPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(PetTogglePayload.TYPE, PetTogglePayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(PetRenamePayload.TYPE, PetRenamePayload.STREAM_CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(PetTogglePayload.TYPE,
                 (payload, context) -> PetManager.togglePet(context.player(), payload.recordId()));
+        ServerPlayNetworking.registerGlobalReceiver(PetRenamePayload.TYPE,
+                (payload, context) -> PetManager.renamePet(context.player(), payload.recordId(), payload.name()));
 
         PetManager.setSyncHandler(PetNetworking::sendPetList);
 
@@ -67,7 +70,7 @@ public final class PetNetworking
         List<PetStatusEntry> entries = new ArrayList<>();
         for (PetRecord record : PetStorage.getPets(player.getUUID()))
         {
-            entries.add(new PetStatusEntry(record.id(), record.petTypeId(), record.enabled()));
+            entries.add(new PetStatusEntry(record.id(), record.petTypeId(), record.enabled(), record.name()));
         }
         ServerPlayNetworking.send(player, new PetListSyncPayload(entries));
     }
