@@ -3,6 +3,8 @@ package com.autovw.advancednetherite.network;
 import com.autovw.advancednetherite.common.pet.PetManager;
 import com.autovw.advancednetherite.common.pet.PetRecord;
 import com.autovw.advancednetherite.common.pet.PetStorage;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -50,6 +52,14 @@ public final class PetNetworking
                 (handler, sender, server) -> PetManager.handlePlayerJoin(handler.getPlayer()));
         ServerPlayConnectionEvents.DISCONNECT.register(
                 (handler, server) -> PetManager.handlePlayerQuit(handler.getPlayer()));
+        ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
+            if (entity instanceof ServerPlayer player)
+            {
+                PetManager.handlePlayerDeath(player);
+            }
+        });
+        ServerPlayerEvents.AFTER_RESPAWN.register(
+                (oldPlayer, newPlayer, alive) -> PetManager.handlePlayerRespawn(newPlayer));
     }
 
     private static void sendPetList(ServerPlayer player)

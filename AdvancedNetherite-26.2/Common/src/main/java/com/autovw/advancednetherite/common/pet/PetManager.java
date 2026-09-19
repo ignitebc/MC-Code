@@ -93,6 +93,46 @@ public final class PetManager
         syncPets(player);
     }
 
+    /**
+     * 주인이 죽으면 데리고 있던 펫을 모두 회수하고 기록을 OFF로 돌린다.
+     *
+     * <p>부활해도 저절로 따라 나오지 않는다. 인벤토리 화면에서 다시 켜야 소환된다.
+     * 접속 종료와 달리 기록까지 끄는 이유는, 죽은 자리에 두고 온 펫이 부활 지점으로
+     * 순간이동해 따라오는 것을 의도한 동작으로 보지 않기 때문이다.
+     */
+    public static void handlePlayerDeath(ServerPlayer player)
+    {
+        boolean changed = false;
+        for (PetRecord record : PetStorage.getPets(player.getUUID()))
+        {
+            DialgaPetEntity livePet = LIVE_PETS.remove(record.id());
+            if (livePet != null)
+            {
+                livePet.discard();
+            }
+            if (record.enabled() && PetStorage.setEnabled(player.getUUID(), record.id(), false) != null)
+            {
+                changed = true;
+            }
+        }
+
+        if (changed)
+        {
+            syncPets(player);
+        }
+    }
+
+    /**
+     * 부활한 플레이어에게 펫 목록을 다시 보낸다.
+     *
+     * <p>부활하면 플레이어 개체가 새로 만들어지므로, 죽을 때 보낸 목록이 사라졌을 수 있다.
+     * 소환은 하지 않는다.
+     */
+    public static void handlePlayerRespawn(ServerPlayer player)
+    {
+        syncPets(player);
+    }
+
     /** 접속을 종료한 플레이어의 펫을 전부 회수한다. */
     public static void handlePlayerQuit(ServerPlayer player)
     {
