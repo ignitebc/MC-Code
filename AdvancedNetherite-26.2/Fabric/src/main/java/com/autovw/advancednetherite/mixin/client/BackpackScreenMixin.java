@@ -1,5 +1,6 @@
 package com.autovw.advancednetherite.mixin.client;
 
+import com.autovw.advancednetherite.client.gui.PetPanelLayout;
 import com.autovw.advancednetherite.common.backpack.BackpackInventory;
 import com.autovw.advancednetherite.common.backpack.BackpackSlot;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -12,7 +13,9 @@ import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InventoryScreen.class)
@@ -28,6 +31,23 @@ public abstract class BackpackScreenMixin extends AbstractContainerScreen<Invent
     private int advancednetherite$vanillaTextureWidth(int width)
     {
         return BackpackInventory.PANEL_LEFT;
+    }
+
+    @ModifyArg(method = "extractBackground", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blit(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIFFIIII)V"), index = 7)
+    private int advancednetherite$vanillaTextureHeight(int height)
+    {
+        return PetPanelLayout.INVENTORY_HEIGHT;
+    }
+
+    /**
+     * 레시피 책 단추는 화면 한가운데(height / 2)에서 22를 뺀 자리에 놓인다.
+     * 인벤토리가 펫 줄의 절반만큼 위로 올라갔으므로 단추도 같은 만큼 올린다.
+     */
+    @ModifyConstant(method = "getRecipeBookButtonPosition", constant = @Constant(intValue = 22))
+    private int advancednetherite$recipeButtonTop(int offset)
+    {
+        return offset + PetPanelLayout.extraHeight() / 2;
     }
 
     @Inject(method = "extractBackground", at = @At("TAIL"))
@@ -47,6 +67,19 @@ public abstract class BackpackScreenMixin extends AbstractContainerScreen<Invent
         int capacityX = left + (BackpackInventory.PANEL_WIDTH - this.font.width(capacityText)) / 2;
         graphics.text(this.font, capacityText, capacityX, this.topPos + 49, 0xFF404040, false);
         graphics.text(this.font, Component.literal("추가 인벤토리"), left + 8, this.topPos + 70, 0xFF404040, false);
+        int petHeight = PetPanelLayout.panelHeight();
+        if (petHeight > 0)
+        {
+            int petLeft = this.leftPos;
+            int petRight = petLeft + PetPanelLayout.width();
+            int petTop = this.topPos + PetPanelLayout.panelTop();
+            int petBottom = petTop + petHeight;
+            graphics.fill(petLeft, petTop, petRight, petBottom, 0xFF373737);
+            graphics.fill(petLeft, petTop + 1, petRight - 1, petBottom - 1, 0xFFC6C6C6);
+            graphics.fill(petLeft, petTop + 1, petRight - 1, petTop + 3, 0xFFFFFFFF);
+            graphics.fill(petRight - 3, petTop + 3, petRight - 1, petBottom - 1, 0xFF555555);
+        }
+
         for (Slot slot : this.menu.slots)
         {
             if (!(slot instanceof BackpackSlot)) continue;

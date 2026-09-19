@@ -1,5 +1,6 @@
 package com.autovw.advancednetherite.mixin.client;
 
+import com.autovw.advancednetherite.client.gui.PetPanelLayout;
 import com.autovw.advancednetherite.common.backpack.BackpackInventory;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -23,6 +24,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * <p>책을 패널 폭의 절반만큼 왼쪽으로 옮기면 [책][인벤토리][가방 패널]이 한 덩어리로 가운데
  * 놓인다. 옆에 나란히 둘 만큼 넓지 않아 책이 전체 덮개로 바뀌는 경우에는 인벤토리와 겹칠 일이
  * 없으므로 옮기지 않는다.
+ *
+ * <p>세로도 사정이 같다. 펫 줄 때문에 인벤토리가 위로 올라가지만 책의 세로 자리는 화면 높이에서
+ * 인벤토리 높이 166만 빼서 정하므로 따라오지 않는다. 그 166을 펫 줄까지 더한 값으로 바꾸면
+ * 바닐라가 topPos를 구하는 식과 똑같아져 책 윗변이 인벤토리 윗변에 정확히 맞는다.
  */
 @Mixin(RecipeBookComponent.class)
 public abstract class BackpackRecipeBookLayoutMixin
@@ -45,6 +50,25 @@ public abstract class BackpackRecipeBookLayoutMixin
     private int advancednetherite$shiftTabs(int tabOffset)
     {
         return tabOffset + advancednetherite$shift();
+    }
+
+    /** 책 본문의 세로 자리 */
+    @ModifyConstant(method = "getYOrigin", constant = @Constant(intValue = 166))
+    private int advancednetherite$bookTop(int inventoryHeight)
+    {
+        return inventoryHeight + advancednetherite$extraHeight();
+    }
+
+    /** 탭 단추의 세로 자리. 여기도 getYOrigin을 쓰지 않고 같은 식을 다시 계산한다. */
+    @ModifyConstant(method = "updateTabs", constant = @Constant(intValue = 166))
+    private int advancednetherite$tabTop(int inventoryHeight)
+    {
+        return inventoryHeight + advancednetherite$extraHeight();
+    }
+
+    private int advancednetherite$extraHeight()
+    {
+        return this.menu instanceof InventoryMenu ? PetPanelLayout.extraHeight() : 0;
     }
 
     private int advancednetherite$shift()

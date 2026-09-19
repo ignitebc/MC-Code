@@ -1,7 +1,6 @@
 package com.autovw.advancednetherite.client.gui;
 
 import com.autovw.advancednetherite.client.ClientPetData;
-import com.autovw.advancednetherite.common.backpack.BackpackInventory;
 import com.autovw.advancednetherite.common.entity.DialgaPetEntity;
 import com.autovw.advancednetherite.common.pet.PetManager;
 import com.autovw.advancednetherite.network.PetStatusEntry;
@@ -18,18 +17,12 @@ import net.minecraft.world.entity.EntityType;
 import java.util.List;
 
 /**
- * 인벤토리 화면(E키) 오른쪽에 펫별 ON/OFF 버튼을 붙인다.
- * 버튼 목록은 서버가 동기화한 {@link ClientPetData}를 따른다.
+ * 인벤토리 화면(E키) 아래의 작은 판에 펫별 ON/OFF 버튼을 붙인다.
+ * 버튼 목록은 서버가 동기화한 {@link ClientPetData}를 따르고,
+ * 자리는 {@link PetPanelLayout}이 정한다.
  */
 public final class PetToggleButtons
 {
-    /** 가방 패널까지 포함한 인벤토리 오른쪽에 배치한다. */
-    private static final int BUTTON_LEFT_OFFSET =
-            BackpackInventory.PANEL_LEFT + BackpackInventory.PANEL_WIDTH + 4;
-    private static final int BUTTON_WIDTH = 80;
-    private static final int BUTTON_HEIGHT = 20;
-    private static final int BUTTON_SPACING = 22;
-
     private PetToggleButtons()
     {
     }
@@ -44,7 +37,7 @@ public final class PetToggleButtons
 
             List<PetStatusEntry> pets = ClientPetData.getPets();
             BackpackScreenPosition position = (BackpackScreenPosition) screen;
-            int left = position.advancednetherite$getLeftPos() + BUTTON_LEFT_OFFSET;
+            int left = position.advancednetherite$getLeftPos();
             int top = position.advancednetherite$getTopPos();
 
             for (int i = 0; i < pets.size(); i++)
@@ -59,7 +52,8 @@ public final class PetToggleButtons
                                     pressedButton.setMessage(buttonLabel(petNumber, newEnabled));
                                     ClientPlayNetworking.send(new PetTogglePayload(entry.recordId()));
                                 })
-                        .bounds(left, top + i * BUTTON_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT)
+                        .bounds(left + PetPanelLayout.buttonX(i), top + PetPanelLayout.buttonY(i),
+                                PetPanelLayout.BUTTON_WIDTH, PetPanelLayout.BUTTON_HEIGHT)
                         .tooltip(buildPetTooltip(entry))
                         .build();
                 Screens.getWidgets(screen).add(button);

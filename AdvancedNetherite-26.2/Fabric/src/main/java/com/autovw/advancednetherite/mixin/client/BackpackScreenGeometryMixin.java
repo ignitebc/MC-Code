@@ -1,6 +1,7 @@
 package com.autovw.advancednetherite.mixin.client;
 
 import com.autovw.advancednetherite.client.gui.BackpackScreenPosition;
+import com.autovw.advancednetherite.client.gui.PetPanelLayout;
 import com.autovw.advancednetherite.common.backpack.BackpackInventory;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -19,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class BackpackScreenGeometryMixin implements BackpackScreenPosition
 {
     @Shadow @Final @Mutable protected int imageWidth;
+    @Shadow @Final @Mutable protected int imageHeight;
     @Shadow protected int leftPos;
     @Shadow protected int topPos;
 
@@ -29,6 +31,9 @@ public abstract class BackpackScreenGeometryMixin implements BackpackScreenPosit
         if ((Object) this instanceof InventoryScreen)
         {
             this.imageWidth = BackpackInventory.PANEL_LEFT + BackpackInventory.PANEL_WIDTH;
+            // 펫 줄만큼 화면이 높다고 알려 두면 바닐라가 인벤토리를 위로 올려 다시 가운데 맞춘다.
+            // inventoryLabelY는 이 위에서 원래 높이로 이미 계산되었으므로 글자는 제자리에 남는다.
+            this.imageHeight = PetPanelLayout.INVENTORY_HEIGHT + PetPanelLayout.extraHeight();
         }
     }
 
