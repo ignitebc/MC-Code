@@ -75,8 +75,9 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     private static final int ROW_STEP = SmithRowButton.HEIGHT + 1;
     private static final int VISIBLE_ROWS = (BODY_Y + BODY_HEIGHT - 3 - LIST_Y) / ROW_STEP;
     private static final int GROUP_TAB_WIDTH = 64;
-    private static final int INGREDIENT_ROW_HEIGHT = 18;
-    private static final int MAX_INGREDIENTS = 12;
+    private static final int INGREDIENT_ROW_HEIGHT = 24;
+    /** 재료 칸에 들어가는 줄 수. 기본 총기팩의 제작법은 재료가 많아야 다섯 가지다. */
+    private static final int MAX_INGREDIENTS = 5;
 
     /** 큰 분류. 선언 순서가 탭 순서다. */
     private enum Group {
@@ -452,6 +453,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         gui.fill(leftPos + barX, thumbTop, leftPos + barX + 2, thumbTop + thumbHeight, SmithTheme.CYAN);
     }
 
+    /** 총기도감과 같은 재료 줄: 한 줄에 재료 하나, 위에는 이름, 아래에는 보유량과 필요량. */
     private void drawIngredients(GuiGraphicsExtractor gui) {
         if (this.selectedRecipe == null) {
             return;
@@ -459,10 +461,10 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         LocalPlayer player = Minecraft.getInstance().player;
         boolean creative = player != null && player.isCreative();
         List<GunSmithTableIngredient> inputs = this.selectedRecipe.getInputs();
-        int columnWidth = (DETAIL_WIDTH - 12) / 2;
+        int x = leftPos + DETAIL_X + 6;
+        int width = DETAIL_WIDTH - 12;
         for (int index = 0; index < inputs.size() && index < MAX_INGREDIENTS; index++) {
-            int x = leftPos + DETAIL_X + 6 + (index % 2) * columnWidth;
-            int y = topPos + LIST_Y + (index / 2) * INGREDIENT_ROW_HEIGHT;
+            int y = topPos + LIST_Y + index * (INGREDIENT_ROW_HEIGHT + 1);
             GunSmithTableIngredient input = inputs.get(index);
 
             // 태그 재료는 해당하는 아이템을 1초마다 돌려 가며 보여 준다.
@@ -471,14 +473,19 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
                     .resolveForStacks(SlotDisplayContext.fromLevel(Minecraft.getInstance().level));
             ItemStack shown = choices.isEmpty() ? ItemStack.EMPTY
                     : choices.get((int) (System.currentTimeMillis() / 1_000 % choices.size()));
-            SmithTheme.texture(gui, SmithTheme.Skin.INSET, x, y, columnWidth - 2, INGREDIENT_ROW_HEIGHT - 1);
-            gui.fakeItem(shown, x + 1, y);
+            SmithTheme.texture(gui, SmithTheme.Skin.INSET, x, y, width, INGREDIENT_ROW_HEIGHT);
+            gui.fakeItem(shown, x + 3, y + 4);
+            Component name = shown.isEmpty()
+                    ? Component.translatable("gui.tacz.gun_smith_table.ingredient.unknown") : shown.getHoverName();
+            SmithTheme.text(gui, name, x + 23, y + 3, width - 27, SmithTheme.TEXT);
 
             int need = input.getCount();
             int have = this.playerIngredientCount == null ? 0 : this.playerIngredientCount.get(index);
-            Component amount = Component.literal(creative ? need + "/∞" : need + "/" + have);
-            SmithTheme.text(gui, amount, x + 19, y + 5, columnWidth - 23,
-                    creative || have >= need ? SmithTheme.TEXT : SmithTheme.ERROR, 0.7f);
+            Component amount = creative
+                    ? Component.translatable("gui.tacz.gun_smith_table.ingredient.creative", need)
+                    : Component.translatable("gui.tacz.gun_smith_table.ingredient.amount", have, need);
+            SmithTheme.text(gui, amount, x + 23, y + 13, width - 27,
+                    creative || have >= need ? SmithTheme.CYAN : SmithTheme.ERROR);
         }
     }
 
