@@ -1,6 +1,7 @@
 package com.autovw.advancednetherite.client.gui;
 
 import com.autovw.advancednetherite.client.ClientPetData;
+import com.autovw.advancednetherite.common.backpack.BackpackInventory;
 import com.autovw.advancednetherite.common.entity.DialgaPetEntity;
 import com.autovw.advancednetherite.common.pet.PetManager;
 import com.autovw.advancednetherite.network.PetStatusEntry;
@@ -23,7 +24,8 @@ import java.util.List;
 public final class PetToggleButtons
 {
     /** 가방 패널까지 포함한 인벤토리 오른쪽에 배치한다. */
-    private static final int BUTTON_LEFT_OFFSET = 264;
+    private static final int BUTTON_LEFT_OFFSET =
+            BackpackInventory.PANEL_LEFT + BackpackInventory.PANEL_WIDTH + 4;
     private static final int BUTTON_WIDTH = 80;
     private static final int BUTTON_HEIGHT = 20;
     private static final int BUTTON_SPACING = 22;

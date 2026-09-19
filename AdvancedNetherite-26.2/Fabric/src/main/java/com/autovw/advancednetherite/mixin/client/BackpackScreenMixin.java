@@ -42,7 +42,10 @@ public abstract class BackpackScreenMixin extends AbstractContainerScreen<Invent
         graphics.text(this.font, Component.literal("가방"), left + 8, this.topPos + 8, 0xFF404040, false);
 
         int capacity = BackpackInventory.get(this.minecraft.player.getInventory()).capacity();
-        graphics.text(this.font, Component.literal("+" + capacity + "칸"), left + 29, this.topPos + 49, 0xFF404040, false);
+        Component capacityText = Component.literal("+" + capacity + "칸");
+        // 칸 수가 두 자리가 되어도 장비 슬롯과 같은 중심에 오도록 글자 폭으로 맞춘다.
+        int capacityX = left + (BackpackInventory.PANEL_WIDTH - this.font.width(capacityText)) / 2;
+        graphics.text(this.font, capacityText, capacityX, this.topPos + 49, 0xFF404040, false);
         graphics.text(this.font, Component.literal("추가 인벤토리"), left + 8, this.topPos + 70, 0xFF404040, false);
         for (Slot slot : this.menu.slots)
         {

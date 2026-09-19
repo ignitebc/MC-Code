@@ -32,8 +32,8 @@ public abstract class BackpackMenuMixin extends AbstractContainerMenu
         for (int i = 0; i < BackpackInventory.MAX_CAPACITY; i++)
         {
             addSlot(new BackpackSlot(inventory, BackpackInventory.STORAGE_START + i,
-                    BackpackInventory.STORAGE_X + (i % 4) * 18,
-                    BackpackInventory.STORAGE_Y + (i / 4) * 18));
+                    BackpackInventory.STORAGE_X + (i % BackpackInventory.STORAGE_COLUMNS) * BackpackInventory.SLOT_SIZE,
+                    BackpackInventory.STORAGE_Y + (i / BackpackInventory.STORAGE_COLUMNS) * BackpackInventory.SLOT_SIZE));
         }
     }
 

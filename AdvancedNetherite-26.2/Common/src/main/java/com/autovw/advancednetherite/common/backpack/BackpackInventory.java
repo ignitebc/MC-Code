@@ -19,10 +19,14 @@ public final class BackpackInventory
     public static final int SLOT_COUNT = MAX_CAPACITY + 1;
     public static final int MENU_EQUIPMENT_SLOT = 46;
     public static final int PANEL_LEFT = 176;
-    public static final int PANEL_WIDTH = 84;
-    public static final int EQUIPMENT_X = 210;
+    /** 추가 칸 3열과 좌우 여백 8px, "추가 인벤토리" 글자가 함께 들어가는 최소 폭이다. */
+    public static final int PANEL_WIDTH = 70;
+    /** 추가 칸을 몇 열로 늘어놓을지. 12칸이므로 3열이면 4줄이 된다. */
+    public static final int STORAGE_COLUMNS = 3;
+    public static final int SLOT_SIZE = 18;
+    public static final int EQUIPMENT_X = PANEL_LEFT + (PANEL_WIDTH - SLOT_SIZE) / 2;
     public static final int EQUIPMENT_Y = 24;
-    public static final int STORAGE_X = 184;
+    public static final int STORAGE_X = PANEL_LEFT + 8;
     public static final int STORAGE_Y = 84;
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
