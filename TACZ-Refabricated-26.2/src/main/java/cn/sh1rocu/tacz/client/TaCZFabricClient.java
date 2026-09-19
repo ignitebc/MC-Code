@@ -139,8 +139,6 @@ public class TaCZFabricClient implements ClientModInitializer {
 
         InputEvent.Key.EVENT.register(InspectKey::onInspectPress);
 
-        InputEvent.Key.EVENT.register(InteractKey::onInteractKeyPress);
-        InputEvent.MouseButton.Post.EVENT.register(InteractKey::onInteractMousePress);
 
         InputEvent.Key.EVENT.register(MeleeKey::onMeleeKeyPress);
         InputEvent.MouseButton.Post.EVENT.register(MeleeKey::onMeleeMousePress);

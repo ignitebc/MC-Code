@@ -6,11 +6,6 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import java.util.List;
 
 public class SyncConfig {
-    // 交互键的判断是在客户端执行的，但是需要服务端来控制
-    public static ForgeConfigSpec.ConfigValue<List<String>> INTERACT_KEY_WHITELIST_BLOCKS;
-    public static ForgeConfigSpec.ConfigValue<List<String>> INTERACT_KEY_WHITELIST_ENTITIES;
-    public static ForgeConfigSpec.ConfigValue<List<String>> INTERACT_KEY_BLACKLIST_BLOCKS;
-    public static ForgeConfigSpec.ConfigValue<List<String>> INTERACT_KEY_BLACKLIST_ENTITIES;
     public static ForgeConfigSpec.BooleanValue ENABLE_TABLE_FILTER;
     public static ForgeConfigSpec.BooleanValue SERVER_SHOOT_NETWORK_V;
     public static ForgeConfigSpec.BooleanValue SERVER_SHOOT_COOLDOWN_V;
@@ -31,27 +26,8 @@ public class SyncConfig {
     public static ForgeConfigSpec.BooleanValue ENABLE_CRAWL;
 
     public static void init(ForgeConfigSpec.Builder builder) {
-        interactKey(builder);
         baseMultiplier(builder);
         misc(builder);
-    }
-
-    public static void interactKey(ForgeConfigSpec.Builder builder) {
-        builder.push("interact_key");
-
-        builder.comment("These whitelist blocks can be interacted with when the interact key is pressed");
-        INTERACT_KEY_WHITELIST_BLOCKS = builder.define("InteractKeyWhitelistBlocks", Lists.newArrayList());
-
-        builder.comment("These whitelist entities can be interacted with when the interact key is pressed");
-        INTERACT_KEY_WHITELIST_ENTITIES = builder.define("InteractKeyWhitelistEntities", Lists.newArrayList());
-
-        builder.comment("These blacklist blocks can be interacted with when the interact key is pressed");
-        INTERACT_KEY_BLACKLIST_BLOCKS = builder.define("InteractKeyBlacklistBlocks", Lists.newArrayList());
-
-        builder.comment("These blacklist entities can be interacted with when the interact key is pressed");
-        INTERACT_KEY_BLACKLIST_ENTITIES = builder.define("InteractKeyBlacklistEntities", Lists.newArrayList());
-
-        builder.pop();
     }
 
     private static void baseMultiplier(ForgeConfigSpec.Builder builder) {

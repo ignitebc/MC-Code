@@ -1,7 +1,6 @@
 package com.tacz.guns.event;
 
 import com.tacz.guns.config.util.HeadShotAABBConfigRead;
-import com.tacz.guns.config.util.InteractKeyConfigRead;
 import net.neoforged.fml.config.ModConfig;
 
 public class LoadingConfigEvent {
@@ -14,7 +13,6 @@ public class LoadingConfigEvent {
         String fileName = config.getFileName();
         if (CONFIG_NAME.equals(fileName)) {
             HeadShotAABBConfigRead.init();
-            InteractKeyConfigRead.init();
         }
     }
 
@@ -25,7 +23,6 @@ public class LoadingConfigEvent {
         String fileName = config.getFileName();
         if (CONFIG_NAME.equals(fileName)) {
             HeadShotAABBConfigRead.init();
-            InteractKeyConfigRead.init();
 //            if (FabricLoader.getInstance().getEnvironmentType()== EnvType.CLIENT) ClientGunPackDownloadManager::downloadClientGunPack;
         }
     }
