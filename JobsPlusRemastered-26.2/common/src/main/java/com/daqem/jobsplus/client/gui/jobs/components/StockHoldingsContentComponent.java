@@ -21,6 +21,8 @@ import java.util.Locale;
 public class StockHoldingsContentComponent extends EmptyComponent
 {
     private static final int ROW_HEIGHT = 16;
+    /** 0.5배 글자(높이 약 5px)가 구분선을 뺀 15px 행의 세로 가운데에 오는 위치. 머리글과 본문이 함께 쓴다. */
+    private static final int TEXT_OFFSET_Y = 5;
     private static final int TABLE_WIDTH = 136;
     private static final int NAME_COLUMN_END = 34;
     private static final int POSITION_COLUMN_END = 54;
@@ -68,14 +70,15 @@ public class StockHoldingsContentComponent extends EmptyComponent
         int y = getTotalY();
         int right = x + getWidth();
         JobsTheme.texture(guiGraphics, JobsTheme.Skin.HEADER, x, y, getWidth(), ROW_HEIGHT);
-        drawScaledCentered(guiGraphics, "종목명", x + nameColumn / 2, y + 2, TEXT_COLOR);
-        drawScaledCentered(guiGraphics, "포지션", x + (nameColumn + positionColumn) / 2, y + 2,
+        int headerTextY = y + TEXT_OFFSET_Y;
+        drawScaledCentered(guiGraphics, "종목명", x + nameColumn / 2, headerTextY, TEXT_COLOR);
+        drawScaledCentered(guiGraphics, "포지션", x + (nameColumn + positionColumn) / 2, headerTextY,
                 TEXT_COLOR);
         drawScaledCentered(guiGraphics, "평단가", x + (positionColumn + priceColumn) / 2,
-                y + 2, TEXT_COLOR);
-        drawScaledCentered(guiGraphics, "투자금", x + (priceColumn + amountColumn) / 2, y + 2, TEXT_COLOR);
+                headerTextY, TEXT_COLOR);
+        drawScaledCentered(guiGraphics, "투자금", x + (priceColumn + amountColumn) / 2, headerTextY, TEXT_COLOR);
         // 전일 대비가 아니라 평단가 대비 손익이므로 "수익률"이 맞다.
-        drawScaled(guiGraphics, "수익률(%)", x + amountColumn + 2, y + 2, TEXT_COLOR);
+        drawScaled(guiGraphics, "수익률(%)", x + amountColumn + 2, headerTextY, TEXT_COLOR);
         guiGraphics.fill(x, y + ROW_HEIGHT - 1, right, y + ROW_HEIGHT, GRID_COLOR);
 
         StockMarketSnapshot snapshot = ClientStockMarket.getSnapshot();
@@ -113,14 +116,15 @@ public class StockHoldingsContentComponent extends EmptyComponent
                 }
             }
 
-            drawScaled(guiGraphics, selected ? "▶" : "", x + 1, rowY + 5, TEXT_COLOR);
-            JobsTheme.text(guiGraphics, Component.literal(name), x + 6, rowY + 5,
+            int textY = rowY + TEXT_OFFSET_Y;
+            drawScaled(guiGraphics, selected ? "▶" : "", x + 1, textY, TEXT_COLOR);
+            JobsTheme.text(guiGraphics, Component.literal(name), x + 6, textY,
                     nameColumn - 9, TEXT_COLOR);
             drawScaledCentered(guiGraphics, positionName, x + (nameColumn + positionColumn) / 2,
-                    rowY + 5, TEXT_COLOR);
-            drawScaledRight(guiGraphics, averagePrice, x + priceColumn - 2, rowY + 5, TEXT_COLOR);
-            drawScaledRight(guiGraphics, investedAmount, x + amountColumn - 2, rowY + 5, TEXT_COLOR);
-            drawScaled(guiGraphics, returnRate, x + amountColumn + 2, rowY + 5, returnColor);
+                    textY, TEXT_COLOR);
+            drawScaledRight(guiGraphics, averagePrice, x + priceColumn - 2, textY, TEXT_COLOR);
+            drawScaledRight(guiGraphics, investedAmount, x + amountColumn - 2, textY, TEXT_COLOR);
+            drawScaled(guiGraphics, returnRate, x + amountColumn + 2, textY, returnColor);
             guiGraphics.fill(x, rowY + ROW_HEIGHT - 1, right, rowY + ROW_HEIGHT, GRID_COLOR);
             index++;
         }
