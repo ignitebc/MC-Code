@@ -14,6 +14,8 @@ public abstract class AbstractScrollWidget extends ScrollContainerWidget
     private final static int DEFAULT_SCROLL_HANDLE_WIDTH = 8;
     private final static int DEFAULT_SCROLL_TRACK_WIDTH = 4;
     private final static int SCROLL_HANDLE_HEIGHT = 13;
+    /** 한 칸 높이만큼만 움직이면 너무 더디므로 휠 한 번에 두 칸씩 넘긴다. */
+    private final static int SCROLL_STEPS_PER_NOTCH = 2;
 
     private final int itemHeight;
 
@@ -85,6 +87,6 @@ public abstract class AbstractScrollWidget extends ScrollContainerWidget
     @Override
     protected double scrollRate()
     {
-        return this.itemHeight;
+        return this.itemHeight * SCROLL_STEPS_PER_NOTCH;
     }
 }
