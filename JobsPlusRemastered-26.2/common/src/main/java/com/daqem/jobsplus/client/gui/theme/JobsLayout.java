@@ -29,8 +29,9 @@ public record JobsLayout(int width, int height) {
         return wide() ? 18 + leftWidth() : 8;
     }
 
+    /** 직업 목록 칸과 같은 너비로 둔다. 남는 폭은 오른쪽 내용 칸이 가져간다. */
     public int detailWidth() {
-        return wide() ? (width - 44) * 27 / 100 : leftWidth();
+        return leftWidth();
     }
 
     public int contentX() {
