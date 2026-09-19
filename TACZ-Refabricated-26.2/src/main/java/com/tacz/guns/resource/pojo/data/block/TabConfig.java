@@ -46,8 +46,11 @@ public record TabConfig(Identifier id, String name, Supplier<ItemStack> icon) {
     public static final Identifier TAB_MISC = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "misc");
     public static final Identifier TAB_EMPTY = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "empty");
 
+    /**
+     * 팩이 탭을 적지 않았거나 작업대 제한을 끈 경우에 쓰는 기본 분류. 기본 총기팩의 총기 작업대 탭과 같은 구성이다.
+     * 탄약 제작법은 구경별 세부 분류를 쓰므로 그 분류들도 함께 둔다.
+     */
     public static final List<TabConfig> DEFAULT_TABS = List.of(
-            new TabConfig(TabConfig.TAB_AMMO, "tacz.type.ammo.name", () -> AmmoItemBuilder.create().setId(DefaultAssets.DEFAULT_AMMO_ID).build()),
             new TabConfig(TabConfig.TAB_PISTOL, "tacz.type.pistol.name", () -> GunItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "p18c")).forceBuild()),
             new TabConfig(TabConfig.TAB_SNIPER, "tacz.type.sniper.name", () -> GunItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "ai_awp")).forceBuild()),
             new TabConfig(TabConfig.TAB_RIFLE, "tacz.type.rifle.name", () -> GunItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "ak47")).forceBuild()),
@@ -61,8 +64,18 @@ public record TabConfig(Identifier id, String name, Supplier<ItemStack> icon) {
             new TabConfig(TabConfig.TAB_GRIP, "tacz.type.grip.name", () -> AttachmentItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "grip_magpul_afg_2")).build()),
             new TabConfig(TabConfig.TAB_EXTENDED_MAG, "tacz.type.extended_mag.name", () -> AttachmentItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "extended_mag_3")).build()),
             new TabConfig(TabConfig.TAB_LASER, "tacz.type.laser.name", () -> AttachmentItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "laser_compact")).build()),
+            new TabConfig(TabConfig.TAB_AMMO, "tacz.type.ammo.name", () -> AmmoItemBuilder.create().setId(DefaultAssets.DEFAULT_AMMO_ID).build()),
+            new TabConfig(taczId("pd_cartridges"), "tacz.type.pd_cartridges.name", () -> AmmoItemBuilder.create().setId(taczId("9mm")).build()),
+            new TabConfig(taczId("ifp_rifle_cartridges"), "tacz.type.ifp_rifle_cartridges.name", () -> AmmoItemBuilder.create().setId(taczId("556x45")).build()),
+            new TabConfig(taczId("lc_specialized"), "tacz.type.lc_specialized.name", () -> AmmoItemBuilder.create().setId(taczId("50bmg")).build()),
+            new TabConfig(taczId("explosives"), "tacz.type.explosives.name", () -> AmmoItemBuilder.create().setId(taczId("rpg_rocket")).build()),
+            new TabConfig(taczId("shotgun_shells"), "tacz.type.shotgun_shells.name", () -> AmmoItemBuilder.create().setId(taczId("12g")).build()),
             new TabConfig(TabConfig.TAB_MISC, "tacz.type.misc.name", () -> ModItems.GUN_SMITH_TABLE.getDefaultInstance())
     );
+
+    private static Identifier taczId(String path) {
+        return Identifier.fromNamespaceAndPath(GunMod.MOD_ID, path);
+    }
 
     public static class Deserializer implements JsonDeserializer<TabConfig> {
         @Override

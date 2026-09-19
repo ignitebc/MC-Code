@@ -1,17 +1,16 @@
 {
-  // 配方过滤器，具体内容位于 data/<命名空间>/recipe_filters 下
-  // 如果没有指定，将使用默认过滤器 tacz:default
+  // 제작법 필터. 내용은 data/<네임스페이스>/recipe_filters 아래에 있다.
+  // 적지 않으면 기본 필터 tacz:default 를 쓴다.
   "filter": "tacz:default",
-  // gui内包含的tab
-  // 如果没有填写此字段或者tabs为空，将使用内置的默认tab列表
-  // 你可以使用自定义的tab id来实现另外一种配方限制
+  // 작업대 화면의 세부 분류. 총기·부착물·탄약을 모두 이 작업대 하나에서 만든다.
+  // 화면 맨 위의 큰 분류(총기/부착물/탄약/기타)는 여기 적지 않는다.
+  // 세부 분류에 든 첫 제작법의 결과물 종류를 보고 화면이 알아서 나눈다.
+  // id 는 제작법 result 의 group 과 짝이고, icon 에는 아무 아이템이나 쓸 수 있다.
   "tabs": [
+    // 총기
     {
-      // tab的id，在配方的result中指定
       "id": "tacz:pistol",
-      // tab的名称，将会显示在gui中
       "name": "tacz.type.pistol.name",
-      // tab的图标，可以指定任意一个物品作为图标
       "icon": {
         "item": "tacz:modern_kinetic_gun",
         "nbt": {
@@ -79,6 +78,136 @@
         }
       }
     },
+    // 부착물
+    {
+      "id": "tacz:scope",
+      "name": "tacz.type.scope.name",
+      "icon": {
+        "item": "tacz:attachment",
+        "nbt": {
+          "AttachmentId": "tacz:scope_acog_ta31"
+        }
+      }
+    },
+    {
+      "id": "tacz:muzzle",
+      "name": "tacz.type.muzzle.name",
+      "icon": {
+        "item": "tacz:attachment",
+        "nbt": {
+          "AttachmentId": "tacz:muzzle_compensator_trident"
+        }
+      }
+    },
+    {
+      "id": "tacz:stock",
+      "name": "tacz.type.stock.name",
+      "icon": {
+        "item": "tacz:attachment",
+        "nbt": {
+          "AttachmentId": "tacz:stock_militech_b5"
+        }
+      }
+    },
+    {
+      "id": "tacz:grip",
+      "name": "tacz.type.grip.name",
+      "icon": {
+        "item": "tacz:attachment",
+        "nbt": {
+          "AttachmentId": "tacz:grip_magpul_afg_2"
+        }
+      }
+    },
+    {
+      "id": "tacz:extended_mag",
+      "name": "tacz.type.extended_mag.name",
+      "icon": {
+        "item": "tacz:attachment",
+        "nbt": {
+          "AttachmentId": "tacz:extended_mag_3"
+        }
+      }
+    },
+    {
+      "id": "tacz:laser",
+      "name": "tacz.type.laser.name",
+      "icon": {
+        "item": "tacz:attachment",
+        "nbt": {
+          "AttachmentId": "tacz:laser_compact"
+        }
+      }
+    },
+    // 탄약
+    {
+      "id": "tacz:ammo",
+      "name": "tacz.type.ammo.name",
+      "icon": {
+        "item": "tacz:ammo",
+        "nbt": {
+          "AmmoId": "tacz:762x39"
+        }
+      }
+    },
+    {
+      "id": "tacz:pd_cartridges",
+      "name": "tacz.type.pd_cartridges.name",
+      "icon": {
+        "item": "tacz:ammo",
+        "nbt": {
+          "AmmoId": "tacz:9mm"
+        }
+      }
+    },
+    {
+      "id": "tacz:ifp_rifle_cartridges",
+      "name": "tacz.type.ifp_rifle_cartridges.name",
+      "icon": {
+        "item": "tacz:ammo",
+        "nbt": {
+          "AmmoId": "tacz:556x45"
+        }
+      }
+    },
+    {
+      "id": "tacz:lc_specialized",
+      "name": "tacz.type.lc_specialized.name",
+      "icon": {
+        "item": "tacz:ammo",
+        "nbt": {
+          "AmmoId": "tacz:50bmg"
+        }
+      }
+    },
+    {
+      "id": "tacz:explosives",
+      "name": "tacz.type.explosives.name",
+      "icon": {
+        "item": "tacz:ammo",
+        "nbt": {
+          "AmmoId": "tacz:rpg_rocket"
+        }
+      }
+    },
+    {
+      "id": "tacz:shotgun_shells",
+      "name": "tacz.type.shotgun_shells.name",
+      "icon": {
+        "item": "tacz:ammo",
+        "nbt": {
+          "AmmoId": "tacz:12g"
+        }
+      }
+    },
+    {
+      "id": "tacz:alternative_proj",
+      "name": "tacz.type.alternative_proj.name",
+      "icon": {
+        "item": "minecraft:arrow"
+      }
+    },
+    // 기타
     {
       "id": "tacz:misc",
       "name": "tacz.type.misc.name",

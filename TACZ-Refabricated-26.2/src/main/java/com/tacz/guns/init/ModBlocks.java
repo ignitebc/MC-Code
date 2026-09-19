@@ -23,11 +23,8 @@ public class ModBlocks {
 
     }
 
-    // 旧方块就让他独占一个了
+    // 작업대는 총기 작업대 하나뿐이다. 탄약·부착물 제작도 이 작업대의 분류 탭에서 한다.
     public static Block GUN_SMITH_TABLE = registerBlock("gun_smith_table", new GunSmithTableBlockB(woodProps("gun_smith_table")));
-    public static Block WORKBENCH_111 = registerBlock("workbench_a", new GunSmithTableBlockA(woodProps("workbench_a")));
-    public static Block WORKBENCH_211 = registerBlock("workbench_b", new GunSmithTableBlockB(woodProps("workbench_b")));
-    public static Block WORKBENCH_121 = registerBlock("workbench_c", new GunSmithTableBlockC(woodProps("workbench_c")));
 
     public static Block TARGET = registerBlock("target", new TargetBlock(woodProps("target")));
     public static Block STATUE = registerBlock("statue", new StatueBlock(BlockBehaviour.Properties.of().setId(blockKey("statue")).sound(SoundType.STONE).strength(2.0F, 3.0F).noOcclusion().pushReaction(PushReaction.DESTROY)));
