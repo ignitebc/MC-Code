@@ -12,6 +12,12 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public class SelectedJobComponent extends EmptyComponent {
+    /** 직업정보 탭의 행동 아이콘과 같은 칸·아이템 크기 */
+    private static final int ICON_SIZE = 32;
+    private static final float ICON_ITEM_SCALE = 1.5f;
+    private static final int ICON_Y = 24;
+    private static final int NAME_Y = ICON_Y + ICON_SIZE + 6;
+
     private final JobsScreenState state;
     private final StartJobButtonWidget startJobButtonWidget;
     private final boolean wide;
@@ -40,16 +46,14 @@ public class SelectedJobComponent extends EmptyComponent {
         int y = getTotalY();
         if (wide) {
             JobsTheme.text(graphics, Component.literal("직업 상세 정보"), x + 8, y + 7, getWidth() - 16, JobsTheme.MUTED);
-            int iconSize = spacious ? 64 : 42;
-            int iconX = x + (getWidth() - iconSize) / 2;
-            JobsTheme.cutBox(graphics, iconX, y + 24, iconSize, iconSize, JobsTheme.INSET, JobsTheme.BORDER);
+            int iconX = x + (getWidth() - ICON_SIZE) / 2;
+            JobsTheme.texture(graphics, JobsTheme.Skin.SLOT, iconX, y + ICON_Y, ICON_SIZE, ICON_SIZE);
             graphics.pose().pushMatrix();
-            graphics.pose().translate(iconX + 5, y + 29);
-            float iconScale = (iconSize - 10) / 16.0f;
-            graphics.pose().scale(iconScale, iconScale);
+            graphics.pose().translate(iconX + 4, y + ICON_Y + 4);
+            graphics.pose().scale(ICON_ITEM_SCALE, ICON_ITEM_SCALE);
             graphics.fakeItem(jobInstance.getIconItem(), 0, 0);
             graphics.pose().popMatrix();
-            JobsTheme.label(graphics, jobInstance.getName(), x + 6, y + (spacious ? 94 : 72), getWidth() - 12, 14, JobsTheme.TEXT);
+            JobsTheme.label(graphics, jobInstance.getName(), x + 6, y + NAME_Y, getWidth() - 12, 14, JobsTheme.TEXT);
         } else {
             graphics.fakeItem(jobInstance.getIconItem(), x + 7, y + 5);
             JobsTheme.text(graphics, jobInstance.getName(), x + 29, y + 7, getWidth() - 35, JobsTheme.TEXT);
@@ -58,10 +62,10 @@ public class SelectedJobComponent extends EmptyComponent {
         if (selectedJob.getLevel() > 0) {
             if (wide) {
                 JobsTheme.label(graphics, JobsPlus.translatable("gui.jobs.level", selectedJob.getLevel()),
-                        x + 6, y + (spacious ? 109 : 87), getWidth() - 12, 12, JobsTheme.CYAN);
-                JobsTheme.progress(graphics, x + 8, y + (spacious ? 127 : 105), getWidth() - 16, 6, selectedJob.getExperiencePercentage());
+                        x + 6, y + NAME_Y + 15, getWidth() - 12, 12, JobsTheme.CYAN);
+                JobsTheme.progress(graphics, x + 8, y + NAME_Y + 33, getWidth() - 16, 6, selectedJob.getExperiencePercentage());
                 JobsTheme.label(graphics, JobsPlus.translatable("gui.jobs.experience", selectedJob.getExperience(),
-                                selectedJob.getExperienceForNextLevel()), x + 4, y + (spacious ? 137 : 115), getWidth() - 8, 12, JobsTheme.MUTED);
+                                selectedJob.getExperienceForNextLevel()), x + 4, y + NAME_Y + 43, getWidth() - 8, 12, JobsTheme.MUTED);
             } else {
                 JobsTheme.text(graphics, JobsPlus.translatable("gui.jobs.level", selectedJob.getLevel()),
                         x + 29, y + 19, getWidth() - 35, JobsTheme.CYAN);
@@ -71,13 +75,7 @@ public class SelectedJobComponent extends EmptyComponent {
             }
             this.removeWidget(this.startJobButtonWidget);
         } else {
-            int infoY = y + 20;
-            if (wide) {
-                infoY = y + 100;
-            }
-            if (spacious) {
-                infoY = y + 125;
-            }
+            int infoY = wide ? y + NAME_Y + 28 : y + 20;
             if (canStartNewJob()) {
                 int remainingFreeJobs = Math.max(0, state.getMaxJobs() - state.getActiveJobCount());
                 Component startCost = canStartFreeJob()
@@ -97,10 +95,10 @@ public class SelectedJobComponent extends EmptyComponent {
             }
         }
         if (spacious) {
-            JobsTheme.sprite(graphics, JobsPlus.getId("jobs/coins"), x + 9, y + 159, 7, 8);
+            JobsTheme.sprite(graphics, JobsPlus.getId("jobs/coins"), x + 9, y + NAME_Y + 65, 7, 8);
             JobsTheme.text(graphics, Component.literal("직업코인  " + state.getCoins()),
-                    x + 21, y + 159, getWidth() - 29, JobsTheme.TEXT);
-            JobsTheme.text(graphics, jobInstance.getDescription(), x + 8, y + 179,
+                    x + 21, y + NAME_Y + 65, getWidth() - 29, JobsTheme.TEXT);
+            JobsTheme.text(graphics, jobInstance.getDescription(), x + 8, y + NAME_Y + 85,
                     getWidth() - 16, JobsTheme.MUTED);
         }
     }
