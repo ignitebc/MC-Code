@@ -132,6 +132,19 @@ public final class JobsTheme {
         g.pose().popMatrix();
     }
 
+    /**
+     * 오른쪽 끝을 기준으로 글자를 놓는다.
+     *
+     * <p>{@link #text}와 같은 방식으로 폭이 모자라면 글자를 줄이고, 줄인 폭만큼 왼쪽으로 민다.
+     *
+     * @param right 글자가 끝날 x 좌표
+     */
+    public static void textRight(GuiGraphicsExtractor g, Component text, int right, int y, int maxWidth, int color) {
+        int textWidth = Minecraft.getInstance().font.width(text);
+        float scale = Math.min(LABEL_SCALE, Math.max(1, maxWidth) / (float) Math.max(1, textWidth));
+        text(g, text, right - (int) Math.ceil(textWidth * scale), y, maxWidth, color);
+    }
+
     public static void progress(GuiGraphicsExtractor g, int x, int y, int width, int height, double percent) {
         cutBox(g, x, y, width, height, INSET, BORDER);
         int filled = (int) Math.round(Math.clamp(percent, 0.0, 100.0) * Math.max(0, width - 2) / 100.0);
