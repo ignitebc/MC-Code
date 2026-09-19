@@ -14,7 +14,6 @@ import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
@@ -46,6 +45,15 @@ public class DialgaPetEntity extends TamableAnimal
     /** 주인 조회가 잠깐 비어도(사망→리스폰 전환 등) 이 시간(5초) 안에 돌아오면 소멸하지 않는다. */
     private static final int OWNER_MISSING_GRACE_TICKS = 100;
 
+    /** 자리 번호를 다시 읽는 주기(1초). 매 틱 저장소를 뒤질 필요는 없다. */
+    private static final int RING_REFRESH_INTERVAL_TICKS = 20;
+    /** 펫 한 마리만 있을 때의 원 반지름 */
+    private static final double RING_BASE_RADIUS = 1.6;
+    /** 펫이 한 마리 늘 때마다 더하는 반지름 */
+    private static final double RING_RADIUS_PER_PET = 0.12;
+    /** 원이 너무 커져 펫이 멀어지지 않도록 둔 상한 */
+    private static final double RING_MAX_RADIUS = 4.0;
+
     /**
      * 펫 저장소의 기록 ID. 차원 이동 시 엔티티가 새 개체로 복사되므로 NBT로도 승계한다.
      * 기록 없는 펫은 존재 자격이 없어 소멸한다.
@@ -53,6 +61,10 @@ public class DialgaPetEntity extends TamableAnimal
     private UUID recordId;
 
     private int ownerMissingTicks;
+
+    /** 주인 둘레에서 맡은 자리 번호와 같이 서 있는 펫 수. 주기적으로 다시 읽는다. */
+    private int ringSlot;
+    private int ringCount = 1;
 
     public DialgaPetEntity(EntityType<? extends DialgaPetEntity> entityType, Level level)
     {
@@ -73,7 +85,7 @@ public class DialgaPetEntity extends TamableAnimal
     {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.4, true));
-        this.goalSelector.addGoal(2, new FollowOwnerGoal(this, 1.25, 3.0F, 1.5F));
+        this.goalSelector.addGoal(2, new FollowOwnerRingGoal(this, 1.25, 3.0F, 1.0F));
         this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
 
@@ -112,6 +124,11 @@ public class DialgaPetEntity extends TamableAnimal
         {
             this.discard();
             return;
+        }
+
+        if (owner instanceof ServerPlayer slotOwner && this.tickCount % RING_REFRESH_INTERVAL_TICKS == 0)
+        {
+            refreshRingSlot(slotOwner);
         }
 
         if (owner instanceof ServerPlayer serverPlayer && serverPlayer.level() != serverLevel)
@@ -172,9 +189,39 @@ public class DialgaPetEntity extends TamableAnimal
 
     private void teleportBesideOwner(LivingEntity owner)
     {
-        this.teleportTo(owner.getX(), owner.getY(), owner.getZ());
+        Vec3 spot = ringPosition(owner);
+        this.teleportTo(spot.x, spot.y, spot.z);
         this.setDeltaMovement(Vec3.ZERO);
         this.resetFallDistance();
+    }
+
+    /** 주인의 켜진 펫 목록에서 이 펫의 자리 번호를 다시 읽는다. */
+    private void refreshRingSlot(ServerPlayer owner)
+    {
+        if (this.recordId == null)
+        {
+            return;
+        }
+
+        int slot = PetManager.enabledPetIndex(owner.getUUID(), this.recordId);
+        if (slot >= 0)
+        {
+            this.ringSlot = slot;
+            this.ringCount = Math.max(1, PetManager.enabledPetCount(owner.getUUID()));
+        }
+    }
+
+    /**
+     * 주인 둘레에서 이 펫이 설 자리.
+     *
+     * <p>자리 번호대로 원을 나눠 갖고, 펫이 많을수록 원을 키워 서로 간격을 둔다.
+     * 각도는 세계 기준이라 주인이 몸을 돌려도 펫이 따라 돌지 않는다.
+     */
+    public Vec3 ringPosition(LivingEntity owner)
+    {
+        double angle = Math.TAU / this.ringCount * this.ringSlot;
+        double radius = Math.min(RING_MAX_RADIUS, RING_BASE_RADIUS + this.ringCount * RING_RADIUS_PER_PET);
+        return owner.position().add(Math.cos(angle) * radius, 0.0, Math.sin(angle) * radius);
     }
 
     /**

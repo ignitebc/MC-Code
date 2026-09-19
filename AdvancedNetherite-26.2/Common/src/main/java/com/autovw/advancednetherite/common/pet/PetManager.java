@@ -218,6 +218,36 @@ public final class PetManager
         LAST_TOGGLE_TICKS.clear();
     }
 
+    /**
+     * 주인의 켜진 펫 가운데 이 기록이 몇 번째인지.
+     *
+     * <p>펫들이 주인 둘레에 겹치지 않고 자리를 나눠 서는 데 쓴다.
+     *
+     * @return 0부터 세는 번호. 기록이 없거나 꺼져 있으면 -1
+     */
+    public static int enabledPetIndex(UUID ownerId, UUID recordId)
+    {
+        int index = 0;
+        for (PetRecord record : PetStorage.getPets(ownerId))
+        {
+            if (!record.enabled()) continue;
+            if (record.id().equals(recordId)) return index;
+            index++;
+        }
+        return -1;
+    }
+
+    /** 주인의 켜진 펫 수 */
+    public static int enabledPetCount(UUID ownerId)
+    {
+        int count = 0;
+        for (PetRecord record : PetStorage.getPets(ownerId))
+        {
+            if (record.enabled()) count++;
+        }
+        return count;
+    }
+
     /** 레지스트리 ID로 펫 타입을 찾는다. 알 수 없는 ID면 null. */
     public static EntityType<DialgaPetEntity> getPetType(String petTypeId)
     {
