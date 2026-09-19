@@ -10,6 +10,7 @@ import com.tacz.guns.api.modifier.ParameterizedCachePair;
 import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource.modifier.ModifierText;
 import com.tacz.guns.resource.pojo.data.attachment.Modifier;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.resource.pojo.data.gun.GunRecoil;
@@ -148,14 +149,14 @@ public class RecoilModifier implements IAttachmentModifier<Pair<Modifier, Modifi
             }
 
             if (pitch > 1) {
-                components.add(Component.translatable("tooltip.tacz.attachment.pitch.increase").withStyle(style -> style.withColor(0xFF5555)));
+                components.add(ModifierText.line("tooltip.tacz.attachment.pitch.increase", modified == null ? null : modified.left(), "", 0xFF5555));
             } else if (pitch < 1) {
-                components.add(Component.translatable("tooltip.tacz.attachment.pitch.decrease").withStyle(style -> style.withColor(0x55FF55)));
+                components.add(ModifierText.line("tooltip.tacz.attachment.pitch.decrease", modified == null ? null : modified.left(), "", 0x55FF55));
             }
             if (yaw > 1) {
-                components.add(Component.translatable("tooltip.tacz.attachment.yaw.increase").withStyle(style -> style.withColor(0xFF5555)));
+                components.add(ModifierText.line("tooltip.tacz.attachment.yaw.increase", modified == null ? null : modified.right(), "", 0xFF5555));
             } else if (yaw < 1) {
-                components.add(Component.translatable("tooltip.tacz.attachment.yaw.decrease").withStyle(style -> style.withColor(0x55FF55)));
+                components.add(ModifierText.line("tooltip.tacz.attachment.yaw.decrease", modified == null ? null : modified.right(), "", 0x55FF55));
             }
         }
     }

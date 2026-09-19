@@ -8,6 +8,7 @@ import com.tacz.guns.api.modifier.JsonProperty;
 import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource.modifier.ModifierText;
 import com.tacz.guns.resource.pojo.data.attachment.Modifier;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import net.fabricmc.api.EnvType;
@@ -83,9 +84,9 @@ public class PierceModifier implements IAttachmentModifier<Modifier, Integer> {
                 long eval = Math.round(AttachmentPropertyManager.eval(pierce, 5));
                 eval = Math.max(eval, 1);
                 if (eval > 5) {
-                    components.add(Component.translatable("tooltip.tacz.attachment.pierce.increase").withStyle(style -> style.withColor(0x55FF55)));
+                    components.add(ModifierText.line("tooltip.tacz.attachment.pierce.increase", pierce, "", 0x55FF55));
                 } else if (eval < 5) {
-                    components.add(Component.translatable("tooltip.tacz.attachment.pierce.decrease").withStyle(style -> style.withColor(0xFF5555)));
+                    components.add(ModifierText.line("tooltip.tacz.attachment.pierce.decrease", pierce, "", 0xFF5555));
                 }
             }
         }

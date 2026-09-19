@@ -10,6 +10,7 @@ import com.tacz.guns.api.modifier.JsonProperty;
 import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource.modifier.ModifierText;
 import com.tacz.guns.resource.pojo.data.attachment.Modifier;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.resource.pojo.data.gun.GunFireModeAdjustData;
@@ -98,9 +99,9 @@ public class AmmoSpeedModifier implements IAttachmentModifier<Modifier, Float> {
             if (ammoSpeed != null) {
                 double eval = AttachmentPropertyManager.eval(ammoSpeed, 300);
                 if (eval > 300) {
-                    components.add(Component.translatable("tooltip.tacz.attachment.ammo_speed.increase").withStyle(style -> style.withColor(0x55FF55)));
+                    components.add(ModifierText.line("tooltip.tacz.attachment.ammo_speed.increase", ammoSpeed, "m/s", 0x55FF55));
                 } else if (eval < 300) {
-                    components.add(Component.translatable("tooltip.tacz.attachment.ammo_speed.decrease").withStyle(style -> style.withColor(0xFF5555)));
+                    components.add(ModifierText.line("tooltip.tacz.attachment.ammo_speed.decrease", ammoSpeed, "m/s", 0xFF5555));
                 }
             }
         }

@@ -11,6 +11,7 @@ import com.tacz.guns.config.sync.SyncConfig;
 import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource.modifier.ModifierText;
 import com.tacz.guns.resource.pojo.data.attachment.Modifier;
 import com.tacz.guns.resource.pojo.data.gun.BulletData;
 import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
@@ -115,9 +116,9 @@ public class ArmorIgnoreModifier implements IAttachmentModifier<Modifier, Float>
             if (value != null) {
                 double eval = AttachmentPropertyManager.eval(value, 0.5);
                 if (eval > 0.5) {
-                    components.add(Component.translatable("tooltip.tacz.attachment.armor_ignore.increase").withStyle(style -> style.withColor(0x55FF55)));
+                    components.add(ModifierText.line("tooltip.tacz.attachment.armor_ignore.increase", value, "", 0x55FF55));
                 } else if (eval < 0.5) {
-                    components.add(Component.translatable("tooltip.tacz.attachment.armor_ignore.decrease").withStyle(style -> style.withColor(0xFF5555)));
+                    components.add(ModifierText.line("tooltip.tacz.attachment.armor_ignore.decrease", value, "", 0xFF5555));
                 }
             }
         }

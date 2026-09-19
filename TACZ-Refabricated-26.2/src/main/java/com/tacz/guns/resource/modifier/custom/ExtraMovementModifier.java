@@ -6,6 +6,7 @@ import com.tacz.guns.api.modifier.CacheValue;
 import com.tacz.guns.api.modifier.IAttachmentModifier;
 import com.tacz.guns.api.modifier.JsonProperty;
 import com.tacz.guns.resource.CommonAssetsManager;
+import com.tacz.guns.resource.modifier.ModifierText;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.resource.pojo.data.gun.MoveSpeed;
 import net.minecraft.network.chat.Component;
@@ -59,9 +60,9 @@ public class ExtraMovementModifier implements IAttachmentModifier<MoveSpeed, Mov
 
         private void resolveComponent(float amount, String key) {
             if (amount > 0) {
-                components.add(Component.translatable(String.format("tooltip.tacz.attachment.%s.increase", key)).withStyle(style -> style.withColor(0x55FF55)));
+                components.add(ModifierText.line(String.format("tooltip.tacz.attachment.%s.increase", key), ModifierText.percent(amount), 0x55FF55));
             } else if (amount < 0) {
-                components.add(Component.translatable(String.format("tooltip.tacz.attachment.%s.decrease", key)).withStyle(style -> style.withColor(0xFF5555)));
+                components.add(ModifierText.line(String.format("tooltip.tacz.attachment.%s.decrease", key), ModifierText.percent(amount), 0xFF5555));
             }
         }
     }

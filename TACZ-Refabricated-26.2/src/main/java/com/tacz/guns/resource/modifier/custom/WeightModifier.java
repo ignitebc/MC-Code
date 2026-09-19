@@ -8,6 +8,7 @@ import com.tacz.guns.api.modifier.JsonProperty;
 import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource.modifier.ModifierText;
 import com.tacz.guns.resource.pojo.data.attachment.Modifier;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import net.fabricmc.api.EnvType;
@@ -98,9 +99,9 @@ public class WeightModifier implements IAttachmentModifier<Modifier, Float> {
             }
             // 添加文本提示
             if (adsAddendTime > 0) {
-                components.add(Component.translatable("tooltip.tacz.attachment.weight.increase").withStyle(style -> style.withColor(0xFF5555)));
+                components.add(ModifierText.line("tooltip.tacz.attachment.weight.increase", value, "kg", 0xFF5555));
             } else if (adsAddendTime < 0) {
-                components.add(Component.translatable("tooltip.tacz.attachment.weight.decrease").withStyle(style -> style.withColor(0x55FF55)));
+                components.add(ModifierText.line("tooltip.tacz.attachment.weight.decrease", value, "kg", 0x55FF55));
             }
         }
     }

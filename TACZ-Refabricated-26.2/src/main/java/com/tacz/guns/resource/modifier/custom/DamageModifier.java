@@ -12,6 +12,7 @@ import com.tacz.guns.config.sync.SyncConfig;
 import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource.modifier.ModifierText;
 import com.tacz.guns.resource.pojo.data.attachment.Modifier;
 import com.tacz.guns.resource.pojo.data.gun.BulletData;
 import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
@@ -141,9 +142,9 @@ public class DamageModifier implements IAttachmentModifier<Modifier, LinkedList<
                 double eval = AttachmentPropertyManager.eval(value, 9);
                 int damage = (int) Math.round(eval);
                 if (damage > 9) {
-                    components.add(Component.translatable("tooltip.tacz.attachment.damage.increase").withStyle(style -> style.withColor(0x55FF55)));
+                    components.add(ModifierText.line("tooltip.tacz.attachment.damage.increase", value, "", 0x55FF55));
                 } else if (damage < 9) {
-                    components.add(Component.translatable("tooltip.tacz.attachment.damage.decrease").withStyle(style -> style.withColor(0xFF5555)));
+                    components.add(ModifierText.line("tooltip.tacz.attachment.damage.decrease", value, "", 0xFF5555));
                 }
             }
         }

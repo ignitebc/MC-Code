@@ -9,6 +9,7 @@ import com.tacz.guns.api.modifier.JsonProperty;
 import com.tacz.guns.config.common.GunConfig;
 import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource.modifier.ModifierText;
 import com.tacz.guns.resource.pojo.data.attachment.Modifier;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import it.unimi.dsi.fastutil.Pair;
@@ -76,9 +77,9 @@ public class SilenceModifier implements IAttachmentModifier<Pair<Modifier, Boole
                 double eval = AttachmentPropertyManager.eval(value.left(), defaultDistance);
                 int distance = (int) Math.round(eval);
                 if (distance > defaultDistance) {
-                    components.add(Component.translatable("tooltip.tacz.attachment.sound_distance.increase").withStyle(style -> style.withColor(0xFF5555)));
+                    components.add(ModifierText.line("tooltip.tacz.attachment.sound_distance.increase", value.left(), "m", 0xFF5555));
                 } else if (distance < defaultDistance) {
-                    components.add(Component.translatable("tooltip.tacz.attachment.sound_distance.increase").withStyle(style -> style.withColor(0x55FF55)));
+                    components.add(ModifierText.line("tooltip.tacz.attachment.sound_distance.decrease", value.left(), "m", 0x55FF55));
                 }
                 if (value.right()) {
                     components.add(Component.translatable("tooltip.tacz.attachment.silence").withStyle(style -> style.withColor(0x55FF55)));
