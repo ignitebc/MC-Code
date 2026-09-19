@@ -17,7 +17,8 @@
     "client.BackpackScreenGeometryMixin",
     "client.BackpackScreenMixin",
     "client.BackpackCreativeScreenMixin",
-    "client.BackpackRecipeBookMixin"
+    "client.BackpackRecipeBookMixin",
+    "client.BackpackRecipeBookLayoutMixin"
   ],
   "injectors": {
     "defaultRequire": 1
