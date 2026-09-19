@@ -22,8 +22,8 @@ python design/pets/build_pets.py gomi_pet     # 하나만
 
 - `petkit.py` : 공용 도구. 복셀 덩어리를 큰 박스들로 분해하고, 박스 UV 아틀라스에
   복셀 색·베벨·틈새 그림자를 구운 뒤 Java 메시와 미리보기를 출력한다.
-- `dogs.py` : 꼬미, 슈퍼꼬미. 복셀 한 칸 = 0.5 유닛. 참고 그림은 저장소 루트의
-  `gomi.png`, `super_gomi.png`.
+- `dogs.py` : 꼬미, 슈퍼꼬미. 복셀 한 칸 = 0.5 유닛. 참고 그림(`gomi.png`, `super_gomi.png`)은
+  저장소에 두지 않는다.
 - `legendaries.py` : 암흑드래곤, 스컬큰 레이븐. 복셀 한 칸 = 1 유닛 (렌더러에서 0.3 배 안팎으로 축소).
 
 ## 고칠 때 지킬 것
