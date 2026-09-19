@@ -47,7 +47,10 @@ public final class RegressionTests {
                 {"balance.creeper.multiplier", "text"}, {"sleep.enable", "true"},
                 {"spawn.scatter.enabled", "on"}, {"spawn.scatter.radius", "0"},
                 {"spawn.scatter.radius", "1.5"}, {"spawn.scatter.radius", "1000001"},
-                {"starter.kit.enabled", "1"}
+                {"starter.kit.enabled", "1"}, {"death.chest.enabled", "on"},
+                {"death.chest.expire_seconds", "0"}, {"death.chest.expire_seconds", "86401"},
+                {"death.chest.expire_seconds", "2.5"}, {"death.chest.empty_seconds", "-1"},
+                {"death.chest.empty_seconds", "3601"}
         };
         for (String[] entry : invalid) {
             values = new Properties();
@@ -76,6 +79,23 @@ public final class RegressionTests {
         values.setProperty("starter.kit.enabled", "false");
         AtomicProperties.write(path, values, "test");
         check(!UtilitiesConfig.load(path).starterKit(), "starter kit can be disabled");
+
+        check(UtilitiesConfig.DEFAULT.deathChest() && UtilitiesConfig.DEFAULT.deathChestExpireSeconds() == 300
+                && UtilitiesConfig.DEFAULT.deathChestEmptySeconds() == 3, "death chest defaults");
+        values = new Properties();
+        values.setProperty("death.chest.enabled", "false");
+        values.setProperty("death.chest.expire_seconds", "1");
+        values.setProperty("death.chest.empty_seconds", "0");
+        AtomicProperties.write(path, values, "test");
+        config = UtilitiesConfig.load(path);
+        check(!config.deathChest() && config.deathChestExpireSeconds() == 1 && config.deathChestEmptySeconds() == 0,
+                "death chest smallest values");
+        values.setProperty("death.chest.expire_seconds", "86400");
+        values.setProperty("death.chest.empty_seconds", "3600");
+        AtomicProperties.write(path, values, "test");
+        config = UtilitiesConfig.load(path);
+        check(config.deathChestExpireSeconds() == 86_400 && config.deathChestEmptySeconds() == 3_600,
+                "death chest largest values");
     }
 
     private static void spawnTests(Path directory) throws Exception {
