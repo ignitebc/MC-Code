@@ -39,8 +39,10 @@ python Build_File-26.2/collect_fabric_jars.py
 
 ## 빌드 대상 모듈
 
-빌드 순서는 의존 관계를 따릅니다. 라이브러리(UI Lib, YAML Config, ArcLib)가 먼저 빌드되고,
-이를 참조하는 Jobs+가 나중에 빌드되도록 스크립트의 `MODULES` 목록이 이미 정렬되어 있습니다.
+빌드 순서는 의존 관계를 따릅니다. 라이브러리(UI Lib, YAML Config, ArcLib)와 Advanced Netherite가
+먼저 빌드되고, 이를 참조하는 Jobs+가 나중에 빌드되도록 스크립트의 `MODULES` 목록이 이미 정렬되어 있습니다.
+Jobs+의 펫관리 탭은 Advanced Netherite JAR을 컴파일 의존으로 쓰므로, Advanced Netherite의 펫 관련
+클래스를 바꿨다면 Jobs+도 함께 다시 빌드해야 합니다.
 
 | 순서 | 모듈 | 비고 |
 | --- | --- | --- |
@@ -48,8 +50,8 @@ python Build_File-26.2/collect_fabric_jars.py
 | 2 | YamlConfig-26.2 | 라이브러리 |
 | 3 | ArcLib-26.2 | 라이브러리 (액션, 조건, 보상 타입 제공) |
 | 4 | ItemRestrictions-26.2 | |
-| 5 | JobsPlusRemastered-26.2 | 위 라이브러리에 의존 |
-| 6 | AdvancedNetherite-26.2 | 데이터 생성 태스크 제외 후 빌드 |
+| 5 | AdvancedNetherite-26.2 | 데이터 생성 태스크 제외 후 빌드 |
+| 6 | JobsPlusRemastered-26.2 | 위 라이브러리와 Advanced Netherite에 의존 |
 | 7 | illagerinvasion-26.2.0-mc26.2-fabric | |
 | 8 | caramelChat-26.2 | |
 | 9 | FallingTree-minecraft-26.2 | 루트 buildJar 병합 산출물 수집 |
