@@ -3,13 +3,9 @@ package com.daqem.jobsplus.client.gui.jobs.components;
 import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import java.lang.reflect.Method;
 
-import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.jobs.widgets.GuideScrollWidget;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import com.daqem.uilib.gui.component.text.multiline.MultiLineTextComponent;
-import com.daqem.uilib.gui.widget.CustomButtonWidget;
-
-import java.util.List;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -25,7 +21,7 @@ public class UserGuideScrollComponent extends EmptyComponent
      * 스킬 설명이 아닌, 별도 팝업만으로 확인하기 어려운
      * 공통 시스템과 아이템 이용 방법을 안내한다.
      */
-    private static final String USER_GUIDE_PAGE_1 = """
+    private static final String USER_GUIDE_LEFT = """
             ★ 게임 이용 안내 ★
             이 화면에서는 플레이 중 놓치기 쉬운 공통 규칙과 주요 아이템 사용 방법을 안내합니다.
 
@@ -157,8 +153,8 @@ public class UserGuideScrollComponent extends EmptyComponent
             - 거래내역에서는 최근 거래 50건까지 확인할 수 있습니다.
             """;
 
-    /** 2쪽: 모험 구조물, 랜덤 상자, 펫, 장비 강화, 전투 주의사항 */
-    private static final String USER_GUIDE_PAGE_2 = """
+    /** 오른쪽 칸: 모험 구조물, 랜덤 상자, 펫, 장비 강화, 전투 주의사항 */
+    private static final String USER_GUIDE_RIGHT = """
             ■ 모험에 관하여..
             신규 모험이 업데이트되었습니다. 
             미궁, 일리저요새, 환영술사탑, 주술사오두막, 화염술사오두막을 찾아 상자 전리품을 찾으세요.
@@ -305,49 +301,35 @@ public class UserGuideScrollComponent extends EmptyComponent
             - 겉날개를 착용한 것만으로는 사망하지 않습니다. 실제로 겉날개 활강 상태가 되었을 때 적용됩니다.</red>
             """;
 
-    private static final List<String> PAGES = List.of(USER_GUIDE_PAGE_1, USER_GUIDE_PAGE_2);
+    /** 왼쪽 칸과 오른쪽 칸의 제목 */
+    private static final Component LEFT_TITLE = Component.literal("직업 · 생활 · 경제");
+    private static final Component RIGHT_TITLE = Component.literal("모험 · 아이템 · 전투");
 
-    /** 본문 아래에 두는 쪽 이동 줄의 높이 */
-    private static final int NAV_HEIGHT = 18;
-    private static final int NAV_BUTTON_WIDTH = 52;
+    /** 두 칸 사이의 간격 */
+    private static final int COLUMN_GAP = 8;
+    /** 칸 제목이 쓰는 높이 */
+    private static final int TITLE_HEIGHT = 12;
 
-    private final JobsScreenState state;
-    private final int pageHeight;
-    private final GuidePageButton previousButton;
-    private final GuidePageButton nextButton;
-    private GuideScrollWidget scrollWidget;
-    private int cachedPage;
+    private final int columnWidth;
 
-    public UserGuideScrollComponent(JobsScreenState state, int width, int height)
+    public UserGuideScrollComponent(int width, int height)
     {
         super(0, 0, width, height);
 
-        this.state = state;
-        this.cachedPage = clampPage(state.getGuidePage());
-        this.pageHeight = Math.max(1, getHeight() - NAV_HEIGHT);
-
-        int navY = getHeight() - NAV_HEIGHT + 2;
-        this.previousButton = new GuidePageButton(0, navY, "◀ 이전",
-                () -> this.state.setGuidePage(this.cachedPage - 1));
-        this.nextButton = new GuidePageButton(getWidth() - NAV_BUTTON_WIDTH, navY, "다음 ▶",
-                () -> this.state.setGuidePage(this.cachedPage + 1));
-
-        this.buildPage();
-        this.addWidget(this.previousButton);
-        this.addWidget(this.nextButton);
-        this.updateButtons();
+        this.columnWidth = (getWidth() - COLUMN_GAP) / 2;
+        int columnHeight = Math.max(1, getHeight() - TITLE_HEIGHT);
+        addColumn(0, columnHeight, USER_GUIDE_LEFT);
+        addColumn(this.columnWidth + COLUMN_GAP, columnHeight, USER_GUIDE_RIGHT);
     }
 
-    /** 현재 쪽의 본문으로 스크롤 영역을 새로 채운다. */
-    private void buildPage()
+    /** 안내 한 칸을 따로 굴러가는 스크롤 영역으로 만들어 붙인다. */
+    private void addColumn(int x, int height, String guide)
     {
-        if (this.scrollWidget != null)
-        {
-            this.removeWidget(this.scrollWidget);
-        }
-        this.scrollWidget = new GuideScrollWidget(getWidth(), this.pageHeight);
+        GuideScrollWidget scrollWidget = new GuideScrollWidget(this.columnWidth, height);
+        scrollWidget.setX(x);
+        scrollWidget.setY(TITLE_HEIGHT);
 
-        int textWidth = Math.max(1, getWidth() - 10);
+        int textWidth = Math.max(1, this.columnWidth - 10);
         float textScale = 0.70f;
 
         /*
@@ -364,7 +346,7 @@ public class UserGuideScrollComponent extends EmptyComponent
                         0,
                         0,
                         wrapWidth,
-                        createGuideComponent(PAGES.get(this.cachedPage)),
+                        createGuideComponent(guide),
                         JobsTheme.TEXT,
                         textScale
                 );
@@ -375,56 +357,18 @@ public class UserGuideScrollComponent extends EmptyComponent
         guideContainer.addComponent(guideText);
         guideContainer.setHeight(guideText.getScaledHeight());
 
-        this.scrollWidget.addComponent(guideContainer);
-        this.addWidget(this.scrollWidget);
+        scrollWidget.addComponent(guideContainer);
+        this.addWidget(scrollWidget);
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY,
                                    float partialTick, int parentWidth, int parentHeight)
     {
-        int page = clampPage(this.state.getGuidePage());
-        if (page != this.cachedPage)
-        {
-            this.cachedPage = page;
-            this.buildPage();
-            this.updateButtons();
-            this.updateParentPosition(getParentX(), getParentY(), parentWidth, parentHeight);
-        }
-
-        JobsTheme.label(guiGraphics, Component.literal((this.cachedPage + 1) + " / " + PAGES.size()),
-                getTotalX() + NAV_BUTTON_WIDTH, getTotalY() + getHeight() - NAV_HEIGHT + 2,
-                Math.max(1, getWidth() - NAV_BUTTON_WIDTH * 2), JobsTheme.BUTTON_HEIGHT, JobsTheme.MUTED);
-    }
-
-    private void updateButtons()
-    {
-        this.previousButton.active = this.cachedPage > 0;
-        this.nextButton.active = this.cachedPage < PAGES.size() - 1;
-    }
-
-    private static int clampPage(int page)
-    {
-        return Math.clamp(page, 0, PAGES.size() - 1);
-    }
-
-    /** 쪽 이동 단추. 화면의 다른 단추와 같은 껍데기를 쓴다. */
-    private static final class GuidePageButton extends CustomButtonWidget
-    {
-        private GuidePageButton(int x, int y, String label, Runnable onPress)
-        {
-            super(x, y, NAV_BUTTON_WIDTH, JobsTheme.BUTTON_HEIGHT, Component.literal(label), null,
-                    button -> onPress.run());
-        }
-
-        @Override
-        protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick)
-        {
-            JobsTheme.button(guiGraphics, getX(), getY(), getWidth(), getHeight(),
-                    this.active, isHoveredOrFocused(), false, false);
-            JobsTheme.label(guiGraphics, getMessage(), getX(), getY(), getWidth(), getHeight(),
-                    this.active ? JobsTheme.TEXT : JobsTheme.DISABLED);
-        }
+        JobsTheme.text(guiGraphics, LEFT_TITLE, getTotalX(), getTotalY(),
+                this.columnWidth, JobsTheme.CYAN);
+        JobsTheme.text(guiGraphics, RIGHT_TITLE, getTotalX() + this.columnWidth + COLUMN_GAP, getTotalY(),
+                this.columnWidth, JobsTheme.CYAN);
     }
 
     private static Component styleSections(String text) {

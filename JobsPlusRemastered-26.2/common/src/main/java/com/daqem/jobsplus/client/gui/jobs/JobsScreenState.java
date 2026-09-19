@@ -36,9 +36,6 @@ public class JobsScreenState {
     private StockPositionSide selectedStockPositionSide;
     private int selectedStockLeverage;
 
-    /** 게임안내 탭에서 보고 있는 쪽 번호. 0부터 센다. */
-    private int guidePage;
-
     // 호환: 기존 시그니처 유지(서버가 maxJobs를 보내지 않는 경우)
     public JobsScreenState(List<Job> jobs, int coins) {
         this(jobs, coins, JobsPlusConfig.maxJobs.get(), null, RightTab.EXPERIENCE);
@@ -78,7 +75,6 @@ public class JobsScreenState {
         this.stockPanelMode = StockPanelMode.BUY;
         this.selectedStockPositionSide = StockPositionSide.LONG;
         this.selectedStockLeverage = StockPosition.DEFAULT_LEVERAGE;
-        this.guidePage = 0;
     }
 
     public List<Job> getJobs() {
@@ -175,14 +171,6 @@ public class JobsScreenState {
 
     public void setSelectedStockLeverage(int selectedStockLeverage) {
         this.selectedStockLeverage = StockPosition.normalizeLeverage(selectedStockLeverage);
-    }
-
-    public int getGuidePage() {
-        return guidePage;
-    }
-
-    public void setGuidePage(int guidePage) {
-        this.guidePage = Math.max(0, guidePage);
     }
 
     public int getActiveJobCount() {

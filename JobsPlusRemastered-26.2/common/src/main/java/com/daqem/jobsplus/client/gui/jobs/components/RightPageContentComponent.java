@@ -37,7 +37,7 @@ public class RightPageContentComponent extends EmptyComponent
         this.setY(layout.bodyY() + 20);
         switch (this.cachedTab) {
         case EXPERIENCE -> this.addComponent(new ExperienceComponent(state, contentWidth, contentHeight));
-        case RECIPES -> this.addComponent(new RecipesComponent(state, contentWidth, contentHeight));
+        case RECIPES -> this.addComponent(new RecipesComponent(contentWidth, contentHeight));
         case UP_AND_DOWN -> {
         }
         case GUN_GUIDE -> this.addComponent(new GunGuideComponent(contentWidth, contentHeight));
