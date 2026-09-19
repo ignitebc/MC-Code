@@ -18,7 +18,6 @@ import com.autovw.advancednetherite.client.renderer.KirbyPetRenderer;
 import com.autovw.advancednetherite.client.renderer.SculkenRavenPetRenderer;
 import com.autovw.advancednetherite.client.renderer.SuperGomiPetRenderer;
 import com.autovw.advancednetherite.client.renderer.UnicornPetRenderer;
-import com.autovw.advancednetherite.client.gui.PetToggleButtons;
 import com.autovw.advancednetherite.core.ModEntityTypes;
 import com.autovw.advancednetherite.network.PetListSyncPayload;
 import net.fabricmc.api.ClientModInitializer;
@@ -57,6 +56,5 @@ public class ClientHandler implements ClientModInitializer
         ClientPlayNetworking.registerGlobalReceiver(PetListSyncPayload.TYPE,
                 (payload, context) -> ClientPetData.setPets(payload.pets()));
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ClientPetData.clear());
-        PetToggleButtons.register();
     }
 }

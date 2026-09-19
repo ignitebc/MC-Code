@@ -1,6 +1,5 @@
 package com.autovw.advancednetherite.mixin.client;
 
-import com.autovw.advancednetherite.client.gui.PetPanelLayout;
 import com.autovw.advancednetherite.common.backpack.BackpackInventory;
 import com.autovw.advancednetherite.common.backpack.BackpackSlot;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -13,9 +12,7 @@ import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InventoryScreen.class)
@@ -37,17 +34,8 @@ public abstract class BackpackScreenMixin extends AbstractContainerScreen<Invent
             target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blit(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIFFIIII)V"), index = 7)
     private int advancednetherite$vanillaTextureHeight(int height)
     {
-        return PetPanelLayout.INVENTORY_HEIGHT;
-    }
-
-    /**
-     * 레시피 책 단추는 화면 한가운데(height / 2)에서 22를 뺀 자리에 놓인다.
-     * 인벤토리가 펫 줄의 절반만큼 위로 올라갔으므로 단추도 같은 만큼 올린다.
-     */
-    @ModifyConstant(method = "getRecipeBookButtonPosition", constant = @Constant(intValue = 22))
-    private int advancednetherite$recipeButtonTop(int offset)
-    {
-        return offset + PetPanelLayout.extraHeight() / 2;
+        // 바닐라 인벤토리 배경 높이. 가방 패널은 폭만 늘리고 높이는 그대로 둔다.
+        return 166;
     }
 
     @Inject(method = "extractBackground", at = @At("TAIL"))
@@ -67,7 +55,6 @@ public abstract class BackpackScreenMixin extends AbstractContainerScreen<Invent
         int capacityX = left + (BackpackInventory.PANEL_WIDTH - this.font.width(capacityText)) / 2;
         graphics.text(this.font, capacityText, capacityX, this.topPos + 49, 0xFF404040, false);
         graphics.text(this.font, Component.literal("추가 인벤토리"), left + 8, this.topPos + 70, 0xFF404040, false);
-        // 펫 줄은 PetPanelWidget이 스스로 그린다. 레시피 책을 여닫아 화면이 밀려도 따라가야 해서다.
         for (Slot slot : this.menu.slots)
         {
             if (!(slot instanceof BackpackSlot)) continue;
