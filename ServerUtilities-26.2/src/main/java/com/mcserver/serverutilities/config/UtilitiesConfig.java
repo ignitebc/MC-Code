@@ -9,9 +9,11 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
                               double combatRange, boolean creeperDamage, float creeperMultiplier,
                               boolean hunger, float hungerMultiplier, boolean armorCurve,
                               boolean equipmentTiers, boolean deathPenalty, boolean deathProtection,
+                              boolean deathChest, int deathChestExpireSeconds, int deathChestEmptySeconds,
                               boolean spawnScatter, int spawnScatterRadius, boolean starterKit) {
     public static final UtilitiesConfig DEFAULT = new UtilitiesConfig(
-            true, true, true, 80.0, true, 4.0F / 3.0F, true, 1.5F, true, true, true, true, true, 2000, true);
+            true, true, true, 80.0, true, 4.0F / 3.0F, true, 1.5F, true, true, true, true, true, 300, 3,
+            true, 2000, true);
 
     public static UtilitiesConfig load(Path path) throws IOException {
         Properties defaults = DEFAULT.toProperties();
@@ -34,6 +36,8 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
                 bool(merged, "balance.hunger.enabled"), (float) number(merged, "balance.hunger.multiplier", 0, 100),
                 bool(merged, "balance.armor.enabled"), bool(merged, "balance.tier.enabled"),
                 bool(merged, "death.penalty.enabled"), bool(merged, "death.protection.enabled"),
+                bool(merged, "death.chest.enabled"), integer(merged, "death.chest.expire_seconds", 1, 86_400),
+                integer(merged, "death.chest.empty_seconds", 0, 3_600),
                 bool(merged, "spawn.scatter.enabled"), integer(merged, "spawn.scatter.radius", 1, 1_000_000),
                 bool(merged, "starter.kit.enabled"));
     }
@@ -52,6 +56,9 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
         values.setProperty("balance.tier.enabled", Boolean.toString(equipmentTiers));
         values.setProperty("death.penalty.enabled", Boolean.toString(deathPenalty));
         values.setProperty("death.protection.enabled", Boolean.toString(deathProtection));
+        values.setProperty("death.chest.enabled", Boolean.toString(deathChest));
+        values.setProperty("death.chest.expire_seconds", Integer.toString(deathChestExpireSeconds));
+        values.setProperty("death.chest.empty_seconds", Integer.toString(deathChestEmptySeconds));
         values.setProperty("spawn.scatter.enabled", Boolean.toString(spawnScatter));
         values.setProperty("spawn.scatter.radius", Integer.toString(spawnScatterRadius));
         values.setProperty("starter.kit.enabled", Boolean.toString(starterKit));

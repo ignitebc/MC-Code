@@ -7,7 +7,8 @@
   "description": "서버 공통 수면·전투·밸런스·사망 규칙",
   "environment": "*",
   "entrypoints": {
-    "main": ["com.mcserver.serverutilities.ServerUtilities"]
+    "main": ["com.mcserver.serverutilities.ServerUtilities"],
+    "client": ["com.mcserver.serverutilities.client.ServerUtilitiesClient"]
   },
   "mixins": ["serverutilities.mixins.json"],
   "depends": {

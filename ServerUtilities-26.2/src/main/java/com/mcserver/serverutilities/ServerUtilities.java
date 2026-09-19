@@ -4,6 +4,7 @@ import com.mcserver.serverutilities.combat.CombatRules;
 import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
 import com.mcserver.serverutilities.monster.MonsterEquipmentRules;
 import com.mcserver.serverutilities.config.UtilitiesConfig;
+import com.mcserver.serverutilities.death.DeathChests;
 import com.mcserver.serverutilities.sleep.SleepRuleManager;
 import com.mcserver.serverutilities.spawn.SpawnScatterRules;
 import com.mcserver.serverutilities.starter.StarterKitRules;
@@ -36,6 +37,7 @@ public final class ServerUtilities implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        DeathChests.register();
         ServerEntityEvents.ALLOW_LOAD.register((entity, level, reason, loadedFromDisk) -> {
             if (entity instanceof MonsterEquipmentAccess state) {
                 // 소환 명령·분열도 포함하고, 디스크 로드·차원 이동은 신규 생성과 구별한다.
@@ -83,6 +85,8 @@ public final class ServerUtilities implements ModInitializer {
                                     + ", 방어도 곡선=" + settings.armorCurve()
                                     + ", 장비 등급=" + settings.equipmentTiers()
                                     + ", 사망 손실=" + settings.deathPenalty() + ", 보존권=" + settings.deathProtection()
+                                    + ", 유품 상자=" + settings.deathChest()
+                                    + " (만료 " + settings.deathChestExpireSeconds() + "초, 회수 후 " + settings.deathChestEmptySeconds() + "초)"
                                     + ", 시작 위치 분산=" + settings.spawnScatter()
                                     + " ±" + settings.spawnScatterRadius()
                                     + " (기준=" + describeAnchor() + ")"

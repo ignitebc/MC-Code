@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "serverutilities:block/death_chest" }
+  }
+}

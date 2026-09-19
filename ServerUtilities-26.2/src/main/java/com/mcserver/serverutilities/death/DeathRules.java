@@ -20,6 +20,8 @@ public final class DeathRules {
 
     private DeathRules() { }
 
+    // Advanced Netherite의 배낭 삭제 연동이 이 메서드 안의 removeItemNoUpdate 호출을 Redirect로 잡는다.
+    // 손실 루프는 이 메서드에 두고, 상자 담기는 별도 클래스에서 처리해 Redirect가 겹치지 않게 한다.
     public static void beforeDrops(ServerPlayer player) {
         if (player.isCreative() || player.isSpectator()) return;
         DeathProtectedPlayer protectedPlayer = (DeathProtectedPlayer) player;
@@ -33,36 +35,38 @@ public final class DeathRules {
                     .append("님의 사망 시 아이템 보존권이 사용되어 모든 소지품이 보호되었습니다."));
             return;
         }
-        if (!config.deathPenalty()) return;
-
-        List<Integer> filledSlots = new ArrayList<>();
-        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
-            if (!inventory.getItem(slot).isEmpty()) filledSlots.add(slot);
+        if (config.deathPenalty()) {
+            List<Integer> filledSlots = new ArrayList<>();
+            for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+                if (!inventory.getItem(slot).isEmpty()) filledSlots.add(slot);
+            }
+            if (filledSlots.isEmpty()) {
+                broadcast(player, Component.empty().append(playerName(player))
+                        .append("님이 죽었습니다. 소지품이 없어 삭제된 아이템이 없습니다."));
+            } else {
+                List<Component> itemNames = new ArrayList<>();
+                while (itemNames.size() < PENALTY_ITEM_COUNT && !filledSlots.isEmpty()) {
+                    int slot = filledSlots.remove(player.getRandom().nextInt(filledSlots.size()));
+                    // 배낭 삭제 연동이 함께 비운 내부 칸은 두 번째 손실로 세지 않고 다시 뽑는다.
+                    if (inventory.getItem(slot).isEmpty()) continue;
+                    ItemStack removed = inventory.removeItemNoUpdate(slot);
+                    if (removed.isEmpty()) continue;
+                    itemNames.add(removed.getHoverName().copy()
+                            .append(removed.getCount() > 1 ? " " + removed.getCount() + "개" : "")
+                            .withStyle(ChatFormatting.RED));
+                }
+                inventory.setChanged();
+                MutableComponent lostItems = Component.empty();
+                for (int i = 0; i < itemNames.size(); i++) {
+                    if (i > 0) lostItems.append(", ");
+                    lostItems.append(itemNames.get(i));
+                }
+                broadcast(player, Component.empty().append(playerName(player)).append("님이 죽었습니다. ")
+                        .append(lostItems).append("이(가) 사라집니다."));
+            }
         }
-        if (filledSlots.isEmpty()) {
-            broadcast(player, Component.empty().append(playerName(player))
-                    .append("님이 죽었습니다. 소지품이 없어 삭제된 아이템이 없습니다."));
-            return;
-        }
-        List<Component> itemNames = new ArrayList<>();
-        while (itemNames.size() < PENALTY_ITEM_COUNT && !filledSlots.isEmpty()) {
-            int slot = filledSlots.remove(player.getRandom().nextInt(filledSlots.size()));
-            // 배낭 삭제 연동이 함께 비운 내부 칸은 두 번째 손실로 세지 않고 다시 뽑는다.
-            if (inventory.getItem(slot).isEmpty()) continue;
-            ItemStack removed = inventory.removeItemNoUpdate(slot);
-            if (removed.isEmpty()) continue;
-            itemNames.add(removed.getHoverName().copy()
-                    .append(removed.getCount() > 1 ? " " + removed.getCount() + "개" : "")
-                    .withStyle(ChatFormatting.RED));
-        }
-        inventory.setChanged();
-        MutableComponent lostItems = Component.empty();
-        for (int i = 0; i < itemNames.size(); i++) {
-            if (i > 0) lostItems.append(", ");
-            lostItems.append(itemNames.get(i));
-        }
-        broadcast(player, Component.empty().append(playerName(player)).append("님이 죽었습니다. ")
-                .append(lostItems).append("이(가) 사라집니다."));
+        // 손실이 끝난 뒤 남은 소지품을 사망 지점의 유품 상자에 담는다.
+        DeathChests.store(player);
     }
 
     private static boolean consumeProtectionScroll(Inventory inventory) {
