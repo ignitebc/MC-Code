@@ -153,11 +153,11 @@ public class JobsComponent extends AbstractComponent
                         layout.detailWidth(), layout.bodyHeight());
                 JobsTheme.texture(guiGraphics, JobsTheme.Skin.HEADER, x + layout.detailX() + 1,
                         y + layout.bodyY() + 1, layout.detailWidth() - 2, 18);
-                JobsTheme.text(guiGraphics, Component.literal("보유 " + state.getActiveJobCount() + " / " + state.getMaxJobs()),
-                        x + 8 + layout.leftWidth() - 59, y + layout.bodyY() + 7, 53, JobsTheme.MUTED);
             }
-            JobsTheme.text(guiGraphics, Component.literal("직업"),
-                    x + 16, y + layout.jobsY() - 12, 42, JobsTheme.MUTED);
+            // 머리글 띠 안에서 다른 제목들과 같은 줄에 놓는다.
+            JobsTheme.text(guiGraphics,
+                    Component.literal("직업보유갯수 " + state.getActiveJobCount() + " / " + state.getMaxJobs()),
+                    x + 16, y + layout.bodyY() + 7, layout.leftWidth() - 24, JobsTheme.MUTED);
             JobsTheme.panel(guiGraphics, x + layout.pageX(this.cachedRightTab), y + layout.bodyY(),
                     layout.pageWidth(this.cachedRightTab), layout.bodyHeight());
             JobsTheme.texture(guiGraphics, JobsTheme.Skin.HEADER, x + layout.pageX(this.cachedRightTab) + 1,
