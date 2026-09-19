@@ -14,6 +14,10 @@ import net.minecraft.network.chat.Component;
 
 /** Client-only inspection panel. All actions delegate to the existing skill node. */
 public class PowerupDetailsComponent extends EmptyComponent {
+    /** 스킬 트리 칸과 같은 칸 크기 */
+    private static final int ICON_SIZE = 24;
+    private static final int ICON_Y = 27;
+
     private final PowerupsScreenState state;
     private final ActionScrollWidget descriptionScroll;
     private MultiLineTextComponent description;
@@ -61,17 +65,18 @@ public class PowerupDetailsComponent extends EmptyComponent {
             displayedPowerup = powerup;
             this.updateParentPosition(getParentX(), getParentY(), parentWidth, parentHeight);
         }
-        JobsTheme.texture(graphics, JobsTheme.Skin.SLOT, x + 8, y + 27, 28, 28);
-        graphics.fakeItem(instance.getIcon(), x + 14, y + 33);
-        JobsTheme.text(graphics, instance.getName(), x + 42, y + 29, getWidth() - 50, JobsTheme.TEXT);
+        // 스킬 트리 칸과 같은 칸·아이템 크기를 쓴다.
+        JobsTheme.texture(graphics, JobsTheme.Skin.SLOT, x + 8, y + ICON_Y, ICON_SIZE, ICON_SIZE);
+        graphics.fakeItem(instance.getIcon(), x + 12, y + ICON_Y + 4);
+        JobsTheme.text(graphics, instance.getName(), x + 38, y + 29, getWidth() - 46, JobsTheme.TEXT);
         String status = switch (powerup.getState()) {
             case ACTIVE -> "활성";
             case INACTIVE -> "비활성";
             case NOT_OWNED -> preview.isActive() ? "구매 가능" : "조건 미충족";
             default -> "잠김";
         };
-        JobsTheme.text(graphics, Component.literal(status), x + 42, y + 43,
-                getWidth() - 50, JobsTheme.CYAN);
+        JobsTheme.text(graphics, Component.literal(status), x + 38, y + 43,
+                getWidth() - 46, JobsTheme.CYAN);
         JobsTheme.texture(graphics, JobsTheme.Skin.INSET, x + 6, y + getHeight() - 74, getWidth() - 12, 26);
         JobsTheme.text(graphics, Component.literal("필요 레벨  " + instance.getRequiredLevel()),
                 x + 12, y + getHeight() - 69, getWidth() - 24, JobsTheme.MUTED);
