@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.laser_lopro",
+  "tooltip": "tacz.attachment.laser_lopro.desc",
   "display": "tacz:laser_lopro_display",
   "data": "tacz:laser_lopro_data",
   "type": "laser",

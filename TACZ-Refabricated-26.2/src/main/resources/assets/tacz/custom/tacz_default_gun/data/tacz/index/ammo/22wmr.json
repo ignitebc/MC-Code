@@ -1,5 +1,6 @@
 {
   "name": "tacz.ammo.22wmr.name",
+  "tooltip": "tacz.ammo.22wmr.desc",
   "display": "tacz:22wmr_display",
   "stack_size": 64,
   "sort": 1

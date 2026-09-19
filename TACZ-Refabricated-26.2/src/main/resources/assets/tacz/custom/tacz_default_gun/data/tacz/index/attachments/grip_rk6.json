@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.grip_rk6.name",
+  "tooltip": "tacz.attachment.grip_rk6.desc",
   "display": "tacz:grip_rk6_display",
   "data": "tacz:grip_rk6_data",
   "type": "grip",

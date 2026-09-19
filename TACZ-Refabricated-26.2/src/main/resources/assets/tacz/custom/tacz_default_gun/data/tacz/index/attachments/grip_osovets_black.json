@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.grip_osovets_black.name",
+  "tooltip": "tacz.attachment.grip_osovets_black.desc",
   "display": "tacz:grip_osovets_black_display",
   "data": "tacz:grip_osovets_black_data",
   "type": "grip",

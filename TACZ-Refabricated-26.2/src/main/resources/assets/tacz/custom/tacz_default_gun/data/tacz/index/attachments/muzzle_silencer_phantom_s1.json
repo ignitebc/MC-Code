@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.muzzle_silencer_phantom_s1.name",
+  "tooltip": "tacz.attachment.muzzle_silencer_phantom_s1.desc",
   "display": "tacz:muzzle_silencer_phantom_s1_display",
   "data": "tacz:muzzle_silencer_phantom_s1_data",
   "type": "muzzle"

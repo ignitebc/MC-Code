@@ -1,5 +1,6 @@
 {
   "name": "tacz.ammo.556x45.name",
+  "tooltip": "tacz.ammo.556x45.desc",
   "display": "tacz:556x45_display",
   "stack_size": 60,
   "sort": 8

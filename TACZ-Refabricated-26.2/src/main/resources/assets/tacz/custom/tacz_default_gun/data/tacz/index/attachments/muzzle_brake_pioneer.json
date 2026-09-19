@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.muzzle_brake_pioneer.name",
+  "tooltip": "tacz.attachment.muzzle_brake_pioneer.desc",
   "display": "tacz:muzzle_brake_pioneer_display",
   "data": "tacz:muzzle_brake_pioneer_data",
   "type": "muzzle"

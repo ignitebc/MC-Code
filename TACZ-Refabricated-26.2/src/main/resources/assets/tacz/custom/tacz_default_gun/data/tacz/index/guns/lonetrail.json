@@ -1,8 +1,8 @@
 {
   "name": "tacz.gun.lonetrail.name",
+  "tooltip": "tacz.gun.lonetrail.desc",
   "display": "tacz:lonetrail_display",
   "data": "tacz:lonetrail_data",
-  "tooltip": "tacz.gun.lonetrail.desc",
   "type": "pistol",
   "sort": 11
 }

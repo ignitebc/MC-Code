@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.laser_peq15",
+  "tooltip": "tacz.attachment.laser_peq15.desc",
   "display": "tacz:laser_peq15_display",
   "data": "tacz:laser_peq15_data",
   "type": "laser",

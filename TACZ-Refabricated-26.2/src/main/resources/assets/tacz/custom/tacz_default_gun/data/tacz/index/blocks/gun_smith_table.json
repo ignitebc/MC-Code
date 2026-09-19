@@ -5,8 +5,6 @@
   "display": "tacz:gun_smith_table",
   // 方块参数文件
   "data": "tacz:gun_smith_table",
-  // 方块文本提示
-  "tooltip": "tacz.block.gun_smith_table.desc",
   // 블록 id. 작업대는 총기 작업대 하나뿐이라 tacz:gun_smith_table 만 쓸 수 있다.
   // 기본 작업대의 id 는 프로그램 안에서 tacz:gun_smith_table 로 고정돼 있다.
   "id": "tacz:gun_smith_table",

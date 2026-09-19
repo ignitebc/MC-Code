@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.sniper_extended_mag_2.name",
+  "tooltip": "tacz.attachment.sniper_extended_mag_2.desc",
   "display": "tacz:sniper_extended_mag_2_display",
   "data": "tacz:sniper_extended_mag_2_data",
   "type": "extended_mag",

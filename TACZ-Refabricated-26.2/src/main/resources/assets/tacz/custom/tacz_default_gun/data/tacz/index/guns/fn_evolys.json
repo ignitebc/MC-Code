@@ -1,8 +1,8 @@
 {
   "name": "tacz.gun.fn_evolys.name",
+  "tooltip": "tacz.gun.fn_evolys.desc",
   "display": "tacz:fn_evolys_display",
   "data": "tacz:fn_evolys_data",
-  "tooltip": "tacz.gun.fn_evolys.desc",
   "type": "mg",
   "sort": 4
 }

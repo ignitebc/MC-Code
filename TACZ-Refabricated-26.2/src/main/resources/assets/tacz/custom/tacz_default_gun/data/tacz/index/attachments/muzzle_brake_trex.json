@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.muzzle_brake_trex.name",
+  "tooltip": "tacz.attachment.muzzle_brake_trex.desc",
   "display": "tacz:muzzle_brake_trex_display",
   "data": "tacz:muzzle_brake_trex_data",
   "type": "muzzle"

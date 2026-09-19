@@ -1,5 +1,6 @@
 {
   "name": "tacz.ammo.357mag.name",
+  "tooltip": "tacz.ammo.357mag.desc",
   "display": "tacz:357mag_display",
   "stack_size": 48,
   "sort": 15

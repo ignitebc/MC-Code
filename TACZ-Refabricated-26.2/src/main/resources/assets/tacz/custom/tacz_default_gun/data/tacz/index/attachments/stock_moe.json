@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.stock_moe.name",
+  "tooltip": "tacz.attachment.stock_moe.desc",
   "display": "tacz:stock_moe_display",
   "data": "tacz:stock_moe_data",
   "type": "stock",

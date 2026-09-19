@@ -1,5 +1,6 @@
 {
   "name": "tacz.ammo.50bmg.name",
+  "tooltip": "tacz.ammo.50bmg.desc",
   "display": "tacz:50bmg_display",
   "stack_size": 30,
   "sort": 21

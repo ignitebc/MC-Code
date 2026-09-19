@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.muzzle_silencer_ursus.name",
+  "tooltip": "tacz.attachment.muzzle_silencer_ursus.desc",
   "display": "tacz:muzzle_silencer_ursus_display",
   "data": "tacz:muzzle_silencer_ursus_data",
   "type": "muzzle"

@@ -1,8 +1,8 @@
 {
   "name": "tacz.gun.g36k.name",
+  "tooltip": "tacz.gun.g36k.desc",
   "display": "tacz:g36k_display",
   "data": "tacz:g36k_data",
   "type": "rifle",
-  "tooltip": "tacz.gun.g36k.desc",
   "sort": 14
 }

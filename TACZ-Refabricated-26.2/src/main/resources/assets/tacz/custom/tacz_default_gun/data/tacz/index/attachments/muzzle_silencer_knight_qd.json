@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.muzzle_silencer_knight_qd.name",
+  "tooltip": "tacz.attachment.muzzle_silencer_knight_qd.desc",
   "display": "tacz:muzzle_silencer_knight_qd_display",
   "data": "tacz:muzzle_silencer_knight_qd_data",
   "type": "muzzle"

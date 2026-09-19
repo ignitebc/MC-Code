@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.scope_98k.name",
+  "tooltip": "tacz.attachment.scope_98k.desc",
   "display": "tacz:scope_98k_display",
   "data": "tacz:scope_98k_data",
   "type": "scope",

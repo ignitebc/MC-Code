@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.grip_magpul_afg_2.name",
+  "tooltip": "tacz.attachment.grip_magpul_afg_2.desc",
   "display": "tacz:grip_magpul_afg_2_display",
   "data": "tacz:grip_magpul_afg_2_data",
   "type": "grip",

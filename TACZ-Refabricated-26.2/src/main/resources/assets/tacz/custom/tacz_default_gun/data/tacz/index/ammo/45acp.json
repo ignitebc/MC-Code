@@ -1,5 +1,6 @@
 {
   "name": "tacz.ammo.45acp.name",
+  "tooltip": "tacz.ammo.45acp.desc",
   "display": "tacz:45acp_display",
   "stack_size": 60,
   "sort": 3

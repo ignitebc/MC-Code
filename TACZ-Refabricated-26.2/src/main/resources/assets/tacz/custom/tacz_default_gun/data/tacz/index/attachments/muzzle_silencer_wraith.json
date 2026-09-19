@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.muzzle_silencer_wraith.name",
+  "tooltip": "tacz.attachment.muzzle_silencer_wraith.desc",
   "display": "tacz:muzzle_silencer_wraith_display",
   "data": "tacz:muzzle_silencer_wraith_data",
   "type": "muzzle"

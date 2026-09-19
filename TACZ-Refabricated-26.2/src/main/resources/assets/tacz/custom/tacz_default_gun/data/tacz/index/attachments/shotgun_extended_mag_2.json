@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.shotgun_extended_mag_2.name",
+  "tooltip": "tacz.attachment.shotgun_extended_mag_2.desc",
   "display": "tacz:shotgun_extended_mag_2_display",
   "data": "tacz:shotgun_extended_mag_2_data",
   "type": "extended_mag",

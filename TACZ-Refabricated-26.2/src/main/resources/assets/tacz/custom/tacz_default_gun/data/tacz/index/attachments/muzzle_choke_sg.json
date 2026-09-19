@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.muzzle_choke_sg.name",
+  "tooltip": "tacz.attachment.muzzle_choke_sg.desc",
   "display": "tacz:muzzle_choke_sg_display",
   "data": "tacz:muzzle_choke_sg_data",
   "type": "muzzle"

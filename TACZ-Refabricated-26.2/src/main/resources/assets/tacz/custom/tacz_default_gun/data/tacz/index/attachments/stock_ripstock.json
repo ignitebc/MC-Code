@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.stock_ripstock.name",
+  "tooltip": "tacz.attachment.stock_ripstock.desc",
   "display": "tacz:stock_ripstock_display",
   "data": "tacz:stock_ripstock_data",
   "type": "stock",

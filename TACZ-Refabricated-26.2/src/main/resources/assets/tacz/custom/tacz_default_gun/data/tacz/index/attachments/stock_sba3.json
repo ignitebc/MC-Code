@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.stock_sba3.name",
+  "tooltip": "tacz.attachment.stock_sba3.desc",
   "display": "tacz:stock_sba3_display",
   "data": "tacz:stock_sba3_data",
   "type": "stock",

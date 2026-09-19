@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.stock_m4ss.name",
+  "tooltip": "tacz.attachment.stock_m4ss.desc",
   "display": "tacz:stock_m4ss_display",
   "data": "tacz:stock_m4ss_data",
   "type": "stock",

@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.grip_td",
+  "tooltip": "tacz.attachment.grip_td.desc",
   "display": "tacz:grip_td_display",
   "data": "tacz:grip_td_data",
   "type": "grip",

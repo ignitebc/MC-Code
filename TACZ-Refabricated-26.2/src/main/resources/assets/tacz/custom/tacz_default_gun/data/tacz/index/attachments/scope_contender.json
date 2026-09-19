@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.scope_contender.name",
+  "tooltip": "tacz.attachment.scope_contender.desc",
   "display": "tacz:scope_contender_display",
   "data": "tacz:scope_contender_data",
   "type": "scope",

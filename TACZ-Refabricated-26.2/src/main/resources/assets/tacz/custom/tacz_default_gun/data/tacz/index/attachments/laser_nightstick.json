@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.laser_nightstick",
+  "tooltip": "tacz.attachment.laser_nightstick.desc",
   "display": "tacz:laser_nightstick_display",
   "data": "tacz:laser_nightstick_data",
   "type": "laser",

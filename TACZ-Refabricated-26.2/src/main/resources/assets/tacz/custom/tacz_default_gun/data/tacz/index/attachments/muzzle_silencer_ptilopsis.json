@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.muzzle_silencer_ptilopsis.name",
+  "tooltip": "tacz.attachment.muzzle_silencer_ptilopsis.desc",
   "display": "tacz:muzzle_silencer_ptilopsis_display",
   "data": "tacz:muzzle_silencer_ptilopsis_data",
   "type": "muzzle"

@@ -1,5 +1,6 @@
 {
   "name": "tacz.ammo.308.name",
+  "tooltip": "tacz.ammo.308.desc",
   "display": "tacz:308_display",
   "stack_size": 48,
   "sort": 12

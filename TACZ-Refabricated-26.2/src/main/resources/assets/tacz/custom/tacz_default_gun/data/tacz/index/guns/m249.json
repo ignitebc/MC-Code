@@ -1,8 +1,8 @@
 {
   "name": "tacz.gun.m249.name",
+  "tooltip": "tacz.gun.m249.desc",
   "display": "tacz:m249_display",
   "data": "tacz:m249_data",
-  "tooltip": "tacz.gun.m249.desc",
   "type": "mg",
   "sort": 1
 }

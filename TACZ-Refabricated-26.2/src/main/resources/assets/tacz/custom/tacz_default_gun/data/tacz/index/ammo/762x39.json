@@ -1,5 +1,6 @@
 {
   "name": "tacz.ammo.762x39.name",
+  "tooltip": "tacz.ammo.762x39.desc",
   "display": "tacz:762x39_display",
   // 堆叠数量
   "stack_size": 60,

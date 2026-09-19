@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.scope_acog_ta31.name",
+  "tooltip": "tacz.attachment.scope_acog_ta31.desc",
   "display": "tacz:scope_acog_ta31_display",
   "data": "tacz:scope_acog_ta31_data",
   "type": "scope",

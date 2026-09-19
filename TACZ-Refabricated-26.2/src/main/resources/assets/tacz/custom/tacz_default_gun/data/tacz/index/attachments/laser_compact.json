@@ -1,5 +1,6 @@
 {
   "name": "tacz.attachment.laser_compact",
+  "tooltip": "tacz.attachment.laser_compact.desc",
   "display": "tacz:laser_compact_display",
   "data": "tacz:laser_compact_data",
   "type": "laser",

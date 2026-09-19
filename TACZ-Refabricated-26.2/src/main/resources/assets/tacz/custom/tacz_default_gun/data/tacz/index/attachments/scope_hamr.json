@@ -1,6 +1,7 @@
 {
   "hidden": false,
   "name": "tacz.attachment.scope_hamr.name",
+  "tooltip": "tacz.attachment.scope_hamr.desc",
   "display": "tacz:scope_hamr_display",
   "data": "tacz:scope_hamr_data",
   "type": "scope",
