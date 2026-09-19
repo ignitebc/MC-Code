@@ -39,8 +39,10 @@ public class PetCareComponent extends EmptyComponent
     private static final int TITLE_HEIGHT = 12;
     private static final int ROW_HEIGHT = 18;
     private static final int ROW_GAP = 3;
-    /** 오른쪽 칸 아래에 두는 이름 변경 영역의 높이 */
-    private static final int RENAME_HEIGHT = 40;
+    /** 오른쪽 칸 아래에 두는 이름 변경 영역의 높이. 입력칸과 저장·취소 단추가 한 줄에 들어간다. */
+    private static final int RENAME_HEIGHT = 22;
+    private static final int RENAME_BUTTON_WIDTH = 34;
+    private static final float RENAME_HINT_SCALE = 0.7f;
     private static final int TOGGLE_WIDTH = 34;
     private static final int RENAME_WIDTH = 54;
 
@@ -72,15 +74,18 @@ public class PetCareComponent extends EmptyComponent
         this.petScroll.setY(TITLE_HEIGHT);
         addWidget(this.petScroll);
 
-        int renameY = height - RENAME_HEIGHT + 4;
+        // 한 줄 배치: [입력칸][저장][취소]
+        int renameY = height - RENAME_HEIGHT + (RENAME_HEIGHT - JobsTheme.BUTTON_HEIGHT) / 2;
+        int cancelX = this.rightX + this.columnWidth - 3 - RENAME_BUTTON_WIDTH;
+        int saveX = cancelX - 3 - RENAME_BUTTON_WIDTH;
         this.nameInput = new JobsEditBox(Minecraft.getInstance().font, this.rightX + 3, renameY,
-                this.columnWidth - 6, 14, Component.literal("펫 이름"));
+                saveX - 3 - (this.rightX + 3), JobsTheme.BUTTON_HEIGHT, Component.literal("펫 이름"));
         this.nameInput.setMaxLength(PetNames.MAX_LENGTH);
         this.nameInput.setHint(Component.literal("새 이름 (비우면 원래 이름으로)"));
         addWidget(this.nameInput);
-        this.saveButton = new ActionButton(this.rightX + 3, renameY + 18, 60, JobsTheme.BUTTON_HEIGHT,
+        this.saveButton = new ActionButton(saveX, renameY, RENAME_BUTTON_WIDTH, JobsTheme.BUTTON_HEIGHT,
                 Component.literal("저장"), () -> false, this::saveName);
-        this.cancelButton = new ActionButton(this.rightX + 67, renameY + 18, 60, JobsTheme.BUTTON_HEIGHT,
+        this.cancelButton = new ActionButton(cancelX, renameY, RENAME_BUTTON_WIDTH, JobsTheme.BUTTON_HEIGHT,
                 Component.literal("취소"), () -> false, this::cancelRename);
         addWidget(this.saveButton);
         addWidget(this.cancelButton);
@@ -251,10 +256,16 @@ public class PetCareComponent extends EmptyComponent
                 this.columnWidth, RENAME_HEIGHT);
         if (this.renaming == null)
         {
-            JobsTheme.text(graphics, Component.literal("이름 변경을 누르면 여기서 새 이름을 정합니다."),
-                    getTotalX() + this.rightX + 4, renameTop + 8, this.columnWidth - 8, JobsTheme.MUTED);
-            JobsTheme.text(graphics, Component.literal("이름은 " + PetNames.MAX_LENGTH + "자까지이며 펫 머리 위에 표시됩니다."),
-                    getTotalX() + this.rightX + 4, renameTop + 22, this.columnWidth - 8, JobsTheme.MUTED);
+            // 안내는 작은 글자 한 줄로, 영역의 세로 가운데에 둔다.
+            float textHeight = Minecraft.getInstance().font.lineHeight * RENAME_HINT_SCALE * JobsTheme.LABEL_SCALE;
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(getTotalX() + this.rightX + 5, renameTop + (RENAME_HEIGHT - textHeight) / 2.0f);
+            graphics.pose().scale(RENAME_HINT_SCALE, RENAME_HINT_SCALE);
+            JobsTheme.text(graphics,
+                    Component.literal("이름 변경을 누르면 여기서 새 이름을 정합니다. ("
+                            + PetNames.MAX_LENGTH + "자까지, 펫 머리 위에 표시)"),
+                    0, 0, (int) ((this.columnWidth - 10) / RENAME_HINT_SCALE), JobsTheme.MUTED);
+            graphics.pose().popMatrix();
         }
     }
 
