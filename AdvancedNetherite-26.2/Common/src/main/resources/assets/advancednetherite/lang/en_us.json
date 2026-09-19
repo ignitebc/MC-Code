@@ -60,7 +60,7 @@
   "tooltip.advancednetherite.sword.additional_piglin_mob_drop": "%s 피글린을 죽였을 때 금 주괴 추가 드롭 확률",
   "tooltip.advancednetherite.sword.additional_zombified_piglin_mob_drop": "%s 좀비화 피글린을 죽였을 때 금 조각 추가 드롭 확률",
   "tooltip.advancednetherite.sword.additional_phantom_mob_drop": "%s 팬텀을 죽였을 때 팬텀 막 추가 드롭 확률",
-  "tooltip.advancednetherite.misc.press_shift_key": "모든 특전을 보려면 %s 키를 누르세요",
+  "tooltip.advancednetherite.misc.press_shift_key": "특수능력치를 보려면 %s 키를 누르세요",
   "tooltip.advancednetherite.misc.shift": "[SHIFT]",
   "tooltip.advancednetherite.misc.plus": "+",
   "advancements.advancednetherite.husbandry.frost_hoe.title": "왜?",
