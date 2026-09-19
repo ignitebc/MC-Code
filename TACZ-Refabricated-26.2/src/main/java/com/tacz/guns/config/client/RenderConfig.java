@@ -20,7 +20,6 @@ public class RenderConfig {
     public static ForgeConfigSpec.DoubleValue KILL_AMOUNT_DURATION_SECOND;
     public static ForgeConfigSpec.IntValue TARGET_RENDER_DISTANCE;
     public static ForgeConfigSpec.BooleanValue FIRST_PERSON_BULLET_TRACER_ENABLE;
-    public static ForgeConfigSpec.BooleanValue AUTO_SELECT_GUN_SMITH_TABLE_FILTER;
     public static ForgeConfigSpec.IntValue DAMAGE_COUNTER_RESET_TIME;
     public static ForgeConfigSpec.BooleanValue DISABLE_MOVEMENT_ATTRIBUTE_FOV;
     public static ForgeConfigSpec.BooleanValue ENABLE_TACZ_ID_IN_TOOLTIP;
@@ -74,9 +73,6 @@ public class RenderConfig {
 
         builder.comment("Whether or not to render first person bullet trail");
         FIRST_PERSON_BULLET_TRACER_ENABLE = builder.define("FirstPersonBulletTracerEnable", true);
-
-        builder.comment("Whether or not to automatically select the gun smith table's held item filter when opening it with a gun, attachment or ammo in main hand");
-        AUTO_SELECT_GUN_SMITH_TABLE_FILTER = builder.define("AutoSelectGunSmithTableFilter", true);
 
         builder.comment("[DEBUG] Enable the scope picture-in-picture (PIP) stage-1 verification. "
                 + "Only creates an off-screen render target and verifies output redirection works; "
