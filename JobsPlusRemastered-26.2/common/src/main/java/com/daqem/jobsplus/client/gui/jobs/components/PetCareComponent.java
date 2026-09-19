@@ -121,15 +121,14 @@ public class PetCareComponent extends EmptyComponent
         int y = 2;
         for (PetRarity rarity : PetRarity.values())
         {
-            List<String> typeIds = rarity.petTypeIds();
             content.addComponent(new TextLine(0, y, width,
                     Component.literal(rarity.label() + " 펫"), rarityColor(rarity), 0.85f));
             y += 11;
             content.addComponent(new TextLine(0, y, width,
-                    Component.literal(rarity.label() + " 펫 상자 · 공격력 +" + formatNumber(rarity.attackDamage())
-                            + " · 종류당 " + formatNumber(100.0 / typeIds.size()) + "%"), JobsTheme.MUTED, 0.7f));
+                    Component.literal(rarity.label() + " 펫 상자 · 공격력 +" + formatNumber(rarity.attackDamage())),
+                    JobsTheme.MUTED, 0.7f));
             y += 11;
-            for (String typeId : typeIds)
+            for (String typeId : rarity.petTypeIds())
             {
                 content.addComponent(new CodexRow(y, width, PetNames.typeName(typeId), owned.getOrDefault(typeId, 0)));
                 y += 16;
