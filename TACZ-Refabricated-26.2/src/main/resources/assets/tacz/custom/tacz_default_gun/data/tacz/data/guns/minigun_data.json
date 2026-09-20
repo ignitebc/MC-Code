@@ -79,14 +79,14 @@
   "crawl_recoil_multiplier": 0.75,
   "recoil": {
     "pitch": [
-      {"time": 0, "value": [0.6, 0.6]},
-      {"time": 0.25, "value": [0.6, 0.6]},
-      {"time": 0.45, "value": [-0.15, -0.15]},
+      {"time": 0, "value": [0.78, 0.78]},
+      {"time": 0.25, "value": [0.78, 0.78]},
+      {"time": 0.45, "value": [-0.195, -0.195]},
       {"time": 0.6, "value": [0, 0]}
     ],
     "yaw": [
-      {"time": 0, "value": [-0.3, 0.2]},
-      {"time": 0.2, "value": [-0.3, 0.2]},
+      {"time": 0, "value": [-0.39, 0.26]},
+      {"time": 0.2, "value": [-0.39, 0.26]},
       {"time": 0.4, "value": [0, 0]}
     ]
   },
