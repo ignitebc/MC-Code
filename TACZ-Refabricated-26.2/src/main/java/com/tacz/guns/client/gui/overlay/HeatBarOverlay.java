@@ -27,11 +27,11 @@ public class HeatBarOverlay {
                     if (percent <= 0.0f && !iGun.isOverheatLocked(stack)) return;
 
                     int width = graphics.guiWidth();
-                    int height = graphics.guiHeight();
                     int barWidth = 104;
                     int barHeight = 5;
                     int x = width - barWidth - 12;
-                    int y = height - 12 - 38 - 8;
+                    // 총기 HUD 바로 아래. HUD 가 오른쪽 상단으로 옮겨져 과열 바도 따라간다.
+                    int y = GunHudOverlay.hudTop(mc.player) + 18;
                     graphics.fill(x, y, x + barWidth, y + barHeight, 0x66000000);
                     graphics.fill(x, y, x + Math.round(barWidth * percent), y + barHeight,
                             getHeatColor(percent, iGun.isOverheatLocked(stack), mc.player.tickCount));

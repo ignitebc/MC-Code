@@ -20,6 +20,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix3x2fStack;
@@ -45,6 +46,11 @@ public class GunHudOverlay {
     private static int cacheInventoryAmmoCount = 0;
 
     private static final int MAX_AMMO_COUNT = 9999;
+
+    /** HUD 위쪽 여백 */
+    private static final int TOP_MARGIN = 6;
+    /** 바닐라 상태 효과 아이콘 한 줄의 높이. 윗줄은 이로운 효과, 아랫줄은 해로운 효과다. */
+    private static final int EFFECT_ROW_HEIGHT = 26;
 
     public static void render(GuiGraphicsExtractor graphics, float partialTick) {
         if (!RenderConfig.GUN_HUD_ENABLE.get()) {
@@ -81,9 +87,8 @@ public class GunHudOverlay {
         handleCacheCount(player, stack, gunData, iGun, useInventoryAmmo);
 
         int width = graphics.guiWidth();
-        int height = graphics.guiHeight();
-
-        // ===== 以下布局逐项对照上游 1.21.1 GunHudOverlay =====
+        // 오른쪽 하단은 소리 자막과 겹치므로 오른쪽 상단에 붙인다. 가로 배치는 상류 1.21.1 과 같다.
+        int top = hudTop(player);
 
         // 弹药数颜色: 余弹告急 / 过热 -> 红; 背包直读+虚拟备弹 -> 青;
         // 仅背包直读 -> 黄; 其余 -> 白
@@ -117,13 +122,13 @@ public class GunHudOverlay {
         Matrix3x2fStack poseStack = graphics.pose();
 
         // 竖线分隔符
-        graphics.fill(width - 75, height - 43, width - 74, height - 25, 0xFFFFFFFF);
+        graphics.fill(width - 75, top, width - 74, top + 14, 0xFFFFFFFF);
 
         // 当前弹药数 (1.5 倍字号)
         poseStack.pushMatrix();
         poseStack.scale(1.5f, 1.5f);
         graphics.text(font, currentAmmoCountText,
-                (int) ((width - 70) / 1.5f), (int) ((height - 43) / 1.5f), ammoCountColor, false);
+                (int) ((width - 70) / 1.5f), (int) (top / 1.5f), ammoCountColor, false);
         poseStack.popMatrix();
 
         // 备弹数 (0.8 倍字号, 紧跟在当前弹药数右侧)
@@ -131,7 +136,7 @@ public class GunHudOverlay {
         poseStack.scale(0.8f, 0.8f);
         graphics.text(font, inventoryAmmoCountText,
                 (int) ((width - 68 + font.width(currentAmmoCountText) * 1.5f) / 0.8f),
-                (int) ((height - 43) / 0.8f), inventoryAmmoCountColor, false);
+                (int) (top / 0.8f), inventoryAmmoCountColor, false);
         poseStack.popMatrix();
 
         // 枪械图标。弹尽/过热时若有专用空仓图标就换图, 否则染红。
@@ -150,7 +155,7 @@ public class GunHudOverlay {
             }
             if (hudTexture != null) {
                 graphics.blit(RenderPipelines.GUI_TEXTURED, hudTexture,
-                        width - 117, height - 44, 0.0F, 0.0F, 39, 13, 39, 13, hudTint);
+                        width - 117, top - 1, 0.0F, 0.0F, 39, 13, 39, 13, hudTint);
             }
         }
 
@@ -161,8 +166,28 @@ public class GunHudOverlay {
             default -> FIRE_MODE_SEMI;
         };
         graphics.blit(RenderPipelines.GUI_TEXTURED, fireModeTexture,
-                (int) (width - 68.5 + font.width(currentAmmoCountText) * 1.5), height - 38,
+                (int) (width - 68.5 + font.width(currentAmmoCountText) * 1.5), top + 5,
                 0.0F, 0.0F, 10, 10, 10, 10);
+    }
+
+    /**
+     * HUD 맨 위의 y 좌표. 바닐라가 오른쪽 상단에 그리는 상태 효과 아이콘을 피해 그 아래로 내려간다.
+     * 과열 바도 이 값을 기준으로 HUD 바로 아래에 붙는다.
+     */
+    public static int hudTop(LocalPlayer player) {
+        boolean hasIcon = false;
+        boolean hasHarmfulIcon = false;
+        for (MobEffectInstance effect : player.getActiveEffects()) {
+            if (!effect.showIcon()) {
+                continue;
+            }
+            hasIcon = true;
+            if (!effect.getEffect().value().isBeneficial()) {
+                hasHarmfulIcon = true;
+            }
+        }
+        int effectRows = hasHarmfulIcon ? 2 : hasIcon ? 1 : 0;
+        return TOP_MARGIN + effectRows * EFFECT_ROW_HEIGHT;
     }
 
     private static void handleCacheCount(LocalPlayer player, ItemStack stack, GunData gunData, IGun iGun, boolean useInventoryAmmo) {
