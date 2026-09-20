@@ -74,6 +74,7 @@
   "gui.tacz.gun_smith_table.group.attachment": "Attachments",
   "gui.tacz.gun_smith_table.group.ammo": "Ammo",
   "gui.tacz.gun_smith_table.group.misc": "Misc",
+  "gui.tacz.gun_smith_table.group.guide": "Gun Guide",
   "gui.tacz.gun_smith_table.category": "Category",
   "gui.tacz.gun_smith_table.recipes": "Recipes",
   "gui.tacz.gun_smith_table.empty": "Nothing to craft.",

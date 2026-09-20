@@ -74,6 +74,7 @@
   "gui.tacz.gun_smith_table.group.attachment": "부착물",
   "gui.tacz.gun_smith_table.group.ammo": "탄약",
   "gui.tacz.gun_smith_table.group.misc": "기타",
+  "gui.tacz.gun_smith_table.group.guide": "총기 도감",
   "gui.tacz.gun_smith_table.category": "분류",
   "gui.tacz.gun_smith_table.recipes": "제작 목록",
   "gui.tacz.gun_smith_table.empty": "만들 수 있는 것이 없습니다.",

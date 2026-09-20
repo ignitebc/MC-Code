@@ -26,6 +26,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -42,12 +43,13 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * 총기 작업대 화면. 총기·부착물·탄약을 한 작업대에서 만들며, Jobs+ 직업 화면(J키)과 같은 스킨을 쓴다.
  *
  * <pre>
- * [ 총기 | 부착물 | 탄약 | 기타 ]                       [x]   ← 큰 분류 탭
+ * [ 총기 | 부착물 | 탄약 | 기타 | 총기 도감 ]            [x]   ← 큰 분류 탭
  * ┌ 분류 ─────┐ ┌ 제작 목록 ───────────┐ ┌ 재료 ───────┐
  * │ 세부 분류  │ │ 만들 수 있는 물건      │ │ 재료와 보유량 │
  * │ (휠 스크롤)│ │ (휠 스크롤)           │ │ 개수 / 제작   │
@@ -56,6 +58,8 @@ import java.util.Map;
  *
  * 큰 분류는 팩 설정에 따로 적지 않고, 세부 분류에 든 첫 제작법의 결과물 종류로 정한다.
  * 그래서 다른 총기팩이 탭을 추가해도 알맞은 큰 분류 아래에 들어간다.
+ * <p>
+ * 맨 끝의 "총기 도감" 탭은 Jobs+가 등록한 도감 화면을 연다. Jobs+가 없으면 탭을 만들지 않는다.
  */
 public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMenu> {
     private static final int WIDTH = 420;
@@ -105,6 +109,16 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
             }
             return MISC;
         }
+    }
+
+    /**
+     * 총기 도감을 여는 함수. 인자는 도감을 닫을 때 돌아올 화면(이 작업대)이다.
+     * 도감은 Jobs+에 있고 TACZ는 Jobs+를 모르므로, Jobs+가 클라이언트 초기화 때 넣어 준다.
+     */
+    private static @Nullable Consumer<Screen> guideOpener;
+
+    public static void setGuideOpener(@Nullable Consumer<Screen> opener) {
+        guideOpener = opener;
     }
 
     /** 세부 분류별 제작법. 제작법이 하나도 없는 분류는 담지 않는다. */
@@ -322,6 +336,13 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
                 this.init();
             }));
             x += GROUP_TAB_WIDTH + 2;
+        }
+
+        // 도감은 다른 화면이라 선택 상태로 남지 않는다. 닫으면 이 작업대로 돌아온다.
+        Consumer<Screen> opener = guideOpener;
+        if (opener != null) {
+            this.addRenderableWidget(new SmithTabButton(x, topPos + 6, GROUP_TAB_WIDTH,
+                    Component.translatable("gui.tacz.gun_smith_table.group.guide"), false, b -> opener.accept(this)));
         }
     }
 
