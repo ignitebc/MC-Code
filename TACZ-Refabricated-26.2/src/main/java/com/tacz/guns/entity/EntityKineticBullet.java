@@ -570,11 +570,11 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         if (hitPartType.builtInRegistryHolder().is(USE_MAGIC_DAMAGE_ON)) {
             source1 = source2 = this.damageSources().indirectMagic(this, getOwner());
         } else if (hitPartType.builtInRegistryHolder().is(USE_VOID_DAMAGE_ON)) {
-            source1 = ModDamageTypes.Sources.bulletVoid(this.level().registryAccess(), directCause, this.getOwner(), false);
-            source2 = ModDamageTypes.Sources.bulletVoid(this.level().registryAccess(), directCause, this.getOwner(), true);
+            source1 = ModDamageTypes.Sources.bulletVoid(this.level().registryAccess(), directCause, this.getOwner(), false, this.gunId);
+            source2 = ModDamageTypes.Sources.bulletVoid(this.level().registryAccess(), directCause, this.getOwner(), true, this.gunId);
         } else {
-            source1 = ModDamageTypes.Sources.bullet(this.level().registryAccess(), directCause, this.getOwner(), false);
-            source2 = ModDamageTypes.Sources.bullet(this.level().registryAccess(), directCause, this.getOwner(), true);
+            source1 = ModDamageTypes.Sources.bullet(this.level().registryAccess(), directCause, this.getOwner(), false, this.gunId);
+            source2 = ModDamageTypes.Sources.bullet(this.level().registryAccess(), directCause, this.getOwner(), true, this.gunId);
         }
         return Pair.of(source1, source2);
     }
