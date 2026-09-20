@@ -15,6 +15,8 @@ import java.util.function.UnaryOperator;
 public final class ClientPetData
 {
     private static volatile List<PetStatusEntry> pets = List.of();
+    /** 목록을 받은 시각. 부활까지 남은 시간은 받은 시점 기준이라 여기서부터 흐른 만큼 뺀다. */
+    private static volatile long receivedAtMillis;
 
     private ClientPetData()
     {
@@ -27,7 +29,15 @@ public final class ClientPetData
 
     public static void setPets(List<PetStatusEntry> newPets)
     {
+        receivedAtMillis = System.currentTimeMillis();
         pets = List.copyOf(newPets);
+    }
+
+    /** 부활까지 남은 시간(초, 올림). 살아 있으면 0 */
+    public static int reviveSecondsLeft(PetStatusEntry entry)
+    {
+        long left = entry.reviveRemainingMillis() - (System.currentTimeMillis() - receivedAtMillis);
+        return left <= 0L ? 0 : (int) ((left + 999L) / 1000L);
     }
 
     public static void clear()

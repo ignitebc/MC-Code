@@ -18,13 +18,11 @@ import java.util.function.Supplier;
 public class PetBoxItem extends AdvancedItem
 {
     private final List<Supplier<EntityType<DialgaPetEntity>>> petTypes;
-    private final double petAttackDamage;
 
-    public PetBoxItem(List<Supplier<EntityType<DialgaPetEntity>>> petTypes, double petAttackDamage, Properties properties)
+    public PetBoxItem(List<Supplier<EntityType<DialgaPetEntity>>> petTypes, Properties properties)
     {
         super(properties);
         this.petTypes = List.copyOf(petTypes);
-        this.petAttackDamage = petAttackDamage;
     }
 
     @Override
@@ -45,7 +43,7 @@ public class PetBoxItem extends AdvancedItem
         EntityType<DialgaPetEntity> petType = this.petTypes.get(pickedIndex).get();
 
         // 소유의 원본은 펫 저장소 기록이다. 기록 생성에 실패하면 상자를 소모하지 않는다.
-        if (!PetManager.createPet(serverPlayer, petType, this.petAttackDamage))
+        if (!PetManager.createPet(serverPlayer, petType))
         {
             serverPlayer.sendSystemMessage(Component.translatable("item.advancednetherite.pet_box.failed"));
             return InteractionResult.FAIL;

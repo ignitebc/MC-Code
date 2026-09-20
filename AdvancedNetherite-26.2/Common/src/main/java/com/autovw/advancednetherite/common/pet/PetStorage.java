@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.UnaryOperator;
 
 /**
  * 플레이어별 펫 소유 기록 저장소.
@@ -122,13 +123,16 @@ public final class PetStorage
                 JsonArray entries = root.getAsJsonArray(playerId);
                 entries.forEach(entry -> {
                     JsonObject pet = entry.getAsJsonObject();
+                    // 이름·레벨·경험치·부활 시각은 나중에 생긴 항목이라 이전 파일에는 없다.
+                    // 이전 파일의 attackDamage 는 읽지 않는다. 공격력은 등급과 레벨에서 계산한다.
                     records.add(new PetRecord(
                             UUID.fromString(pet.get("id").getAsString()),
                             pet.get("type").getAsString(),
-                            pet.get("attackDamage").getAsDouble(),
                             pet.get("enabled").getAsBoolean(),
-                            // 이름은 나중에 생긴 항목이라 이전 파일에는 없다.
-                            pet.has("name") && !pet.get("name").isJsonNull() ? pet.get("name").getAsString() : ""));
+                            pet.has("name") && !pet.get("name").isJsonNull() ? pet.get("name").getAsString() : "",
+                            pet.has("level") ? pet.get("level").getAsInt() : 1,
+                            pet.has("exp") ? pet.get("exp").getAsInt() : 0,
+                            pet.has("reviveAt") ? pet.get("reviveAt").getAsLong() : 0L));
                 });
                 loadedPets.put(UUID.fromString(playerId), records);
             }
@@ -151,9 +155,11 @@ public final class PetStorage
                 JsonObject pet = new JsonObject();
                 pet.addProperty("id", record.id().toString());
                 pet.addProperty("type", record.petTypeId());
-                pet.addProperty("attackDamage", record.attackDamage());
                 pet.addProperty("enabled", record.enabled());
                 if (!record.name().isEmpty()) pet.addProperty("name", record.name());
+                pet.addProperty("level", record.level());
+                pet.addProperty("exp", record.exp());
+                if (record.reviveAtMillis() > 0L) pet.addProperty("reviveAt", record.reviveAtMillis());
                 entries.add(pet);
             }
             root.add(playerId.toString(), entries);
@@ -295,6 +301,16 @@ public final class PetStorage
      */
     public static synchronized PetRecord setEnabled(UUID playerId, UUID recordId, boolean enabled)
     {
+        return update(playerId, recordId, record -> record.withEnabled(enabled));
+    }
+
+    /**
+     * 기록 하나를 바꾸고 갱신된 기록을 돌려준다. 대상이 없으면 null.
+     * <p>
+     * 경험치처럼 자주 바뀌는 값에 쓴다. 토글과 마찬가지로 파일 기록은 {@link #saveIfDirty()}에 맡긴다.
+     */
+    public static synchronized PetRecord update(UUID playerId, UUID recordId, UnaryOperator<PetRecord> change)
+    {
         if (!saveEnabled)
         {
             return null;
@@ -310,7 +326,7 @@ public final class PetStorage
             {
                 continue;
             }
-            PetRecord updated = records.get(i).withEnabled(enabled);
+            PetRecord updated = change.apply(records.get(i));
             records.set(i, updated);
             dirty = true;
             return updated;

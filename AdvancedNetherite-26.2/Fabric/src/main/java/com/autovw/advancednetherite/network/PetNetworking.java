@@ -42,6 +42,7 @@ public final class PetNetworking
 
         ServerLifecycleEvents.SERVER_STARTING.register(PetStorage::load);
         ServerTickEvents.END_SERVER_TICK.register(server -> {
+            PetManager.tick(server);
             if (server.getTickCount() % SAVE_INTERVAL_TICKS == 0)
             {
                 PetStorage.saveIfDirty();
@@ -67,10 +68,12 @@ public final class PetNetworking
 
     private static void sendPetList(ServerPlayer player)
     {
+        long now = System.currentTimeMillis();
         List<PetStatusEntry> entries = new ArrayList<>();
         for (PetRecord record : PetStorage.getPets(player.getUUID()))
         {
-            entries.add(new PetStatusEntry(record.id(), record.petTypeId(), record.enabled(), record.name()));
+            entries.add(new PetStatusEntry(record.id(), record.petTypeId(), record.enabled(), record.name(),
+                    record.level(), record.exp(), Math.max(0L, record.reviveAtMillis() - now)));
         }
         ServerPlayNetworking.send(player, new PetListSyncPayload(entries));
     }

@@ -54,9 +54,9 @@ public final class ModItems
 
     // petbox
     // 어떤 펫이 어느 상자에서 나오는지와 공격력은 PetRarity가 한 곳에서 정한다. 펫 도감도 같은 표를 읽는다.
-    public static final PetBoxItem NOMAL_PETBOX = new PetBoxItem(PetRarity.NORMAL.petTypes(), PetRarity.NORMAL.attackDamage(), new Item.Properties().setId(key("nomal_petbox")));
-    public static final PetBoxItem RARE_PETBOX = new PetBoxItem(PetRarity.RARE.petTypes(), PetRarity.RARE.attackDamage(), new Item.Properties().setId(key("rare_petbox")));
-    public static final PetBoxItem LEGEND_PETBOX = new PetBoxItem(PetRarity.LEGEND.petTypes(), PetRarity.LEGEND.attackDamage(), new Item.Properties().setId(key("legend_petbox")));
+    public static final PetBoxItem NOMAL_PETBOX = new PetBoxItem(PetRarity.NORMAL.petTypes(), new Item.Properties().setId(key("nomal_petbox")));
+    public static final PetBoxItem RARE_PETBOX = new PetBoxItem(PetRarity.RARE.petTypes(), new Item.Properties().setId(key("rare_petbox")));
+    public static final PetBoxItem LEGEND_PETBOX = new PetBoxItem(PetRarity.LEGEND.petTypes(), new Item.Properties().setId(key("legend_petbox")));
 
     // ARMOR SETS
     // Netherite-Iron

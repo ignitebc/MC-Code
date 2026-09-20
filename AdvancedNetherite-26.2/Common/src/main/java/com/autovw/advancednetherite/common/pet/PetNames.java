@@ -91,6 +91,12 @@ public final class PetNames
         return labels;
     }
 
+    /** 이름 뒤에 레벨을 붙이고 등급 색을 입힌다. 예: "꼬미 LV3" */
+    public static Component withLevel(Component name, PetRarity rarity, int level)
+    {
+        return name.copy().append(Component.literal(" LV" + level)).withColor(rarity.color());
+    }
+
     /** 기록 하나의 표시 이름. 목록에 없는 기록이면 종류 이름만 돌려준다. */
     public static Component displayName(List<PetRecord> pets, PetRecord record)
     {

@@ -10,12 +10,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -38,6 +40,20 @@ public final class PetManager
 
     /** 플레이어 UUID → 마지막 토글을 처리한 서버 틱 */
     private static final Map<UUID, Integer> LAST_TOGGLE_TICKS = new ConcurrentHashMap<>();
+
+    /**
+     * 기록 ID → 회수될 때의 체력. 껐다 켜는 것만으로 체력이 가득 차지 않게 한다.
+     * 파일에는 남기지 않으므로 서버를 다시 켜면 가득 찬 체력으로 시작한다.
+     */
+    private static final Map<UUID, Float> LAST_HEALTH = new ConcurrentHashMap<>();
+
+    /** 경험치가 바뀌었지만 아직 클라이언트에 알리지 않은 플레이어. 한 대마다 패킷을 보내지 않으려고 모아 둔다. */
+    private static final Set<UUID> EXP_DIRTY_PLAYERS = ConcurrentHashMap.newKeySet();
+
+    /** 부활 시각 확인 주기(1초) */
+    private static final int REVIVE_CHECK_INTERVAL_TICKS = 20;
+    /** 모아 둔 경험치 변경을 클라이언트에 보내는 주기(5초) */
+    private static final int EXP_SYNC_INTERVAL_TICKS = 100;
 
     /** 펫 목록이 바뀔 때 클라이언트에 동기화 패킷을 보내는 훅. 플랫폼 초기화 코드가 등록한다. */
     private static Consumer<ServerPlayer> syncHandler;
@@ -79,7 +95,7 @@ public final class PetManager
 
     private static void applyNameTag(DialgaPetEntity pet, List<PetRecord> records, PetRecord record)
     {
-        Component name = PetNames.displayName(records, record);
+        Component name = PetNames.withLevel(PetNames.displayName(records, record), record.rarity(), record.level());
         pet.setCustomName(name);
         pet.setCustomNameVisible(true);
     }
@@ -109,7 +125,7 @@ public final class PetManager
     }
 
     /** 펫 상자 사용 시 호출된다. 기록을 만들고 즉시 소환한다. */
-    public static boolean createPet(ServerPlayer player, EntityType<DialgaPetEntity> petType, double attackDamage)
+    public static boolean createPet(ServerPlayer player, EntityType<DialgaPetEntity> petType)
     {
         if (!PetStorage.isAvailable())
         {
@@ -117,7 +133,7 @@ public final class PetManager
         }
 
         String petTypeId = BuiltInRegistries.ENTITY_TYPE.getKey(petType).toString();
-        PetRecord record = new PetRecord(UUID.randomUUID(), petTypeId, attackDamage, true);
+        PetRecord record = new PetRecord(UUID.randomUUID(), petTypeId);
         if (!PetStorage.addPet(player.getUUID(), record))
         {
             return false;
@@ -193,6 +209,7 @@ public final class PetManager
             }
         }
         LAST_TOGGLE_TICKS.remove(player.getUUID());
+        EXP_DIRTY_PLAYERS.remove(player.getUUID());
 
         // 아직 파일에 반영되지 않은 토글 상태가 남아 있으면 이 시점에 기록해 둔다.
         PetStorage.saveIfDirty();
@@ -232,6 +249,17 @@ public final class PetManager
         PetRecord record = PetStorage.findPet(player.getUUID(), recordId);
         if (record == null)
         {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        if (!record.enabled() && record.isReviving(now))
+        {
+            long secondsLeft = (record.reviveAtMillis() - now + 999L) / 1000L;
+            player.sendSystemMessage(Component.empty().append(petLabel(player, record))
+                    .append("은(는) 부활까지 " + secondsLeft + "초 남았습니다."));
+            // 클라이언트가 먼저 뒤집어 둔 단추를 실제 상태로 되돌린다.
+            syncPets(player);
             return;
         }
 
@@ -295,7 +323,169 @@ public final class PetManager
         UUID recordId = pet.getRecordId();
         if (recordId != null)
         {
+            // 죽어서 사라진 펫은 부활할 때 체력이 가득 차므로 기억하지 않는다.
+            if (pet.isAlive())
+            {
+                LAST_HEALTH.put(recordId, pet.getHealth());
+            }
             LIVE_PETS.remove(recordId, pet);
+        }
+    }
+
+    /**
+     * 펫이 몹을 한 대 때릴 때마다 호출된다. 경험치 1을 주고, 가득 차면 레벨을 올린다.
+     */
+    public static void handlePetHit(DialgaPetEntity pet)
+    {
+        UUID recordId = pet.getRecordId();
+        if (recordId == null || !(pet.getOwner() instanceof ServerPlayer owner))
+        {
+            return;
+        }
+
+        PetRecord before = PetStorage.findPet(owner.getUUID(), recordId);
+        if (before == null || before.level() >= PetStats.MAX_LEVEL)
+        {
+            return;
+        }
+
+        int level = before.level();
+        int exp = before.exp() + 1;
+        while (level < PetStats.MAX_LEVEL && exp >= PetStats.expToLevelUp(level))
+        {
+            exp -= PetStats.expToLevelUp(level);
+            level++;
+        }
+        if (level >= PetStats.MAX_LEVEL)
+        {
+            exp = 0;
+        }
+
+        int newLevel = level;
+        int newExp = exp;
+        PetRecord after = PetStorage.update(owner.getUUID(), recordId, record -> record.withProgress(newLevel, newExp));
+        if (after == null)
+        {
+            return;
+        }
+
+        if (after.level() == before.level())
+        {
+            EXP_DIRTY_PLAYERS.add(owner.getUUID());
+            return;
+        }
+
+        // 늘어난 최대 체력만큼은 바로 채워 준다.
+        float gainedHealth = (float) (PetStats.maxHealth(after.rarity(), after.level())
+                - PetStats.maxHealth(before.rarity(), before.level()));
+        applyStats(pet, after);
+        pet.heal(gainedHealth);
+        owner.sendSystemMessage(Component.empty().append(petLabel(owner, after)).append(" 달성!"));
+        syncPets(owner);
+    }
+
+    /**
+     * 펫이 죽으면 기록을 끄고 부활 시각을 남긴다. 부활 시각이 지나기 전에는 다시 켤 수 없다.
+     * 부활해도 꺼진 상태로 남으므로 주인이 펫관리에서 직접 켜야 한다.
+     */
+    public static void handlePetDeath(DialgaPetEntity pet)
+    {
+        UUID recordId = pet.getRecordId();
+        if (recordId == null || pet.getOwnerReference() == null)
+        {
+            return;
+        }
+
+        UUID ownerId = pet.getOwnerReference().getUUID();
+        PetRecord record = PetStorage.findPet(ownerId, recordId);
+        if (record == null)
+        {
+            return;
+        }
+
+        LIVE_PETS.remove(recordId, pet);
+        LAST_HEALTH.remove(recordId);
+        long reviveAt = System.currentTimeMillis() + PetStats.reviveMillis(record.level());
+        PetRecord updated = PetStorage.update(ownerId, recordId,
+                current -> current.withEnabled(false).withReviveAt(reviveAt));
+        if (updated == null || !(pet.getOwner() instanceof ServerPlayer owner))
+        {
+            return;
+        }
+
+        owner.sendSystemMessage(Component.empty().append(petLabel(owner, updated))
+                .append("이(가) 쓰러졌습니다. " + PetStats.reviveMillis(updated.level()) / 1000L + "초 뒤에 부활합니다."));
+        syncPets(owner);
+    }
+
+    /** 서버가 매 틱 호출한다. 부활 시각이 지난 펫을 풀어 주고, 모아 둔 경험치 변경을 보낸다. */
+    public static void tick(MinecraftServer server)
+    {
+        int tick = server.getTickCount();
+        if (tick % REVIVE_CHECK_INTERVAL_TICKS == 0)
+        {
+            long now = System.currentTimeMillis();
+            for (ServerPlayer player : server.getPlayerList().getPlayers())
+            {
+                reviveExpiredPets(player, now);
+            }
+        }
+
+        if (tick % EXP_SYNC_INTERVAL_TICKS == 0 && !EXP_DIRTY_PLAYERS.isEmpty())
+        {
+            for (UUID playerId : List.copyOf(EXP_DIRTY_PLAYERS))
+            {
+                EXP_DIRTY_PLAYERS.remove(playerId);
+                ServerPlayer player = server.getPlayerList().getPlayer(playerId);
+                if (player != null)
+                {
+                    syncPets(player);
+                }
+            }
+        }
+    }
+
+    private static void reviveExpiredPets(ServerPlayer player, long now)
+    {
+        boolean revived = false;
+        for (PetRecord record : PetStorage.getPets(player.getUUID()))
+        {
+            if (record.reviveAtMillis() == 0L || record.isReviving(now))
+            {
+                continue;
+            }
+            if (PetStorage.update(player.getUUID(), record.id(), current -> current.withReviveAt(0L)) != null)
+            {
+                player.sendSystemMessage(Component.empty().append(petLabel(player, record))
+                        .append("이(가) 부활했습니다. 펫관리에서 다시 켤 수 있습니다."));
+                revived = true;
+            }
+        }
+        if (revived)
+        {
+            syncPets(player);
+        }
+    }
+
+    /** 채팅에 쓰는 펫 이름. 머리 위 이름표와 같은 모양이다. */
+    private static Component petLabel(ServerPlayer owner, PetRecord record)
+    {
+        List<PetRecord> records = PetStorage.getPets(owner.getUUID());
+        return PetNames.withLevel(PetNames.displayName(records, record), record.rarity(), record.level());
+    }
+
+    /** 등급과 레벨에서 계산한 공격력·최대 체력을 펫에 입힌다. */
+    private static void applyStats(LivingEntity pet, PetRecord record)
+    {
+        AttributeInstance attackAttribute = pet.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (attackAttribute != null)
+        {
+            attackAttribute.setBaseValue(PetStats.attackDamage(record.rarity(), record.level()));
+        }
+        AttributeInstance healthAttribute = pet.getAttribute(Attributes.MAX_HEALTH);
+        if (healthAttribute != null)
+        {
+            healthAttribute.setBaseValue(PetStats.maxHealth(record.rarity(), record.level()));
         }
     }
 
@@ -304,6 +494,8 @@ public final class PetManager
     {
         LIVE_PETS.clear();
         LAST_TOGGLE_TICKS.clear();
+        LAST_HEALTH.clear();
+        EXP_DIRTY_PLAYERS.clear();
     }
 
     /**
@@ -375,11 +567,9 @@ public final class PetManager
         // 엔티티는 저장되지 않으므로 소환할 때마다 이름표를 다시 붙인다.
         applyNameTag(pet, PetStorage.getPets(player.getUUID()), record);
 
-        AttributeInstance attackAttribute = pet.getAttribute(Attributes.ATTACK_DAMAGE);
-        if (attackAttribute != null)
-        {
-            attackAttribute.setBaseValue(record.attackDamage());
-        }
+        applyStats(pet, record);
+        Float lastHealth = LAST_HEALTH.remove(record.id());
+        pet.setHealth(lastHealth == null ? pet.getMaxHealth() : Math.max(1.0F, Math.min(lastHealth, pet.getMaxHealth())));
 
         if (serverLevel.addFreshEntity(pet))
         {

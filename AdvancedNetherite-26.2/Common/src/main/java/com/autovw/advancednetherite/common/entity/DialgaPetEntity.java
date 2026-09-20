@@ -10,6 +10,7 @@ import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -54,6 +55,10 @@ public class DialgaPetEntity extends TamableAnimal
     /** 원이 너무 커져 펫이 멀어지지 않도록 둔 상한 */
     private static final double RING_MAX_RADIUS = 4.0;
 
+    /** 싸우지 않을 때 체력을 회복하는 주기(2초)와 한 번에 회복하는 최대 체력 비율(1%) */
+    private static final int REGEN_INTERVAL_TICKS = 40;
+    private static final float REGEN_FRACTION = 0.01F;
+
     /**
      * 펫 저장소의 기록 ID. 차원 이동 시 엔티티가 새 개체로 복사되므로 NBT로도 승계한다.
      * 기록 없는 펫은 존재 자격이 없어 소멸한다.
@@ -74,7 +79,7 @@ public class DialgaPetEntity extends TamableAnimal
     public static AttributeSupplier.Builder createAttributes()
     {
         return TamableAnimal.createAnimalAttributes()
-                .add(Attributes.MAX_HEALTH, 20.0)
+                .add(Attributes.MAX_HEALTH, 100.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.35)
                 .add(Attributes.FOLLOW_RANGE, 48.0)
                 .add(Attributes.ATTACK_DAMAGE, 1.0);
@@ -140,6 +145,12 @@ public class DialgaPetEntity extends TamableAnimal
         }
 
         updatePursuit(owner);
+
+        // 싸우지 않는 동안에는 체력을 조금씩 회복한다.
+        if (this.getTarget() == null && this.tickCount % REGEN_INTERVAL_TICKS == 0 && this.getHealth() < this.getMaxHealth())
+        {
+            this.heal(Math.max(1.0F, this.getMaxHealth() * REGEN_FRACTION));
+        }
 
         // 추격 중이 아닐 때 주인과 10칸 이상 벌어지면 곁으로 순간이동한다.
         boolean isIdle = this.getTarget() == null;
@@ -263,7 +274,7 @@ public class DialgaPetEntity extends TamableAnimal
     }
 
     /**
-     * 펫은 어떤 공격도 받지 않으므로 펫끼리의 전투는 영원히 끝나지 않는다.
+     * 펫끼리 싸우면 서로의 펫만 닳고 정작 주인을 때린 쪽은 멀쩡하다.
      * 주인이 펫에게 맞은 경우, 그 펫 대신 펫의 주인을 대상으로 잡을 수 있을 때만 복수를 허용한다.
      */
     @Override
@@ -278,7 +289,7 @@ public class DialgaPetEntity extends TamableAnimal
 
     /**
      * 공격 대상이 펫이면 그 펫의 주인으로 치환한다.
-     * 펫은 무적이라 직접 때릴 가치가 없고, 주인을 물어야 전투가 성립한다.
+     * 시킨 쪽은 주인이므로 펫이 아니라 주인을 물어야 전투가 성립한다.
      */
     @Override
     public void setTarget(LivingEntity target)
@@ -372,12 +383,65 @@ public class DialgaPetEntity extends TamableAnimal
             return super.hurtServer(serverLevel, damageSource, amount);
         }
 
-        // 펫은 전투 대상이 아니므로 모든 피해를 무시한다.
-        // /kill 명령(BYPASSES_INVULNERABILITY)만 예외로 두어 운영 중 정리가 가능하게 한다.
+        // /kill 명령(BYPASSES_INVULNERABILITY)은 그대로 통과시켜 운영 중 정리가 가능하게 한다.
         if (damageSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY))
         {
             return super.hurtServer(serverLevel, damageSource, amount);
         }
+
+        // 누군가에게 맞은 피해만 받는다. 낙하·질식·화염 같은 환경 피해는 무시한다.
+        // 주인을 따라 순간이동하는 펫이 지형 때문에 죽는 일을 막기 위해서다.
+        Entity attacker = damageSource.getEntity();
+        if (!(attacker instanceof LivingEntity) || isFriendly(attacker))
+        {
+            return false;
+        }
+        return super.hurtServer(serverLevel, damageSource, amount);
+    }
+
+    /** 주인과 주인의 다른 펫에게서는 피해를 받지 않는다. */
+    private boolean isFriendly(Entity attacker)
+    {
+        LivingEntity owner = this.getOwner();
+        if (owner == null)
+        {
+            return false;
+        }
+        return attacker == owner || (attacker instanceof DialgaPetEntity otherPet && otherPet.getOwner() == owner);
+    }
+
+    /** 몹을 한 대 때릴 때마다 경험치를 얻는다. 플레이어를 때린 것은 세지 않는다. */
+    @Override
+    public boolean doHurtTarget(ServerLevel serverLevel, Entity target)
+    {
+        boolean hit = super.doHurtTarget(serverLevel, target);
+        if (hit && target instanceof Mob)
+        {
+            PetManager.handlePetHit(this);
+        }
+        return hit;
+    }
+
+    /** 죽으면 기록에 부활 시각을 남긴다. 쓰러지는 모습을 보여준 뒤 바닐라 경로로 사라진다. */
+    @Override
+    public void die(DamageSource damageSource)
+    {
+        super.die(damageSource);
+        if (!this.level().isClientSide())
+        {
+            PetManager.handlePetDeath(this);
+        }
+    }
+
+    @Override
+    protected boolean shouldDropLoot(ServerLevel serverLevel)
+    {
+        return false;
+    }
+
+    @Override
+    public boolean shouldDropExperience()
+    {
         return false;
     }
 
