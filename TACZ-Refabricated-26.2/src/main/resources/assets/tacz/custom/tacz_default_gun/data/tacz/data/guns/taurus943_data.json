@@ -104,10 +104,12 @@
     ]
   },
   "inaccuracy": {
-    "stand": 3,
-    "move": 3.5,
-    "sneak": 1.25,
-    "lie": 1.5,
-    "aim": 0.1
+    "stand": 2.83,
+    "move": 4.15,
+    "sneak": 1,
+    "lie": 1.2,
+    "aim": 0.176,
+    "run": 5.93,
+    "fly": 11.86
   }
 }

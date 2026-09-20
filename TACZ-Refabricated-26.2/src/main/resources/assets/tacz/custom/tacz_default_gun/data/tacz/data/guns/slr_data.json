@@ -164,11 +164,13 @@
   },
   "hurt_bob_tweak_multiplier": 0.05,
   "inaccuracy": {
-    "stand": 6,
-    "move": 6.5,
-    "sneak": 2.5,
-    "lie": 1.5,
-    "aim": 0.1
+    "stand": 5.66,
+    "move": 7.71,
+    "sneak": 2,
+    "lie": 1.2,
+    "aim": 0.176,
+    "run": 11.32,
+    "fly": 22.64
   },
   "melee": {
     "distance": 1,

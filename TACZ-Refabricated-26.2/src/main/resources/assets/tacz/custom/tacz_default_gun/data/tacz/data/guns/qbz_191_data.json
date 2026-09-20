@@ -86,11 +86,13 @@
     ]
   },
   "inaccuracy": {
-    "stand": 4,
-    "move": 5,
-    "sneak": 2,
-    "lie": 1.5,
-    "aim": 0.10
+    "stand": 3.77,
+    "move": 5.93,
+    "sneak": 1.6,
+    "lie": 1.2,
+    "aim": 0.176,
+    "run": 8.47,
+    "fly": 16.94
   },
   // 近战相关
   "melee": {

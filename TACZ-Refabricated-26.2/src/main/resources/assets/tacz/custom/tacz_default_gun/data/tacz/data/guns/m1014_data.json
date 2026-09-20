@@ -94,7 +94,9 @@
     "move": 4.1,
     "sneak": 4,
     "lie": 3.95,
-    "aim": 3.9
+    "aim": 3.9,
+    "run": 8.2,
+    "fly": 16.4
   },
   "melee": {
     "distance": 1.25,

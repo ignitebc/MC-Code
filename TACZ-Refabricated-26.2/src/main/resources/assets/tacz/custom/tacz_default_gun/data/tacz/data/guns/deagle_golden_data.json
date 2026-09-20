@@ -96,11 +96,13 @@
     ]
   },
   "inaccuracy": {
-    "stand": 3,
-    "move": 3.5,
-    "sneak": 2,
-    "lie": 1.2,
-    "aim": 0.1
+    "stand": 2.83,
+    "move": 4.15,
+    "sneak": 1.6,
+    "lie": 0.96,
+    "aim": 0.176,
+    "run": 5.93,
+    "fly": 11.86
   },
   "allow_attachment_types": [
     "scope",
