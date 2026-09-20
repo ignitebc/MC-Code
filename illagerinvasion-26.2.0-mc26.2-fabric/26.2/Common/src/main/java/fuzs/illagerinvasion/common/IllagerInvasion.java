@@ -58,54 +58,55 @@ public class IllagerInvasion implements ModConstructor {
 
     @Override
     public void onRegisterEntityAttributes(EntityAttributesContext context) {
+        // Max health of every mob is twice the upstream value (server balance).
         context.registerAttributes(ModEntityTypes.ALCHEMIST_ENTITY_TYPE.value(),
                 Monster.createMonsterAttributes()
-                        .add(Attributes.MAX_HEALTH, 24.0)
+                        .add(Attributes.MAX_HEALTH, 48.0)
                         .add(Attributes.MOVEMENT_SPEED, 0.38));
         context.registerAttributes(ModEntityTypes.ARCHIVIST_ENTITY_TYPE.value(),
                 Monster.createMonsterAttributes()
-                        .add(Attributes.MAX_HEALTH, 24.0)
+                        .add(Attributes.MAX_HEALTH, 48.0)
                         .add(Attributes.MOVEMENT_SPEED, 0.36));
         context.registerAttributes(ModEntityTypes.BASHER_ENTITY_TYPE.value(),
                 Monster.createMonsterAttributes()
-                        .add(Attributes.MAX_HEALTH, 32.0)
+                        .add(Attributes.MAX_HEALTH, 64.0)
                         .add(Attributes.MOVEMENT_SPEED, 0.31)
                         .add(Attributes.ATTACK_DAMAGE, 3.0)
                         .add(Attributes.ATTACK_KNOCKBACK, 0.2));
         context.registerAttributes(ModEntityTypes.FIRECALLER_ENTITY_TYPE.value(),
                 Monster.createMonsterAttributes()
-                        .add(Attributes.MAX_HEALTH, 32.0)
+                        .add(Attributes.MAX_HEALTH, 64.0)
                         .add(Attributes.MOVEMENT_SPEED, 0.38));
         context.registerAttributes(ModEntityTypes.INQUISITOR_ENTITY_TYPE.value(),
                 Monster.createMonsterAttributes()
-                        .add(Attributes.MAX_HEALTH, 80.0)
+                        .add(Attributes.MAX_HEALTH, 160.0)
                         .add(Attributes.MOVEMENT_SPEED, 0.33)
                         .add(Attributes.ATTACK_DAMAGE, 10.0)
                         .add(Attributes.ATTACK_KNOCKBACK, 1.6)
                         .add(Attributes.KNOCKBACK_RESISTANCE, 0.8));
         context.registerAttributes(ModEntityTypes.INVOKER_ENTITY_TYPE.value(),
                 Monster.createMonsterAttributes()
-                        .add(Attributes.MAX_HEALTH, 250.0)
+                        .add(Attributes.MAX_HEALTH, 500.0)
                         .add(Attributes.MOVEMENT_SPEED, 0.36)
                         .add(Attributes.KNOCKBACK_RESISTANCE, 0.3)
                         .add(Attributes.ATTACK_DAMAGE, 8.0));
         context.registerAttributes(ModEntityTypes.MARAUDER_ENTITY_TYPE.value(),
                 Monster.createMonsterAttributes()
-                        .add(Attributes.MAX_HEALTH, 24.0)
+                        .add(Attributes.MAX_HEALTH, 48.0)
                         .add(Attributes.MOVEMENT_SPEED, 0.30));
         context.registerAttributes(ModEntityTypes.PROVOKER_ENTITY_TYPE.value(),
                 Monster.createMonsterAttributes()
-                        .add(Attributes.MAX_HEALTH, 24.0)
+                        .add(Attributes.MAX_HEALTH, 48.0)
                         .add(Attributes.MOVEMENT_SPEED, 0.38));
         context.registerAttributes(ModEntityTypes.SORCERER_ENTITY_TYPE.value(),
                 Monster.createMonsterAttributes()
-                        .add(Attributes.MAX_HEALTH, 32.0)
+                        .add(Attributes.MAX_HEALTH, 64.0)
                         .add(Attributes.MOVEMENT_SPEED, 0.38));
         context.registerAttributes(ModEntityTypes.SURRENDERED_ENTITY_TYPE.value(),
-                Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 14.0).add(Attributes.ATTACK_DAMAGE, 5.0));
+                Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 28.0).add(Attributes.ATTACK_DAMAGE, 5.0));
         context.registerAttributes(ModEntityTypes.NECROMANCER_ENTITY_TYPE.value(),
                 Monster.createMonsterAttributes()
-                        .add(Attributes.MAX_HEALTH, 32.0)
+                        .add(Attributes.MAX_HEALTH, 64.0)
                         .add(Attributes.MOVEMENT_SPEED, 0.38));
     }
 
