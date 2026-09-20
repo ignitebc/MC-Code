@@ -19,10 +19,10 @@ public enum PetRarity
             () -> ModEntityTypes.DIALGA_PET,
             () -> ModEntityTypes.KIRBY_PET,
             () -> ModEntityTypes.GOMI_PET)),
-    RARE("희귀", 3.0, List.of(
+    RARE("희귀", 2.0, List.of(
             () -> ModEntityTypes.UNICORN_PET,
             () -> ModEntityTypes.GAZELLE_PET)),
-    LEGEND("전설", 5.0, List.of(
+    LEGEND("전설", 3.0, List.of(
             () -> ModEntityTypes.FAIRLINS_PET,
             () -> ModEntityTypes.DARK_DRAGON_PET,
             () -> ModEntityTypes.SCULKEN_RAVEN_PET,
