@@ -28,6 +28,7 @@ final class TaczStats {
             Map.entry("recoil", "반동"), Map.entry("pitch", "수직 반동"), Map.entry("yaw", "수평 반동"),
             Map.entry("inaccuracy", "탄퍼짐"), Map.entry("aim", "조준"), Map.entry("stand", "서 있을 때"),
             Map.entry("move", "이동 중"), Map.entry("sneak", "웅크릴 때"), Map.entry("lie", "엎드릴 때"),
+            Map.entry("run", "질주 직후"), Map.entry("fly", "비행 중"),
             Map.entry("movement_speed", "이동 속도"), Map.entry("base", "기본"), Map.entry("reload", "재장전 중"),
             Map.entry("silence", "총성"), Map.entry("explosion", "폭발"), Map.entry("explode", "폭발 사용"),
             Map.entry("radius", "반경"), Map.entry("destroy_block", "블록 파괴"), Map.entry("delay", "지연 시간(초)"),
