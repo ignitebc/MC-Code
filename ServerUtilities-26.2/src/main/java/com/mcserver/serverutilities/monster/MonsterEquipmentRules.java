@@ -15,8 +15,8 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 public final class MonsterEquipmentRules {
-    /** 방어구와 무기 각각의 지급 확률. 두 추첨은 서로 영향을 주지 않는다. */
-    private static final int EQUIPMENT_CHANCE_DENOMINATOR = 5;
+    /** 방어구와 무기 각각의 지급 확률(%). 두 추첨은 서로 영향을 주지 않는다. */
+    private static final int EQUIPMENT_CHANCE_PERCENT = 30;
 
     private static final EquipmentSlot[] ARMOR_SLOTS = {
             EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
@@ -86,7 +86,7 @@ public final class MonsterEquipmentRules {
     }
 
     private static boolean rollEquipment(Mob mob) {
-        return mob.getRandom().nextInt(EQUIPMENT_CHANCE_DENOMINATOR) == 0;
+        return mob.getRandom().nextInt(100) < EQUIPMENT_CHANCE_PERCENT;
     }
 
     // TACZ의 선택적 Mixin이 로드된 총기를 이 무기 후보군에 함께 넣는다.
