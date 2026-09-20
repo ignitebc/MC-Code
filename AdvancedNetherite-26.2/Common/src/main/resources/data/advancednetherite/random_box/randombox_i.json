@@ -4,19 +4,24 @@
   "roll_mode": "SINGLE",
   "rewards": [
     { "item": "advancednetherite:job_select_ticket", "count": 1, "chance": 5 },
-    { "item": "minecraft:totem_of_undying", "count": 3, "chance": 15 },
-    { "item": "minecraft:netherite_ingot", "count": 3, "chance": 15 },
+    { "item": "minecraft:totem_of_undying", "count": 3, "chance": 12 },
+    { "item": "minecraft:netherite_ingot", "count": 3, "chance": 12 },
 
     { "item": "minecraft:diamond_sword", "count": 1, "chance": 10 },
-    { "item": "minecraft:diamond_helmet", "count": 1, "chance": 9 },
-    { "item": "minecraft:diamond_chestplate", "count": 1, "chance": 8 },
-    { "item": "minecraft:diamond_leggings", "count": 1, "chance": 8 },
-    { "item": "minecraft:diamond_boots", "count": 1, "chance": 9 },
+    { "item": "minecraft:diamond_helmet", "count": 1, "chance": 8 },
+    { "item": "minecraft:diamond_chestplate", "count": 1, "chance": 7 },
+    { "item": "minecraft:diamond_leggings", "count": 1, "chance": 7 },
+    { "item": "minecraft:diamond_boots", "count": 1, "chance": 8 },
 
-    { "item": "minecraft:golden_apple", "count": 12, "chance": 10 },
+    { "item": "minecraft:golden_apple", "count": 12, "chance": 8 },
     { "item": "minecraft:diamond", "count": 12, "chance": 5 },
     { "item": "advancednetherite:bitcoin", "count": 20, "chance": 3 },
     { "item": "advancednetherite:bitcoin", "count": 30, "chance": 2 },
-    { "item": "advancednetherite:bitcoin", "count": 50, "chance": 1 }
+    { "item": "advancednetherite:bitcoin", "count": 50, "chance": 1 },
+
+    { "item": "advancednetherite:experience_double_coupon", "count": 1, "chance": 5 },
+    { "item": "advancednetherite:bitcoin_double_coupon", "count": 1, "chance": 4 },
+    { "item": "advancednetherite:experience_triple_coupon", "count": 1, "chance": 2 },
+    { "item": "advancednetherite:bitcoin_triple_coupon", "count": 1, "chance": 1 }
   ]
 }

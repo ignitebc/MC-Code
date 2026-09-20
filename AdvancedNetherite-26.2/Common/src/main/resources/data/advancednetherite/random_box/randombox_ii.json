@@ -4,22 +4,27 @@
   "roll_mode": "SINGLE",
   "rewards": [
     { "item": "advancednetherite:job_select_ticket", "count": 1, "chance": 10 },
-    { "item": "minecraft:totem_of_undying", "count": 5, "chance": 10 },
-    { "item": "minecraft:netherite_ingot", "count": 10, "chance": 10 },
+    { "item": "minecraft:totem_of_undying", "count": 5, "chance": 8 },
+    { "item": "minecraft:netherite_ingot", "count": 10, "chance": 8 },
 
-    { "item": "minecraft:diamond", "count": 26, "chance": 15 },
-    { "item": "minecraft:enchanted_golden_apple", "count": 2, "chance": 12 },
-    { "item": "minecraft:enchanted_golden_apple", "count": 4, "chance": 10 },
+    { "item": "minecraft:diamond", "count": 26, "chance": 9 },
+    { "item": "minecraft:enchanted_golden_apple", "count": 2, "chance": 9 },
+    { "item": "minecraft:enchanted_golden_apple", "count": 4, "chance": 8 },
 
-    { "item": "minecraft:diamond_sword", "count": 1, "chance": 5.5 },
-    { "item": "minecraft:diamond_helmet", "count": 1, "chance": 5 },
-    { "item": "minecraft:diamond_chestplate", "count": 1, "chance": 6 },
-    { "item": "minecraft:diamond_leggings", "count": 1, "chance": 6 },
-    { "item": "minecraft:diamond_boots", "count": 1, "chance": 5 },
+    { "item": "minecraft:diamond_sword", "count": 1, "chance": 4.5 },
+    { "item": "minecraft:diamond_helmet", "count": 1, "chance": 4 },
+    { "item": "minecraft:diamond_chestplate", "count": 1, "chance": 5 },
+    { "item": "minecraft:diamond_leggings", "count": 1, "chance": 5 },
+    { "item": "minecraft:diamond_boots", "count": 1, "chance": 4 },
 
     { "item": "advancednetherite:nomal_petbox", "count": 1, "chance": 1 },
     { "item": "advancednetherite:bitcoin", "count": 70, "chance": 2 },
     { "item": "advancednetherite:bitcoin", "count": 100, "chance": 1.5 },
-    { "item": "advancednetherite:bitcoin", "count": 200, "chance": 1 }
+    { "item": "advancednetherite:bitcoin", "count": 200, "chance": 1 },
+
+    { "item": "advancednetherite:experience_double_coupon", "count": 3, "chance": 6 },
+    { "item": "advancednetherite:bitcoin_double_coupon", "count": 3, "chance": 5 },
+    { "item": "advancednetherite:experience_triple_coupon", "count": 2, "chance": 5 },
+    { "item": "advancednetherite:bitcoin_triple_coupon", "count": 2, "chance": 4 }
   ]
 }
