@@ -61,7 +61,7 @@ public final class DeathRules {
                     if (i > 0) lostItems.append(", ");
                     lostItems.append(itemNames.get(i));
                 }
-                broadcast(player, Component.empty().append(playerName(player)).append("님이 죽었습니다. ")
+                broadcast(player, Component.empty().append(playerName(player)).append("님이 죽어, ")
                         .append(lostItems).append("이(가) 사라집니다."));
             }
         }
