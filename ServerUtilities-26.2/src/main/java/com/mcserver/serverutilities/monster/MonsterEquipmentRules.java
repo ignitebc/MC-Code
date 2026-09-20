@@ -5,6 +5,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.Item;
@@ -52,20 +53,30 @@ public final class MonsterEquipmentRules {
         return mob instanceof Zombie || mob instanceof AbstractSkeleton;
     }
 
+    /**
+     * 방어구만 추첨하는 몬스터인지 확인한다. 피글린과 피글린 야수가 대상이다.
+     * <p>
+     * 피글린은 석궁 사격과 금 물물교환이, 야수는 금 도끼가 고유 행동이라 무기는 건드리지 않는다.
+     * 네더에서만 사는 몬스터이므로 오버월드 조건도 두지 않는다.
+     */
+    public static boolean isArmorOnlyMonster(Mob mob) {
+        return mob instanceof AbstractPiglin;
+    }
+
     public static void onSpawn(Entity entity) {
         if (!(entity instanceof Mob mob) || entity.level().isClientSide()) return;
-        if (!isMonster(mob) || !isOverworld(mob)) return;
+        if (!isMonster(mob)) return;
         MonsterEquipmentAccess state = (MonsterEquipmentAccess) mob;
         if (state.serverutilities$equipmentRolled()) return;
 
-        if (!isEquippableMonster(mob)) {
-            state.serverutilities$finishEquipmentRoll(false, false);
-            return;
-        }
+        // 조건에 맞지 않는 개체도 추첨을 끝낸 것으로 기록한다.
+        // 기록하지 않으면 생성 대기 표시가 남아, 네더에서 태어난 개체가 나중에 오버월드로 넘어올 때 추첨된다.
+        boolean fullyEquippable = isEquippableMonster(mob) && isOverworld(mob);
+        boolean rollsArmor = fullyEquippable || isArmorOnlyMonster(mob);
 
         // 방어구와 무기를 따로 추첨하므로 한쪽만 갖춘 개체도 나온다.
-        boolean armorEquipped = rollEquipment(mob);
-        boolean weaponEquipped = rollEquipment(mob);
+        boolean armorEquipped = rollsArmor && rollEquipment(mob);
+        boolean weaponEquipped = fullyEquippable && rollEquipment(mob);
         state.serverutilities$finishEquipmentRoll(armorEquipped, weaponEquipped);
 
         if (armorEquipped) {
@@ -103,6 +114,7 @@ public final class MonsterEquipmentRules {
             mob.setDropChance(EquipmentSlot.OFFHAND, 0.0f);
         }
         // 줍기로 지급 장비를 교체해 확정 드롭 상태가 되는 것을 방지한다.
-        if (armorEquipped || weaponEquipped) mob.setCanPickUpLoot(false);
+        // 피글린은 던져 준 금을 주워야 물물교환이 되므로 줍기를 막지 않는다.
+        if ((armorEquipped || weaponEquipped) && !isArmorOnlyMonster(mob)) mob.setCanPickUpLoot(false);
     }
 }
