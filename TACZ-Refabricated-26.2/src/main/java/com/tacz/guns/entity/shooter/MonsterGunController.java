@@ -10,6 +10,7 @@ import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
@@ -39,6 +40,16 @@ public final class MonsterGunController {
      * 발사해 총을 든 의미가 사라진다. 상한은 두지 않는다.
      */
     private static final double MINIMUM_RANGE = 12.0;
+    /**
+     * 시선과 대상 방향의 차이가 이 각도(도) 안일 때만 쏜다.
+     * <p>
+     * 탄은 대상 방향으로 곧게 나가므로, 이 검사가 없으면 등을 돌린 채로도 등 뒤로 총알이 나간다.
+     * 좌우는 총구가 대상을 향했다고 볼 만큼 좁게, 상하는 높낮이 차이를 따라가는 동안 끊기지 않게 조금 넉넉히 둔다.
+     */
+    private static final float MAX_AIM_YAW_ERROR = 20.0f;
+    private static final float MAX_AIM_PITCH_ERROR = 30.0f;
+    /** 고개를 대상 쪽으로 돌리는 속도(도/틱). 바닐라 몬스터가 대상을 볼 때 쓰는 값과 같다. */
+    private static final float AIM_TURN_SPEED = 30.0f;
     /** 거리별 피해표의 "infinite" 구간은 이 값으로 들어온다. 거리 제한이 없다는 뜻이다. */
     private static final float UNLIMITED_DISTANCE = Float.MAX_VALUE;
     private static final Identifier FOLLOW_RANGE_MODIFIER_ID =
@@ -95,6 +106,9 @@ public final class MonsterGunController {
             this.chargeProgress = 0;
             return;
         }
+        // 발사하는 틱에만 고개를 돌리면 몸이 따라오기 전에 탄이 먼저 나간다.
+        // 쏠 수 있는 동안에는 재장전·쿨타임 중에도 계속 대상을 겨누게 한다.
+        this.mob.getLookControl().setLookAt(target, AIM_TURN_SPEED, AIM_TURN_SPEED);
         // 몬스터는 탄약 아이템 없이 장전하지만, 장전 시간은 플레이어와 똑같이 기다린다.
         if (operator.getDataHolder().reloadStateType.isReloading()) {
             this.chargeProgress = 0;
@@ -116,7 +130,7 @@ public final class MonsterGunController {
         double dy = target.getY(0.5) - this.mob.getEyeY();
         float yaw = (float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0f;
         float pitch = (float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz)));
-        this.mob.getLookControl().setLookAt(target, 30.0f, 30.0f);
+        if (!isAimedAt(yaw, pitch)) return;
         ShootResult result = operator.shoot(() -> pitch, () -> yaw,
                 System.currentTimeMillis() - operator.getDataHolder().baseTimestamp, this.chargeProgress);
         if (result == ShootResult.NEED_BOLT) operator.bolt();
@@ -125,6 +139,19 @@ public final class MonsterGunController {
             this.chargeProgress = charge.getChargeType() == ChargeType.DELAY ? 0
                     : Math.max(0, this.chargeProgress - charge.getDecreaseOnFire());
         }
+    }
+
+    /**
+     * 몬스터의 시선이 대상 방향을 향했는지. 도망치거나 돌아서 가느라 등을 보인 동안에는 쏘지 않는다.
+     * <p>
+     * 엔더 드래곤은 시선 제어를 쓰지 않아 머리 방향이 대상을 따라가지 않으므로 검사하지 않는다.
+     */
+    private boolean isAimedAt(float targetYaw, float targetPitch) {
+        if (this.mob instanceof EnderDragon) {
+            return true;
+        }
+        return Mth.degreesDifferenceAbs(this.mob.getYHeadRot(), targetYaw) <= MAX_AIM_YAW_ERROR
+                && Mth.degreesDifferenceAbs(this.mob.getXRot(), targetPitch) <= MAX_AIM_PITCH_ERROR;
     }
 
     /**
