@@ -14,8 +14,6 @@ import com.tacz.guns.config.client.RenderConfig;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.util.AttachmentDataUtils;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -38,9 +36,6 @@ public class GunHudOverlay {
             Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "textures/hud/fire_mode_auto.png");
     private static final Identifier FIRE_MODE_BURST =
             Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "textures/hud/fire_mode_burst.png");
-
-    /** 版本串每次都拼是浪费，缓存一次即可。 */
-    private static String cachedVersionText = null;
 
     private static final DecimalFormat CURRENT_AMMO_FORMAT = new DecimalFormat("000");
     private static final DecimalFormat CURRENT_AMMO_FORMAT_PERCENT = new DecimalFormat("000%");
@@ -139,13 +134,6 @@ public class GunHudOverlay {
                 (int) ((height - 43) / 0.8f), inventoryAmmoCountColor, false);
         poseStack.popMatrix();
 
-        // 版本信息 (0.5 倍字号)
-        poseStack.pushMatrix();
-        poseStack.scale(0.5f, 0.5f);
-        graphics.text(font, versionText(),
-                (int) ((width - 70) / 0.5f), (int) ((height - 29f) / 0.5f), 0xFFAAAAAA, false);
-        poseStack.popMatrix();
-
         // 枪械图标。弹尽/过热时若有专用空仓图标就换图, 否则染红。
         if (display != null) {
             Identifier hudTexture = display.getHUDTexture();
@@ -175,18 +163,6 @@ public class GunHudOverlay {
         graphics.blit(RenderPipelines.GUI_TEXTURED, fireModeTexture,
                 (int) (width - 68.5 + font.width(currentAmmoCountText) * 1.5), height - 38,
                 0.0F, 0.0F, 10, 10, 10, 10);
-    }
-
-    /** 版本信息文本，格式与上游一致：{@code <MC版本>-<模组版本>}。 */
-    private static String versionText() {
-        if (cachedVersionText == null) {
-            String mcVersion = SharedConstants.getCurrentVersion().name();
-            String modVersion = FabricLoader.getInstance().getModContainer(GunMod.MOD_ID)
-                    .map(c -> c.getMetadata().getVersion().getFriendlyString())
-                    .orElse("unknown");
-            cachedVersionText = mcVersion + "-" + modVersion;
-        }
-        return cachedVersionText;
     }
 
     private static void handleCacheCount(LocalPlayer player, ItemStack stack, GunData gunData, IGun iGun, boolean useInventoryAmmo) {
