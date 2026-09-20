@@ -70,6 +70,10 @@ public class CommonGunIndex {
         if (readInaccuracy == null || readInaccuracy.isEmpty()) {
             data.setInaccuracy(defaultInaccuracy);
         } else {
+            // run / fly 是后加的状态，旧枪包里没有。缺省时按该枪自己的 stand 推算，而不是套用固定默认值
+            float stand = readInaccuracy.getOrDefault(InaccuracyType.STAND, defaultInaccuracy.get(InaccuracyType.STAND));
+            readInaccuracy.putIfAbsent(InaccuracyType.RUN, stand * InaccuracyType.RUN_STAND_RATIO);
+            readInaccuracy.putIfAbsent(InaccuracyType.FLY, stand * InaccuracyType.FLY_STAND_RATIO);
             defaultInaccuracy.forEach(readInaccuracy::putIfAbsent);
         }
     }

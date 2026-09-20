@@ -82,6 +82,10 @@ public class ShooterDataHolder {
     public float sprintTimeS = 0;
     public long sprintTimestamp = -1;
     /**
+     * 最近一次持枪疾跑的时间戳，用于判定“疾跑后立即射击”的散布惩罚，-1 表示还没有疾跑过
+     */
+    public long lastSprintTimestamp = -1;
+    /**
      * 用来记录子弹击退能力，负数表示使用原版击退
      */
     public double knockbackStrength = -1;
@@ -118,6 +122,7 @@ public class ShooterDataHolder {
         reloadStateType = ReloadState.StateType.NOT_RELOADING;
         sprintTimestamp = -1;
         sprintTimeS = 0;
+        lastSprintTimestamp = -1;
         boltTimestamp = -1;
         isBolting = false;
         shootCount = 0;
