@@ -2,6 +2,7 @@ package com.daqem.jobsplus.client;
 
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.event.EventKeyPressed;
+import com.daqem.jobsplus.client.gunguide.TaczSmithTableLink;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
@@ -15,6 +16,7 @@ public class JobsPlusClient
     public static void init()
     {
         registerEvents();
+        TaczSmithTableLink.register();
     }
 
     private static void registerEvents()
