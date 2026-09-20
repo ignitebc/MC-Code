@@ -5,9 +5,7 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
 import com.tacz.guns.client.input.RefitKey;
-import com.tacz.guns.client.resource.ClientAssetsManager;
 import com.tacz.guns.client.resource.GunDisplayInstance;
-import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.client.resource.pojo.display.gun.AmmoCountStyle;
 import com.tacz.guns.client.resource.pojo.display.gun.DamageStyle;
 import com.tacz.guns.config.sync.SyncConfig;
@@ -59,7 +57,6 @@ public class ClientGunTooltip implements ClientTooltipComponent {
     private MutableComponent weight;
     private MutableComponent tips;
     private MutableComponent levelInfo;
-    private @Nullable MutableComponent packInfo;
 
     private int maxWidth;
 
@@ -90,9 +87,6 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             height += 34;
         }
         if (shouldShow(GunTooltipPart.UPGRADES_TIP)) {
-            height += 14;
-        }
-        if (shouldShow(GunTooltipPart.PACK_INFO)) {
             height += 14;
         }
         return height;
@@ -219,16 +213,6 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             this.tips = Component.translatable("tooltip.tacz.gun.tips", keyName).withStyle(style -> style.withColor(0xFFFF55)).withStyle(style -> style.withItalic(true));
             this.maxWidth = Math.max(font.width(this.tips), this.maxWidth);
         }
-
-
-        if (shouldShow(GunTooltipPart.PACK_INFO)) {
-            Identifier gunId = iGun.getGunId(gun);
-            PackInfo packInfoObject = ClientAssetsManager.INSTANCE.getPackInfo(gunId);
-            if (packInfoObject != null) {
-                packInfo = Component.translatable(packInfoObject.getName()).withStyle(style -> style.withColor(0x5555FF)).withStyle(style -> style.withItalic(true));
-                this.maxWidth = Math.max(font.width(this.packInfo), this.maxWidth);
-            }
-        }
     }
 
     @Override
@@ -298,15 +282,6 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             // Z 键说明
             graphics.text(font, this.tips, pX, yOffset, 0xFFffffff);
             yOffset += 10;
-        }
-
-
-        if (shouldShow(GunTooltipPart.PACK_INFO)) {
-            // 枪包名
-            if (packInfo != null) {
-                yOffset += 4;
-                graphics.text(font, this.packInfo, pX, yOffset, 0xFFffffff);
-            }
         }
     }
 

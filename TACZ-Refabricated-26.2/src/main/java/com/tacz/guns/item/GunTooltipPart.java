@@ -10,8 +10,7 @@ public enum GunTooltipPart {
     AMMO_INFO,
     BASE_INFO,
     EXTRA_DAMAGE_INFO,
-    UPGRADES_TIP,
-    PACK_INFO;
+    UPGRADES_TIP;
 
     private final int mask = 1 << this.ordinal();
 

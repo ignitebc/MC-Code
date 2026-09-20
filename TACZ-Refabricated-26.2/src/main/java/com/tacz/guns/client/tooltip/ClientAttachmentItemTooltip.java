@@ -10,8 +10,6 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.builder.AttachmentItemBuilder;
 import com.tacz.guns.api.item.builder.GunItemBuilder;
-import com.tacz.guns.client.resource.ClientAssetsManager;
-import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.inventory.tooltip.AttachmentItemTooltip;
 import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
 import net.minecraft.client.Minecraft;
@@ -39,7 +37,6 @@ public class ClientAttachmentItemTooltip implements ClientTooltipComponent {
     private final List<Component> components = Lists.newArrayList();
     private final MutableComponent tips = Component.translatable("tooltip.tacz.attachment.yaw.shift");
     private final MutableComponent support = Component.translatable("tooltip.tacz.attachment.yaw.support");
-    private @Nullable MutableComponent packInfo;
     private List<ItemStack> showGuns = Lists.newArrayList();
     private ItemStack attachment;
 
@@ -48,14 +45,6 @@ public class ClientAttachmentItemTooltip implements ClientTooltipComponent {
         this.attachment = tooltip.getAttachmentItem();
         this.addText(tooltip.getType());
         this.getShowGuns();
-        this.addPackInfo();
-    }
-
-    private void addPackInfo() {
-        PackInfo packInfoObject = ClientAssetsManager.INSTANCE.getPackInfo(attachmentId);
-        if (packInfoObject != null) {
-            packInfo = Component.translatable(packInfoObject.getName()).withStyle(style -> style.withColor(0x5555FF)).withStyle(style -> style.withItalic(true));
-        }
     }
 
     private static List<ItemStack> getAllAllowGuns(List<ItemStack> output, Identifier attachmentId) {
@@ -76,17 +65,14 @@ public class ClientAttachmentItemTooltip implements ClientTooltipComponent {
     @Override
     public int getHeight(Font font) {
         if (!isShiftDown()) {
-            return components.size() * 10 + 28;
+            return components.size() * 10 + 16;
         }
-        return (showGuns.size() - 1) / 16 * 18 + 50 + components.size() * 10;
+        return (showGuns.size() - 1) / 16 * 18 + 36 + components.size() * 10;
     }
 
     @Override
     public int getWidth(Font font) {
         int[] width = new int[]{0};
-        if (packInfo != null) {
-            width[0] = Math.max(width[0], font.width(packInfo) + 4);
-        }
         components.forEach(c -> width[0] = Math.max(width[0], font.width(c)));
         if (!isShiftDown()) {
             return Math.max(width[0], font.width(tips) + 4);
@@ -108,13 +94,6 @@ public class ClientAttachmentItemTooltip implements ClientTooltipComponent {
         }
         if (!isShiftDown()) {
             graphics.text(font, tips, pX, pY + 5 + this.components.size() * 10, 0xFF9e9e9e);
-            yOffset += 10;
-        } else {
-            yOffset += (showGuns.size() - 1) / 16 * 18 + 32;
-        }
-        // 枪包名
-        if (packInfo != null) {
-            graphics.text(font, this.packInfo, pX, yOffset + 8, 0xFFffffff);
         }
     }
 

@@ -2,15 +2,12 @@ package com.tacz.guns.client.tooltip;
 
 import com.google.common.collect.Lists;
 import com.tacz.guns.api.TimelessAPI;
-import com.tacz.guns.client.resource.ClientAssetsManager;
-import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.inventory.tooltip.BlockItemTooltip;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,33 +17,20 @@ import java.util.List;
 public class ClientBlockItemTooltip implements ClientTooltipComponent {
     private final Identifier blockId;
     private final List<Component> components = Lists.newArrayList();
-    private @Nullable MutableComponent packInfo;
 
     public ClientBlockItemTooltip(BlockItemTooltip tooltip) {
         this.blockId = tooltip.getBlockId();
         this.addText();
-        this.addPackInfo();
     }
-
-    private void addPackInfo() {
-        PackInfo packInfoObject = ClientAssetsManager.INSTANCE.getPackInfo(blockId);
-        if (packInfoObject != null) {
-            packInfo = Component.translatable(packInfoObject.getName()).withStyle(style -> style.withColor(0x5555FF)).withStyle(style -> style.withItalic(true));
-        }
-    }
-
 
     @Override
     public int getHeight(Font font) {
-        return components.size() * 10 + (packInfo != null ? 16 : 0);
+        return components.size() * 10;
     }
 
     @Override
     public int getWidth(Font font) {
         int[] width = new int[]{0};
-        if (packInfo != null) {
-            width[0] = Math.max(width[0], font.width(packInfo) + 4);
-        }
         components.forEach(c -> width[0] = Math.max(width[0], font.width(c)));
         return width[0];
     }
@@ -57,10 +41,6 @@ public class ClientBlockItemTooltip implements ClientTooltipComponent {
         for (Component component : this.components) {
             graphics.text(font, component, pX, yOffset, 0xFFffaa00);
             yOffset += 10;
-        }
-        // 枪包名
-        if (packInfo != null) {
-            graphics.text(font, this.packInfo, pX, yOffset + 6, 0xFFffffff);
         }
     }
 

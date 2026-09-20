@@ -5,16 +5,13 @@ import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
 import com.tacz.guns.api.item.nbt.AmmoItemDataAccessor;
 import com.tacz.guns.client.renderer.item.AmmoItemRenderer;
-import com.tacz.guns.client.resource.ClientAssetsManager;
 import com.tacz.guns.client.resource.index.ClientAmmoIndex;
-import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.resource.index.CommonAmmoIndex;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import cn.sh1rocu.tacz.compat.fabric.BuiltinItemRendererRegistry;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -139,11 +136,5 @@ public class AmmoItem extends Item implements AmmoItemDataAccessor, IItem {
                 adder.accept(Component.translatable(tooltipKey).withStyle(style -> style.withColor(0xAAAAAA)));
             }
         });
-
-        PackInfo packInfoObject = ClientAssetsManager.INSTANCE.getPackInfo(ammoId);
-        if (packInfoObject != null) {
-            MutableComponent component = Component.translatable(packInfoObject.getName()).withStyle(style -> style.withColor(0x5555FF)).withStyle(style -> style.withItalic(true));
-            adder.accept(component);
-        }
     }
 }
