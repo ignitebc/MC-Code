@@ -16,12 +16,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /** Read-only optional integration: JobsPlus still loads when TACZ is absent. */
 public final class TaczCatalog {
-    private static final List<String> CATEGORIES = List.of("권총", "기관단총", "돌격소총", "산탄총", "저격소총",
+    private static final List<String> CATEGORIES = List.of("권총", "기관단총", "돌격소총", "지정사수소총", "산탄총", "저격소총",
             "기관총", "발사기", "기타 총기", "탄약", "조준경", "소음기", "총구", "손잡이", "개머리판",
             "레이저", "탄창 · 특수탄", "기타 파츠");
+    private static final Set<String> DESIGNATED_MARKSMAN_RIFLES = Set.of(
+            "tacz:sks_tactical", "tacz:mk14", "tacz:slr", "tacz:mini14", "tacz:mk12", "tacz:vss", "tacz:dragunov");
     public enum Kind {
         GUN("총기", "Gun", "IGun", "getGunId"),
         AMMO("탄약", "Ammo", "IAmmo", "getAmmoId"),
@@ -86,7 +89,7 @@ public final class TaczCatalog {
                 List<Link> links = new ArrayList<>();
                 String category = "탄약";
                 if (kind == Kind.GUN) {
-                    category = gunCategory((String) call(common.get(), "getType"));
+                    category = gunCategory(id, (String) call(common.get(), "getType"));
                     Object data = call(common.get(), "getGunData");
                     gunData.put(key, data);
                     description.add("기본 장탄수: " + call(data, "getAmmoAmount"));
@@ -206,7 +209,11 @@ public final class TaczCatalog {
         return kind.name() + ":" + id;
     }
 
-    private static String gunCategory(String type) {
+    private static String gunCategory(Identifier id, String type) {
+        // TACZ 의 type 에는 지정사수소총이 없어 rifle 로 들어온다. type 을 바꾸면 TACZ 제작대 탭에서 빠지므로 도감에서만 가른다
+        if (DESIGNATED_MARKSMAN_RIFLES.contains(id.toString())) {
+            return "지정사수소총";
+        }
         return switch (type.toLowerCase(Locale.ROOT)) {
             case "pistol" -> "권총";
             case "smg" -> "기관단총";
