@@ -1,26 +1,26 @@
 {
   "ammo": "tacz:12g",
-  "rpm": 300,
+  "rpm": 480,
   "bullet": {
     "life": 0.6,
     "bullet_amount": 1,
-    "damage": 5.6,
+    "damage": 4.2,
     "tracer_count_interval": 0,
     "extra_damage": {
-      "armor_ignore": 0.3,
+      "armor_ignore": 0.25,
       "head_shot_multiplier": 1.5,
       "damage_adjust": [
         {
-          "distance": 40,
-          "damage": 5.6
+          "distance": 30,
+          "damage": 4.2
         },
         {
-          "distance": 80,
-          "damage": 4.59
+          "distance": 60,
+          "damage": 3.44
         },
         {
           "distance": "infinite",
-          "damage": 3.47
+          "damage": 2.6
         }
       ]
     },
@@ -31,7 +31,7 @@
     "ignite": false,
     "pierce": 2
   },
-  "ammo_amount": 5,
+  "ammo_amount": 30,
   "bolt": "open_bolt",
   "reload": {
     "type": "magazine",
@@ -46,9 +46,9 @@
   },
   "draw_time": 0.55,
   "put_away_time": 0.6,
-  "aim_time": 0.17,
+  "aim_time": 0.19,
   "sprint_time": 0.21,
-  "weight": 4.2,
+  "weight": 4.6,
   "movement_speed": {
     "base": 0.0,
     "aim": -0.2,
@@ -56,36 +56,36 @@
   },
   "crawl_recoil_multiplier": 0.5,
   "fire_mode": [
+    "auto",
+    "burst",
     "semi"
   ],
   "allow_attachment_types": [
     "scope",
     "grip",
-    "muzzle",
-    "extended_mag",
-    "laser"
+    "muzzle"
   ],
   "recoil": {
     "pitch": [
       {
         "time": 0,
         "value": [
-          1.3,
-          1.3
+          1.625,
+          1.625
         ]
       },
       {
         "time": 0.125,
         "value": [
-          1.3,
-          1.3
+          1.625,
+          1.625
         ]
       },
       {
         "time": 0.4,
         "value": [
-          -1.3,
-          -1.3
+          -1.625,
+          -1.625
         ]
       },
       {
@@ -100,22 +100,22 @@
       {
         "time": 0,
         "value": [
-          -1.625,
-          1.625
+          -1.95,
+          1.95
         ]
       },
       {
         "time": 0.1,
         "value": [
-          -1.625,
-          1.625
+          -1.95,
+          1.95
         ]
       },
       {
         "time": 0.2,
         "value": [
-          0.4875,
-          0.4875
+          0.585,
+          0.585
         ]
       },
       {
@@ -132,7 +132,7 @@
     "move": 2.375,
     "sneak": 2.0,
     "lie": 2.0,
-    "aim": 0.25,
+    "aim": 0.3,
     "run": 4.5,
     "fly": 9.0
   },
@@ -148,9 +148,10 @@
       "prep": 0.1
     }
   },
-  "extended_mag_ammo_amount": [
-    10,
-    15,
-    20
-  ]
+  "burst_data": {
+    "continuous_shoot": false,
+    "count": 3,
+    "bpm": 480,
+    "min_interval": 0.55
+  }
 }
