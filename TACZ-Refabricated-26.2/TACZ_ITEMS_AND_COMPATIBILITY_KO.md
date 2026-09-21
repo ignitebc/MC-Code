@@ -99,7 +99,6 @@
 | [P320](#gun-p320) | `tacz:p320` | [.45 ACP 탄약](#ammo-45acp) | 12 | 단발 | 단거리 보조 사격 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/p320.json) |
 | [.357 Rhino Revolver](#gun-rhino357) | `tacz:rhino357` | [.357 매그넘 탄약](#ammo-357mag) | 6 | 단발 | 단거리 보조 사격 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/rhino357.json) |
 | [Taurus "Raging Hunter" Hand Cannon](#gun-taurus500) | `tacz:taurus500` | [.500 매그넘](#ammo-500mag) | 5 | 단발 | 단거리 보조 사격 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/taurus500.json) |
-| [.22 Model 943 Revolver](#gun-taurus943) | `tacz:taurus943` | [.22 윈체스터 매그넘](#ammo-22wmr) | 8 | 단발 | 단거리 보조 사격 | 기본 레시피 파일 없음 |
 | [Timeless .50 Z-Type](#gun-timeless50) | `tacz:timeless50` | [.50 AE 탄약](#ammo-50ae) | 8 | 단발 | 단거리 보조 사격 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/timeless50.json) |
 
 ### 소총 — 17종
@@ -180,7 +179,6 @@
 | 한글 이름 | 탄약 ID | 사용 가능한 모든 기본 총기 | 1스택 | 철 / 금 / 다이아 상자 발수 | 제작 |
 | --- | --- | --- | --- | --- | --- |
 | <a id="ammo-12g"></a>12 게이지 산탄 | `tacz:12g` | [AA12 Shotgun](#gun-aa12), [DB-4 Ursus](#gun-db_long), [Sawed-Off](#gun-sawed_off), [M1014 Battle Shotgun](#gun-m1014), [M870](#gun-m870), [SPAS-12 Multi-purpose Shotgun](#gun-spas_12) | 36 | 108 / 216 / 324 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/12g.json) |
-| <a id="ammo-22wmr"></a>.22 윈체스터 매그넘 | `tacz:22wmr` | [.22 Model 943 Revolver](#gun-taurus943) | 64 | 192 / 384 / 576 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/22wmr.json) |
 | <a id="ammo-308"></a>.308 윈체스터 탄약 | `tacz:308` | [FN EVOLYS Machine Gun](#gun-fn_evolys), [FN FAL Battle Rifle](#gun-fn_fal), [HK G3 Battle Rifle](#gun-hk_g3), [M134 Minigun](#gun-minigun), [MK14 EBR](#gun-mk14), [SCAR-H Battle Rifle](#gun-scar_h) | 48 | 144 / 288 / 432 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/308.json) |
 | <a id="ammo-30_06"></a>.30-06 스프링필드 탄약 | `tacz:30_06` | [.30-06 Lonetrail Hand Cannon](#gun-lonetrail), [M700 Sniper Rifle](#gun-m700) | 36 | 108 / 216 / 324 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/30_06.json) |
 | <a id="ammo-338"></a>.338 라푸아 매그넘 탄약 | `tacz:338` | [Accuracy International AWM](#gun-ai_awp) | 30 | 90 / 180 / 270 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/338.json) |
@@ -1277,18 +1275,14 @@
 | 레이저 | 2 | [밀리텍 컴팩트 레이저](#attachment-laser_compact) (`laser_compact`)<br>[나이트스틱 컴팩트 레이저](#attachment-laser_nightstick) (`laser_nightstick`) |
 | 탄창·특수탄 개조 | 4 | [FMJ탄](#attachment-ammo_mod_fmj) (`ammo_mod_fmj`)<br>[고폭탄](#attachment-ammo_mod_he) (`ammo_mod_he`)<br>[할로우 포인트 탄](#attachment-ammo_mod_hp) (`ammo_mod_hp`)<br>[소이탄](#attachment-ammo_mod_i) (`ammo_mod_i`) |
 
-<a id="gun-taurus943"></a>
-### .22 Model 943 Revolver — `tacz:taurus943`
 
 | 항목 | 내용 |
 | --- | --- |
 | 분류·용도 | 권총 / 단거리 보조 사격 |
-| 사용 탄약 | [.22 윈체스터 매그넘](#ammo-22wmr) (`tacz:22wmr`) |
 | 기본 장탄수 / 확장 1·2·3단계 설정 | 8발 / 확장 탄창 슬롯 미지원 (데이터 배열: 8발 / 8발 / 8발) |
 | 발사 모드 / 장전 구조 | 단발 / 개방형(open_bolt) |
 | 기본 내장 부품 | 별도 내장 부착물 정의 없음 |
 | 제작 여부 | 기본 레시피 파일 없음 |
-| 근거 | [총기 데이터](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/data/guns/taurus943_data.json) / 부착물 허용 파일 없음 |
 
 | 장착 슬롯 | 허용 부품 수 | 장착 가능한 전체 부품 |
 | --- | --- | --- |
@@ -1580,7 +1574,6 @@ FMJ탄·고폭탄·할로우 포인트 탄·소이탄·산탄총 슬러그 탄�
 | 항목 | 관련 총기 | 설명 |
 | --- | --- | --- |
 | `tacz:muzzle_duckbill_sg` — 산탄총 덕빌 총구 부착물 | [AA12 Shotgun](#gun-aa12), [M1014 Battle Shotgun](#gun-m1014), [M870](#gun-m870), [SPAS-12 Multi-purpose Shotgun](#gun-spas_12) | 허용 태그에는 있으나 index/attachments에 아이템 정의가 없습니다. 등록된 99종과 장착 가능 목록에서 제외했습니다. |
-| 현재 외부 부착물 없음 | [M320 Grenade Launcher](#gun-m320), [M134 Minigun](#gun-minigun), [RPG-7](#gun-rpg7), [.22 Model 943 Revolver](#gun-taurus943) | 총기별 허용 파일이 없으므로 부착물 매칭 코드가 false를 반환합니다. |
 
 ### 8.3 숨김 부품과 미사용 탄약
 

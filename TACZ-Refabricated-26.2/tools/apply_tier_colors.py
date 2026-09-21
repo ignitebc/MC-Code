@@ -25,7 +25,7 @@ GUNS = {
     "C": "ak47 type_81 g36k m4a1 aug qbz_95 scar_l fn_fal slr hk_g3 m700 p90 mp5k",
     "D": "b93r deagle timeless50 db_long sawed_off springfield1873 m16a4 micro_uzi",
     "E": "lonetrail p320 cz75 m1911 deagle_golden rhino357",
-    "F": "m9a4 p18c hk_mk23 taurus943",
+    "F": "m9a4 p18c hk_mk23",
 }
 
 ATTACHMENTS = {
@@ -59,7 +59,6 @@ AMMO = {
     "C": "762x39 58x42 556x45 57x28 45_70",
     "D": "45acp 50ae 357mag",
     "E": "9mm",
-    "F": "22wmr",
 }
 UNGRADED_AMMO = "46x30 545x39 68x51fury 762x25 762x54".split()
 
