@@ -134,6 +134,12 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     @Unique
     private double arc$rawElytraCm = 0.0D;
     @Unique
+    private long arc$blockInteractionCounter = 0L;
+    @Unique
+    private int arc$automatedFishingStreak = 0;
+    @Unique
+    private long arc$lastFishingNoticeTick = Long.MIN_VALUE;
+    @Unique
     private static final String arc$BLOCK_POS_CACHE_TAG = "ArcBlockPosCacheByDimension";
     @Unique
     private static final String arc$LEGACY_BLOCK_POS_CACHE_TAG = "ArcBlockPosCache";
@@ -331,6 +337,36 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     @Override
     public MovementCreditTracker arc$getMovementCreditTracker() {
         return this.arc$movementCreditTracker;
+    }
+
+    @Override
+    public long arc$getBlockInteractionCounter() {
+        return this.arc$blockInteractionCounter;
+    }
+
+    @Override
+    public void arc$incrementBlockInteractionCounter() {
+        this.arc$blockInteractionCounter++;
+    }
+
+    @Override
+    public int arc$getAutomatedFishingStreak() {
+        return this.arc$automatedFishingStreak;
+    }
+
+    @Override
+    public void arc$setAutomatedFishingStreak(int streak) {
+        this.arc$automatedFishingStreak = Math.max(0, streak);
+    }
+
+    @Override
+    public long arc$getLastFishingNoticeTick() {
+        return this.arc$lastFishingNoticeTick;
+    }
+
+    @Override
+    public void arc$setLastFishingNoticeTick(long gameTime) {
+        this.arc$lastFishingNoticeTick = gameTime;
     }
 
     /**

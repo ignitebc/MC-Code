@@ -7,6 +7,7 @@ import com.daqem.arc.api.action.type.ActionType;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
+import dev.architectury.event.events.common.InteractionEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
@@ -17,6 +18,15 @@ import net.minecraft.world.level.block.state.BlockState;
 public class BlockEvents {
 
     public static void registerEvents() {
+
+        // 블록 우클릭 횟수를 센다. 자동 낚시 회로는 낚싯대 대신 블록이 우클릭을
+        // 대신 먹게 만드는 것이 전제라, 대기 중에 이 값이 급격히 올라간다.
+        InteractionEvent.RIGHT_CLICK_BLOCK.register((player, hand, pos, face) -> {
+            if (player instanceof ArcServerPlayer arcServerPlayer) {
+                arcServerPlayer.arc$incrementBlockInteractionCounter();
+            }
+            return EventResult.pass();
+        });
 
         BlockEvent.PLACE.register((level, pos, state, placer) -> {
             if (placer instanceof ArcServerPlayer arcServerPlayer) {

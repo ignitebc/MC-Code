@@ -44,4 +44,19 @@ public interface ArcServerPlayer extends ArcPlayer {
 
     /** 이동 보상 인정 여부를 판정하는 추적기. 제자리 왕복 악용을 막는다. */
     MovementCreditTracker arc$getMovementCreditTracker();
+
+    /** 블록을 우클릭한 누적 횟수. 자동 낚시 판정의 근거로 쓴다. */
+    long arc$getBlockInteractionCounter();
+
+    void arc$incrementBlockInteractionCounter();
+
+    /** 자동 낚시 조건에 연속으로 걸린 횟수. */
+    int arc$getAutomatedFishingStreak();
+
+    void arc$setAutomatedFishingStreak(int streak);
+
+    /** 자동 낚시 안내를 마지막으로 보낸 게임 시각. 안내 도배를 막는다. */
+    long arc$getLastFishingNoticeTick();
+
+    void arc$setLastFishingNoticeTick(long gameTime);
 }
