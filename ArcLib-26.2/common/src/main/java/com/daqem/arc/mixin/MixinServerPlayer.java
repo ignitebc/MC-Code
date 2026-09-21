@@ -15,6 +15,7 @@ import com.daqem.arc.event.triggers.StatEvents;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.networking.ClientboundSyncPlayerActionHoldersPacket;
 import com.daqem.arc.player.BlockPosCache;
+import com.daqem.arc.player.MovementCreditTracker;
 import com.daqem.arc.player.CachedBlockPos;
 import com.daqem.arc.player.PlayerActionCache;
 import com.mojang.authlib.GameProfile;
@@ -105,6 +106,33 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     public float arc$horseRidingDistance = 0;
     @Unique
     public BlockPosCache arc$blockPosCache = new BlockPosCache();
+    @Unique
+    private final MovementCreditTracker arc$movementCreditTracker = new MovementCreditTracker();
+    // 이벤트로 넘기는 값은 원본 누적기가 아니라 "인정된 이동"만 더한 누적기다.
+    @Unique
+    private double arc$creditedSwimCm = 0.0D;
+    @Unique
+    private double arc$creditedWalkCm = 0.0D;
+    @Unique
+    private double arc$creditedSprintCm = 0.0D;
+    @Unique
+    private double arc$creditedCrouchCm = 0.0D;
+    @Unique
+    private double arc$creditedRideCm = 0.0D;
+    @Unique
+    private double arc$creditedElytraCm = 0.0D;
+    @Unique
+    private double arc$rawSwimCm = 0.0D;
+    @Unique
+    private double arc$rawWalkCm = 0.0D;
+    @Unique
+    private double arc$rawSprintCm = 0.0D;
+    @Unique
+    private double arc$rawCrouchCm = 0.0D;
+    @Unique
+    private double arc$rawRideCm = 0.0D;
+    @Unique
+    private double arc$rawElytraCm = 0.0D;
     @Unique
     private static final String arc$BLOCK_POS_CACHE_TAG = "ArcBlockPosCacheByDimension";
     @Unique
@@ -301,6 +329,22 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     }
 
     @Override
+    public MovementCreditTracker arc$getMovementCreditTracker() {
+        return this.arc$movementCreditTracker;
+    }
+
+    /**
+     * 원본 누적기(cm)의 이번 틱 증가분에 인정 비율을 곱해 인정 누적기에 더하고,
+     * 이벤트로 넘길 값을 돌려준다. 인정 비율이 0 이면 누적기가 그대로 멈춘다.
+     */
+    @Unique
+    private double arc$advanceCredited(double rawAbsoluteCm, double previousRawCm,
+                                       double creditedCm, double factor) {
+        double delta = Math.max(0.0D, rawAbsoluteCm - previousRawCm);
+        return creditedCm + delta * factor;
+    }
+
+    @Override
     public double arc$nextRandomDouble() {
         return this.arc$getServerPlayer().getRandom().nextDouble();
     }
@@ -322,8 +366,14 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
 
     @Inject(at = @At("TAIL"), method = "tick()V")
     public void tick(CallbackInfo ci) {
+        // 이동 보상 인정 비율은 틱당 한 번만 계산한다. 제자리 왕복이면 0 이 나온다.
+        final double arc$creditFactor = this.arc$movementCreditTracker.creditFactor(arc$getServerPlayer());
+
         if (this.arc$isSwimming && this.isSwimming()) {
-            MovementEvents.onSwim(this, this.arc$swimmingDistanceInCm);
+            this.arc$creditedSwimCm = arc$advanceCredited(this.arc$swimmingDistanceInCm,
+                    this.arc$rawSwimCm, this.arc$creditedSwimCm, arc$creditFactor);
+            this.arc$rawSwimCm = this.arc$swimmingDistanceInCm;
+            MovementEvents.onSwim(this, (int) this.arc$creditedSwimCm);
         } else {
             if (this.arc$isSwimming) {
                 this.arc$isSwimming = false;
@@ -340,7 +390,11 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
         float distance = this.moveDist - this.arc$walkingDistance;
         if (this.arc$isWalking && isCurrentlyWalking) {
             this.arc$walkingDistance = this.moveDist;
-            MovementEvents.onWalk(this, (int) (this.arc$walkingDistance / ARC_MOVE_DIST_SCALE * 100));
+            double arc$rawWalk = this.arc$walkingDistance / ARC_MOVE_DIST_SCALE * 100;
+            this.arc$creditedWalkCm = arc$advanceCredited(arc$rawWalk, this.arc$rawWalkCm,
+                    this.arc$creditedWalkCm, arc$creditFactor);
+            this.arc$rawWalkCm = arc$rawWalk;
+            MovementEvents.onWalk(this, (int) this.arc$creditedWalkCm);
         } else {
             if (this.arc$isWalking) {
                 this.arc$isWalking = false;
@@ -353,7 +407,11 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
 
         if (this.arc$isSprinting && this.isSprinting()) {
             this.arc$sprintingDistance += distance;
-            MovementEvents.onSprint(this, (int) (this.arc$sprintingDistance / ARC_MOVE_DIST_SCALE * 100));
+            double arc$rawSprint = this.arc$sprintingDistance / ARC_MOVE_DIST_SCALE * 100;
+            this.arc$creditedSprintCm = arc$advanceCredited(arc$rawSprint, this.arc$rawSprintCm,
+                    this.arc$creditedSprintCm, arc$creditFactor);
+            this.arc$rawSprintCm = arc$rawSprint;
+            MovementEvents.onSprint(this, (int) this.arc$creditedSprintCm);
         } else {
             if (this.arc$isSprinting) {
                 this.arc$isSprinting = false;
@@ -369,7 +427,11 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
             float horseRidingDistance = horse.moveDist - this.arc$horseRidingDistance;
             if (isCurrentlyRiding) {
                 this.arc$horseRidingDistance += horseRidingDistance;
-                MovementEvents.onHorseRide(this, (int) (this.arc$horseRidingDistance / ARC_MOVE_DIST_SCALE * 100));
+                double arc$rawRide = this.arc$horseRidingDistance / ARC_MOVE_DIST_SCALE * 100;
+                this.arc$creditedRideCm = arc$advanceCredited(arc$rawRide, this.arc$rawRideCm,
+                        this.arc$creditedRideCm, arc$creditFactor);
+                this.arc$rawRideCm = arc$rawRide;
+                MovementEvents.onHorseRide(this, (int) this.arc$creditedRideCm);
             }
         } else {
             if (this.arc$isHorseRiding) {
@@ -379,6 +441,7 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
                 if (this.getRootVehicle() instanceof Horse horse && horse.isSaddled() && horse.isTamed()) {
                     this.arc$isHorseRiding = true;
                     this.arc$horseRidingDistance = 0;
+                    this.arc$rawRideCm = 0.0D;
                     horse.moveDist = 0;
                     MovementEvents.onStartHorseRiding(this);
                 }
@@ -387,7 +450,11 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
 
         if (this.arc$isCrouching && this.isCrouching()) {
             this.arc$crouchingDistance += distance;
-            MovementEvents.onCrouch(this, (int) (this.arc$crouchingDistance / ARC_MOVE_DIST_SCALE * 100));
+            double arc$rawCrouch = this.arc$crouchingDistance / ARC_MOVE_DIST_SCALE * 100;
+            this.arc$creditedCrouchCm = arc$advanceCredited(arc$rawCrouch, this.arc$rawCrouchCm,
+                    this.arc$creditedCrouchCm, arc$creditFactor);
+            this.arc$rawCrouchCm = arc$rawCrouch;
+            MovementEvents.onCrouch(this, (int) this.arc$creditedCrouchCm);
         } else {
             if (this.arc$isCrouching) {
                 this.arc$isCrouching = false;
@@ -399,7 +466,10 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
         }
 
         if (this.arc$isElytraFlying && this.isFallFlying()) {
-            MovementEvents.onElytraFly(this, (int) this.arc$elytraFlyingDistance);
+            this.arc$creditedElytraCm = arc$advanceCredited(this.arc$elytraFlyingDistance,
+                    this.arc$rawElytraCm, this.arc$creditedElytraCm, arc$creditFactor);
+            this.arc$rawElytraCm = this.arc$elytraFlyingDistance;
+            MovementEvents.onElytraFly(this, (int) this.arc$creditedElytraCm);
         } else {
             if (this.arc$isElytraFlying) {
                 this.arc$isElytraFlying = false;

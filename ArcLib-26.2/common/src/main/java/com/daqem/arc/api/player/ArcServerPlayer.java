@@ -3,6 +3,7 @@ package com.daqem.arc.api.player;
 import com.daqem.arc.api.action.holder.IActionHolder;
 import com.daqem.arc.api.condition.ICondition;
 import com.daqem.arc.player.BlockPosCache;
+import com.daqem.arc.player.MovementCreditTracker;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -40,4 +41,7 @@ public interface ArcServerPlayer extends ArcPlayer {
     void arc$syncActionHoldersWithClient();
 
     BlockPosCache arc$getBlockPosCache();
+
+    /** 이동 보상 인정 여부를 판정하는 추적기. 제자리 왕복 악용을 막는다. */
+    MovementCreditTracker arc$getMovementCreditTracker();
 }
