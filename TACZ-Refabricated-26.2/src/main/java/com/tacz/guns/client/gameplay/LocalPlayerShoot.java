@@ -35,7 +35,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 public class LocalPlayerShoot {
@@ -252,9 +254,16 @@ public class LocalPlayerShoot {
         final int maxCount = Math.min(ammoCount, fireMode == FireMode.BURST ? gunData.getBurstData().getCount() : 1);
         // 连发计数器
         AtomicInteger count = new AtomicInteger(0);
+        // 연발 작업은 스스로를 취소해야 한다. 실행 중인 Thread 는 ScheduledFuture 가 아니므로 형변환하면
+        // ClassCastException 으로 작업이 끝난다. 예약 반환값을 보관해 두고 그것을 취소한다.
+        // 지연이 0 이면 반환값을 저장하기 전에 첫 실행이 올 수 있어, 중단 요청 플래그를 함께 둔다.
+        AtomicReference<ScheduledFuture<?>> shootTask = new AtomicReference<>();
+        AtomicBoolean stopRequested = new AtomicBoolean(false);
 
-        LocalPlayerDataHolder.SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> {
-
+        ScheduledFuture<?> scheduledTask = LocalPlayerDataHolder.SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> {
+            if (stopRequested.get()) {
+                return;
+            }
             if (count.get() == 0) {
                 // 转换 isRecord 状态，允许下一个tick的开火检测。
                 data.isShootRecorded = true;
@@ -262,15 +271,13 @@ public class LocalPlayerShoot {
             //Handle Heat Data
             if (gunData.hasHeatData()) {
                 if (iGun.isOverheatLocked(mainHandItem)) {
-                    ScheduledFuture<?> future = (ScheduledFuture<?>) Thread.currentThread();
-                    future.cancel(false); // 取消当前任务
+                    cancelShootTask(shootTask, stopRequested);
                     return;
                 }
             }
             // 如果达到最大连发次数，或者玩家已经死亡，取消任务
             if (count.get() >= maxCount || player.isDeadOrDying()) {
-                ScheduledFuture<?> future = (ScheduledFuture<?>) Thread.currentThread();
-                future.cancel(false); // 取消当前任务
+                cancelShootTask(shootTask, stopRequested);
                 return;
             }
 
@@ -314,6 +321,19 @@ public class LocalPlayerShoot {
 
             count.getAndIncrement();
         }, delay, period, TimeUnit.MILLISECONDS);
+        shootTask.set(scheduledTask);
+        // 반환값을 저장하기 전에 작업이 중단을 요청했으면 여기서 취소한다
+        if (stopRequested.get()) {
+            scheduledTask.cancel(false);
+        }
+    }
+
+    private static void cancelShootTask(AtomicReference<ScheduledFuture<?>> shootTask, AtomicBoolean stopRequested) {
+        stopRequested.set(true);
+        ScheduledFuture<?> future = shootTask.get();
+        if (future != null) {
+            future.cancel(false);
+        }
     }
 
     private boolean useSilenceSound() {
