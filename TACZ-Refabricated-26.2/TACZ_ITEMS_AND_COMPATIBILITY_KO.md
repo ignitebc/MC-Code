@@ -186,18 +186,13 @@
 | <a id="ammo-40mm"></a>40mm 유탄 | `tacz:40mm` | [M320 Grenade Launcher](#gun-m320) | 6 | 18 / 36 / 54 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/40mm.json) |
 | <a id="ammo-45_70"></a>.45-70 탄약 | `tacz:45_70` | [Springfield 1873 Trapdoor Rifle](#gun-springfield1873) | 48 | 144 / 288 / 432 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/45_70.json) |
 | <a id="ammo-45acp"></a>.45 ACP 탄약 | `tacz:45acp` | [MK23 Offensive Pistol](#gun-hk_mk23), [M1911](#gun-m1911), [P320](#gun-p320), [UMP45 SMG](#gun-ump45), [Vector SMG](#gun-vector45) | 60 | 180 / 360 / 540 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/45acp.json) |
-| <a id="ammo-46x30"></a>4.6mm 철갑탄 | `tacz:46x30` | **기본 팩에 사용 총기 없음** | 60 | 180 / 360 / 540 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/46x30.json) |
 | <a id="ammo-500mag"></a>.500 매그넘 | `tacz:500mag` | [Taurus "Raging Hunter" Hand Cannon](#gun-taurus500) | 42 | 126 / 252 / 378 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/500mag.json) |
 | <a id="ammo-50ae"></a>.50 AE 탄약 | `tacz:50ae` | [Deagle 50](#gun-deagle), [Timeless .50 Z-Type](#gun-timeless50) | 48 | 144 / 288 / 432 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/50ae.json) |
 | <a id="ammo-50bmg"></a>.50 BMG 탄약 | `tacz:50bmg` | [M107 Sniper Rifle](#gun-m107), [M95 .50 Cal Anti-Materiel](#gun-m95) | 30 | 90 / 180 / 270 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/50bmg.json) |
-| <a id="ammo-545x39"></a>5.45x39mm 탄약 | `tacz:545x39` | **기본 팩에 사용 총기 없음** | 60 | 180 / 360 / 540 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/545x39.json) |
 | <a id="ammo-556x45"></a>5.56x45mm 탄약 | `tacz:556x45` | [AUG](#gun-aug), [G36K](#gun-g36k), [M416](#gun-m416), [M16A1 Service Rifle](#gun-m16a1), [M16A4 Service Rifle](#gun-m16a4), [M249 Machine Gun](#gun-m249), [M4A1 Carbine](#gun-m4a1), [SCAR-L Assault Rifle](#gun-scar_l), [SPR-15 HB "Sagittarius"](#gun-spr15hb) | 60 | 180 / 360 / 540 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/556x45.json) |
 | <a id="ammo-57x28"></a>5.7x28mm 철갑탄 | `tacz:57x28` | [P90 PDW](#gun-p90) | 60 | 180 / 360 / 540 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/57x28.json) |
 | <a id="ammo-58x42"></a>5.8mm DBP87 탄약 | `tacz:58x42` | [QBZ-191 Assault Rifle](#gun-qbz_191), [QBZ-95 "Longbow"](#gun-qbz_95) | 60 | 180 / 360 / 540 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/58x42.json) |
-| <a id="ammo-68x51fury"></a>6.8x51mm 퓨리 탄약 | `tacz:68x51fury` | **기본 팩에 사용 총기 없음** | 60 | 180 / 360 / 540 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/68x51fury.json) |
-| <a id="ammo-762x25"></a>7.62x25mm 토카레프 탄약 | `tacz:762x25` | **기본 팩에 사용 총기 없음** | 60 | 180 / 360 / 540 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/762x25.json) |
 | <a id="ammo-762x39"></a>7.62x39mm 탄약 | `tacz:762x39` | [AKM](#gun-ak47), [RPK](#gun-rpk), [SKS Tactical Rifle](#gun-sks_tactical), [Type 81-1 Service Rifle](#gun-type_81) | 60 | 180 / 360 / 540 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/762x39.json) |
-| <a id="ammo-762x54"></a>7.62x54mm 탄약 | `tacz:762x54` | **기본 팩에 사용 총기 없음** | 60 | 180 / 360 / 540 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/762x54.json) |
 | <a id="ammo-792x57"></a>8mm 마우저 탄약 | `tacz:792x57` | [Mauser Kar98k Rifle](#gun-kar98) | 36 | 108 / 216 / 324 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/792x57.json) |
 | <a id="ammo-9mm"></a>9mm 탄약 | `tacz:9mm` | [B93R](#gun-b93r), [CZ 75](#gun-cz75), [P18C](#gun-p18c), [MP5K](#gun-mp5k), [M9A4](#gun-m9a4), [Micro UZI](#gun-micro_uzi) | 60 | 180 / 360 / 540 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/9mm.json) |
 | <a id="ammo-rpg_rocket"></a>RPG-7 로켓 | `tacz:rpg_rocket` | [RPG-7](#gun-rpg7) | 6 | 18 / 36 / 54 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/ammo/rpg_rocket.json) |
@@ -1583,11 +1578,6 @@ FMJ탄·고폭탄·할로우 포인트 탄·소이탄·산탄총 슬러그 탄�
 | [PEQ-15 전술 레이저 [숨김]](#attachment-laser_peq15) | 숨김 부착물 | 일반 부착물 탭에는 표시되지 않습니다. 실제 데이터 호환 총기는 6절에 표시했습니다. |
 | [AUG 일체형 조준경 [숨김]](#attachment-scope_aug_default) | 숨김 부착물 | 일반 부착물 탭에는 표시되지 않습니다. 실제 데이터 호환 총기는 6절에 표시했습니다. 기본 내장 조준경입니다. |
 | [P90 기본 조준경 [숨김]](#attachment-sight_p90) | 숨김 부착물 | 일반 부착물 탭에는 표시되지 않습니다. 실제 데이터 호환 총기는 6절에 표시했습니다. 기본 내장 조준경입니다. |
-| [4.6mm 철갑탄](#ammo-46x30) | 기본 총기에서 미사용 | 탄약 정의는 있지만 기본 총기 54종 중 ammo 필드로 참조하는 총기가 없습니다. |
-| [5.45x39mm 탄약](#ammo-545x39) | 기본 총기에서 미사용 | 탄약 정의는 있지만 기본 총기 54종 중 ammo 필드로 참조하는 총기가 없습니다. |
-| [6.8x51mm 퓨리 탄약](#ammo-68x51fury) | 기본 총기에서 미사용 | 탄약 정의는 있지만 기본 총기 54종 중 ammo 필드로 참조하는 총기가 없습니다. |
-| [7.62x25mm 토카레프 탄약](#ammo-762x25) | 기본 총기에서 미사용 | 탄약 정의는 있지만 기본 총기 54종 중 ammo 필드로 참조하는 총기가 없습니다. |
-| [7.62x54mm 탄약](#ammo-762x54) | 기본 총기에서 미사용 | 탄약 정의는 있지만 기본 총기 54종 중 ammo 필드로 참조하는 총기가 없습니다. |
 
 ### 8.4 번역·내부 항목
 

@@ -60,7 +60,7 @@ AMMO = {
     "D": "45acp 50ae 357mag",
     "E": "9mm",
 }
-UNGRADED_AMMO = "46x30 545x39 68x51fury 762x25 762x54".split()
+UNGRADED_AMMO = []  # 사용 총기가 없던 탄약 5종을 제거해 현재는 비어 있다
 
 
 def strip_comments(text):
