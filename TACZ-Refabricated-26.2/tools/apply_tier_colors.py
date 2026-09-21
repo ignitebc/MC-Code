@@ -19,12 +19,14 @@ PACK = Path(__file__).resolve().parents[1] / "src/main/resources/assets/tacz/cus
 TIER_COLORS = {"F": "§a", "E": "§b", "D": "§9", "C": "§5", "B": "§e", "A": "§c", "S": "§6"}
 
 GUNS = {
-    "S": "m95 m107 minigun rpg7 spas_12",
-    "A": "ai_awp aa12 fn_evolys scar_h m1014 vector45 taurus500 m320",
-    "B": "spr15hb m16a1 rpk m416 ump45 qbz_191 mk14 kar98 m870 m249 sks_tactical",
-    "C": "ak47 type_81 g36k m4a1 aug qbz_95 scar_l fn_fal slr hk_g3 m700 p90 mp5k",
-    "D": "b93r deagle timeless50 db_long sawed_off springfield1873 m16a4 micro_uzi",
-    "E": "lonetrail p320 cz75 m1911 deagle_golden rhino357",
+    "S": "m95 m107 minigun rpg7 spas_12 mg3",
+    "A": "ai_awp aa12 fn_evolys scar_h m1014 vector45 taurus500 m320 groza dbs o12 rpd",
+    "B": "spr15hb m16a1 rpk m416 ump45 qbz_191 mk14 kar98 m870 m249 sks_tactical"
+         " beryl_m762 ace32 famas mk47_mutant mk12 dragunov m24 s12k",
+    "C": "ak47 type_81 g36k m4a1 aug qbz_95 scar_l fn_fal slr hk_g3 m700 p90 mp5k"
+         " k2 mini14 vss tommy_gun mp9 js9 win94",
+    "D": "b93r deagle timeless50 db_long sawed_off springfield1873 m16a4 micro_uzi skorpion",
+    "E": "lonetrail p320 cz75 m1911 deagle_golden rhino357 r1895",
     "F": "m9a4 p18c hk_mk23",
 }
 
