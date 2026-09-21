@@ -2,16 +2,27 @@
 -- 장전과 펌프 동작은 m870_gun_logic 과 같고 발사만 다르다.
 local M = {}
 
+-- 펌프질 뒤로 쏜 발수(0 또는 1). 총기 아이템에 저장하므로 재장전이나 무기 교체 뒤에도 유지된다.
+-- 잔탄 홀짝으로 추론하면 첫 발 뒤에 한 발을 채워 넣었을 때 세 발을 연달아 쏠 수 있게 된다.
+-- 스크립트 캐시(cacheScriptData)는 재장전 때 덮어써지고 무기를 꺼낼 때 지워져서 쓸 수 없다.
+local SHOTS_SINCE_PUMP = "dbs_shots_since_pump"
+
 function M.shoot(api)
     api:shootOnce(api:isShootingNeedConsumeAmmo())
-    -- 관형 탄창에 남은 탄이 홀수면 한 쌍의 첫 발을 쏜 것이므로 펌프 없이 다음 탄을 약실로 올린다.
-    -- 짝수면 둘째 발까지 쏜 것이므로 약실을 비워 둔 채 펌프 동작(tick_bolt)에 맡긴다.
-    -- 스크립트 캐시는 재장전 때 덮어써지므로 상태를 따로 두지 않고 잔탄 홀짝으로 판단한다.
-    local is_first_of_pair = api:getAmmoAmount() % 2 == 1
-    if (is_first_of_pair and not api:hasAmmoInBarrel()) then
-        if (api:removeAmmoFromMagazine(1) ~= 0) then
-            api:setAmmoInBarrel(true)
-        end
+    -- 탄을 소모하지 않는 사격(크리에이티브 등)은 약실이 그대로라 주기를 따질 필요가 없다
+    if (api:hasAmmoInBarrel()) then
+        return
+    end
+    local is_first_of_pair = api:getScriptStateInt(SHOTS_SINCE_PUMP) == 0
+    if (not is_first_of_pair) then
+        -- 둘째 발까지 쐈다. 약실을 비워 둔 채 펌프 동작(tick_bolt)에 맡긴다
+        api:setScriptStateInt(SHOTS_SINCE_PUMP, 0)
+        return
+    end
+    -- 첫 발이다. 둘째 총열의 탄을 펌프 없이 바로 쏠 수 있게 약실로 올린다
+    if (api:removeAmmoFromMagazine(1) ~= 0) then
+        api:setAmmoInBarrel(true)
+        api:setScriptStateInt(SHOTS_SINCE_PUMP, 1)
     end
 end
 
@@ -33,6 +44,7 @@ function M.tick_bolt(api)
     if (not api:hasAmmoInBarrel()) then
         if (api:removeAmmoFromMagazine(1) ~= 0) then
             api:setAmmoInBarrel(true)
+            api:setScriptStateInt(SHOTS_SINCE_PUMP, 0)
         end
     end
     return bolt_time < total_bolt_time
@@ -90,6 +102,7 @@ function M.tick_reload(api)
             if (reload_time > intro_empty_feed) then
                 api:consumeAmmoFromPlayer(1)
                 api:setAmmoInBarrel(true)
+                api:setScriptStateInt(SHOTS_SINCE_PUMP, 0)
                 reloaded_count = reloaded_count + 1
             end
         else
