@@ -1,0 +1,892 @@
+{
+ "groza": {
+  "shoot": [
+   [
+    "tacz:scar_h/scar_h_shoot",
+    0.28,
+    0.88
+   ],
+   [
+    "tacz:rpk/rpk_shoot",
+    0.14,
+    0.82
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:scar_h/scar_h_shoot_3p",
+    0.36,
+    0.9
+   ],
+   [
+    "tacz:rpk/rpk_shoot_3p",
+    0.18,
+    0.84
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:scar_h/scar_h_silence",
+    0.24,
+    0.88
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:scar_h/scar_h_silence_3p",
+    0.3,
+    0.9
+   ]
+  ]
+ },
+ "beryl_m762": {
+  "shoot": [
+   [
+    "tacz:rpk/rpk_shoot",
+    0.25,
+    0.94
+   ],
+   [
+    "tacz:scar_h/scar_h_shoot",
+    0.12,
+    0.97
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:rpk/rpk_shoot_3p",
+    0.34,
+    0.94
+   ],
+   [
+    "tacz:scar_h/scar_h_shoot_3p",
+    0.16,
+    0.96
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:rpk/rpk_silence",
+    0.22,
+    0.94
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:rpk/rpk_silence_3p",
+    0.28,
+    0.94
+   ]
+  ]
+ },
+ "ace32": {
+  "shoot": [
+   [
+    "tacz:m416/m416_shoot",
+    0.22,
+    0.88
+   ],
+   [
+    "tacz:scar_h/scar_h_shoot",
+    0.1,
+    0.98
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:m416/m416_shoot_3p",
+    0.28,
+    0.9
+   ],
+   [
+    "tacz:scar_h/scar_h_shoot_3p",
+    0.14,
+    0.98
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:m416/m416_silence",
+    0.2,
+    0.9
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:m416/m416_silence_3p",
+    0.26,
+    0.9
+   ]
+  ]
+ },
+ "famas": {
+  "shoot": [
+   [
+    "tacz:m416/m416_shoot",
+    0.24,
+    1.07
+   ],
+   [
+    "tacz:mp5k/mp5k_shoot",
+    0.12,
+    1.02
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:m416/m416_shoot_3p",
+    0.3,
+    1.05
+   ],
+   [
+    "tacz:mp5k/mp5k_shoot_3p",
+    0.15,
+    1.02
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:m416/m416_silence",
+    0.2,
+    1.06
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:m416/m416_silence_3p",
+    0.25,
+    1.04
+   ]
+  ]
+ },
+ "k2": {
+  "shoot": [
+   [
+    "tacz:m416/m416_shoot",
+    0.2,
+    0.97
+   ],
+   [
+    "tacz:aug/aug_shoot",
+    0.12,
+    1.0
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:m416/m416_shoot_3p",
+    0.27,
+    0.97
+   ],
+   [
+    "tacz:aug/aug_shoot_3p",
+    0.14,
+    1.0
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:m416/m416_silence",
+    0.18,
+    0.98
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:m416/m416_silence_3p",
+    0.24,
+    0.98
+   ]
+  ]
+ },
+ "mk47_mutant": {
+  "shoot": [
+   [
+    "tacz:ak47/ak47_shoot",
+    0.22,
+    0.88
+   ],
+   [
+    "tacz:fn_fal/fn_fal_shoot",
+    0.12,
+    0.98
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:ak47/ak47_shoot_3p",
+    0.3,
+    0.88
+   ],
+   [
+    "tacz:fn_fal/fn_fal_shoot_3p",
+    0.15,
+    0.98
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:ak47/ak47_silence",
+    0.19,
+    0.9
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:ak47/ak47_silence_3p",
+    0.25,
+    0.9
+   ]
+  ]
+ },
+ "mini14": {
+  "shoot": [
+   [
+    "tacz:m416/m416_shoot",
+    0.18,
+    1.07
+   ],
+   [
+    "tacz:sks/sks_shoot",
+    0.12,
+    1.05
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:m416/m416_shoot_3p",
+    0.24,
+    1.05
+   ],
+   [
+    "tacz:sks/sks_shoot_3p",
+    0.15,
+    1.04
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:m416/m416_silence",
+    0.18,
+    1.06
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:m416/m416_silence_3p",
+    0.22,
+    1.05
+   ]
+  ]
+ },
+ "mk12": {
+  "shoot": [
+   [
+    "tacz:sks/sks_shoot",
+    0.2,
+    1.04
+   ],
+   [
+    "tacz:m416/m416_shoot",
+    0.1,
+    0.95
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:sks/sks_shoot_3p",
+    0.27,
+    1.03
+   ],
+   [
+    "tacz:m416/m416_shoot_3p",
+    0.12,
+    0.95
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:sks/sks_silence",
+    0.2,
+    1.03
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:sks/sks_silence_3p",
+    0.25,
+    1.03
+   ]
+  ]
+ },
+ "vss": {
+  "shoot": [
+   [
+    "tacz:m416/m416_silence",
+    0.25,
+    0.82
+   ],
+   [
+    "tacz:sks/sks_silence",
+    0.13,
+    0.9
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:m416/m416_silence_3p",
+    0.3,
+    0.84
+   ],
+   [
+    "tacz:sks/sks_silence_3p",
+    0.16,
+    0.9
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:m416/m416_silence",
+    0.22,
+    0.8
+   ],
+   [
+    "tacz:sks/sks_silence",
+    0.1,
+    0.88
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:m416/m416_silence_3p",
+    0.27,
+    0.82
+   ],
+   [
+    "tacz:sks/sks_silence_3p",
+    0.12,
+    0.88
+   ]
+  ]
+ },
+ "dragunov": {
+  "shoot": [
+   [
+    "tacz:sks/sks_shoot",
+    0.24,
+    0.86
+   ],
+   [
+    "tacz:m700/m700_shoot",
+    0.12,
+    1.02
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:sks/sks_shoot_3p",
+    0.31,
+    0.86
+   ],
+   [
+    "tacz:m700/m700_shoot_3p",
+    0.15,
+    1.0
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:sks/sks_silence",
+    0.21,
+    0.88
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:sks/sks_silence_3p",
+    0.27,
+    0.88
+   ]
+  ]
+ },
+ "tommy_gun": {
+  "shoot": [
+   [
+    "tacz:ak47/ak47_shoot",
+    0.11,
+    0.78
+   ],
+   [
+    "tacz:p320/p320_shoot",
+    0.2,
+    0.9
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:ak47/ak47_shoot_3p",
+    0.15,
+    0.8
+   ],
+   [
+    "tacz:p320/p320_shoot_3p",
+    0.25,
+    0.9
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:p320/p320_silence",
+    0.2,
+    0.9
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:p320/p320_silence_3p",
+    0.25,
+    0.9
+   ]
+  ]
+ },
+ "mp9": {
+  "shoot": [
+   [
+    "tacz:b93r/b93r_shoot",
+    0.24,
+    1.08
+   ],
+   [
+    "tacz:p90/p90_shoot",
+    0.11,
+    1.12
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:b93r/b93r_shoot_3p",
+    0.3,
+    1.07
+   ],
+   [
+    "tacz:p90/p90_shoot_3p",
+    0.14,
+    1.1
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:b93r/b93r_silence",
+    0.21,
+    1.08
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:b93r/b93r_silence_3p",
+    0.25,
+    1.07
+   ]
+  ]
+ },
+ "js9": {
+  "shoot": [
+   [
+    "tacz:mp5k/mp5k_shoot",
+    0.2,
+    0.96
+   ],
+   [
+    "tacz:m416/m416_shoot",
+    0.1,
+    1.05
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:mp5k/mp5k_shoot_3p",
+    0.26,
+    0.96
+   ],
+   [
+    "tacz:m416/m416_shoot_3p",
+    0.12,
+    1.04
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:mp5k/mp5k_silence",
+    0.19,
+    0.97
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:mp5k/mp5k_silence_3p",
+    0.23,
+    0.97
+   ]
+  ]
+ },
+ "win94": {
+  "shoot": [
+   [
+    "tacz:m700/m700_shoot",
+    0.25,
+    0.88
+   ],
+   [
+    "tacz:deagle/deagle_shoot",
+    0.1,
+    0.78
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:m700/m700_shoot_3p",
+    0.32,
+    0.88
+   ],
+   [
+    "tacz:deagle/deagle_shoot_3p",
+    0.13,
+    0.8
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:m700/m700_silence",
+    0.2,
+    0.88
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:m700/m700_silence_3p",
+    0.25,
+    0.88
+   ]
+  ]
+ },
+ "m24": {
+  "shoot": [
+   [
+    "tacz:ai_awp/awp_shoot",
+    0.24,
+    0.93
+   ],
+   [
+    "tacz:m95/m95_shoot",
+    0.08,
+    1.05
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:ai_awp/awp_shoot_3p",
+    0.31,
+    0.92
+   ],
+   [
+    "tacz:m95/m95_shoot_3p",
+    0.1,
+    1.04
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:ai_awp/awp_silence",
+    0.22,
+    0.94
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:ai_awp/awp_silence_3p",
+    0.27,
+    0.93
+   ]
+  ]
+ },
+ "s12k": {
+  "shoot": [
+   [
+    "tacz:aa12/aa12_shoot",
+    0.24,
+    1.0
+   ],
+   [
+    "tacz:m870/m870_shoot",
+    0.16,
+    1.05
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:aa12/aa12_shoot_3p",
+    0.3,
+    0.99
+   ],
+   [
+    "tacz:m870/m870_shoot_3p",
+    0.2,
+    1.03
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:aa12/aa12_silence",
+    0.22,
+    1.0
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:aa12/aa12_silence_3p",
+    0.27,
+    1.0
+   ]
+  ]
+ },
+ "dbs": {
+  "shoot": [
+   [
+    "tacz:spas_12/spas12_shoot",
+    0.3,
+    0.92
+   ],
+   [
+    "tacz:m1014/m1014_shoot",
+    0.18,
+    0.88
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:m870/m870_shoot_3p",
+    0.34,
+    0.91
+   ],
+   [
+    "tacz:m1014/m1014_shoot_3p",
+    0.2,
+    0.88
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:m870/m870_silence",
+    0.24,
+    0.9
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:m870/m870_silence_3p",
+    0.29,
+    0.9
+   ]
+  ]
+ },
+ "o12": {
+  "shoot": [
+   [
+    "tacz:aa12/aa12_shoot",
+    0.28,
+    0.94
+   ],
+   [
+    "tacz:m1014/m1014_shoot",
+    0.12,
+    1.05
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:aa12/aa12_shoot_3p",
+    0.34,
+    0.94
+   ],
+   [
+    "tacz:m1014/m1014_shoot_3p",
+    0.15,
+    1.04
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:aa12/aa12_silence",
+    0.22,
+    0.96
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:aa12/aa12_silence_3p",
+    0.27,
+    0.96
+   ]
+  ]
+ },
+ "mg3": {
+  "shoot": [
+   [
+    "tacz:m107/m107_shoot",
+    0.13,
+    0.82
+   ],
+   [
+    "tacz:rpk/rpk_shoot",
+    0.22,
+    0.88
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:m107/m107_shoot_3p",
+    0.17,
+    0.82
+   ],
+   [
+    "tacz:rpk/rpk_shoot_3p",
+    0.29,
+    0.88
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:rpk/rpk_silence",
+    0.22,
+    0.88
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:rpk/rpk_silence_3p",
+    0.27,
+    0.88
+   ]
+  ]
+ },
+ "rpd": {
+  "shoot": [
+   [
+    "tacz:m249/m249_shoot",
+    0.2,
+    0.9
+   ],
+   [
+    "tacz:ak47/ak47_shoot",
+    0.14,
+    0.86
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:m249/m249_shoot_3p",
+    0.26,
+    0.9
+   ],
+   [
+    "tacz:ak47/ak47_shoot_3p",
+    0.18,
+    0.86
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:rpk/rpk_silence",
+    0.21,
+    0.9
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:rpk/rpk_silence_3p",
+    0.26,
+    0.9
+   ]
+  ]
+ },
+ "skorpion": {
+  "shoot": [
+   [
+    "tacz:mp5k/mp5k_shoot",
+    0.22,
+    1.1
+   ],
+   [
+    "tacz:p90/p90_shoot",
+    0.1,
+    1.08
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:mp5k/mp5k_shoot_3p",
+    0.28,
+    1.08
+   ],
+   [
+    "tacz:p90/p90_shoot_3p",
+    0.13,
+    1.08
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:mp5k/mp5k_silence",
+    0.2,
+    1.08
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:mp5k/mp5k_silence_3p",
+    0.24,
+    1.08
+   ]
+  ]
+ },
+ "r1895": {
+  "shoot": [
+   [
+    "tacz:deagle/deagle_shoot",
+    0.24,
+    0.78
+   ],
+   [
+    "tacz:m700/m700_shoot",
+    0.08,
+    1.05
+   ]
+  ],
+  "shoot_3p": [
+   [
+    "tacz:deagle/deagle_shoot_3p",
+    0.31,
+    0.78
+   ],
+   [
+    "tacz:m700/m700_shoot_3p",
+    0.1,
+    1.04
+   ]
+  ],
+  "silence": [
+   [
+    "tacz:deagle/deagle_silence",
+    0.2,
+    0.82
+   ]
+  ],
+  "silence_3p": [
+   [
+    "tacz:deagle/deagle_silence_3p",
+    0.25,
+    0.82
+   ]
+  ]
+ }
+}
