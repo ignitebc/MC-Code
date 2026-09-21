@@ -74,6 +74,16 @@ local function getReloadTimingFromParam(param)
     return intro_empty, intro, loop, ending, intro_empty_feed, loop_feed
 end
 
+-- 한 발을 플레이어에게서 가져온다. 실제로 가져왔을 때만 true 를 돌려준다.
+-- consumeAmmoFromPlayer 는 요청량이 아니라 실제로 가져온 수량을 돌려주므로, 반환값을 보지 않고 급탄하면
+-- 예비탄이 없어도 총기 안의 탄이 늘어난다. 크리에이티브처럼 탄을 소모하지 않는 경우는 소모 없이 급탄한다.
+local function take_one_ammo(api)
+    if (not api:isReloadingNeedConsumeAmmo()) then
+        return true
+    end
+    return api:consumeAmmoFromPlayer(1) == 1
+end
+
 function M.tick_reload(api)
     local param = api:getScriptParams();
     local intro_empty, intro, loop, ending, intro_empty_feed, loop_feed = getReloadTimingFromParam(param)
@@ -92,25 +102,31 @@ function M.tick_reload(api)
             return TACTICAL_RELOAD_FINISHING, ending - int_time
         end
         return EMPTY_RELOAD_FINISHING, ending - int_time
-    elseif (not api:hasAmmoToConsume()) then
-        interrupted_time = api:getReloadTime()
+    end
+    -- 예비탄이 떨어지면 이번 호출에서는 급탄하지 않고 마무리 단계로 넘긴다
+    local has_ammo = api:hasAmmoToConsume()
+    if (not has_ammo) then
+        interrupted_time = reload_time
     end
     -- 빈 총이면 첫 탄을 약실에 먼저 넣는다
     local reloaded_count = cache.reloaded_count;
-    if (reloaded_count == 0) then
+    if (reloaded_count == 0 and has_ammo) then
         if (not cache.is_tactical) then
             if (reload_time > intro_empty_feed) then
-                api:consumeAmmoFromPlayer(1)
-                api:setAmmoInBarrel(true)
-                api:setScriptStateInt(SHOTS_SINCE_PUMP, 0)
-                reloaded_count = reloaded_count + 1
+                if (take_one_ammo(api)) then
+                    api:setAmmoInBarrel(true)
+                    api:setScriptStateInt(SHOTS_SINCE_PUMP, 0)
+                    reloaded_count = reloaded_count + 1
+                else
+                    has_ammo = false
+                end
             end
         else
             reloaded_count = reloaded_count + 1
         end
     end
-    -- 나머지는 관형 탄창에 한 발씩 넣는다
-    if (reloaded_count > 0) then
+    -- 나머지는 관형 탄창에 한 발씩 넣는다. 틱이 밀려 급탄 시점을 여러 개 지나쳤어도 매 발 실제로 가져온 뒤에만 넣는다
+    if (reloaded_count > 0 and has_ammo) then
         local base_time = (reloaded_count - 1) * loop + loop_feed
         if (not cache.is_tactical) then
             base_time = base_time + intro_empty
@@ -121,11 +137,17 @@ function M.tick_reload(api)
             if (reloaded_count > cache.needed_count) then
                 break
             end
+            if (not take_one_ammo(api)) then
+                has_ammo = false
+                break
+            end
+            api:putAmmoInMagazine(1)
             reloaded_count = reloaded_count + 1
             base_time = base_time + loop
-            api:consumeAmmoFromPlayer(1)
-            api:putAmmoInMagazine(1)
         end
+    end
+    if (not has_ammo and interrupted_time == -1) then
+        interrupted_time = reload_time
     end
     if (reloaded_count > cache.needed_count) then
         interrupted_time = api:getReloadTime() - loop_feed + loop
