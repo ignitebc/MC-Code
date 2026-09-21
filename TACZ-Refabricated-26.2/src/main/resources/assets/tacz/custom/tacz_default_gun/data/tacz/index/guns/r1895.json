@@ -1,0 +1,9 @@
+{
+  "name": "tacz.gun.r1895.name",
+  "display": "tacz:r1895_display",
+  "data": "tacz:r1895_data",
+  "tooltip": "tacz.gun.r1895.desc",
+  "type": "pistol",
+  "item_type": "modern_kinetic",
+  "sort": 16
+}
