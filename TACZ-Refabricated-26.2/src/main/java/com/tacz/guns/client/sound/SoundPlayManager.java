@@ -4,6 +4,7 @@ import com.tacz.guns.GunMod;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IAttachment;
 import com.tacz.guns.client.resource.GunDisplayInstance;
+import com.tacz.guns.client.resource.pojo.display.gun.GunSoundLayer;
 import com.tacz.guns.config.client.SoundConfig;
 import com.tacz.guns.config.common.GunConfig;
 import com.tacz.guns.init.ModSounds;
@@ -113,12 +114,31 @@ public class SoundPlayManager {
         });
     }
 
+    private static void playGunSoundLayers(Entity entity, GunDisplayInstance gunIndex, String soundName,
+                                           float volume, float pitch, int distance, boolean mono,
+                                           int concurrencyLimit, boolean trackEntity, boolean relative) {
+        for (GunSoundLayer layer : gunIndex.getSoundLayers(soundName)) {
+            playClientSound(entity, layer.getSound(), volume * layer.getVolume(), pitch * layer.getPitch(),
+                    distance, mono, concurrencyLimit, trackEntity, relative);
+        }
+    }
+
     public static void playShootSound(LivingEntity entity, GunDisplayInstance gunIndex, GunData gunData) {
-        playClientSound(entity, gunIndex.getSounds(SoundManager.SHOOT_SOUND), 0.8f, 0.9f + entity.getRandom().nextFloat() * 0.125f, (int) (GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE.get() * gunData.getFireSound().getFireMultiplier()), false, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, false);
+        float pitch = 0.9f + entity.getRandom().nextFloat() * 0.125f;
+        int distance = (int) (GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE.get() * gunData.getFireSound().getFireMultiplier());
+        playClientSound(entity, gunIndex.getSounds(SoundManager.SHOOT_SOUND), 0.8f, pitch, distance,
+                false, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, false);
+        playGunSoundLayers(entity, gunIndex, SoundManager.SHOOT_SOUND, 0.8f, pitch, distance,
+                false, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, false);
     }
 
     public static void playSilenceSound(LivingEntity entity, GunDisplayInstance gunIndex, GunData gunData) {
-        playClientSound(entity, gunIndex.getSounds(SoundManager.SILENCE_SOUND), 0.6f, 0.9f + entity.getRandom().nextFloat() * 0.125f, (int) (GunConfig.DEFAULT_GUN_SILENCE_SOUND_DISTANCE.get() * gunData.getFireSound().getSilenceMultiplier()), false, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, false);
+        float pitch = 0.9f + entity.getRandom().nextFloat() * 0.125f;
+        int distance = (int) (GunConfig.DEFAULT_GUN_SILENCE_SOUND_DISTANCE.get() * gunData.getFireSound().getSilenceMultiplier());
+        playClientSound(entity, gunIndex.getSounds(SoundManager.SILENCE_SOUND), 0.6f, pitch, distance,
+                false, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, false);
+        playGunSoundLayers(entity, gunIndex, SoundManager.SILENCE_SOUND, 0.6f, pitch, distance,
+                false, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, false);
     }
 
     public static void playDryFireSound(LivingEntity entity, GunDisplayInstance gunIndex) {
@@ -207,7 +227,10 @@ public class SoundPlayManager {
                 return;
             }
             if (SoundManager.SHOOT_3P_SOUND.equals(soundName) || SoundManager.SILENCE_3P_SOUND.equals(soundName)) {
-                playClientSound(livingEntity, soundId, message.getVolume(), message.getPitch(), message.getDistance(), true, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), true, false);
+                playClientSound(livingEntity, soundId, message.getVolume(), message.getPitch(), message.getDistance(),
+                        true, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), true, false);
+                playGunSoundLayers(livingEntity, index, soundName, message.getVolume(), message.getPitch(),
+                        message.getDistance(), true, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), true, false);
             } else {
                 playClientSound(livingEntity, soundId, message.getVolume(), message.getPitch(), message.getDistance());
             }

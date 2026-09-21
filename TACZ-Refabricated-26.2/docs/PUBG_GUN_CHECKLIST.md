@@ -192,3 +192,13 @@ PUBG Update 42.1에서 **월드 스폰 제외**된 Mosin Nagant, R45, DP-28, PP-
 - [AR](https://pubg.com/en/game-info/weapons/ar), [DMR](https://pubg.com/en/game-info/weapons/dmr), [SMG](https://pubg.com/en/game-info/weapons/smg), [SR](https://pubg.com/en/game-info/weapons/sr)
 - [산탄총](https://pubg.com/en/game-info/weapons/sg), [권총](https://pubg.com/en/game-info/weapons/pistol), [LMG·특수 무기](https://pubg.com/en/game-info/weapons/etc)
 - [Update 42.1 — 월드 스폰 제외 목록](https://pubg.com/en/news/10179)
+
+
+### 22종 사운드 확장
+
+- [x] 22종 발사음 레이어 프로필 추가
+- [x] 1인칭/3인칭 발사음 레이어 분리
+- [x] 소음기 발사음 레이어 분리
+- [x] VSS는 소음기 계열 샘플만 사용
+- [x] 레이어 OGG 사전 로드 경로 연결
+- [ ] 실제 스피커/헤드셋 음량 밸런스 인게임 검증

@@ -336,7 +336,166 @@ public final class PubgGunResourceGenerator {
             if (silence != null) value = replaceJsonStringValue(value, "shoot", silence);
             if (silence3p != null) value = replaceJsonStringValue(value, "shoot_3p", silence3p);
         }
-        return value;
+
+        String layers = soundLayersJson(s);
+        int closingBrace = value.lastIndexOf('}');
+        if (closingBrace < 0) {
+            throw new IllegalArgumentException("Display JSON has no closing object: " + id);
+        }
+        return value.substring(0, closingBrace).stripTrailing()
+                + ",\n  \"sound_layers\": " + layers + "\n}\n";
+    }
+
+    private static String soundLayersJson(Spec s) {
+        SoundProfile profile = soundProfile(s.s("id"));
+        return "{\n"
+                + soundLayerEntry("shoot", profile.shoot()) + ",\n"
+                + soundLayerEntry("shoot_3p", profile.shoot3p()) + ",\n"
+                + soundLayerEntry("silence", profile.silence()) + ",\n"
+                + soundLayerEntry("silence_3p", profile.silence3p()) + "\n"
+                + "  }";
+    }
+
+    private static String soundLayerEntry(String name, List<SoundLayerSpec> layers) {
+        StringBuilder out = new StringBuilder();
+        out.append("    \"").append(name).append("\": [");
+        for (int i = 0; i < layers.size(); i++) {
+            SoundLayerSpec layer = layers.get(i);
+            if (i > 0) out.append(", ");
+            out.append("{\"sound\": \"").append(layer.sound()).append("\", \"volume\": ")
+                    .append(n(layer.volume())).append(", \"pitch\": ").append(n(layer.pitch())).append("}");
+        }
+        out.append("]");
+        return out.toString();
+    }
+
+    private static SoundProfile soundProfile(String id) {
+        return switch (id) {
+            case "groza" -> profile(
+                    layers(layer("tacz:scar_h/scar_h_shoot", .28, .88), layer("tacz:rpk/rpk_shoot", .14, .82)),
+                    layers(layer("tacz:scar_h/scar_h_shoot_3p", .36, .90), layer("tacz:rpk/rpk_shoot_3p", .18, .84)),
+                    layers(layer("tacz:scar_h/scar_h_silence", .24, .88)),
+                    layers(layer("tacz:scar_h/scar_h_silence_3p", .30, .90)));
+            case "beryl_m762" -> profile(
+                    layers(layer("tacz:rpk/rpk_shoot", .25, .94), layer("tacz:scar_h/scar_h_shoot", .12, .97)),
+                    layers(layer("tacz:rpk/rpk_shoot_3p", .34, .94), layer("tacz:scar_h/scar_h_shoot_3p", .16, .96)),
+                    layers(layer("tacz:rpk/rpk_silence", .22, .94)),
+                    layers(layer("tacz:rpk/rpk_silence_3p", .28, .94)));
+            case "ace32" -> profile(
+                    layers(layer("tacz:m416/m416_shoot", .22, .88), layer("tacz:scar_h/scar_h_shoot", .10, .98)),
+                    layers(layer("tacz:m416/m416_shoot_3p", .28, .90), layer("tacz:scar_h/scar_h_shoot_3p", .14, .98)),
+                    layers(layer("tacz:m416/m416_silence", .20, .90)),
+                    layers(layer("tacz:m416/m416_silence_3p", .26, .90)));
+            case "famas" -> profile(
+                    layers(layer("tacz:m416/m416_shoot", .24, 1.07), layer("tacz:mp5k/mp5k_shoot", .12, 1.02)),
+                    layers(layer("tacz:m416/m416_shoot_3p", .30, 1.05), layer("tacz:mp5k/mp5k_shoot_3p", .15, 1.02)),
+                    layers(layer("tacz:m416/m416_silence", .20, 1.06)),
+                    layers(layer("tacz:m416/m416_silence_3p", .25, 1.04)));
+            case "k2" -> profile(
+                    layers(layer("tacz:m416/m416_shoot", .20, .97), layer("tacz:aug/aug_shoot", .12, 1.00)),
+                    layers(layer("tacz:m416/m416_shoot_3p", .27, .97), layer("tacz:aug/aug_shoot_3p", .14, 1.00)),
+                    layers(layer("tacz:m416/m416_silence", .18, .98)),
+                    layers(layer("tacz:m416/m416_silence_3p", .24, .98)));
+            case "mk47_mutant" -> profile(
+                    layers(layer("tacz:ak47/ak47_shoot", .22, .88), layer("tacz:fn_fal/fn_fal_shoot", .12, .98)),
+                    layers(layer("tacz:ak47/ak47_shoot_3p", .30, .88), layer("tacz:fn_fal/fn_fal_shoot_3p", .15, .98)),
+                    layers(layer("tacz:ak47/ak47_silence", .19, .90)),
+                    layers(layer("tacz:ak47/ak47_silence_3p", .25, .90)));
+            case "mini14" -> profile(
+                    layers(layer("tacz:m416/m416_shoot", .18, 1.07), layer("tacz:sks/sks_shoot", .12, 1.05)),
+                    layers(layer("tacz:m416/m416_shoot_3p", .24, 1.05), layer("tacz:sks/sks_shoot_3p", .15, 1.04)),
+                    layers(layer("tacz:m416/m416_silence", .18, 1.06)),
+                    layers(layer("tacz:m416/m416_silence_3p", .22, 1.05)));
+            case "mk12" -> profile(
+                    layers(layer("tacz:sks/sks_shoot", .20, 1.04), layer("tacz:m416/m416_shoot", .10, .95)),
+                    layers(layer("tacz:sks/sks_shoot_3p", .27, 1.03), layer("tacz:m416/m416_shoot_3p", .12, .95)),
+                    layers(layer("tacz:sks/sks_silence", .20, 1.03)),
+                    layers(layer("tacz:sks/sks_silence_3p", .25, 1.03)));
+            case "vss" -> profile(
+                    layers(layer("tacz:m416/m416_silence", .25, .82), layer("tacz:sks/sks_silence", .13, .90)),
+                    layers(layer("tacz:m416/m416_silence_3p", .30, .84), layer("tacz:sks/sks_silence_3p", .16, .90)),
+                    layers(layer("tacz:m416/m416_silence", .22, .80), layer("tacz:sks/sks_silence", .10, .88)),
+                    layers(layer("tacz:m416/m416_silence_3p", .27, .82), layer("tacz:sks/sks_silence_3p", .12, .88)));
+            case "dragunov" -> profile(
+                    layers(layer("tacz:sks/sks_shoot", .24, .86), layer("tacz:m700/m700_shoot", .12, 1.02)),
+                    layers(layer("tacz:sks/sks_shoot_3p", .31, .86), layer("tacz:m700/m700_shoot_3p", .15, 1.00)),
+                    layers(layer("tacz:sks/sks_silence", .21, .88)),
+                    layers(layer("tacz:sks/sks_silence_3p", .27, .88)));
+            case "tommy_gun" -> profile(
+                    layers(layer("tacz:ak47/ak47_shoot", .11, .78), layer("tacz:p320/p320_shoot", .20, .90)),
+                    layers(layer("tacz:ak47/ak47_shoot_3p", .15, .80), layer("tacz:p320/p320_shoot_3p", .25, .90)),
+                    layers(layer("tacz:p320/p320_silence", .20, .90)),
+                    layers(layer("tacz:p320/p320_silence_3p", .25, .90)));
+            case "mp9" -> profile(
+                    layers(layer("tacz:b93r/b93r_shoot", .24, 1.08), layer("tacz:p90/p90_shoot", .11, 1.12)),
+                    layers(layer("tacz:b93r/b93r_shoot_3p", .30, 1.07), layer("tacz:p90/p90_shoot_3p", .14, 1.10)),
+                    layers(layer("tacz:b93r/b93r_silence", .21, 1.08)),
+                    layers(layer("tacz:b93r/b93r_silence_3p", .25, 1.07)));
+            case "js9" -> profile(
+                    layers(layer("tacz:mp5k/mp5k_shoot", .20, .96), layer("tacz:m416/m416_shoot", .10, 1.05)),
+                    layers(layer("tacz:mp5k/mp5k_shoot_3p", .26, .96), layer("tacz:m416/m416_shoot_3p", .12, 1.04)),
+                    layers(layer("tacz:mp5k/mp5k_silence", .19, .97)),
+                    layers(layer("tacz:mp5k/mp5k_silence_3p", .23, .97)));
+            case "win94" -> profile(
+                    layers(layer("tacz:m700/m700_shoot", .25, .88), layer("tacz:deagle/deagle_shoot", .10, .78)),
+                    layers(layer("tacz:m700/m700_shoot_3p", .32, .88), layer("tacz:deagle/deagle_shoot_3p", .13, .80)),
+                    layers(layer("tacz:m700/m700_silence", .20, .88)),
+                    layers(layer("tacz:m700/m700_silence_3p", .25, .88)));
+            case "m24" -> profile(
+                    layers(layer("tacz:ai_awp/awp_shoot", .24, .93), layer("tacz:m95/m95_shoot", .08, 1.05)),
+                    layers(layer("tacz:ai_awp/awp_shoot_3p", .31, .92), layer("tacz:m95/m95_shoot_3p", .10, 1.04)),
+                    layers(layer("tacz:ai_awp/awp_silence", .22, .94)),
+                    layers(layer("tacz:ai_awp/awp_silence_3p", .27, .93)));
+            case "s12k" -> profile(
+                    layers(layer("tacz:aa12/aa12_shoot", .24, 1.00), layer("tacz:m870/m870_shoot", .16, 1.05)),
+                    layers(layer("tacz:aa12/aa12_shoot_3p", .30, .99), layer("tacz:m870/m870_shoot_3p", .20, 1.03)),
+                    layers(layer("tacz:aa12/aa12_silence", .22, 1.00)),
+                    layers(layer("tacz:aa12/aa12_silence_3p", .27, 1.00)));
+            case "dbs" -> profile(
+                    layers(layer("tacz:spas_12/spas12_shoot", .30, .92), layer("tacz:m1014/m1014_shoot", .18, .88)),
+                    layers(layer("tacz:m870/m870_shoot_3p", .34, .91), layer("tacz:m1014/m1014_shoot_3p", .20, .88)),
+                    layers(layer("tacz:m870/m870_silence", .24, .90)),
+                    layers(layer("tacz:m870/m870_silence_3p", .29, .90)));
+            case "o12" -> profile(
+                    layers(layer("tacz:aa12/aa12_shoot", .28, .94), layer("tacz:m1014/m1014_shoot", .12, 1.05)),
+                    layers(layer("tacz:aa12/aa12_shoot_3p", .34, .94), layer("tacz:m1014/m1014_shoot_3p", .15, 1.04)),
+                    layers(layer("tacz:aa12/aa12_silence", .22, .96)),
+                    layers(layer("tacz:aa12/aa12_silence_3p", .27, .96)));
+            case "mg3" -> profile(
+                    layers(layer("tacz:m107/m107_shoot", .13, .82), layer("tacz:rpk/rpk_shoot", .22, .88)),
+                    layers(layer("tacz:m107/m107_shoot_3p", .17, .82), layer("tacz:rpk/rpk_shoot_3p", .29, .88)),
+                    layers(layer("tacz:rpk/rpk_silence", .22, .88)),
+                    layers(layer("tacz:rpk/rpk_silence_3p", .27, .88)));
+            case "rpd" -> profile(
+                    layers(layer("tacz:m249/m249_shoot", .20, .90), layer("tacz:ak47/ak47_shoot", .14, .86)),
+                    layers(layer("tacz:m249/m249_shoot_3p", .26, .90), layer("tacz:ak47/ak47_shoot_3p", .18, .86)),
+                    layers(layer("tacz:rpk/rpk_silence", .21, .90)),
+                    layers(layer("tacz:rpk/rpk_silence_3p", .26, .90)));
+            case "skorpion" -> profile(
+                    layers(layer("tacz:mp5k/mp5k_shoot", .22, 1.10), layer("tacz:p90/p90_shoot", .10, 1.08)),
+                    layers(layer("tacz:mp5k/mp5k_shoot_3p", .28, 1.08), layer("tacz:p90/p90_shoot_3p", .13, 1.08)),
+                    layers(layer("tacz:mp5k/mp5k_silence", .20, 1.08)),
+                    layers(layer("tacz:mp5k/mp5k_silence_3p", .24, 1.08)));
+            case "r1895" -> profile(
+                    layers(layer("tacz:deagle/deagle_shoot", .24, .78), layer("tacz:m700/m700_shoot", .08, 1.05)),
+                    layers(layer("tacz:deagle/deagle_shoot_3p", .31, .78), layer("tacz:m700/m700_shoot_3p", .10, 1.04)),
+                    layers(layer("tacz:deagle/deagle_silence", .20, .82)),
+                    layers(layer("tacz:deagle/deagle_silence_3p", .25, .82)));
+            default -> throw new IllegalArgumentException("Missing sound profile for " + id);
+        };
+    }
+
+    private static SoundProfile profile(List<SoundLayerSpec> shoot, List<SoundLayerSpec> shoot3p,
+                                        List<SoundLayerSpec> silence, List<SoundLayerSpec> silence3p) {
+        return new SoundProfile(shoot, shoot3p, silence, silence3p);
+    }
+
+    private static List<SoundLayerSpec> layers(SoundLayerSpec... layers) {
+        return List.of(layers);
+    }
+
+    private static SoundLayerSpec layer(String sound, double volume, double pitch) {
+        return new SoundLayerSpec(sound, volume, pitch);
     }
 
     private static Model createModel(Spec s) {
@@ -908,6 +1067,13 @@ public final class PubgGunResourceGenerator {
     }
 
     private record Model(List<Box> body, List<Box> magazine, List<Box> bolt) {
+    }
+
+    private record SoundLayerSpec(String sound, double volume, double pitch) {
+    }
+
+    private record SoundProfile(List<SoundLayerSpec> shoot, List<SoundLayerSpec> shoot3p,
+                                List<SoundLayerSpec> silence, List<SoundLayerSpec> silence3p) {
     }
 
     private record Spec(Map<String, String> values) {

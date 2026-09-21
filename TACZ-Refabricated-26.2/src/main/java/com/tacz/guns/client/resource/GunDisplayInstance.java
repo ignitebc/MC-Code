@@ -76,6 +76,7 @@ public class GunDisplayInstance {
     private @Nullable LuaTable stateMachineParam;
 
     private Map<String, Identifier> sounds = Maps.newHashMap();
+    private Map<String, List<GunSoundLayer>> soundLayers = Maps.newHashMap();
     private List<Identifier> preloadSounds = Lists.newArrayList();
     private GunTransform transform = GunTransform.getDefault();
 
@@ -544,6 +545,7 @@ public class GunDisplayInstance {
 
     private void checkSounds(GunDisplay display) {
         sounds = Maps.newHashMap();
+        soundLayers = Maps.newHashMap();
         preloadSounds = Lists.newArrayList();
         Map<String, Identifier> soundMaps = display.getSounds();
         if (soundMaps == null || soundMaps.isEmpty()) {
@@ -560,6 +562,24 @@ public class GunDisplayInstance {
         soundMaps.putIfAbsent(SoundManager.MELEE_PUSH, Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "melee_stock/melee_stock_02"));
         sounds.putAll(soundMaps);
 
+        Map<String, List<GunSoundLayer>> configuredSoundLayers = display.getSoundLayers();
+        if (configuredSoundLayers != null) {
+            configuredSoundLayers.forEach((name, layers) -> {
+                if (StringUtils.isBlank(name) || layers == null || layers.isEmpty()) {
+                    return;
+                }
+                List<GunSoundLayer> validLayers = new ArrayList<>();
+                for (GunSoundLayer layer : layers) {
+                    if (layer != null && layer.getSound() != null && layer.getVolume() > 0.0F) {
+                        validLayers.add(layer);
+                    }
+                }
+                if (!validLayers.isEmpty()) {
+                    soundLayers.put(name, List.copyOf(validLayers));
+                }
+            });
+        }
+
         Set<Identifier> preloadSet = new LinkedHashSet<>();
         for (String name : GunSoundPreload.DEFAULT_PRELOAD_NAMES) {
             addPreloadSound(preloadSet, name);
@@ -568,6 +588,11 @@ public class GunDisplayInstance {
         if (configuredPreloadSounds != null) {
             for (String name : configuredPreloadSounds) {
                 addPreloadSound(preloadSet, name);
+            }
+        }
+        for (List<GunSoundLayer> layers : soundLayers.values()) {
+            for (GunSoundLayer layer : layers) {
+                preloadSet.add(layer.getSound());
             }
         }
         preloadSounds.addAll(preloadSet);
@@ -681,6 +706,10 @@ public class GunDisplayInstance {
     @Nullable
     public Identifier getSounds(String name) {
         return sounds.get(name);
+    }
+
+    public List<GunSoundLayer> getSoundLayers(String name) {
+        return soundLayers.getOrDefault(name, List.of());
     }
 
     public List<Identifier> getPreloadSounds() {

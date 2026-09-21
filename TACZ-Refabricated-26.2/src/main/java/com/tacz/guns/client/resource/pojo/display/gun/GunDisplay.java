@@ -63,6 +63,9 @@ public class GunDisplay implements IDisplay {
     @SerializedName("sounds")
     private Map<String, Identifier> sounds;
     @Nullable
+    @SerializedName("sound_layers")
+    private Map<String, List<GunSoundLayer>> soundLayers;
+    @Nullable
     @SerializedName("preload_sounds")
     private List<String> preloadSounds;
     @Nullable
@@ -160,6 +163,11 @@ public class GunDisplay implements IDisplay {
     @Nullable
     public Map<String, Identifier> getSounds() {
         return sounds;
+    }
+
+    @Nullable
+    public Map<String, List<GunSoundLayer>> getSoundLayers() {
+        return soundLayers;
     }
 
     @Nullable
