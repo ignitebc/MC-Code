@@ -22,17 +22,17 @@
   "bullet": {
     "life": 0.7,
     "bullet_amount": 1,
-    "damage": 12,
+    "damage": 3.6,
     "tracer_count_interval": 0,
     "extra_damage": {
       "armor_ignore": 0.2,
       "head_shot_multiplier": 1.8,
       "damage_adjust": [
-        {"distance": 18, "damage": 12},
-        {"distance": 36, "damage": 11},
-        {"distance": 55, "damage": 9},
+        {"distance": 18, "damage": 3.6},
+        {"distance": 36, "damage": 3.3},
+        {"distance": 55, "damage": 2.7},
         // 如果你忘记写这个无穷，那么超过上述距离，我就认为是 0
-        {"distance": "infinite", "damage": 7}
+        {"distance": "infinite", "damage": 2.1}
       ]
     },
     "speed": 200,
@@ -43,7 +43,7 @@
     "pierce": 1,
     "explosion": {
       "explode": false,
-      "damage": 20,
+      "damage": 6,
       "radius": 0.6,
       "knockback": true,
       "delay": 1

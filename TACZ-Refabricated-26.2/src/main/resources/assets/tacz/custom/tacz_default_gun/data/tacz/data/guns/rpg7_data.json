@@ -6,7 +6,7 @@
   "bullet": {
     "life": 3,
     "bullet_amount": 1,
-    "damage": 20,
+    "damage": 6,
     "extra_damage": {
       "armor_ignore": 0.0,
       "head_shot_multiplier": 1
@@ -19,7 +19,7 @@
     "pierce": 0,
     "explosion": {
       "explode": true,
-      "damage": 120,
+      "damage": 36,
       "radius": 3,
       "knockback": true,
       "destroy_block": true,
@@ -91,7 +91,7 @@
       // 刺刀范围角度
       "range_angle": 30,
       // 伤害值
-      "damage": 5,
+      "damage": 1.5,
       // 击退效果
       "knockback": 0.75,
       // 前摇时长，单位：秒

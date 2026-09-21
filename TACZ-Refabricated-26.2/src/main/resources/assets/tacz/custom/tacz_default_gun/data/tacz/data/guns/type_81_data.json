@@ -11,15 +11,15 @@
   "bullet": {
     "life": 0.75,
     "bullet_amount": 1,
-    "damage": 9,
+    "damage": 2.7,
     "tracer_count_interval": 0,
     "extra_damage": {
       "armor_ignore": 0.2,
       "head_shot_multiplier": 1.5,
       "damage_adjust": [
-        {"distance": 25, "damage": 9},
-        {"distance": 55, "damage": 7},
-        {"distance": "infinite", "damage": 4.5}
+        {"distance": 25, "damage": 2.7},
+        {"distance": 55, "damage": 2.1},
+        {"distance": "infinite", "damage": 1.35}
       ]
     },
     "speed": 245,
@@ -59,7 +59,7 @@
     // 半自动状态的数值调整，如无调整可不写
     "semi": {
       // 加算，半自动模式的开火数值调整，如无调整可不写
-      "damage": 2,
+      "damage": 0.6,
       "rpm": -330,
       "speed": 20,
       "knockback": 0.0,
@@ -125,7 +125,7 @@
       // 刺刀范围角度
       "range_angle": 30,
       // 伤害值
-      "damage": 2,
+      "damage": 0.6,
       // 击退效果
       "knockback": 0.5,
       // 前摇时长，单位：秒

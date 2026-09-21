@@ -20,7 +20,7 @@
     // 用于霰弹，默认为 1，每发的伤害 / bullet_amount，每次射击扣除一发子弹
     "bullet_amount": 1,
     // 伤害
-    "damage": 10,
+    "damage": 3,
     // 曳光弹间隔数量，没有此字段则不发射曳光弹
     // 设置为 0 则是每发都是曳光弹
     "tracer_count_interval": 0,
@@ -32,10 +32,10 @@
       "head_shot_multiplier": 1.5,
       // 距离-伤害分段常函数
       "damage_adjust": [
-        {"distance": 36, "damage": 10},
-        {"distance": 64, "damage": 7},
+        {"distance": 36, "damage": 3},
+        {"distance": 64, "damage": 2.1},
         // 如果你忘记写这个无穷，那么超过上述距离，我就认为是 0
-        {"distance": "infinite", "damage": 6}
+        {"distance": "infinite", "damage": 1.8}
       ]
     },
     // 速度 m/s
@@ -57,13 +57,13 @@
     //  延时爆炸，单位：秒
     //  "delay": 5
     //  "radius": 5,
-    //  "damage": 5,
+    //  "damage": 1.5,
     //  爆炸导致的击退，默认为 false，需要服务器也开启爆炸击退才能使用
     //  "knockback": false
     //}
     "explosion": {
       "explode": false,
-      "damage": 22,
+      "damage": 6.6,
       "radius": 0.6,
       "knockback": true,
       "delay": 1
@@ -160,7 +160,7 @@
       // 刺刀范围角度
       "range_angle": 30,
       // 伤害值
-      "damage": 4,
+      "damage": 1.2,
       // 击退效果
       "knockback": 0.6,
       // 前摇时长，单位：秒

@@ -30,15 +30,15 @@
   "bullet": {
     "life": 0.9,
     "bullet_amount": 1,
-    "damage": 6.5,
+    "damage": 1.95,
     "tracer_count_interval": 0,
     "extra_damage": {
       "armor_ignore": 0.2,
       "head_shot_multiplier": 1.5,
       "damage_adjust": [
-        {"distance": 30, "damage": 6.5},
-        {"distance": 60, "damage": 5},
-        {"distance": "infinite", "damage": 4}
+        {"distance": 30, "damage": 1.95},
+        {"distance": 60, "damage": 1.5},
+        {"distance": "infinite", "damage": 1.2}
       ]
     },
     "speed": 290,
@@ -112,7 +112,7 @@
       // 刺刀范围角度
       "range_angle": 30,
       // 伤害值
-      "damage": 2,
+      "damage": 0.6,
       // 击退效果
       "knockback": 0.5,
       // 前摇时长，单位：秒

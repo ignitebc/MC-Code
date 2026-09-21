@@ -44,7 +44,7 @@
     // 用于霰弹，默认为 1，每发的伤害 / bullet_amount，每次射击扣除一发子弹
     "bullet_amount": 1,
     // 伤害
-    "damage": 9,
+    "damage": 2.7,
     // 曳光弹间隔数量，没有此字段则不发射曳光弹
     // 设置为 0 则是每发都是曳光弹
     "tracer_count_interval": 0,
@@ -56,10 +56,10 @@
       "head_shot_multiplier": 1.5,
       // 距离-伤害分段常函数
       "damage_adjust": [
-        {"distance": 30, "damage": 9},
-        {"distance": 60, "damage": 7.5},
+        {"distance": 30, "damage": 2.7},
+        {"distance": 60, "damage": 2.25},
         // 如果你忘记写这个无穷，那么超过上述距离，我就认为是 0
-        {"distance": "infinite", "damage": 6}
+        {"distance": "infinite", "damage": 1.8}
       ]
     },
     // 速度 m/s
@@ -91,7 +91,7 @@
       // 爆炸半径，单位：米（格）
       // "radius": 5,
       // 爆炸伤害
-      // "damage": 5,
+      // "damage": 1.5,
       // 爆炸导致的击退，默认为 false，需要服务器也开启爆炸击退才能使用
       // "knockback": false
       // 爆炸是否破坏方块，默认为 false，需要服务器也开启爆炸破坏方块才能使用
@@ -229,7 +229,7 @@
     // 半自动状态的数值调整，如无调整可不写
     "semi": {
       // 加算，半自动模式的开火数值调整，如无调整可不写
-      "damage": 9,
+      "damage": 2.7,
       "rpm": -400,
       "speed": 20,
       "knockback": 0.1,
@@ -315,7 +315,7 @@
       // 刺刀冷却时间，枪械里还有个刺刀冷却时间参数，两者做加和
       "cooldown": 0,
       // 伤害值
-      "damage": 1,
+      "damage": 0.3,
       // 击退效果
       "knockback": 0.5,
       // 前摇时长，单位：秒
