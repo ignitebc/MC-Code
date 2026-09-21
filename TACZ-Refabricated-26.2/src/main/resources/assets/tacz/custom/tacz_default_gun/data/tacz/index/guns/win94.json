@@ -1,0 +1,9 @@
+{
+  "name": "tacz.gun.win94.name",
+  "display": "tacz:win94_display",
+  "data": "tacz:win94_data",
+  "tooltip": "tacz.gun.win94.desc",
+  "type": "sniper",
+  "item_type": "modern_kinetic",
+  "sort": 7
+}
