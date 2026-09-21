@@ -55,7 +55,18 @@ final class TaczStats {
     static void gun(List<String> lines, Object data) throws ReflectiveOperationException {
         lines.add("기본 성능 · 팩 기준 / 서버 배율·장착 효과 적용 전");
         Object bullet = call(data, "getBulletData");
-        add(lines, "기본 피해량(탄환 1개)", bullet, "getDamageAmount", "");
+        // TACZ 는 산탄의 damage 를 펠릿 수로 나눠 각 펠릿에 준다(EntityKineticBullet.applyShotgunDamageSpread).
+        // 그래서 산탄총의 damage 는 탄환 1개가 아니라 한 번 격발한 펠릿 전체의 피해량이다
+        double damage = number(bullet, "getDamageAmount");
+        int pelletCount = (int) number(bullet, "getBulletAmount");
+        boolean firesPellets = pelletCount > 1;
+        if (firesPellets) {
+            lines.add("격발 총 피해량(펠릿 전부 적중): " + format(damage));
+            lines.add("펠릿당 기본 피해량: " + format(damage / pelletCount));
+        } else {
+            lines.add("기본 피해량(탄환 1개): " + format(damage));
+        }
+        String rangeLabel = firesPellets ? "거리별 격발 총 피해량 · " : "거리별 피해량 · ";
         Object extra = call(bullet, "getExtraDamage");
         double head = extra == null ? 1 : number(extra, "getHeadShotMultiplier");
         double armor = extra == null ? 0 : number(extra, "getArmorIgnore");
@@ -68,12 +79,12 @@ final class TaczStats {
                 for (Object range : ranges) {
                     double distance = number(range, "getDistance");
                     String interval = distance > 1.0e9 ? format(previous) + "m 이후" : format(previous) + "~" + format(distance) + "m";
-                    lines.add("거리별 피해량 · " + interval + ": " + format(number(range, "getDamage")));
+                    lines.add(rangeLabel + interval + ": " + format(number(range, "getDamage")));
                     previous = distance;
                 }
             }
         }
-        add(lines, "발당 탄환 수", bullet, "getBulletAmount", "개");
+        lines.add((firesPellets ? "발당 펠릿 수: " : "발당 탄환 수: ") + pelletCount + "개");
         add(lines, "탄속", bullet, "getSpeed", "m/s");
         add(lines, "관통 대상 수", bullet, "getPierce", "");
         add(lines, "탄환 유지 시간", bullet, "getLifeSecond", "초");
