@@ -42,53 +42,42 @@ SLR의 피해량·반동·장전 시간 등은 기존 FN FAL 설정을 바탕으
 
 ## 22종 확장 구현
 
-기준: 2026-09-21, 최신 `26.3` 브랜치. 기존 55종과 완전 중복으로 본 G36C, Lynx AMR, S1897, S686, P92는 제외하고, 사용자가 추가 지정한 M24를 포함해 총 22종을 구현합니다.
+기준: 2026-09-21, 최신 `26.3` 브랜치. 기존 54종과 역할이 겹치는 G36C, Lynx AMR, S1897, S686, P92는 제외하고, 추가 지정한 M24를 포함해 총 22종을 구현합니다. 수치·특수 동작·제작 구조는 [22종 설계 문서](PUBG_GUN_EXPANSION_22.md)에 있습니다.
 
-모델과 텍스처는 PUBG 원본 자산을 복사하지 않고, 공식 무기 외형과 실루엣을 참고해 빌드 시 독립 생성합니다. 발사 데이터는 기존 TaCZ 총기 밸런스 스케일에 맞추되 탄종, 발사 모드, 장탄수, RPM, 반동, 탄속, 부착물 제한 등 각 총기의 특징을 분리했습니다.
+리소스는 기본 총기팩 경로에 실제 파일로 들어 있습니다. "리소스"는 index·data·recipe·부착물 태그·display·모델·LOD·텍스처·슬롯/HUD 아이콘·번역이 모두 있고 정합성 검사를 통과했다는 뜻이고, "인게임"은 게임에서 직접 확인했다는 뜻입니다.
 
-| 반영 | 분류 | 총기 | 내부 ID | 구현 범위 |
-|---|---|---|---|---|
-| ☑ | RIFLE | Groza | `tacz:groza` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | RIFLE | Beryl M762 | `tacz:beryl_m762` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | RIFLE | ACE32 | `tacz:ace32` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | RIFLE | FAMAS | `tacz:famas` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | RIFLE | K2 | `tacz:k2` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | RIFLE | Mk47 Mutant | `tacz:mk47_mutant` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | RIFLE | Mini14 | `tacz:mini14` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | RIFLE | Mk12 | `tacz:mk12` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | RIFLE | VSS | `tacz:vss` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | RIFLE | Dragunov | `tacz:dragunov` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | SMG | Tommy Gun | `tacz:tommy_gun` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | SMG | MP9 | `tacz:mp9` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | SMG | JS9 | `tacz:js9` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | SNIPER | Win94 | `tacz:win94` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | SNIPER | M24 | `tacz:m24` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | SHOTGUN | S12K | `tacz:s12k` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | SHOTGUN | DBS | `tacz:dbs` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | SHOTGUN | O12 | `tacz:o12` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | MG | MG3 | `tacz:mg3` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | MG | RPD | `tacz:rpd` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | PISTOL | Skorpion | `tacz:skorpion` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-| ☑ | PISTOL | R1895 | `tacz:r1895` | 생성형 전용 모델·텍스처·HUD/슬롯·데이터·레시피·부착물 |
-
-### 생성 리소스
-
-`tools/PubgGunResourceGenerator.java`가 Gradle `processResources` 전에 다음 리소스를 생성합니다.
-
-- gun index / gun data / 제작 레시피 / 부착물 허용 태그
-- Bedrock 기본 모델 / LOD 모델
-- UV 컬러 / normal / specular 텍스처
-- HUD / 인벤토리 슬롯 아이콘
-- 기존 총기 애니메이션·사운드 골격 재사용 및 신규 모델에 맞춘 부착물 위치
+| 리소스 | 인게임 | 분류 | 총기 | 내부 ID | 애니메이션 베이스 |
+|---|---|---|---|---|---|
+| ☑ | ☐ | RIFLE | Groza | `tacz:groza` | `aug` |
+| ☑ | ☐ | RIFLE | Beryl M762 | `tacz:beryl_m762` | `ak47` |
+| ☑ | ☐ | RIFLE | ACE32 | `tacz:ace32` | `ak47` |
+| ☑ | ☐ | RIFLE | FAMAS | `tacz:famas` | `aug` |
+| ☑ | ☐ | RIFLE | K2 | `tacz:k2` | `m16a4` |
+| ☑ | ☐ | RIFLE | Mk47 Mutant | `tacz:mk47_mutant` | `m16a4` |
+| ☑ | ☐ | RIFLE | Mini14 | `tacz:mini14` | `sks_tactical` |
+| ☑ | ☐ | RIFLE | Mk12 | `tacz:mk12` | `spr15hb` |
+| ☑ | ☐ | RIFLE | VSS | `tacz:vss` | `ak47` |
+| ☑ | ☐ | RIFLE | Dragunov | `tacz:dragunov` | `ak47` |
+| ☑ | ☐ | SMG | Tommy Gun | `tacz:tommy_gun` | `ump45` |
+| ☑ | ☐ | SMG | MP9 | `tacz:mp9` | `micro_uzi` |
+| ☑ | ☐ | SMG | JS9 | `tacz:js9` | `aug` |
+| ☑ | ☐ | SNIPER | Win94 | `tacz:win94` | `kar98` |
+| ☑ | ☐ | SNIPER | M24 | `tacz:m24` | `m700` |
+| ☑ | ☐ | SHOTGUN | S12K | `tacz:s12k` | `ak47` |
+| ☑ | ☐ | SHOTGUN | DBS | `tacz:dbs` | `m870` |
+| ☑ | ☐ | SHOTGUN | O12 | `tacz:o12` | `aa12` |
+| ☑ | ☐ | MG | MG3 | `tacz:mg3` | `m249` |
+| ☑ | ☐ | MG | RPD | `tacz:rpd` | `m249` |
+| ☑ | ☐ | PISTOL | Skorpion | `tacz:skorpion` | `mp5k` |
+| ☑ | ☐ | PISTOL | R1895 | `tacz:r1895` | `rhino357` |
 
 ### 검증 상태
 
 - [x] 22종 ID·탄종·발사 모드·장탄수·기본 밸런스 설계
-- [x] 22종 생성 리소스 경로와 기존 default gun pack 로딩 구조 연결
-- [x] 한국어·영어 이름과 설명 키 추가
+- [x] 22종 리소스 파일 작성과 `tools/pubg_guns/build.py` 정합성 검사 통과
+- [x] 한국어·영어 이름과 설명, 등급 색 적용
 - [ ] Gradle 빌드
-- [ ] 22종 생성 파일 실제 산출 확인
-- [ ] 1인칭 손 위치·ADS·재장전·부착물 위치 인게임 확인
+- [ ] 1인칭 손 위치·조준 정렬·재장전·부착물 위치 인게임 확인
 - [ ] 서버/클라이언트 동기화와 거리별 피해 실측
 
 ## 이전 신규 제작 목록(참고) — 일반 총기 27종
@@ -196,7 +185,7 @@ PUBG Update 42.1에서 **월드 스폰 제외**된 Mosin Nagant, R45, DP-28, PP-
 
 ### 22종 사운드 확장
 
-- [x] 22종 발사음 레이어 프로필 추가
+- [x] 22종 기본 발사음 지정과 덧소리 레이어 프로필 추가
 - [x] 1인칭/3인칭 발사음 레이어 분리
 - [x] 소음기 발사음 레이어 분리
 - [x] VSS는 소음기 계열 샘플만 사용

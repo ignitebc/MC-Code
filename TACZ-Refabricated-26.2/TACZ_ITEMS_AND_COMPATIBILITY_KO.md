@@ -6,7 +6,7 @@
 
 총기 이름을 누르면 해당 총기의 슬롯별 전체 호환표로, 부품 이름을 누르면 효과와 사용 가능한 모든 총기 목록으로 이동합니다. 브라우저나 편집기의 찾기 기능으로 영문 총기 이름, 한글 부품 이름 또는 `tacz:` ID를 검색할 수도 있습니다.
 
-언어 파일은 한국어(`ko_kr`)와 영어(`en_us`)를 제공합니다. 이 도감의 기존 54종 중 이름을 변경한 5종은 현재 표시 이름과 내부 ID를 반영했습니다. 소드오프는 영어 설정에서 Sawed-Off로 표시합니다. 추가된 SLR을 포함한 기본 팩은 총 55종이며, SLR 및 ID 호환 처리의 상세 내용은 [PUBG 총기 체크리스트](docs/PUBG_GUN_CHECKLIST.md)를 참고하세요.
+언어 파일은 한국어(`ko_kr`)와 영어(`en_us`)를 제공합니다. 이 도감의 기존 54종 중 이름을 변경한 5종은 현재 표시 이름과 내부 ID를 반영했습니다. 소드오프는 영어 설정에서 Sawed-Off로 표시합니다. 기본 팩 전체는 `index/guns` 기준으로 현재 76종입니다. 이 도감의 표는 나중에 추가된 SLR과 PUBG 계열 22종을 다루지 않으며, 22종의 목록은 [3-1절](#pubg-guns)에 따로 있습니다. SLR 및 ID 호환 처리의 상세 내용은 [PUBG 총기 체크리스트](docs/PUBG_GUN_CHECKLIST.md)를 참고하세요.
 
 | 목차 | 내용 |
 | --- | --- |
@@ -172,6 +172,37 @@
 | [RPG-7](#gun-rpg7) | `tacz:rpg7` | [RPG-7 로켓](#ammo-rpg_rocket) | 1 | 단발 | 1발 장전식 로켓 발사 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/rpg7.json) |
 
 <a id="ammo"></a>
+<a id="pubg-guns"></a>
+
+### 3-1. PUBG 계열 추가 총기 — 22종
+
+수치·특수 동작은 [22종 설계 문서](docs/PUBG_GUN_EXPANSION_22.md)를 봅니다. 5·6절의 부착물 호환표에는 아직 넣지 않았습니다.
+
+| 영문 총기 이름 | 총기 ID | 분류 | 사용 탄약 | 기본 장탄수 | 발사 모드 | 제작 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Groza | `tacz:groza` | 소총 | [`762x39`](#ammo-762x39) | 30 | 자동 / 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/groza.json) |
+| Beryl M762 | `tacz:beryl_m762` | 소총 | [`762x39`](#ammo-762x39) | 30 | 자동 / 점사 / 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/beryl_m762.json) |
+| ACE32 | `tacz:ace32` | 소총 | [`762x39`](#ammo-762x39) | 30 | 자동 / 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/ace32.json) |
+| FAMAS | `tacz:famas` | 소총 | [`556x45`](#ammo-556x45) | 25 | 자동 / 점사 / 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/famas.json) |
+| K2 | `tacz:k2` | 소총 | [`556x45`](#ammo-556x45) | 30 | 자동 / 점사 / 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/k2.json) |
+| Mk47 Mutant | `tacz:mk47_mutant` | 소총 | [`762x39`](#ammo-762x39) | 20 | 점사 / 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/mk47_mutant.json) |
+| Mini14 | `tacz:mini14` | 소총 | [`556x45`](#ammo-556x45) | 20 | 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/mini14.json) |
+| Mk12 | `tacz:mk12` | 소총 | [`556x45`](#ammo-556x45) | 20 | 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/mk12.json) |
+| VSS | `tacz:vss` | 소총 | [`9mm`](#ammo-9mm) | 10 | 자동 / 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/vss.json) |
+| Dragunov | `tacz:dragunov` | 소총 | [`308`](#ammo-308) | 10 | 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/dragunov.json) |
+| Tommy Gun | `tacz:tommy_gun` | 기관단총 | [`45acp`](#ammo-45acp) | 30 | 자동 / 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/tommy_gun.json) |
+| MP9 | `tacz:mp9` | 기관단총 | [`9mm`](#ammo-9mm) | 25 | 자동 / 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/mp9.json) |
+| JS9 | `tacz:js9` | 기관단총 | [`9mm`](#ammo-9mm) | 30 | 자동 / 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/js9.json) |
+| Win94 | `tacz:win94` | 저격소총 | [`45_70`](#ammo-45_70) | 8 | 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/win94.json) |
+| M24 | `tacz:m24` | 저격소총 | [`308`](#ammo-308) | 5 | 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/m24.json) |
+| S12K | `tacz:s12k` | 산탄총 | [`12g`](#ammo-12g) | 5 | 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/s12k.json) |
+| DBS | `tacz:dbs` | 산탄총 | [`12g`](#ammo-12g) | 13 | 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/dbs.json) |
+| O12 | `tacz:o12` | 산탄총 | [`12g`](#ammo-12g) | 5 | 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/o12.json) |
+| MG3 | `tacz:mg3` | 경기관총 | [`308`](#ammo-308) | 75 | 자동 / 점사 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/mg3.json) |
+| RPD | `tacz:rpd` | 경기관총 | [`762x39`](#ammo-762x39) | 100 | 자동 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/rpd.json) |
+| Skorpion | `tacz:skorpion` | 권총 | [`9mm`](#ammo-9mm) | 20 | 자동 / 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/skorpion.json) |
+| R1895 | `tacz:r1895` | 권총 | [`357mag`](#ammo-357mag) | 7 | 단발 | [레시피 있음](src/main/resources/assets/tacz/custom/tacz_default_gun/data/tacz/recipe/gun/r1895.json) |
+
 ## 4. 탄약 전체 목록 — 24종
 
 사용 총기는 기본 총기 54종의 ammo 필드를 역으로 대조했습니다. 현실 총기의 구경을 추정해서 연결하지 않았습니다. 보관 발수는 기본 탄약상자 설정 기준입니다.
