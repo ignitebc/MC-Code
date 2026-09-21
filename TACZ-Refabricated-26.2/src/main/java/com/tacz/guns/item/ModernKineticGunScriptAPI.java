@@ -27,8 +27,10 @@ import com.tacz.guns.resource.pojo.data.gun.*;
 import com.tacz.guns.sound.SoundManager;
 import com.tacz.guns.util.AttachmentDataUtils;
 import com.tacz.guns.util.CycleTaskHelper;
+import com.tacz.guns.util.ItemNbtUtils;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.component.CustomData;
@@ -48,6 +50,10 @@ import java.util.function.Supplier;
 @SuppressWarnings("unused")
 public class ModernKineticGunScriptAPI {
     public static String MARKER = "ScriptAPI";
+    /**
+     * 스크립트 상태를 모아 두는 총기 커스텀 데이터 하위 태그 이름
+     */
+    private static final String SCRIPT_STATE_TAG = "ScriptState";
 
     private LivingEntity shooter;
 
@@ -723,6 +729,38 @@ public class ModernKineticGunScriptAPI {
      */
     public LuaNbtAccessor getNbt() {
         return nbtUtil;
+    }
+
+    /**
+     * 스크립트가 총기 아이템에 남겨 둔 정수 상태를 읽는다. 값이 없으면 0 이다.<br/>
+     * {@link #getNbt()} 는 복사본이라 거기에 쓴 값은 아이템에 남지 않고, {@link #cacheScriptData} 는
+     * 재장전·무기 교체 때 지워진다. 그 뒤에도 유지되어야 하는 상태는 이 메서드 쌍으로 다룬다.
+     *
+     * @param key 상태 이름
+     * @return 저장된 값
+     */
+    public int getScriptStateInt(String key) {
+        if (itemStack == null) {
+            return 0;
+        }
+        return ItemNbtUtils.getTag(itemStack).getCompoundOrEmpty(SCRIPT_STATE_TAG).getIntOr(key, 0);
+    }
+
+    /**
+     * 스크립트 상태를 총기 아이템에 저장한다. 참고: {@link #getScriptStateInt(String)}
+     *
+     * @param key   상태 이름
+     * @param value 저장할 값
+     */
+    public void setScriptStateInt(String key, int value) {
+        if (itemStack == null) {
+            return;
+        }
+        ItemNbtUtils.updateTag(itemStack, nbt -> {
+            CompoundTag state = nbt.getCompoundOrEmpty(SCRIPT_STATE_TAG);
+            state.putInt(key, value);
+            nbt.put(SCRIPT_STATE_TAG, state);
+        });
     }
 
     /**
