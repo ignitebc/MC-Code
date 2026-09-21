@@ -1,0 +1,9 @@
+{
+  "name": "tacz.gun.ace32.name",
+  "display": "tacz:ace32_display",
+  "data": "tacz:ace32_data",
+  "tooltip": "tacz.gun.ace32.desc",
+  "type": "rifle",
+  "item_type": "modern_kinetic",
+  "sort": 22
+}

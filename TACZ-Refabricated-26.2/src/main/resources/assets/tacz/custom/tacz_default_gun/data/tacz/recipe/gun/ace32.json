@@ -1,0 +1,33 @@
+{
+  "materials": [
+    {
+      "item": "#c:ingots/iron",
+      "count": 84
+    },
+    {
+      "item": "#c:ingots/copper",
+      "count": 11
+    },
+    {
+      "item": "#c:ingots/gold",
+      "count": 26
+    },
+    {
+      "item": "minecraft:coal",
+      "count": 17
+    },
+    {
+      "item": "#c:gems/emerald",
+      "count": 7
+    },
+    {
+      "item": "#c:gems/quartz",
+      "count": 20
+    }
+  ],
+  "result": {
+    "type": "gun",
+    "id": "tacz:ace32"
+  },
+  "type": "tacz:gun_smith_table_crafting"
+}
