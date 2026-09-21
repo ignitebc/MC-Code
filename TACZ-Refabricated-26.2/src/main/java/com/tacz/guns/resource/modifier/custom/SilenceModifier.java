@@ -3,6 +3,8 @@ package com.tacz.guns.resource.modifier.custom;
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
 import com.tacz.guns.api.GunProperties;
+import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.modifier.CacheValue;
 import com.tacz.guns.api.modifier.IAttachmentModifier;
 import com.tacz.guns.api.modifier.JsonProperty;
@@ -10,10 +12,12 @@ import com.tacz.guns.config.common.GunConfig;
 import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import com.tacz.guns.resource.modifier.ModifierText;
+import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
 import com.tacz.guns.resource.pojo.data.attachment.Modifier;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -47,7 +51,45 @@ public class SilenceModifier implements IAttachmentModifier<Pair<Modifier, Boole
     @Override
     public CacheValue<Pair<Integer, Boolean>> initCache(ItemStack gunItem, GunData gunData) {
         int defaultDistance = GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE.get();
-        return new CacheValue<>(Pair.of(defaultDistance, false));
+        Pair<Modifier, Boolean> builtinSilence = getBuiltinMuzzleSilence(gunData);
+        if (builtinSilence == null) {
+            return new CacheValue<>(Pair.of(defaultDistance, false));
+        }
+        double builtinDistance = AttachmentPropertyManager.eval(builtinSilence.left(), defaultDistance);
+        return new CacheValue<>(Pair.of((int) Math.round(builtinDistance), builtinSilence.right()));
+    }
+
+    /**
+     * 일체형 총구(builtin_attachments.muzzle)의 소음 수치를 읽는다.
+     * <p>
+     * 일체형 부착물은 실제 장착 슬롯에 들어 있지 않아 {@code AttachmentDataUtils.getAllAttachmentData} 가 모으는 효과에서
+     * 빠진다. 그래서 VSS 처럼 소음기를 내장한 총이 총성 거리와 소음기 음원 판단에서는 일반 총으로 계산됐다.
+     * 다른 능력치까지 일체형 부착물에서 끌어오면 AUG, P90 의 내장 조준경 무게와 조준 시간이 함께 바뀌므로 소음 효과만 읽는다.
+     *
+     * @return 소음 수치. 일체형 총구가 없거나 소음 수치가 없으면 null
+     */
+    @Nullable
+    private static Pair<Modifier, Boolean> getBuiltinMuzzleSilence(GunData gunData) {
+        Identifier muzzleId = gunData.getBuiltInAttachments().get(AttachmentType.MUZZLE);
+        if (muzzleId == null) {
+            return null;
+        }
+        AttachmentData attachmentData = gunData.getExclusiveAttachments().get(muzzleId);
+        if (attachmentData == null) {
+            attachmentData = TimelessAPI.getCommonAttachmentIndex(muzzleId).map(index -> index.getData()).orElse(null);
+        }
+        if (attachmentData == null) {
+            return null;
+        }
+        JsonProperty<?> silenceProperty = attachmentData.getModifier().get(ID);
+        if (silenceProperty == null) {
+            return null;
+        }
+        Object value = silenceProperty.getValue();
+        if (value instanceof Pair<?, ?> pair && pair.left() instanceof Modifier distance && pair.right() instanceof Boolean useSilenceSound) {
+            return Pair.of(distance, useSilenceSound);
+        }
+        return null;
     }
 
     @Override
