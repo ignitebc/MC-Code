@@ -1568,7 +1568,6 @@ FMJ탄·고폭탄·할로우 포인트 탄·소이탄·산탄총 슬러그 탄�
 
 | 항목 | 관련 총기 | 설명 |
 | --- | --- | --- |
-| `tacz:muzzle_duckbill_sg` — 산탄총 덕빌 총구 부착물 | [AA12 Shotgun](#gun-aa12), [M1014 Battle Shotgun](#gun-m1014), [M870](#gun-m870), [SPAS-12 Multi-purpose Shotgun](#gun-spas_12) | 허용 태그에는 있으나 index/attachments에 아이템 정의가 없습니다. 등록된 99종과 장착 가능 목록에서 제외했습니다. |
 
 ### 8.3 숨김 부품과 미사용 탄약
 
