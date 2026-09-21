@@ -32,7 +32,7 @@ SCOPE_TAGS = {
     "sight_only": ["#tacz:scope_sight"],
     "default": ["#tacz:scope_sight", "#tacz:scope_scope"],
 }
-SIGHT_ONLY_GUNS = ("tommy_gun", "skorpion")
+SIGHT_ONLY_GUNS = ("tommy_gun", "skorpion", "o12")
 
 
 def attachment_tags(gun_id, spec):

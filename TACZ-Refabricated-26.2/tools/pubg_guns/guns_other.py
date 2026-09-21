@@ -174,7 +174,7 @@ def dbs(m):
 
 
 def o12(m):
-    """aa12 베이스(총열 축 y=10.8). 키 큰 총몸, 굵은 곧은 탄창, 큰 제퇴기. 3단계 확장은 드럼."""
+    """aa12 베이스(총열 축 y=10.8). 키 큰 총몸, 30발 고정 드럼 탄창, 큰 제퇴기."""
     body, bolt = "body", "bolt"
     chamfer(m, body, 2.2, 10.0, 4.0, -12.0, 21.0, "metal", c=0.4, style="panel")
     chamfer(m, body, 2.0, 8.0, 2.2, -6.0, 15.0, "metal", c=0.35)
@@ -185,7 +185,6 @@ def o12(m):
     rail_top = rail(m, body, 14.0, -18.6, 8.6, w=1.5)
     chamfer(m, body, 2.0, 9.4, 4.6, -19.0, 7.0, "metal_dark", c=0.6, style="vents")
     grip_y = bottom_rail(m, body, 9.4, -18.4, -13.0, w=1.3)
-    laser_x = side_rail_stub(m, body, 1.0, 11.4, -16.0)
     tube(m, body, 10.8, -22.2, -19.0, 0.62, "metal_dark")
     # aa12 베이스에는 muzzle_default 뼈가 없다. 새로 만들어야 총구 부착물을 달 때 기본 제퇴기가 숨는다
     m.add_bone("muzzle_default", body)
@@ -195,12 +194,11 @@ def o12(m):
     tube(m, body, 11.4, 9.0, 12.0, 0.6, "metal_dark")
     poly_stock(m, body, 10.4, 18.4, 12.6, 5.6, w=1.6, cutout=True)
     pins(m, body, 1.12, [(9.0, -4.4), (9.0, 6.8), (11.6, 7.6)])
-    for level, extra in zip(MAG_LEVELS[:3], (0.0, 2.2, 4.2)):
-        box_mag(m, level, -5.0, 7.4, 4.0, 3.2 + extra, w=1.8, material="poly", style="hribs")
-    m.cbox("mag_extended_3", 1.8, 5.0, 2.4, -5.0, 4.0, "poly")
-    drum(m, "mag_extended_3", 3.0, -3.0, 3.4, 2.6, material="poly")
+    # 30발 드럼 고정: 삽입구에 꽂히는 목과 그 아래 드럼
+    m.cbox("mag_standard", 1.8, 5.0, 2.4, -5.0, 4.0, "poly")
+    drum(m, "mag_standard", 3.0, -3.0, 3.4, 2.6, material="poly")
     m.meta = {"muzzle_z": -22.2, "flash_z": -25.4, "bore_y": 10.8, "scope": (rail_top, 3.0), "iron_y": rail_top + 0.4,
-              "grip": (grip_y, -15.6), "laser": (laser_x, 11.4, -16.0), "shell": (-0.7, 11.4, -1.0)}
+              "grip": (grip_y, -15.6), "shell": (-0.7, 11.4, -1.0)}
 
 
 def lmg_common(m, body, stock_material):
@@ -242,7 +240,7 @@ def mg3(m):
 
 
 def rpd(m):
-    """m249 베이스. 목재 개머리판·손잡이·핸드가드, 총열 밑 가스관, 총몸 밑 원형 드럼."""
+    """m249 베이스. 목재 개머리판·손잡이·핸드가드, 총열 밑 가스관, 총몸 밑 원형 드럼(확장 단계마다 커진다)."""
     body = "body"
     chamfer(m, body, 1.9, 6.4, 3.0, -2.0, 13.0, "metal", c=0.3, style="panel")
     chamfer(m, "cap", 1.7, 9.4, 0.8, 0.0, 8.2, "metal", c=0.3)
@@ -259,15 +257,19 @@ def rpd(m):
     tube(m, body, 8.4, -22.8, -22.2, 0.56, "metal")
     m.add("pull_handle", RIGHT * 0.95 - 0.8, 7.4, 2.0, 0.8, 0.5, 0.7, "steel")
     lmg_common(m, body, "wood")
-    wood_stock(m, body, 11.0, 23.0, 9.2, 2.6, 5.2, 1.4, w=1.7, material="wood", butt="steel")
+    # m249 베이스에는 개머리판·탄창 단계 뼈가 없다. 새로 만들어야 부착물에 따라 보이고 숨는다
+    m.add_bone("stock_default", body)
+    wood_stock(m, "stock_default", 11.0, 23.0, 9.2, 2.6, 5.2, 1.4, w=1.7, material="wood", butt="steel")
     bipod(m, body, -19.0, 8.0, length=7.0, folded=True)
     pins(m, body, 0.96, [(7.2, -1.0), (7.0, 5.2), (8.4, 9.6)])
-    drum(m, "magazine", 3.2, 1.6, 3.0, 2.2, material="metal_dark")
     m.add("magazine", -0.7, 6.0, 0.4, 1.4, 0.6, 2.4, "metal_dark")
+    for level, radius in zip(MAG_LEVELS, (2.6, 2.9, 3.2, 3.5)):
+        m.add_bone(level, "magazine")
+        drum(m, level, 6.0 - radius, 1.6, radius, 2.2, material="metal_dark")
     for index in range(4):
         m.add("bullet_chain", 0.9, 8.7, 1.2 + index * 0.62, 1.2, 0.32, 0.32, "brass", detail=True)
     m.meta = {"muzzle_z": -22.8, "flash_z": -23.2, "bore_y": 8.4, "scope": (rail_top, 4.6), "iron_y": sight_top - 0.2,
-              "shell": (-0.9, 6.6, 2.0)}
+              "stock": ar_stock_adapter(m, 8.2, 11.0, 12.2), "shell": (-0.9, 6.6, 2.0)}
 
 
 def r1895(m):

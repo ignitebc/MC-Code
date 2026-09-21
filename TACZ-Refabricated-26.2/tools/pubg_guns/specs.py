@@ -100,7 +100,7 @@ SPECS = {
         desc_en="The fastest 9mm SMG at 1100 RPM. Extremely light and mobile, but short-ranged."),
     "js9": dict(
         ko="JS9", en="JS9", type="smg", sort=8, tier="C", base="aug", like="mp5k",
-        ammo="tacz:9mm", mag=30, ext=(35, 40, 45), rpm=880, modes=("auto", "semi"),
+        ammo="tacz:9mm", mag=30, ext=(35, 40, 45), rpm=900, modes=("auto", "semi"),
         damage=1.8, ranges=RANGES["smg"], armor=0.2, head=1.3, speed=200, weight=2.9, aim=0.13,
         recoil=(0.45, 0.45), spread=0.85, atts=("scope", "muzzle", "extended_mag", "laser"),
         desc_ko="반동이 매우 작은 불펍형 9mm 기관단총. 손잡이와 개머리판 슬롯은 없습니다.",
@@ -135,11 +135,11 @@ SPECS = {
         desc_en="A twin-barrel bullpup pump shotgun. Fires two quick shots per pump and holds 14 shells."),
     "o12": dict(
         ko="O12", en="O12", type="shotgun", sort=6, tier="A", base="aa12", like="aa12",
-        ammo="tacz:12g", mag=5, ext=(10, 15, 20), rpm=300, modes=("semi",),
-        damage=5.6, pellets=1, ranges=(40, 80), armor=0.3, head=1.5, speed=220, pierce=2, weight=4.2, aim=0.17,
-        recoil=(4.0, 2.5), spread=0.5, aim_spread=0.25, atts=("scope", "grip", "muzzle", "extended_mag", "laser"),
-        desc_ko="산탄 대신 슬러그 단일탄을 쏘는 반자동 산탄총. 산탄총 중 유효 사거리가 가장 깁니다.",
-        desc_en="A semi-auto shotgun firing single slugs, with the longest reach of any shotgun."),
+        ammo="tacz:12g", mag=30, ext=None, rpm=480, modes=("auto", "burst", "semi"), burst=(3, 480, 0.55),
+        damage=4.2, pellets=1, ranges=(30, 60), armor=0.25, head=1.5, speed=220, pierce=2, weight=4.6, aim=0.19,
+        recoil=(5.0, 3.0), spread=0.5, aim_spread=0.3, atts=("scope", "grip", "muzzle"),
+        desc_ko="30발 드럼에 슬러그 단일탄을 담아 단발·3점사·연사로 쏘는 자동 산탄총. 산탄총 중 유효 사거리가 가장 길고, 탄창은 바꿀 수 없습니다.",
+        desc_en="An automatic shotgun feeding single slugs from a fixed 30-round drum, with semi, burst and full-auto fire and the longest reach of any shotgun."),
     "mg3": dict(
         ko="MG3", en="MG3", type="mg", sort=5, tier="S", base="m249", like="fn_evolys",
         ammo="tacz:308", mag=75, ext=None, rpm=660, modes=("auto", "burst"), burst=(3, 990, 0.18, True),
@@ -149,11 +149,11 @@ SPECS = {
         desc_en="A 7.62mm LMG with 660 and 990 RPM settings. The fast setting sits in the burst fire-mode slot."),
     "rpd": dict(
         ko="RPD", en="RPD", type="mg", sort=6, tier="A", base="m249", like="fn_evolys",
-        ammo="tacz:762x39", mag=100, ext=None, rpm=650, modes=("auto",),
-        damage=2.9, ranges=RANGES["mg"], armor=0.3, head=1.5, speed=260, pierce=2, weight=7.4, aim=0.28,
-        recoil=(0.95, 0.9), spread=1.0, crawl=0.3, atts=("scope",),
-        desc_ko="100발 드럼을 쓰는 7.62mm 경기관총. 연사는 느리지만 안정적이고 오래 쏠 수 있습니다.",
-        desc_en="A 7.62mm LMG fed from a 100-round drum. Slow but steady and long-lasting."),
+        ammo="tacz:762x39", mag=50, ext=(70, 90, 110), rpm=750, modes=("auto",),
+        damage=2.7, ranges=RANGES["mg"], armor=0.3, head=1.5, speed=260, pierce=2, weight=7.4, aim=0.28,
+        recoil=(0.95, 0.9), spread=1.0, crawl=0.3, atts=("scope", "stock", "extended_mag"),
+        desc_ko="50발 드럼을 확장 탄창으로 110발까지 늘리는 7.62mm 경기관총. 한 발이 묵직하고 반동을 다루기 쉬우며, 총구와 손잡이는 달 수 없습니다.",
+        desc_en="A 7.62mm LMG whose 50-round drum extends up to 110 rounds. Hard-hitting and controllable, with no muzzle or grip slot."),
     "skorpion": dict(
         ko="스콜피온", en="Skorpion", type="pistol", sort=15, tier="D", base="mp5k", like="b93r",
         ammo="tacz:9mm", mag=20, ext=(25, 30, 35), rpm=850, modes=("auto", "semi"),
