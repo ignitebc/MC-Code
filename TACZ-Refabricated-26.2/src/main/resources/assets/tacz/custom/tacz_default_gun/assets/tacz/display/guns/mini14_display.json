@@ -1,0 +1,127 @@
+{
+  "model": "tacz:gun/mini14_geo",
+  "texture": "tacz:gun/uv/mini14",
+  "lod": {
+    "model": "tacz:gun/lod/mini14",
+    "texture": "tacz:gun/uv/mini14"
+  },
+  "hud": "tacz:gun/hud/mini14",
+  "slot": "tacz:gun/slot/mini14",
+  "animation": "tacz:sks_tactical",
+  "use_default_animation": "rifle",
+  "third_person_animation": "default",
+  "state_machine": "tacz:sks_tactical_state_machine",
+  "transform": {
+    "scale": {
+      "thirdperson": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "ground": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "fixed": [
+        1.2,
+        1.2,
+        1.2
+      ]
+    }
+  },
+  "muzzle_flash": {
+    "texture": "tacz:flash/common_muzzle_flash",
+    "scale": 1.0
+  },
+  "iron_zoom": 1.5,
+  "zoom_model_fov": 45,
+  "shell": {
+    "initial_velocity": [
+      5,
+      2,
+      1
+    ],
+    "random_velocity": [
+      1,
+      1,
+      0.25
+    ],
+    "acceleration": [
+      0.0,
+      -10,
+      0.0
+    ],
+    "angular_velocity": [
+      360,
+      -1200,
+      90
+    ],
+    "living_time": 1.0
+  },
+  "sounds": {
+    "shoot": "tacz:m416/m416_shoot",
+    "shoot_3p": "tacz:m416/m416_shoot_3p",
+    "silence": "tacz:m416/m416_silence",
+    "silence_3p": "tacz:m416/m416_silence_3p",
+    "dry_fire": "tacz:dry_fire",
+    "fire_select": "tacz:fire_select",
+    "head_hit": "tacz:head_hit",
+    "flesh_hit": "tacz:flesh_hit",
+    "kill": "tacz:kill",
+    "melee_push": "tacz:melee_stock/melee_stock_01",
+    "melee_stock": "tacz:melee_stock/melee_stock_03"
+  },
+  "offhand_show": {
+    "pos": [
+      0,
+      19,
+      4
+    ],
+    "rotate": [
+      0,
+      0,
+      60
+    ],
+    "scale": [
+      0.5,
+      0.5,
+      0.5
+    ]
+  },
+  "hotbar_show": {
+    "0": {
+      "pos": [
+        0,
+        19,
+        3
+      ],
+      "rotate": [
+        -180,
+        0,
+        120
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "sound_layers": {
+    "shoot": [
+      {
+        "sound": "tacz:sks/sks_shoot",
+        "volume": 0.6,
+        "pitch": 1.05
+      }
+    ],
+    "shoot_3p": [
+      {
+        "sound": "tacz:sks/sks_shoot_3p",
+        "volume": 0.6,
+        "pitch": 1.04
+      }
+    ]
+  }
+}
