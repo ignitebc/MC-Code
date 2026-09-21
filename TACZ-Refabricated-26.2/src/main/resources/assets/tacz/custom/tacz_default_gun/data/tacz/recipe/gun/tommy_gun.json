@@ -1,0 +1,33 @@
+{
+  "materials": [
+    {
+      "item": "#c:ingots/iron",
+      "count": 81
+    },
+    {
+      "item": "#c:ingots/copper",
+      "count": 11
+    },
+    {
+      "item": "#c:ingots/gold",
+      "count": 8
+    },
+    {
+      "item": "minecraft:coal",
+      "count": 17
+    },
+    {
+      "item": "#c:gems/emerald",
+      "count": 7
+    },
+    {
+      "item": "#c:gems/quartz",
+      "count": 8
+    }
+  ],
+  "result": {
+    "type": "gun",
+    "id": "tacz:tommy_gun"
+  },
+  "type": "tacz:gun_smith_table_crafting"
+}
