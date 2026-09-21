@@ -1,0 +1,125 @@
+{
+  "model": "tacz:gun/mp9_geo",
+  "texture": "tacz:gun/uv/mp9",
+  "hud": "tacz:gun/hud/mp9",
+  "lod": {
+    "model": "tacz:gun/lod/mp9",
+    "texture": "tacz:gun/uv/mp9"
+  },
+  "slot": "tacz:gun/slot/mp9",
+  "animation": "tacz:micro_uzi",
+  "use_default_animation": "rifle",
+  "third_person_animation": "default",
+  "transform": {
+    "scale": {
+      "thirdperson": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "ground": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "fixed": [
+        1.2,
+        1.2,
+        1.2
+      ]
+    }
+  },
+  "muzzle_flash": {
+    "texture": "tacz:flash/common_muzzle_flash",
+    "scale": 0.6
+  },
+  "shell": {
+    "initial_velocity": [
+      5,
+      2,
+      1
+    ],
+    "random_velocity": [
+      1,
+      1,
+      0.25
+    ],
+    "acceleration": [
+      0.0,
+      -10,
+      0.0
+    ],
+    "angular_velocity": [
+      360,
+      -1200,
+      90
+    ],
+    "living_time": 1.0
+  },
+  "sounds": {
+    "shoot": "tacz:b93r/b93r_shoot",
+    "shoot_3p": "tacz:b93r/b93r_shoot_3p",
+    "reload_empty": "tacz:micro_uzi/micro_uzi_reload_empty",
+    "reload_tactical": "tacz:micro_uzi/micro_uzi_reload_tactical",
+    "inspect": "tacz:micro_uzi/micro_uzi_inspect",
+    "inspect_empty": "tacz:micro_uzi/micro_uzi_inspect_empty",
+    "draw": "tacz:micro_uzi/micro_uzi_draw",
+    "put_away": "tacz:micro_uzi/micro_uzi_put_away",
+    "silence": "tacz:b93r/b93r_silence",
+    "silence_3p": "tacz:b93r/b93r_silence_3p",
+    "melee_push": "tacz:melee_stock/melee_stock_03",
+    "melee_stock": "tacz:melee_stock/melee_stock_01"
+  },
+  "offhand_show": {
+    "pos": [
+      1,
+      20,
+      4
+    ],
+    "rotate": [
+      0,
+      0,
+      45
+    ],
+    "scale": [
+      0.5,
+      0.5,
+      0.5
+    ]
+  },
+  "hotbar_show": {
+    "0": {
+      "pos": [
+        1,
+        16,
+        -2
+      ],
+      "rotate": [
+        0,
+        0,
+        20
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "sound_layers": {
+    "shoot": [
+      {
+        "sound": "tacz:p90/p90_shoot",
+        "volume": 0.46,
+        "pitch": 1.12
+      }
+    ],
+    "shoot_3p": [
+      {
+        "sound": "tacz:p90/p90_shoot_3p",
+        "volume": 0.47,
+        "pitch": 1.1
+      }
+    ]
+  }
+}
