@@ -1,12 +1,12 @@
 {
   "materials": [
     {
-      "item": "minecraft:crying_obsidian",
-      "count": 3
+      "item": "#c:ingots/gold",
+      "count": 13
     },
     {
-      "item": "#c:ingots/gold",
-      "count": 8
+      "item": "#c:gems/emerald",
+      "count": 6
     }
   ],
   "result": {

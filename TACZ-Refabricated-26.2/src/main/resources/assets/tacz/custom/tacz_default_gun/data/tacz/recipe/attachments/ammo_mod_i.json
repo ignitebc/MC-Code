@@ -1,11 +1,16 @@
 {
   "materials": [
     {
-      "item": "minecraft:crying_obsidian",
-      "count": 2
+      "item": "minecraft:coal",
+      "count": 24
     },
     {
-      "item": "minecraft:fire_charge"
+      "item": "#c:gems/emerald",
+      "count": 4
+    },
+    {
+      "item": "#c:gunpowders",
+      "count": 15
     },
     {
       "item": "#c:rods/blaze",

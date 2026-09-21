@@ -1,8 +1,8 @@
 {
   "materials": [
     {
-      "item": "minecraft:crying_obsidian",
-      "count": 2
+      "item": "#c:gems/emerald",
+      "count": 4
     },
     {
       "item": "#c:gems/diamond",

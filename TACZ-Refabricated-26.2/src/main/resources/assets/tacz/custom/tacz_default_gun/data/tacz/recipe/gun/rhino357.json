@@ -2,20 +2,28 @@
   "type": "tacz:gun_smith_table_crafting",
   "materials": [
     {
-      "item": "#c:gems/lapis",
-      "count": 8
+      "item": "#c:ingots/iron",
+      "count": 42
+    },
+    {
+      "item": "#c:ingots/copper",
+      "count": 6
     },
     {
       "item": "#c:ingots/gold",
+      "count": 7
+    },
+    {
+      "item": "minecraft:coal",
+      "count": 10
+    },
+    {
+      "item": "#c:gems/lapis",
+      "count": 16
+    },
+    {
+      "item": "#c:gems/emerald",
       "count": 4
-    },
-    {
-      "item": "#c:ingots/iron",
-      "count": 32
-    },
-    {
-      "item": "#minecraft:logs",
-      "count": 5
     }
   ],
   "result": {

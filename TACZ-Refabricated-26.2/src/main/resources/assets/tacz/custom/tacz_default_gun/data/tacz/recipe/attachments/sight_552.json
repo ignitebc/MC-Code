@@ -2,15 +2,23 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 12
+      "count": 16
     },
     {
       "item": "#c:ingots/gold",
-      "count": 5
+      "count": 8
     },
     {
       "item": "#c:dusts/redstone",
-      "count": 6
+      "count": 15
+    },
+    {
+      "item": "#c:gems/quartz",
+      "count": 4
+    },
+    {
+      "item": "minecraft:glowstone",
+      "count": 2
     },
     {
       "item": "#c:glass_blocks",

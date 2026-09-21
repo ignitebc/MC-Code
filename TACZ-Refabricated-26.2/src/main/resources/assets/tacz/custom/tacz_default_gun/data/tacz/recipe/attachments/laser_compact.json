@@ -2,11 +2,11 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 6
+      "count": 8
     },
     {
       "item": "#c:dusts/redstone",
-      "count": 4
+      "count": 10
     }
   ],
   "result": {

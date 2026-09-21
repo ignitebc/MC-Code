@@ -2,11 +2,11 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 12
+      "count": 16
     },
     {
       "item": "#c:gems/lapis",
-      "count": 8
+      "count": 16
     }
   ],
   "result": {

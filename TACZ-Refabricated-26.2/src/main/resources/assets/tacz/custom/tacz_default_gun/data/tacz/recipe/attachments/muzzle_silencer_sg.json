@@ -2,15 +2,15 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 18
+      "count": 24
+    },
+    {
+      "item": "#c:dusts/redstone",
+      "count": 5
     },
     {
       "item": "#c:leathers",
       "count": 5
-    },
-    {
-      "item": "#c:dusts/redstone",
-      "count": 2
     }
   ],
   "result": {

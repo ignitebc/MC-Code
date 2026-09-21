@@ -2,18 +2,23 @@
   "materials": [
     {
       "item": "#c:ingots/copper",
-      "count": 110
+      "count": 165
     },
     {
-      "item": "#c:gunpowders",
-      "count": 20
+      "item": "minecraft:coal",
+      "count": 9
     },
     {
       "item": "#c:gems/lapis",
-      "count": 12
+      "count": 18
     },
     {
-      "item": "#c:rods/blaze"
+      "item": "#c:gunpowders",
+      "count": 27
+    },
+    {
+      "item": "#c:rods/blaze",
+      "count": 1
     }
   ],
   "result": {

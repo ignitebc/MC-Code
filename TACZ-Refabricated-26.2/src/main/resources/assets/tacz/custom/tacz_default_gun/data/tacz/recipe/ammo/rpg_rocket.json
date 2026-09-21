@@ -6,11 +6,15 @@
     },
     {
       "item": "#c:ingots/copper",
-      "count": 30
+      "count": 45
+    },
+    {
+      "item": "minecraft:coal",
+      "count": 6
     },
     {
       "item": "#c:gunpowders",
-      "count": 12
+      "count": 17
     }
   ],
   "result": {

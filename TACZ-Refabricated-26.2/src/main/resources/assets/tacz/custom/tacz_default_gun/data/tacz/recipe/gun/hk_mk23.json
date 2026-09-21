@@ -1,16 +1,28 @@
 {
   "materials": [
     {
-      "item": "#c:ingots/gold",
-      "count": 4
+      "item": "#c:ingots/iron",
+      "count": 47
     },
     {
-      "item": "#c:ingots/iron",
-      "count": 36
+      "item": "#c:ingots/copper",
+      "count": 6
+    },
+    {
+      "item": "#c:ingots/gold",
+      "count": 7
+    },
+    {
+      "item": "minecraft:coal",
+      "count": 10
     },
     {
       "item": "#c:gems/lapis",
-      "count": 2
+      "count": 4
+    },
+    {
+      "item": "#c:gems/emerald",
+      "count": 4
     }
   ],
   "result": {

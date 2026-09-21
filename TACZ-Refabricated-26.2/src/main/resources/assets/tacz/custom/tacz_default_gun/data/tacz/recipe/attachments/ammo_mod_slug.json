@@ -1,11 +1,8 @@
 {
   "materials": [
     {
-      "item": "minecraft:crying_obsidian",
-      "count": 3
-    },
-    {
-      "item": "#c:raw_materials/netherite"
+      "item": "#c:gems/emerald",
+      "count": 12
     }
   ],
   "result": {

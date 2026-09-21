@@ -2,16 +2,28 @@
   "type": "tacz:gun_smith_table_crafting",
   "materials": [
     {
-      "item": "#c:gems/diamond",
-      "count": 1
+      "item": "#c:ingots/iron",
+      "count": 63
+    },
+    {
+      "item": "#c:ingots/copper",
+      "count": 8
     },
     {
       "item": "#c:ingots/gold",
+      "count": 10
+    },
+    {
+      "item": "minecraft:coal",
+      "count": 13
+    },
+    {
+      "item": "#c:gems/emerald",
       "count": 6
     },
     {
-      "item": "#c:ingots/iron",
-      "count": 48
+      "item": "#c:gems/diamond",
+      "count": 1
     }
   ],
   "result": {

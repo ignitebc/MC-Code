@@ -2,15 +2,15 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 36
+      "count": 47
     },
     {
       "item": "#c:ingots/gold",
-      "count": 16
+      "count": 26
     },
     {
       "item": "#c:gems/quartz",
-      "count": 8
+      "count": 20
     },
     {
       "item": "#c:gems/diamond",
