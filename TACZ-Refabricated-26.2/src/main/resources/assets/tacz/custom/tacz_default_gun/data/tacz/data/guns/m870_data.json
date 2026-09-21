@@ -11,15 +11,15 @@
   "bullet": {
     "life": 0.6,
     "bullet_amount": 9,
-    "damage": 10.8,
+    "damage": 8.05,
     "tracer_count_interval": 0,
     "extra_damage": {
       "armor_ignore": 0.25,
       "head_shot_multiplier": 1.33,
       "damage_adjust": [
-        {"distance": 18, "damage": 10.8},
-        {"distance": 32, "damage": 8.1},
-        {"distance": "infinite", "damage": 5.4}
+        {"distance": 12, "damage": 8.05},
+        {"distance": 24, "damage": 6.04},
+        {"distance": "infinite", "damage": 4.02}
       ]
     },
     "speed": 150,
@@ -30,7 +30,7 @@
     "pierce": 1,
     "explosion": {
       "explode": false,
-      "damage": 15,
+      "damage": 11.18,
       "radius": 3,
       "knockback": false,
       "delay": 5
@@ -102,7 +102,7 @@
       "animation_type": "melee_stock",
       "distance": 1,
       "range_angle": 30,
-      "damage": 0.6,
+      "damage": 0.45,
       "knockback": 0.6,
       "prep": 0.1
     }
