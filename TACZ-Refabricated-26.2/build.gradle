@@ -77,26 +77,7 @@ dependencies {
     implementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:26.2.1"
 }
 
-
-def pubgGeneratedResources = layout.buildDirectory.dir("generated/pubg-guns")
-
-sourceSets {
-    main {
-        resources.srcDir(pubgGeneratedResources)
-    }
-}
-
-tasks.register("generatePubgGunResources", Exec) {
-    group = "build"
-    description = "Generates the 22 PUBG-inspired gun resources."
-    inputs.file(layout.projectDirectory.file("tools/PubgGunResourceGenerator.java"))
-    outputs.dir(pubgGeneratedResources)
-    workingDir projectDir
-    commandLine "java", "tools/PubgGunResourceGenerator.java", pubgGeneratedResources.get().asFile.absolutePath
-}
-
 processResources {
-    dependsOn tasks.named("generatePubgGunResources")
     inputs.property "version", project.version
     inputs.property "minecraft_version", project.minecraft_version
     inputs.property "fabric_loader_version", project.fabric_loader_version
