@@ -2,7 +2,7 @@
   "ammo": "tacz:9mm",
   "ammo_amount": 30,
   "bolt": "closed_bolt",
-  "rpm": 880,
+  "rpm": 900,
   "bullet": {
     "life": 0.75,
     "bullet_amount": 1,
