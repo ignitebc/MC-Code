@@ -1,0 +1,21 @@
+{
+  "materials": [
+    {
+      "item": "#c:ingots/iron",
+      "count": 33
+    },
+    {
+      "item": "#c:ingots/copper",
+      "count": 6
+    },
+    {
+      "item": "minecraft:coal",
+      "count": 24
+    }
+  ],
+  "result": {
+    "type": "gun",
+    "id": "tacz:s12k"
+  },
+  "type": "tacz:gun_smith_table_crafting"
+}
