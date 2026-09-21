@@ -327,8 +327,8 @@ public final class PubgGunResourceGenerator {
         value = value.replace("tacz:gun/" + base + "_geo", "tacz:gun/" + id + "_geo");
         value = value.replace("tacz:gun/uv/" + base, "tacz:gun/uv/" + id);
         value = value.replace("tacz:gun/lod/" + base, "tacz:gun/lod/" + id);
-        value = value.replace("tacz:gun/hud/" + base, "tacz:gun/hud/" + id);
-        value = value.replace("tacz:gun/slot/" + base, "tacz:gun/slot/" + id);
+        value = replaceJsonStringValue(value, "hud", "tacz:gun/hud/" + id);
+        value = replaceJsonStringValue(value, "slot", "tacz:gun/slot/" + id);
 
         if (s.b("suppressed")) {
             String silence = jsonStringValue(value, "silence");
@@ -568,6 +568,45 @@ public final class PubgGunResourceGenerator {
         b.add(new Box(-.35, 9.4, rearZ, .7, .75, .45, "dark"));
     }
 
+    private static String magAnimationWrapper(Spec s) {
+        return switch (s.s("base")) {
+            case "ak47", "rpk" -> "lefthand_and_mag";
+            case "scar_h" -> "mag_and_lh";
+            case "ump45" -> "magzine_and_bullet";
+            case "p90" -> "p90_mag_standard";
+            default -> null;
+        };
+    }
+
+    private static String gunAnimationWrapper(Spec s) {
+        return switch (s.s("base")) {
+            case "scar_h", "springfield1873" -> "gun_and_rh";
+            case "ump45" -> "ump45";
+            case "mp5k" -> "Mp5k";
+            case "rpk", "rhino357" -> "righthand_and_gun";
+            default -> null;
+        };
+    }
+
+    private static String boltAnimationWrapper(Spec s) {
+        return switch (s.s("base")) {
+            case "aug" -> "aug_bolt";
+            case "m16a1" -> "m4a1_bolt";
+            case "ump45", "p90" -> "ump45_bolt";
+            case "m1014" -> "Bolt";
+            case "m870" -> "slide2";
+            default -> null;
+        };
+    }
+
+    private static String additionalMagazineBone(Spec s) {
+        return switch (s.s("base")) {
+            case "m16a1" -> "additional_magzine";
+            case "ak47", "scar_h", "sks_tactical", "spr15hb", "fn_fal", "mp5k" -> "additional_magazine";
+            default -> null;
+        };
+    }
+
     private static String geometryJson(Spec s, Model model, boolean lod) {
         List<Box> body = lod ? simplify(model.body()) : model.body();
         List<Box> mag = lod ? simplify(model.magazine()) : model.magazine();
@@ -583,8 +622,15 @@ public final class PubgGunResourceGenerator {
         out.append("        \"texture_width\": 256, \"texture_height\": 256,\n");
         out.append("        \"visible_bounds_width\": 7, \"visible_bounds_height\": 3.5, \"visible_bounds_offset\": [0, 0.7, 0]\n");
         out.append("      },\n      \"bones\": [\n");
-        bone(out, "root", null, new double[]{0, 7.5, 6}, List.of(), false);
-        bone(out, "mag_and_lefthand", "root", new double[]{0, 5, 1}, List.of(), true);
+        String magWrapper = magAnimationWrapper(s);
+        String gunWrapper = gunAnimationWrapper(s);
+        String boltWrapper = boltAnimationWrapper(s);
+
+        bone(out, "root", null, new double[]{0, 7.5, 6}, List.of(), true);
+        if (magWrapper != null) {
+            bone(out, magWrapper, "root", new double[]{0, 5, 1}, List.of(), true);
+        }
+        bone(out, "mag_and_lefthand", magWrapper != null ? magWrapper : "root", new double[]{0, 5, 1}, List.of(), true);
         bone(out, "lefthand", "mag_and_lefthand", new double[]{-6, 19, 0}, List.of(), true);
         bone(out, "lefthand_pos", "lefthand", new double[]{0, 8, 0}, List.of(), true);
         bone(out, "mag_and_bullet", "mag_and_lefthand", new double[]{0, 5, 1}, List.of(), true);
@@ -595,11 +641,21 @@ public final class PubgGunResourceGenerator {
         bone(out, "mag_extended_1", "magazine", new double[]{0, 5, 1}, scaledMagazine(mag, 1.15), true);
         bone(out, "mag_extended_2", "magazine", new double[]{0, 5, 1}, scaledMagazine(mag, 1.30), true);
         bone(out, "mag_extended_3", "magazine", new double[]{0, 5, 1}, scaledMagazine(mag, 1.45), true);
-        bone(out, "gun_and_righthand", "root", new double[]{0, 7.5, 0}, List.of(), true);
+        String additionalMagazine = additionalMagazineBone(s);
+        if (additionalMagazine != null) {
+            bone(out, additionalMagazine, "root", new double[]{0, 5, 1}, mag, true);
+        }
+        if (gunWrapper != null) {
+            bone(out, gunWrapper, "root", new double[]{0, 7.5, 0}, List.of(), true);
+        }
+        bone(out, "gun_and_righthand", gunWrapper != null ? gunWrapper : "root", new double[]{0, 7.5, 0}, List.of(), true);
         bone(out, "righthand", "gun_and_righthand", new double[]{6, 19, 0}, List.of(), true);
         bone(out, "righthand_pos", "righthand", new double[]{0, 8, 0}, List.of(), true);
         bone(out, "default_gun", "gun_and_righthand", new double[]{0, 0, 0}, body, true);
-        bone(out, "bullet_and_bolt", "default_gun", new double[]{0, 8, 0}, List.of(), true);
+        if (boltWrapper != null) {
+            bone(out, boltWrapper, "default_gun", new double[]{0, 8, 0}, List.of(), true);
+        }
+        bone(out, "bullet_and_bolt", boltWrapper != null ? boltWrapper : "default_gun", new double[]{0, 8, 0}, List.of(), true);
         bone(out, "bolt", "bullet_and_bolt", new double[]{0, 8, 0}, bolt, true);
         bone(out, "bullet_in_barrel", "bolt", new double[]{0, 8, -1}, List.of(new Box(-.10, 7.9, muzzleZ + 2, .20, .20, .8, "accent")), true);
         bone(out, "charge_handle", "default_gun", new double[]{0, 8, 0}, List.of(), true);
