@@ -1,0 +1,37 @@
+{
+  "materials": [
+    {
+      "item": "#c:ingots/iron",
+      "count": 189
+    },
+    {
+      "item": "#c:ingots/copper",
+      "count": 24
+    },
+    {
+      "item": "#c:ingots/gold",
+      "count": 48
+    },
+    {
+      "item": "minecraft:coal",
+      "count": 38
+    },
+    {
+      "item": "#c:gems/emerald",
+      "count": 16
+    },
+    {
+      "item": "#c:gems/diamond",
+      "count": 6
+    },
+    {
+      "item": "#c:rods/blaze",
+      "count": 5
+    }
+  ],
+  "result": {
+    "type": "gun",
+    "id": "tacz:mg3"
+  },
+  "type": "tacz:gun_smith_table_crafting"
+}

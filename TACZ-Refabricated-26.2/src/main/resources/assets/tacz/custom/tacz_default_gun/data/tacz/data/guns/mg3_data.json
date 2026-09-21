@@ -1,0 +1,148 @@
+{
+  "ammo": "tacz:308",
+  "ammo_amount": 75,
+  "can_slide": false,
+  "bolt": "open_bolt",
+  "rpm": 660,
+  "bullet": {
+    "life": 1.0,
+    "bullet_amount": 1,
+    "damage": 3.3,
+    "tracer_count_interval": 0,
+    "extra_damage": {
+      "armor_ignore": 0.4,
+      "head_shot_multiplier": 1.5,
+      "damage_adjust": [
+        {
+          "distance": 42,
+          "damage": 3.3
+        },
+        {
+          "distance": 86,
+          "damage": 2.71
+        },
+        {
+          "distance": "infinite",
+          "damage": 2.05
+        }
+      ]
+    },
+    "speed": 290,
+    "gravity": 0.15,
+    "knockback": 0,
+    "friction": 0.015,
+    "ignite": false,
+    "pierce": 2
+  },
+  "reload": {
+    "type": "magazine",
+    "feed": {
+      "empty": 6.4,
+      "tactical": 4.7
+    },
+    "cooldown": {
+      "empty": 7.57,
+      "tactical": 5.9
+    }
+  },
+  "draw_time": 1,
+  "put_away_time": 0.67,
+  "aim_time": 0.32,
+  "sprint_time": 0.25,
+  "weight": 10.5,
+  "movement_speed": {
+    "base": 0.0,
+    "aim": -0.25,
+    "reload": -0.2
+  },
+  "crawl_recoil_multiplier": 0.3,
+  "fire_mode": [
+    "auto",
+    "burst"
+  ],
+  "recoil": {
+    "pitch": [
+      {
+        "time": 0,
+        "value": [
+          0.624,
+          0.624
+        ]
+      },
+      {
+        "time": 0.3,
+        "value": [
+          0.624,
+          0.624
+        ]
+      },
+      {
+        "time": 0.5,
+        "value": [
+          -0.234,
+          -0.234
+        ]
+      },
+      {
+        "time": 0.65,
+        "value": [
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "yaw": [
+      {
+        "time": 0,
+        "value": [
+          -0.429,
+          0.286
+        ]
+      },
+      {
+        "time": 0.3,
+        "value": [
+          -0.429,
+          0.286
+        ]
+      },
+      {
+        "time": 0.5,
+        "value": [
+          0.0,
+          0.0
+        ]
+      }
+    ]
+  },
+  "inaccuracy": {
+    "stand": 4.95,
+    "move": 6.53,
+    "sneak": 2.4,
+    "lie": 1.6,
+    "aim": 0.309,
+    "run": 9.9,
+    "fly": 19.8
+  },
+  "melee": {
+    "distance": 1,
+    "cooldown": 0.8,
+    "default": {
+      "animation_type": "melee_stock",
+      "distance": 0,
+      "range_angle": 30,
+      "damage": 1.2,
+      "knockback": 0.75,
+      "prep": 0.1
+    }
+  },
+  "allow_attachment_types": [
+    "scope"
+  ],
+  "burst_data": {
+    "continuous_shoot": true,
+    "count": 3,
+    "bpm": 990,
+    "min_interval": 0.18
+  }
+}
