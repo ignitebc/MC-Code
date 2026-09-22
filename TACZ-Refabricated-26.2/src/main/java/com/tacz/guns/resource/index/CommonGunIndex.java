@@ -15,6 +15,7 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class CommonGunIndex {
@@ -60,6 +61,7 @@ public class CommonGunIndex {
         Preconditions.checkArgument(!data.getFireModeSet().contains(null) && !data.getFireModeSet().contains(FireMode.UNKNOWN), "fire mode is error");
         checkInaccuracy(data);
         checkRecoil(data);
+        checkDamageAdjust(gunIndexPOJO, data);
         checkScript(data, index);
         index.gunData = data;
     }
@@ -75,6 +77,29 @@ public class CommonGunIndex {
             readInaccuracy.putIfAbsent(InaccuracyType.RUN, stand * InaccuracyType.RUN_STAND_RATIO);
             readInaccuracy.putIfAbsent(InaccuracyType.FLY, stand * InaccuracyType.FLY_STAND_RATIO);
             defaultInaccuracy.forEach(readInaccuracy::putIfAbsent);
+        }
+    }
+
+    /**
+     * 거리별 피해표의 마지막 구간은 반드시 "infinite" 여야 한다.
+     * <p>
+     * {@code EntityKineticBullet#getDamage} 는 어느 구간에도 걸리지 않으면 피해를 0 으로 둔다.
+     * 마지막 구간을 빠뜨린 총기는 그 거리 밖에서 아무 경고 없이 피해가 사라지므로, 불러올 때 알려 준다.
+     * 의도적으로 0 으로 만든 총기도 있을 수 있어 경고만 남기고 값은 건드리지 않는다.
+     */
+    private static void checkDamageAdjust(GunIndexPOJO gunIndexPOJO, GunData data) {
+        ExtraDamage extraDamage = data.getBulletData().getExtraDamage();
+        if (extraDamage == null) {
+            return;
+        }
+        LinkedList<ExtraDamage.DistanceDamagePair> damageAdjust = extraDamage.getDamageAdjust();
+        if (damageAdjust == null || damageAdjust.isEmpty()) {
+            return;
+        }
+        float lastDistance = damageAdjust.getLast().getDistance();
+        if (lastDistance < Float.MAX_VALUE) {
+            GunMod.LOGGER.warn(MARKER, "gun data '{}' has no 'infinite' entry in damage_adjust, damage becomes 0 beyond {} blocks",
+                    gunIndexPOJO.getData(), lastDistance);
         }
     }
 
