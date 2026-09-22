@@ -2,11 +2,19 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 20
+      "count": 30
     },
     {
-      "item": "#c:dusts/redstone",
-      "count": 13
+      "item": "minecraft:magma_cream",
+      "count": 10
+    },
+    {
+      "item": "#c:ingots/gold",
+      "count": 8
+    },
+    {
+      "item": "#c:gems/diamond",
+      "count": 3
     }
   ],
   "result": {

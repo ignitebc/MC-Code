@@ -5,12 +5,16 @@
       "count": 24
     },
     {
-      "item": "#c:ingots/gold",
-      "count": 4
+      "item": "#c:leathers",
+      "count": 26
     },
     {
-      "item": "#c:leathers",
-      "count": 4
+      "item": "minecraft:slime_ball",
+      "count": 12
+    },
+    {
+      "item": "#c:gems/amethyst",
+      "count": 5
     }
   ],
   "result": {

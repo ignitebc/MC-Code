@@ -2,11 +2,15 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 13
+      "count": 8
+    },
+    {
+      "item": "#c:ingots/copper",
+      "count": 4
     },
     {
       "item": "#c:ingots/gold",
-      "count": 48
+      "count": 6
     }
   ],
   "result": {

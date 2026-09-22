@@ -2,14 +2,18 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 24
-    },
-    {
-      "item": "#c:ingots/gold",
-      "count": 7
+      "count": 15
     },
     {
       "item": "#c:leathers",
+      "count": 16
+    },
+    {
+      "item": "minecraft:slime_ball",
+      "count": 8
+    },
+    {
+      "item": "#c:gems/quartz",
       "count": 4
     }
   ],

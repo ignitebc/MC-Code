@@ -2,15 +2,19 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 42
+      "count": 15
     },
     {
-      "item": "#c:ingots/gold",
-      "count": 20
+      "item": "#c:ingots/copper",
+      "count": 14
     },
     {
-      "item": "#c:gems/diamond",
-      "count": 3
+      "item": "minecraft:honeycomb",
+      "count": 4
+    },
+    {
+      "item": "#c:gems/quartz",
+      "count": 4
     }
   ],
   "result": {

@@ -2,19 +2,27 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 13
+      "count": 17
     },
     {
-      "item": "#c:gems/quartz",
-      "count": 4
+      "item": "#c:glass_blocks",
+      "count": 10
+    },
+    {
+      "item": "#c:dusts/redstone",
+      "count": 26
     },
     {
       "item": "minecraft:glowstone",
-      "count": 2
+      "count": 3
+    },
+    {
+      "item": "#c:gems/quartz",
+      "count": 8
     },
     {
       "item": "#c:gems/amethyst",
-      "count": 2
+      "count": 3
     }
   ],
   "result": {

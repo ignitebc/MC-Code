@@ -2,11 +2,19 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 13
+      "count": 19
+    },
+    {
+      "item": "#c:glass_blocks",
+      "count": 10
     },
     {
       "item": "#c:dusts/redstone",
-      "count": 10
+      "count": 42
+    },
+    {
+      "item": "#c:gems/amethyst",
+      "count": 9
     }
   ],
   "result": {

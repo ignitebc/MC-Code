@@ -2,10 +2,18 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 13
+      "count": 24
     },
     {
-      "item": "#c:dusts/redstone",
+      "item": "#c:ingots/copper",
+      "count": 19
+    },
+    {
+      "item": "#minecraft:wool",
+      "count": 29
+    },
+    {
+      "item": "#c:gems/amethyst",
       "count": 5
     }
   ],

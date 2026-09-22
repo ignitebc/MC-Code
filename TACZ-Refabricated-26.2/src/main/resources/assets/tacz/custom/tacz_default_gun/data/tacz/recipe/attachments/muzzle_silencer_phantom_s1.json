@@ -2,15 +2,19 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 21
+      "count": 15
     },
     {
-      "item": "#c:dusts/redstone",
-      "count": 5
+      "item": "#c:ingots/copper",
+      "count": 12
     },
     {
-      "item": "#c:leathers",
-      "count": 6
+      "item": "#minecraft:wool",
+      "count": 18
+    },
+    {
+      "item": "#c:gems/quartz",
+      "count": 4
     }
   ],
   "result": {

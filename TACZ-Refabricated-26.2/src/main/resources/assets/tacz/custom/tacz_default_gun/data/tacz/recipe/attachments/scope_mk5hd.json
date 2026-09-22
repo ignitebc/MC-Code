@@ -2,23 +2,27 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 32
+      "count": 24
+    },
+    {
+      "item": "#c:glass_blocks",
+      "count": 14
     },
     {
       "item": "#c:dusts/redstone",
-      "count": 20
-    },
-    {
-      "item": "#c:gems/quartz",
-      "count": 4
+      "count": 36
     },
     {
       "item": "minecraft:glowstone",
-      "count": 8
+      "count": 5
     },
     {
-      "item": "#c:gems/amethyst",
-      "count": 10
+      "item": "#c:gems/quartz",
+      "count": 11
+    },
+    {
+      "item": "minecraft:prismarine_crystals",
+      "count": 5
     }
   ],
   "result": {

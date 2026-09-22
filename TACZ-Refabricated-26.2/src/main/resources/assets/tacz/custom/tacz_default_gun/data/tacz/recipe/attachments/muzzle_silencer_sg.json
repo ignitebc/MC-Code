@@ -5,11 +5,15 @@
       "count": 24
     },
     {
-      "item": "#c:dusts/redstone",
-      "count": 5
+      "item": "#c:ingots/copper",
+      "count": 19
     },
     {
-      "item": "#c:leathers",
+      "item": "#minecraft:wool",
+      "count": 29
+    },
+    {
+      "item": "#c:gems/amethyst",
       "count": 5
     }
   ],

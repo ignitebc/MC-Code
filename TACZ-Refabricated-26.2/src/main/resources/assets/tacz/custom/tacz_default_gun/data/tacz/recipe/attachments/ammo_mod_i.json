@@ -1,20 +1,24 @@
 {
   "materials": [
     {
-      "item": "minecraft:coal",
-      "count": 24
-    },
-    {
-      "item": "#c:gems/emerald",
-      "count": 4
+      "item": "#c:ingots/iron",
+      "count": 18
     },
     {
       "item": "#c:gunpowders",
-      "count": 15
+      "count": 27
     },
     {
-      "item": "#c:rods/blaze",
-      "count": 4
+      "item": "minecraft:blaze_powder",
+      "count": 6
+    },
+    {
+      "item": "#c:gems/diamond",
+      "count": 2
+    },
+    {
+      "item": "#c:gems/emerald",
+      "count": 2
     }
   ],
   "result": {

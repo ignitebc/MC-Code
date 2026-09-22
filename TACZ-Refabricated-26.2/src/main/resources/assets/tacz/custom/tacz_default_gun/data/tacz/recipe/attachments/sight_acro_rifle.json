@@ -5,15 +5,19 @@
       "count": 8
     },
     {
-      "item": "#c:dusts/redstone",
-      "count": 3
+      "item": "#c:glass_blocks",
+      "count": 6
     },
     {
-      "item": "#c:gems/quartz",
-      "count": 4
+      "item": "#c:dusts/redstone",
+      "count": 10
     },
     {
       "item": "minecraft:glowstone",
+      "count": 2
+    },
+    {
+      "item": "#c:ingots/gold",
       "count": 2
     }
   ],

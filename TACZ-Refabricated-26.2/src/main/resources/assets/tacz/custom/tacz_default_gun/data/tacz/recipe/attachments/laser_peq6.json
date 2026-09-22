@@ -2,15 +2,23 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 21
+      "count": 28
+    },
+    {
+      "item": "#c:glass_blocks",
+      "count": 14
     },
     {
       "item": "#c:dusts/redstone",
-      "count": 10
+      "count": 62
     },
     {
       "item": "#c:gems/amethyst",
-      "count": 1
+      "count": 7
+    },
+    {
+      "item": "minecraft:prismarine_crystals",
+      "count": 6
     }
   ],
   "result": {
