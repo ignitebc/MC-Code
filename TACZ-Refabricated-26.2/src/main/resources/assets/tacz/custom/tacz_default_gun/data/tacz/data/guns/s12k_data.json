@@ -52,7 +52,14 @@
     "knockback": 0.15,
     "friction": 0.05,
     "ignite": false,
-    "pierce": 1
+    "pierce": 1,
+    "explosion": {
+      "explode": false,
+      "damage": 7.2,
+      "radius": 2.5,
+      "knockback": false,
+      "delay": 5
+    }
   },
   "fire_sound": {
     "fire_multiplier": 1.0,
