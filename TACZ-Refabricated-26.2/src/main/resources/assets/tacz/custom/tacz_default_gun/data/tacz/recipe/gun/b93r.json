@@ -6,15 +6,19 @@
     },
     {
       "item": "#c:ingots/copper",
-      "count": 6
+      "count": 25
     },
     {
       "item": "minecraft:coal",
-      "count": 10
+      "count": 21
+    },
+    {
+      "item": "#c:glass_blocks",
+      "count": 14
     },
     {
       "item": "#c:gems/lapis",
-      "count": 4
+      "count": 8
     }
   ],
   "result": {

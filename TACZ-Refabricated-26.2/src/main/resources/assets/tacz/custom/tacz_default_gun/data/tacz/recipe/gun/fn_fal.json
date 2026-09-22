@@ -2,27 +2,35 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 84
+      "count": 90
     },
     {
       "item": "#c:ingots/copper",
-      "count": 11
-    },
-    {
-      "item": "#c:ingots/gold",
-      "count": 16
+      "count": 79
     },
     {
       "item": "minecraft:coal",
-      "count": 60
+      "count": 89
     },
     {
-      "item": "#c:gems/lapis",
-      "count": 40
+      "item": "#c:glass_blocks",
+      "count": 52
+    },
+    {
+      "item": "#c:ingots/gold",
+      "count": 24
+    },
+    {
+      "item": "#c:gems/quartz",
+      "count": 30
+    },
+    {
+      "item": "#c:gems/amethyst",
+      "count": 19
     },
     {
       "item": "#c:gems/emerald",
-      "count": 7
+      "count": 8
     }
   ],
   "result": {
