@@ -19,6 +19,11 @@ import java.util.List;
 
 public class ExplosionModifier implements IAttachmentModifier<ExplosionModifier.ExplosionModifierValue, ExplosionData> {
     public static final String ID = GunProperties.EXPLOSION.name();
+    /**
+     * 총기 자체에 폭발 수치가 없을 때 쓰는 기본값.
+     * 고폭탄처럼 폭발만 켜는 부품이 붙으면 이 값이 그대로 폭발 위력이 된다.
+     */
+    public static final ExplosionData DEFAULT_EXPLOSION_DATA = new ExplosionData(false, 0.5f, 2, false, 30, false);
 
     @Override
     public String getId() {
@@ -35,7 +40,7 @@ public class ExplosionModifier implements IAttachmentModifier<ExplosionModifier.
     public CacheValue<ExplosionData> initCache(ItemStack gunItem, GunData gunData) {
         ExplosionData explosionData = gunData.getBulletData().getExplosionData();
         if (explosionData == null) {
-            explosionData = new ExplosionData(false, 0.5f, 2, false, 30, false);
+            explosionData = DEFAULT_EXPLOSION_DATA;
         }
         return new CacheValue<>(explosionData);
     }
@@ -126,6 +131,14 @@ public class ExplosionModifier implements IAttachmentModifier<ExplosionModifier.
 
         public boolean isExplode() {
             return explode;
+        }
+
+        public Modifier getDamage() {
+            return damage;
+        }
+
+        public Modifier getRadius() {
+            return radius;
         }
     }
 }

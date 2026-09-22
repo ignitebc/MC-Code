@@ -14,6 +14,7 @@ import com.tacz.guns.resource.modifier.custom.*;
 import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
 import com.tacz.guns.resource.pojo.data.attachment.Modifier;
 import com.tacz.guns.resource.pojo.data.gun.BulletData;
+import com.tacz.guns.resource.pojo.data.gun.ExplosionData;
 import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.resource.pojo.data.gun.GunFireModeAdjustData;
@@ -135,6 +136,26 @@ public final class AttachmentDataUtils {
         }
         return calcBooleanValue(gunItem, gunData, ExplosionModifier.ID, ExplosionModifier.ExplosionModifierValue.class,
                 ExplosionModifier.ExplosionModifierValue::isExplode);
+    }
+
+    /**
+     * 부품 보정까지 반영한 폭발 피해를 계산한다.
+     * <p>
+     * 총기에 폭발 수치가 없으면 {@link ExplosionModifier#DEFAULT_EXPLOSION_DATA} 의 기본값을 쓴다.
+     * 폭발이 켜져 있지 않은 총기에도 값을 돌려주므로, 표시 여부는 {@link #isExplodeEnabled} 로 따로 판단한다.
+     */
+    public static double getExplosionDamageWithAttachment(ItemStack gunItem, GunData gunData) {
+        ExplosionData explosionData = gunData.getBulletData().getExplosionData();
+        float base = explosionData != null ? explosionData.getDamage() : ExplosionModifier.DEFAULT_EXPLOSION_DATA.getDamage();
+
+        List<Modifier> modifiers = new ArrayList<>();
+        getAllAttachmentData(gunItem, gunData, data -> {
+            var property = data.getModifier().get(ExplosionModifier.ID);
+            if (property != null && property.getValue() instanceof ExplosionModifier.ExplosionModifierValue value) {
+                modifiers.add(value.getDamage());
+            }
+        });
+        return AttachmentPropertyManager.eval(modifiers, base) * SyncConfig.DAMAGE_BASE_MULTIPLIER.get();
     }
 
     public static double getArmorIgnoreWithAttachment(ItemStack gunItem, GunData gunData) {

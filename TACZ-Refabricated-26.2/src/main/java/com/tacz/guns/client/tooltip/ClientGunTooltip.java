@@ -175,8 +175,12 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             } else {
                 value = Component.literal(DAMAGE_FORMAT.format(damage)).withStyle(style -> style.withColor(0x55FFFF));
             }
-            if (bulletData.getExplosionData() != null && (AttachmentDataUtils.isExplodeEnabled(gun, gunData) || bulletData.getExplosionData().isExplode())) {
-                value.append(" + ").append(DAMAGE_FORMAT.format(bulletData.getExplosionData().getDamage() * SyncConfig.DAMAGE_BASE_MULTIPLIER.get())).append(Component.translatable("tooltip.tacz.gun.explosion"));
+            // 총기에 폭발 수치가 없어도 고폭탄 같은 부품이 폭발을 켤 수 있으므로, 폭발 여부만으로 판단한다
+            boolean explodeEnabled = AttachmentDataUtils.isExplodeEnabled(gun, gunData)
+                    || (bulletData.getExplosionData() != null && bulletData.getExplosionData().isExplode());
+            if (explodeEnabled) {
+                double explosionDamage = AttachmentDataUtils.getExplosionDamageWithAttachment(gun, gunData);
+                value.append(" + ").append(DAMAGE_FORMAT.format(explosionDamage)).append(Component.translatable("tooltip.tacz.gun.explosion"));
             }
             this.damage = Component.translatable("tooltip.tacz.gun.damage").append(value);
             this.maxWidth = Math.max(font.width(this.damage), this.maxWidth);
