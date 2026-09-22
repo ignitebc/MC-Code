@@ -19,48 +19,48 @@ PACK = Path(__file__).resolve().parents[1] / "src/main/resources/assets/tacz/cus
 TIER_COLORS = {"F": "§a", "E": "§b", "D": "§9", "C": "§5", "B": "§e", "A": "§c", "S": "§6"}
 
 GUNS = {
-    "S": "m95 m107 minigun rpg7 spas_12 mg3",
-    "A": "ai_awp aa12 fn_evolys scar_h m1014 vector45 taurus500 m320 groza dbs o12 rpd",
-    "B": "spr15hb m16a1 rpk m416 ump45 qbz_191 mk14 kar98 m870 m249 sks_tactical"
-         " beryl_m762 ace32 famas mk47_mutant mk12 dragunov m24 s12k",
-    "C": "ak47 type_81 g36k m4a1 aug qbz_95 scar_l fn_fal slr hk_g3 m700 p90 mp5k"
-         " k2 mini14 vss tommy_gun mp9 js9 win94",
-    "D": "b93r deagle timeless50 db_long sawed_off springfield1873 m16a4 micro_uzi skorpion",
-    "E": "lonetrail p320 cz75 m1911 deagle_golden rhino357 r1895",
-    "F": "m9a4 p18c hk_mk23",
+    "S": "m107 m95 minigun ai_awp mg3 fn_evolys",
+    "A": "mk14 scar_h m24 rpg7 rpd fn_fal hk_g3 m700 dbs rpk o12 taurus500",
+    "B": "aa12 m249 dragunov slr spas_12 mk12 mk47_mutant qbz_191 m1014 groza p90 spr15hb beryl_m762 qbz_95 kar98 "
+         "ace32 sks_tactical m16a1 m870",
+    "C": "ak47 m320 s12k scar_l mini14 type_81 m416 tommy_gun springfield1873 m16a4 win94 g36k k2 aug famas lonetrail "
+         "m4a1 ump45 vector45 deagle",
+    "D": "timeless50 micro_uzi db_long js9 vss deagle_golden b93r rhino357 mp5k",
+    "E": "p320 r1895 m1911 sawed_off hk_mk23 mp9 cz75",
+    "F": "p18c skorpion m9a4",
 }
 
 ATTACHMENTS = {
-    "S": "scope_mk5hd scope_standard_8x muzzle_silencer_wraith muzzle_brake_timeless50 muzzle_silencer_vulture"
-         " stock_militech_b5 grip_vertical_ranger laser_peq6 ammo_mod_hp ammo_mod_fmj",
-    "A": "scope_vudu scope_lpvo_1_6 scope_hamr scope_elcan_4x muzzle_brake_cyclone_d2 muzzle_silencer_ursus"
-         " muzzle_silencer_knight_qd muzzle_silencer_ptilopsis stock_hk_slim_line oem_stock_heavy stock_heavy_spas_12"
-         " grip_vertical_military grip_rk1_b25u grip_cqr laser_lopro ammo_mod_i ammo_mod_slug",
-    "B": "scope_contender scope_acog_ta31 scope_qmk152 scope_retro_2x scope_98k scope_1873_6x"
-         " muzzle_compensator_trident muzzle_brake_cthulhu muzzle_brake_trex muzzle_brake_pioneer"
-         " muzzle_silencer_phantom_s1 muzzle_brake_mastiff_sg stock_tactical_ar oem_stock_tactical stock_ak12"
-         " stock_tactical_spas_12 grip_se_5 grip_osovets_black grip_rk0 grip_vertical_talon grip_magpul_afg_2"
-         " laser_compact laser_peq15 ammo_mod_he"
-         " extended_mag_3 light_extended_mag_3 shotgun_extended_mag_3 sniper_extended_mag_3",
-    "C": "sight_exp3 sight_552 sight_uh1 sight_srs_02 sight_acro_rifle muzzle_silencer_mirage muzzle_silencer_sg"
-         " muzzle_choke_sg deagle_golden_long_barrel stock_sba3 stock_ripstock stock_moe grip_rk6 grip_td"
-         " laser_nightstick",
-    "D": "sight_acro_pistol sight_deltapoint_pistol sight_deltapoint_rifle sight_fastfire_pistol"
-         " sight_fastfire_rifle sight_pk06_pistol sight_pk06_rifle stock_carbon_bone_c5 oem_stock_light stock_m4ss"
-         " grip_cobra extended_mag_2 light_extended_mag_2 shotgun_extended_mag_2 sniper_extended_mag_2",
-    "E": "sight_t1 sight_t2 sight_okp7 sight_coyote sight_rmr_dot sight_sro_dot bayonet_6h3 bayonet_m9"
-         " extended_mag_1 light_extended_mag_1 shotgun_extended_mag_1 sniper_extended_mag_1",
-    "F": "scope_aug_default sight_p90",
+    "S": "muzzle_brake_timeless50 laser_peq6 stock_militech_b5 grip_vertical_ranger scope_mk5hd "
+         "muzzle_silencer_vulture muzzle_silencer_wraith ammo_mod_i scope_1873_6x ammo_mod_fmj",
+    "A": "grip_rk1_b25u stock_heavy_spas_12 oem_stock_heavy muzzle_brake_cyclone_d2 scope_standard_8x "
+         "grip_vertical_military ammo_mod_slug muzzle_silencer_mirage oem_stock_tactical ammo_mod_he "
+         "muzzle_silencer_ptilopsis muzzle_silencer_sg laser_lopro grip_osovets_black scope_vudu scope_contender "
+         "scope_lpvo_1_6",
+    "B": "extended_mag_3 light_extended_mag_3 shotgun_extended_mag_3 sniper_extended_mag_3 muzzle_compensator_trident "
+         "muzzle_brake_mastiff_sg muzzle_brake_trex stock_hk_slim_line stock_ak12 muzzle_brake_cthulhu "
+         "stock_tactical_ar muzzle_silencer_phantom_s1 ammo_mod_hp stock_tactical_spas_12 laser_nightstick "
+         "laser_compact grip_rk0 grip_vertical_talon grip_cqr muzzle_brake_pioneer scope_aug_default grip_td "
+         "scope_elcan_4x scope_hamr grip_rk6 scope_98k scope_retro_2x scope_qmk152",
+    "C": "sight_acro_rifle sight_uh1 sight_acro_pistol sight_pk06_pistol sight_pk06_rifle muzzle_silencer_knight_qd "
+         "stock_m4ss stock_sba3 muzzle_silencer_ursus laser_peq15 oem_stock_light deagle_golden_long_barrel "
+         "grip_magpul_afg_2 grip_se_5 muzzle_choke_sg",
+    "D": "extended_mag_2 light_extended_mag_2 shotgun_extended_mag_2 sniper_extended_mag_2 sight_t2 sight_t1 "
+         "sight_552 sight_deltapoint_pistol sight_deltapoint_rifle sight_fastfire_pistol sight_fastfire_rifle "
+         "stock_carbon_bone_c5 stock_moe grip_cobra stock_ripstock",
+    "E": "bayonet_m9 sight_exp3 sight_okp7 sight_srs_02 bayonet_6h3 extended_mag_1 light_extended_mag_1 "
+         "shotgun_extended_mag_1 sniper_extended_mag_1 sight_coyote sight_sro_dot sight_p90",
+    "F": "sight_rmr_dot scope_acog_ta31",
 }
 
 # 탄약은 그 탄을 쓰는 총기의 등급을 따른다. 기본 팩에 쓰는 총기가 없는 탄은 등급 없이 흰색.
 AMMO = {
-    "S": "50bmg rpg_rocket",
-    "A": "338 40mm 500mag",
-    "B": "308 30_06 792x57 12g",
-    "C": "762x39 58x42 556x45 57x28 45_70",
-    "D": "45acp 50ae 357mag",
-    "E": "9mm",
+    "S": "50bmg 308",
+    "A": "rpg_rocket 338 40mm",
+    "B": "500mag 12g 762x39 792x57",
+    "C": "45_70 45acp 30_06 556x45 58x42",
+    "D": "50ae 9mm 57x28",
+    "E": "357mag",
 }
 UNGRADED_AMMO = []  # 사용 총기가 없던 탄약 5종을 제거해 현재는 비어 있다
 
