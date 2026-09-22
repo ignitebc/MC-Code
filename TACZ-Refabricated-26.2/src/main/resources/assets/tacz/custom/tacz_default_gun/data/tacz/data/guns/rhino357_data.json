@@ -18,7 +18,7 @@
       "damage_adjust": [
         {"distance": 25, "damage": 3.15},
         {"distance": 35, "damage": 2.55},
-        {"distance": 50, "damage": 1.8},
+        {"distance": 50, "damage": 2.1},
         {"distance": "infinite", "damage": 1.8}
       ]
     },
