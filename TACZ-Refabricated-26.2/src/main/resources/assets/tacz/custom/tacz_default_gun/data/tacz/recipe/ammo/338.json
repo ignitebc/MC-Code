@@ -1,27 +1,35 @@
 {
   "materials": [
     {
+      "item": "#c:ingots/iron",
+      "count": 2
+    },
+    {
       "item": "#c:ingots/copper",
-      "count": 38
+      "count": 23
     },
     {
       "item": "minecraft:coal",
-      "count": 4
+      "count": 3
     },
     {
-      "item": "#c:gems/lapis",
-      "count": 6
+      "item": "minecraft:clay_ball",
+      "count": 2
     },
     {
       "item": "#c:gunpowders",
-      "count": 11
+      "count": 6
+    },
+    {
+      "item": "#c:gems/lapis",
+      "count": 2
     }
   ],
   "result": {
     "type": "ammo",
     "group": "lc_specialized",
     "id": "tacz:338",
-    "count": 18
+    "count": 16
   },
   "type": "tacz:gun_smith_table_crafting"
 }

@@ -2,26 +2,34 @@
   "materials": [
     {
       "item": "#c:ingots/iron",
-      "count": 3
+      "count": 1
     },
     {
       "item": "#c:ingots/copper",
-      "count": 45
-    },
-    {
-      "item": "minecraft:coal",
       "count": 6
     },
     {
+      "item": "minecraft:coal",
+      "count": 1
+    },
+    {
+      "item": "minecraft:clay_ball",
+      "count": 1
+    },
+    {
       "item": "#c:gunpowders",
-      "count": 17
+      "count": 2
+    },
+    {
+      "item": "#c:gems/lapis",
+      "count": 1
     }
   ],
   "result": {
     "type": "ammo",
     "group": "explosives",
     "id": "tacz:rpg_rocket",
-    "count": 3
+    "count": 4
   },
   "type": "tacz:gun_smith_table_crafting"
 }

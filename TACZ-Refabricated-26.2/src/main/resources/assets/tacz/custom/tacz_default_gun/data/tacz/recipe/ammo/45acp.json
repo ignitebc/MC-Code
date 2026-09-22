@@ -2,22 +2,30 @@
   "materials": [
     {
       "item": "#c:ingots/copper",
-      "count": 15
+      "count": 18
     },
     {
       "item": "minecraft:coal",
+      "count": 3
+    },
+    {
+      "item": "minecraft:clay_ball",
       "count": 2
     },
     {
       "item": "#c:gunpowders",
-      "count": 3
+      "count": 4
+    },
+    {
+      "item": "#c:gems/lapis",
+      "count": 1
     }
   ],
   "result": {
     "type": "ammo",
     "group": "pd_cartridges",
     "id": "tacz:45acp",
-    "count": 30
+    "count": 32
   },
   "type": "tacz:gun_smith_table_crafting"
 }
