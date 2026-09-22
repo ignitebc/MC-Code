@@ -21,6 +21,16 @@ public final class HitboxHelper {
     private static final WeakHashMap<Player, LinkedList<Vec3>> PLAYER_VELOCITY = new WeakHashMap<>();
     // 命中箱缓存 Tick 上限
     private static final int SAVE_TICK = Mth.floor(OtherConfig.SERVER_HITBOX_LATENCY_MAX_SAVE_MS.get() / 1000 * 20 + 0.5);
+    /**
+     * 되감기의 기준 틱.
+     * <p>
+     * 사수 화면에 그려지는 대상의 위치는 보간 때문에 서버 위치보다 뒤처진다. 그만큼 명중 판정용 상자를
+     * 뒤로 물려야 화면에서 맞은 사격이 실제로도 맞는다. 실제 되감기량은 여기서 {@code ServerHitboxOffset}
+     * 을 뺀 값이며, 기본 설정에서 2틱이 된다.
+     */
+    private static final double BASE_REWIND_TICK = 5.0;
+    /** 탈것에 탄 대상과 표적에 추가로 적용하는 되감기 틱. */
+    private static final double RIDING_EXTRA_REWIND_TICK = 2.5;
 
     public static void onPlayerTick(Player player) {
         if (player.isSpectator()) {
@@ -80,33 +90,47 @@ public final class HitboxHelper {
         return getPlayerVelocity(entity);
     }
 
+    /**
+     * 사수의 통신 지연을 틱으로 환산한다. 사수가 플레이어가 아니면 지연이 없으므로 0 이다.
+     */
+    public static int getPingTick(Entity owner) {
+        if (owner instanceof ServerPlayer shooter) {
+            int ping = Mth.floor((shooter.connection.latency() / 1000.0) * 20.0 + 0.5);
+            return Mth.clamp(ping, 0, SAVE_TICK);
+        }
+        return 0;
+    }
+
     public static AABB getFixedBoundingBox(Entity entity, Entity owner) {
         AABB boundingBox = entity.getBoundingBox();
         Vec3 velocity = new Vec3(entity.getX() - entity.xOld, entity.getY() - entity.yOld, entity.getZ() - entity.zOld);
+        int pingTick = getPingTick(owner);
         // hitbox 延迟补偿。只有射击者是玩家（且被击中者也是玩家）才进行此类延迟补偿计算
-        if (OtherConfig.SERVER_HITBOX_LATENCY_FIX.get() && entity instanceof ServerPlayer player && owner instanceof ServerPlayer serverPlayerOwner) {
-            int ping = Mth.floor((serverPlayerOwner.connection.latency() / 1000.0) * 20.0 + 0.5);
-            boundingBox = getBoundingBox(player, ping);
-            velocity = getVelocity(player, ping);
+        // 과거 히트박스를 직접 꺼내 쓴 경우에는 핑만큼의 되감기가 이미 끝난 상태이므로 아래에서 핑을 다시 더하지 않는다.
+        boolean rewoundByHistory = false;
+        if (OtherConfig.SERVER_HITBOX_LATENCY_FIX.get() && entity instanceof ServerPlayer player && owner instanceof ServerPlayer) {
+            boundingBox = getBoundingBox(player, pingTick);
+            velocity = getVelocity(player, pingTick);
+            rewoundByHistory = true;
         }
         // 应用蹲伏导致的 hitbox 变形
         double expandHeight = entity instanceof Player && !entity.isCrouching() ? 0.0625 : 0.0;
         boundingBox = boundingBox.expandTowards(0, expandHeight, 0);
         // 根据速度一定程度地扩展 hitbox
         boundingBox = boundingBox.expandTowards(velocity.x, velocity.y, velocity.z);
-        // 玩家 hitbox 修正，可以通过 Config 调整
-        double playerHitboxOffset = OtherConfig.SERVER_HITBOX_OFFSET.get();
-        if (entity instanceof ServerPlayer) {
-            if (entity.getVehicle() != null) {
-                boundingBox = boundingBox.move(velocity.multiply(playerHitboxOffset / 2, playerHitboxOffset / 2, playerHitboxOffset / 2));
-            }
-            boundingBox = boundingBox.move(velocity.multiply(playerHitboxOffset, playerHitboxOffset, playerHitboxOffset));
-        }
-        // 给所有实体统一应用的 Hitbox 偏移，其数值为实验得出的定值。
+        // 되감기량 계산.
+        // 종전에는 앞으로 밀어 주는 보정이 플레이어에게만 적용되어, 몬스터만 5틱치를 그대로 뒤집어썼다.
+        // 그래서 달리는 몬스터는 판정 상자가 모델보다 한 칸 가까이 뒤에 놓였다. 대상 종류와 무관하게 같은 양을 적용한다.
+        double hitboxOffset = OtherConfig.SERVER_HITBOX_OFFSET.get();
+        double rewindTick = BASE_REWIND_TICK - hitboxOffset;
         if (entity.getVehicle() != null || entity instanceof ITargetEntity) {
-            boundingBox = boundingBox.move(velocity.multiply(-2.5, -2.5, -2.5));
+            rewindTick += RIDING_EXTRA_REWIND_TICK - hitboxOffset / 2;
         }
-        boundingBox = boundingBox.move(velocity.multiply(-5, -5, -5));
+        // 히트박스 이력이 없는 대상(몬스터 등)은 사수의 핑만큼을 속도로 되감아 플레이어와 보정량을 맞춘다.
+        if (!rewoundByHistory) {
+            rewindTick += pingTick;
+        }
+        boundingBox = boundingBox.move(velocity.multiply(-rewindTick, -rewindTick, -rewindTick));
         return boundingBox;
     }
 }
