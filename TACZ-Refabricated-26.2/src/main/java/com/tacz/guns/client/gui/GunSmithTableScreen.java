@@ -31,6 +31,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -80,8 +81,13 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     private static final int VISIBLE_ROWS = (BODY_Y + BODY_HEIGHT - 3 - LIST_Y) / ROW_STEP;
     private static final int GROUP_TAB_WIDTH = 64;
     private static final int INGREDIENT_ROW_HEIGHT = 24;
-    /** 재료 칸에 들어가는 줄 수. 기본 총기팩의 제작법은 재료가 많아야 다섯 가지다. */
-    private static final int MAX_INGREDIENTS = 5;
+    /**
+     * 재료가 많을 때까지 줄일 수 있는 칸 높이의 하한.
+     * 아이템 아이콘(16px)과 글자 한 줄이 들어가는 크기이며, 이 높이면 재료 여덟 가지가 한 화면에 들어간다.
+     */
+    private static final int INGREDIENT_ROW_HEIGHT_MIN = 18;
+    /** 재료 목록에 쓸 수 있는 세로 공간. */
+    private static final int INGREDIENT_AREA_HEIGHT = BODY_Y + BODY_HEIGHT - 3 - LIST_Y;
 
     /** 큰 분류. 선언 순서가 탭 순서다. */
     private enum Group {
@@ -479,13 +485,25 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         if (this.selectedRecipe == null) {
             return;
         }
+        List<GunSmithTableIngredient> inputs = this.selectedRecipe.getInputs();
+        if (inputs.isEmpty()) {
+            return;
+        }
         LocalPlayer player = Minecraft.getInstance().player;
         boolean creative = player != null && player.isCreative();
-        List<GunSmithTableIngredient> inputs = this.selectedRecipe.getInputs();
         int x = leftPos + DETAIL_X + 6;
         int width = DETAIL_WIDTH - 12;
-        for (int index = 0; index < inputs.size() && index < MAX_INGREDIENTS; index++) {
-            int y = topPos + LIST_Y + index * (INGREDIENT_ROW_HEIGHT + 1);
+        // 재료 가짓수에 맞춰 칸 높이를 줄인다. 제작 가능 판정은 모든 재료를 보므로 하나라도 감추면 이유 없이 제작이 막힌 것처럼 보인다.
+        int rowHeight = Mth.clamp(INGREDIENT_AREA_HEIGHT / inputs.size() - 1,
+                INGREDIENT_ROW_HEIGHT_MIN, INGREDIENT_ROW_HEIGHT);
+        int step = rowHeight + 1;
+        int rowCount = Math.min(inputs.size(), Math.max(1, INGREDIENT_AREA_HEIGHT / step));
+        // 칸을 최소 높이까지 줄여도 다 못 넣으면 마지막 칸을 남은 가짓수 안내로 쓴다.
+        int hidden = inputs.size() - rowCount;
+        int drawCount = hidden > 0 ? rowCount - 1 : rowCount;
+        boolean compact = rowHeight < INGREDIENT_ROW_HEIGHT;
+        for (int index = 0; index < drawCount; index++) {
+            int y = topPos + LIST_Y + index * step;
             GunSmithTableIngredient input = inputs.get(index);
 
             // 태그 재료는 해당하는 아이템을 1초마다 돌려 가며 보여 준다.
@@ -494,19 +512,32 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
                     .resolveForStacks(SlotDisplayContext.fromLevel(Minecraft.getInstance().level));
             ItemStack shown = choices.isEmpty() ? ItemStack.EMPTY
                     : choices.get((int) (System.currentTimeMillis() / 1_000 % choices.size()));
-            SmithTheme.texture(gui, SmithTheme.Skin.INSET, x, y, width, INGREDIENT_ROW_HEIGHT);
-            gui.fakeItem(shown, x + 3, y + 4);
+            SmithTheme.texture(gui, SmithTheme.Skin.INSET, x, y, width, rowHeight);
+            gui.fakeItem(shown, x + 3, y + (rowHeight - 16) / 2);
             Component name = shown.isEmpty()
                     ? Component.translatable("gui.tacz.gun_smith_table.ingredient.unknown") : shown.getHoverName();
-            SmithTheme.text(gui, name, x + 23, y + 3, width - 27, SmithTheme.TEXT);
 
             int need = input.getCount();
             int have = this.playerIngredientCount == null ? 0 : this.playerIngredientCount.get(index);
             Component amount = creative
                     ? Component.translatable("gui.tacz.gun_smith_table.ingredient.creative", need)
                     : Component.translatable("gui.tacz.gun_smith_table.ingredient.amount", have, need);
-            SmithTheme.text(gui, amount, x + 23, y + 13, width - 27,
-                    creative || have >= need ? SmithTheme.CYAN : SmithTheme.ERROR);
+            int amountColor = creative || have >= need ? SmithTheme.CYAN : SmithTheme.ERROR;
+
+            if (compact) {
+                // 두 줄이 안 들어가는 높이라 이름과 수량을 한 줄에 붙인다. 폭이 모자라면 글자가 작아진다.
+                Component line = Component.empty().append(name).append(" ").append(amount);
+                SmithTheme.text(gui, line, x + 23, y + (rowHeight - 8) / 2, width - 27, amountColor);
+            } else {
+                SmithTheme.text(gui, name, x + 23, y + 3, width - 27, SmithTheme.TEXT);
+                SmithTheme.text(gui, amount, x + 23, y + 13, width - 27, amountColor);
+            }
+        }
+        if (hidden > 0) {
+            int y = topPos + LIST_Y + drawCount * step;
+            SmithTheme.texture(gui, SmithTheme.Skin.INSET, x, y, width, rowHeight);
+            SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.ingredient.more", hidden + 1),
+                    x + 6, y + (rowHeight - 8) / 2, width - 10, SmithTheme.ERROR);
         }
     }
 
