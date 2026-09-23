@@ -11,6 +11,7 @@
     "DeathChestProtectionMixin",
     "EquipmentTierTooltipMixin",
     "HungerExhaustionMixin",
+    "MerchantTradeLimitMixin",
     "MonsterEquipmentMixin",
     "NetherHostilityMixin",
     "NetheriteKnockbackMixin",
