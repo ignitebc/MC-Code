@@ -3,6 +3,7 @@ package com.tacz.guns.client.gui;
 import cn.sh1rocu.tacz.mixin.accessor.ScreenAccessor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.tacz.guns.GunMod;
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IAmmo;
@@ -26,8 +27,14 @@ import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.ContainerEventHandler;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -44,7 +51,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * 총기 작업대 화면. 총기·부착물·탄약을 한 작업대에서 만들며, Jobs+ 직업 화면(J키)과 같은 스킨을 쓴다.
@@ -60,7 +67,8 @@ import java.util.function.Consumer;
  * 큰 분류는 팩 설정에 따로 적지 않고, 세부 분류에 든 첫 제작법의 결과물 종류로 정한다.
  * 그래서 다른 총기팩이 탭을 추가해도 알맞은 큰 분류 아래에 들어간다.
  * <p>
- * 맨 끝의 "총기 도감" 탭은 Jobs+가 등록한 도감 화면을 연다. Jobs+가 없으면 탭을 만들지 않는다.
+ * 맨 끝의 "총기 도감" 탭은 세 칸을 합친 자리에 Jobs+가 만든 도감 칸을 띄운다. 다른 화면으로 넘어가지 않으므로
+ * 탭을 오가도 작업대에서 고르던 제작법과 도감에서 보던 항목이 그대로 남는다. Jobs+가 없으면 탭을 만들지 않는다.
  */
 public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMenu> {
     private static final int WIDTH = 420;
@@ -75,6 +83,9 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     private static final int RECIPE_WIDTH = 170;
     private static final int DETAIL_X = RECIPE_X + RECIPE_WIDTH + 4;
     private static final int DETAIL_WIDTH = WIDTH - 8 - DETAIL_X;
+    /** 도감 칸은 분류·제작 목록·재료 세 칸을 합친 자리를 쓴다. */
+    private static final int GUIDE_X = TYPE_X;
+    private static final int GUIDE_WIDTH = WIDTH - GUIDE_X * 2;
 
     private static final int LIST_Y = BODY_Y + PANEL_HEADER + 4;
     private static final int ROW_STEP = SmithRowButton.HEIGHT + 1;
@@ -118,13 +129,16 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     }
 
     /**
-     * 총기 도감을 여는 함수. 인자는 도감을 닫을 때 돌아올 화면(이 작업대)이다.
+     * 총기 도감 칸을 만드는 함수. 인자는 도감이 들어갈 자리(머리글 줄을 포함한 본문 전체)다.
+     * 돌려받은 칸은 {@link GuiEventListener}·{@link Renderable}·{@link NarratableEntry}를 모두 갖춰
+     * 그리기와 입력을 스스로 처리해야 한다. 칸의 틀과 머리글 제목은 작업대가 그린다.
+     * <p>
      * 도감은 Jobs+에 있고 TACZ는 Jobs+를 모르므로, Jobs+가 클라이언트 초기화 때 넣어 준다.
      */
-    private static @Nullable Consumer<Screen> guideOpener;
+    private static @Nullable Function<ScreenRectangle, ?> guidePanelFactory;
 
-    public static void setGuideOpener(@Nullable Consumer<Screen> opener) {
-        guideOpener = opener;
+    public static void setGuidePanelFactory(@Nullable Function<ScreenRectangle, ?> factory) {
+        guidePanelFactory = factory;
     }
 
     /** 세부 분류별 제작법. 제작법이 하나도 없는 분류는 담지 않는다. */
@@ -138,6 +152,11 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     private @Nullable Int2IntArrayMap playerIngredientCount;
     private int typeScroll;
     private int recipeScroll;
+
+    private boolean showingGuide;
+    /** 한 번 만든 도감 칸. 자리가 그대로면 다시 배치할 때도 같은 칸을 써서 고른 항목·스크롤·검색어를 지킨다. */
+    private @Nullable GuiEventListener guidePanel;
+    private @Nullable ScreenRectangle guidePanelArea;
 
     public GunSmithTableScreen(GunSmithTableMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, WIDTH, HEIGHT);
@@ -312,12 +331,16 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         this.clearWidgets();
 
         this.addGroupTabs();
-        this.addTypeRows();
-        this.addRecipeRows();
         this.addRenderableWidget(new SmithTextButton(leftPos + WIDTH - 8 - SmithTheme.BUTTON_HEIGHT, topPos + 7,
                 SmithTheme.BUTTON_HEIGHT, SmithTheme.BUTTON_HEIGHT, Component.literal("×"),
                 SmithTextButton.Style.CLOSE, b -> this.onClose()));
+        if (this.showingGuide) {
+            this.addGuidePanel();
+            return;
+        }
 
+        this.addTypeRows();
+        this.addRecipeRows();
         SmithTextButton craft = new SmithTextButton(leftPos + DETAIL_X + 6,
                 topPos + BODY_Y + BODY_HEIGHT - SmithTheme.BUTTON_HEIGHT - 6, DETAIL_WIDTH - 12,
                 SmithTheme.BUTTON_HEIGHT, Component.translatable("gui.tacz.gun_smith_table.craft"),
@@ -336,20 +359,51 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         int x = leftPos + 8;
         for (Group group : this.groupTabs.keySet()) {
             this.addRenderableWidget(new SmithTabButton(x, topPos + 6, GROUP_TAB_WIDTH,
-                    Component.translatable(group.nameKey), group == this.selectedGroup, b -> {
-                this.selectedGroup = group;
-                this.selectedType = null;
+                    Component.translatable(group.nameKey), !this.showingGuide && group == this.selectedGroup, b -> {
+                // 도감을 보다가 원래 분류로 돌아오면 고르던 세부 분류와 제작법을 그대로 둔다.
+                if (group != this.selectedGroup) {
+                    this.selectedGroup = group;
+                    this.selectedType = null;
+                }
+                this.showingGuide = false;
                 this.init();
             }));
             x += GROUP_TAB_WIDTH + 2;
         }
 
-        // 도감은 다른 화면이라 선택 상태로 남지 않는다. 닫으면 이 작업대로 돌아온다.
-        Consumer<Screen> opener = guideOpener;
-        if (opener != null) {
+        if (guidePanelFactory != null) {
             this.addRenderableWidget(new SmithTabButton(x, topPos + 6, GROUP_TAB_WIDTH,
-                    Component.translatable("gui.tacz.gun_smith_table.group.guide"), false, b -> opener.accept(this)));
+                    Component.translatable("gui.tacz.gun_smith_table.group.guide"), this.showingGuide, b -> {
+                this.showingGuide = true;
+                this.init();
+            }));
         }
+    }
+
+    private void addGuidePanel() {
+        Function<ScreenRectangle, ?> factory = guidePanelFactory;
+        if (factory == null) {
+            return;
+        }
+        ScreenRectangle area = new ScreenRectangle(leftPos + GUIDE_X, topPos + BODY_Y, GUIDE_WIDTH, BODY_HEIGHT);
+        // 창 크기가 바뀌어 자리가 옮겨졌을 때만 새로 만든다. 만들기에 실패해도 자리를 기억해 같은 경고를 되풀이하지 않는다.
+        if (!area.equals(this.guidePanelArea)) {
+            this.guidePanel = createGuidePanel(factory, area);
+            this.guidePanelArea = area;
+        }
+        if (this.guidePanel != null) {
+            this.addRenderableWidget((GuiEventListener & Renderable & NarratableEntry) this.guidePanel);
+        }
+    }
+
+    @Nullable
+    private static GuiEventListener createGuidePanel(Function<ScreenRectangle, ?> factory, ScreenRectangle area) {
+        Object panel = factory.apply(area);
+        if (panel instanceof GuiEventListener listener && panel instanceof Renderable && panel instanceof NarratableEntry) {
+            return listener;
+        }
+        GunMod.LOGGER.warn("The gun guide panel must be a renderable and narratable GUI listener, but got {}.", panel);
+        return null;
     }
 
     private void addTypeRows() {
@@ -385,6 +439,14 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (this.showingGuide) {
+            // 컨테이너 화면은 휠을 위젯에 넘기지 않으므로 도감 칸에 직접 넘긴다.
+            if (this.guidePanel != null && this.guidePanel.isMouseOver(mouseX, mouseY)
+                    && this.guidePanel.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+                return true;
+            }
+            return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        }
         int step = scrollY > 0 ? -1 : 1;
         if (isOver(mouseX, mouseY, TYPE_X, TYPE_WIDTH)) {
             this.typeScroll = clampScroll(this.typeScroll + step, visibleTypes().size());
@@ -404,6 +466,30 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
                 && mouseY >= topPos + BODY_Y && mouseY < topPos + BODY_Y + BODY_HEIGHT;
     }
 
+    /**
+     * 도감 검색창에 글을 쓰는 동안에는 키를 검색창에만 넘긴다.
+     * 컨테이너 화면은 위젯이 처리하지 않은 키가 인벤토리 키(E)면 화면을 닫으므로, 그대로 두면 "e"를 치다 작업대가 닫힌다.
+     * ESC는 평소처럼 작업대를 닫는다.
+     */
+    @Override
+    public boolean keyPressed(@NotNull KeyEvent event) {
+        GuiEventListener focused = this.getFocused();
+        if (!event.isEscape() && focused != null && isTyping(focused)) {
+            focused.keyPressed(event);
+            return true;
+        }
+        return super.keyPressed(event);
+    }
+
+    /** 포커스를 안쪽까지 따라가 글자를 받는 입력창에 닿는지 본다. */
+    private static boolean isTyping(GuiEventListener focused) {
+        GuiEventListener current = focused;
+        while (current instanceof ContainerEventHandler container && container.getFocused() != null) {
+            current = container.getFocused();
+        }
+        return current instanceof EditBox box && box.canConsumeInput();
+    }
+
     // ---- 그리기 -----------------------------------------------------------
 
     /**
@@ -419,9 +505,13 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         SmithTheme.texture(gui, SmithTheme.Skin.HEADER, x + 2, y + 2, WIDTH - 4, 25);
         gui.fill(x + 8, y + 27, x + WIDTH - 8, y + 28, SmithTheme.DIVIDER);
 
-        drawPanel(gui, TYPE_X, TYPE_WIDTH);
-        drawPanel(gui, RECIPE_X, RECIPE_WIDTH);
-        drawPanel(gui, DETAIL_X, DETAIL_WIDTH);
+        if (this.showingGuide) {
+            drawPanel(gui, GUIDE_X, GUIDE_WIDTH);
+        } else {
+            drawPanel(gui, TYPE_X, TYPE_WIDTH);
+            drawPanel(gui, RECIPE_X, RECIPE_WIDTH);
+            drawPanel(gui, DETAIL_X, DETAIL_WIDTH);
+        }
 
         gui.fill(x + 8, y + HEIGHT - 20, x + WIDTH - 8, y + HEIGHT - 19, SmithTheme.DIVIDER);
     }
@@ -435,7 +525,16 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     @Override
     public void extractRenderState(@NotNull GuiGraphicsExtractor gui, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(gui, mouseX, mouseY, partialTick);
+        SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.close_hint"),
+                leftPos + 10, topPos + HEIGHT - 14, 80, SmithTheme.MUTED);
         int headerY = topPos + BODY_Y + 6;
+        if (this.showingGuide) {
+            // 머리글 오른쪽 절반에는 도감 검색창이 들어간다.
+            SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.group.guide"),
+                    leftPos + GUIDE_X + 8, headerY, GUIDE_WIDTH / 2, SmithTheme.CYAN);
+            return;
+        }
+
         SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.category"),
                 leftPos + TYPE_X + 8, headerY, TYPE_WIDTH - 16, SmithTheme.CYAN);
         TabConfig tab = this.selectedType == null ? null : this.tabs.get(this.selectedType);
@@ -457,8 +556,6 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
                     leftPos + DETAIL_X + 8, topPos + BODY_Y + BODY_HEIGHT - SmithTheme.BUTTON_HEIGHT - 18,
                     DETAIL_WIDTH - 16, SmithTheme.MUTED);
         }
-        SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.close_hint"),
-                leftPos + 10, topPos + HEIGHT - 14, 80, SmithTheme.MUTED);
 
         for (var widget : ((ScreenAccessor) this).tacz$getRenderables()) {
             if (widget instanceof SmithRowButton row && !row.tooltipStack().isEmpty()) {
