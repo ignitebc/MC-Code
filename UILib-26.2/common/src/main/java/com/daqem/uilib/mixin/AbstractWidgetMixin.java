@@ -2,9 +2,7 @@ package com.daqem.uilib.mixin;
 
 import com.daqem.uilib.api.component.IComponent;
 import com.daqem.uilib.api.component.IComponentsParent;
-import com.daqem.uilib.api.screen.IScreen;
 import com.daqem.uilib.api.widget.IWidget;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -50,17 +48,18 @@ public abstract class AbstractWidgetMixin implements Renderable, GuiEventListene
         }
     }
 
+    /*
+     * 부모 위치는 열린 화면 종류와 관계없이 더한다. UILib 화면이 아닌 곳(TACZ 총기 작업대의 총기 도감 칸)에
+     * 끼운 컴포넌트도 버튼이 제자리에 그려지고 눌려야 하기 때문이다.
+     * 부모를 지정받지 않은 바닐라 위젯은 부모 위치가 0이라 돌려주는 값이 바뀌지 않는다.
+     */
     @Inject(method = "getX()I", at = @At("RETURN"), cancellable = true)
     private void uilib$modifyGetX(CallbackInfoReturnable<Integer> cir) {
-        if (Minecraft.getInstance().gui.screen() instanceof IScreen) {
-            cir.setReturnValue(this.x + this.uilib$parentX);
-        }
+        cir.setReturnValue(this.x + this.uilib$parentX);
     }
 
     @Inject(method = "getY()I", at = @At("RETURN"), cancellable = true)
     private void uilib$modifyGetY(CallbackInfoReturnable<Integer> cir) {
-        if (Minecraft.getInstance().gui.screen() instanceof IScreen) {
-            cir.setReturnValue(this.y + this.uilib$parentY);
-        }
+        cir.setReturnValue(this.y + this.uilib$parentY);
     }
 }
