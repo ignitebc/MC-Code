@@ -20,5 +20,9 @@
     "ServerPlayerDeathMixin",
     "StarterKitMixin"
   ],
+  "client": [
+    "MonsterLevelLabelMixin",
+    "MonsterLevelRenderStateMixin"
+  ],
   "injectors": { "defaultRequire": 1 }
 }

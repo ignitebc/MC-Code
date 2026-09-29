@@ -3,6 +3,7 @@ package com.mcserver.serverutilities;
 import com.mcserver.serverutilities.combat.CombatRules;
 import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
 import com.mcserver.serverutilities.monster.MonsterEquipmentRules;
+import com.mcserver.serverutilities.monster.MonsterLevelSync;
 import com.mcserver.serverutilities.config.UtilitiesConfig;
 import com.mcserver.serverutilities.death.DeathChests;
 import com.mcserver.serverutilities.sleep.SleepRuleManager;
@@ -46,6 +47,7 @@ public final class ServerUtilities implements ModInitializer {
             }
             return true;
         });
+        MonsterLevelSync.register();
         rejectLegacyModule("jobsplus", "com/daqem/jobsplus/event/player/EventDeleteRandomItemOnDeath.class");
         rejectLegacyModule("advancednetherite", "com/autovw/advancednetherite/mixin/HungerExhaustionMixin.class");
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
