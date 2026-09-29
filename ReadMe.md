@@ -95,6 +95,12 @@ Jobs+는 Minecraft에 직업, 레벨, 스킬, 보상, 아이템 제한, 상점 �
 > [!IMPORTANT]
 > 클라이언트는 외부 시세 API를 직접 조회하지 않습니다. 화면에 표시되는 가격과 서버에서 실제로 체결되는 가격이 어긋나는 것을 막기 위한 구조입니다.
 
+### 밸런스 분석 메트릭
+
+서버는 `logs/jobsplus-metrics/v2/<시즌>`에 직업 Action별 횟수·EXP·BTC, 레벨업·스킬 구매·쿠폰·관리자 명령,
+플레이어 상태와 1분 단위 활동·잠수 여부, 적용 중인 보상표를 기록합니다.
+기록 형식, 집계 스크립트, 시즌 운영 절차는 [직업 밸런스 메트릭](JobsPlusRemastered-26.2/docs/metrics.md)을 참고하세요.
+
 ## 필수 모드
 
 Jobs+를 실행하려면 다음 모드가 필요합니다.
@@ -144,6 +150,8 @@ python Build_File-26.2/collect_fabric_jars.py
 JobsPlusRemastered-26.2
 ├─ common              공통 게임 로직, 직업, 스킬, 데이터, 네트워크 및 UI 연동
 ├─ fabric              Fabric 초기화 및 Fabric 배포 JAR 생성
+├─ docs                기능 문서
+├─ tools/metrics       밸런스 메트릭 집계 스크립트와 회귀 검사
 ├─ build.gradle
 ├─ settings.gradle
 └─ gradle.properties
