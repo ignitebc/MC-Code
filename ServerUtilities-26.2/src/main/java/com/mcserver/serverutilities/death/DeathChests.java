@@ -104,7 +104,7 @@ public final class DeathChests {
                 .append(Component.literal(pos.getX() + ", " + pos.getY() + ", " + pos.getZ()).withStyle(ChatFormatting.YELLOW))
                 .append("에 설치되었습니다. " + describeSeconds(config.deathChestExpireSeconds()) + " 뒤 상자와 내용물이 사라집니다."));
         if (overflow > 0) {
-            player.sendSystemMessage(Component.literal("상자에 담지 못한 " + overflow + "개 스택은 바닥에 떨어졌습니다.")
+            player.sendSystemMessage(Component.literal("상자에 담지 못한 " + overflow + "개 아이템은 바닥에 떨어졌습니다.")
                     .withStyle(ChatFormatting.RED));
         }
     }
