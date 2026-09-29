@@ -78,8 +78,13 @@ public class JobExpMultiplierReward extends AbstractReward
                 if (exp != null)
                 {
                     double experience = exp * this.multiplier - exp;
+                    // 기본 EXP로 최대 레벨에 도달했으면 보너스는 쌓이지 않으므로 기록하지 않는다.
+                    boolean grantable = !job.isMaxLevel();
                     job.addExperienceWithoutEvent(experience);
-                    JobsPlusMetrics.recordSkillExperience(jobsServerPlayer.jobsplus$getServerPlayer(), job, experience);
+                    if (grantable)
+                    {
+                        JobsPlusMetrics.recordSkillExperience(jobsServerPlayer.jobsplus$getServerPlayer(), job, experience);
+                    }
                 }
             }
         }
