@@ -4,6 +4,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
@@ -99,9 +100,19 @@ public final class MonsterEquipmentRules {
         }
         preventEquipmentDrops(mob, armorEquipped, weaponEquipped);
 
-        // 레벨은 실제로 입힌 장비에서 계산하므로 지급을 마친 뒤 기록한다.
-        int level = calculateLevel(mob, armorEquipped, weaponEquipped);
+        int level;
+        if (mob instanceof Creeper) {
+            level = rollCreeperLevel(mob);
+        } else {
+            // 레벨은 실제로 입힌 장비에서 계산하므로 지급을 마친 뒤 기록한다.
+            level = calculateLevel(mob, armorEquipped, weaponEquipped);
+        }
         state.serverutilities$finishEquipmentRoll(armorEquipped, weaponEquipped, level);
+    }
+
+    /** 크리퍼는 장비가 없으므로 LV1~LV7을 같은 확률로 뽑는다. 레벨이 폭발 피해와 블록 파괴 범위를 정한다. */
+    private static int rollCreeperLevel(Mob mob) {
+        return CreeperLevel.fromRoll(mob.getRandom().nextInt(CreeperLevel.LEVEL_COUNT));
     }
 
     /**
