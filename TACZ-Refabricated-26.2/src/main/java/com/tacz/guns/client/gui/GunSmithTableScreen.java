@@ -38,7 +38,6 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -92,13 +91,14 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     private static final int VISIBLE_ROWS = (BODY_Y + BODY_HEIGHT - 3 - LIST_Y) / ROW_STEP;
     private static final int GROUP_TAB_WIDTH = 64;
     private static final int INGREDIENT_ROW_HEIGHT = 24;
+    private static final int INGREDIENT_ROW_STEP = INGREDIENT_ROW_HEIGHT + 1;
+    /** 재료 칸 아래의 제작 개수 줄. 그 아래에는 제작 버튼이 있다. */
+    private static final int COUNT_Y = BODY_Y + BODY_HEIGHT - SmithTheme.BUTTON_HEIGHT - 18;
     /**
-     * 재료가 많을 때까지 줄일 수 있는 칸 높이의 하한.
-     * 아이템 아이콘(16px)과 글자 한 줄이 들어가는 크기이며, 이 높이면 재료 여덟 가지가 한 화면에 들어간다.
+     * 재료 목록이 한 번에 보여 주는 줄 수. 제작 개수 줄 위까지만 쓴다.
+     * 제작 가능 판정은 모든 재료를 보므로, 넘치는 재료는 감추지 않고 휠로 넘겨 볼 수 있게 한다.
      */
-    private static final int INGREDIENT_ROW_HEIGHT_MIN = 18;
-    /** 재료 목록에 쓸 수 있는 세로 공간. */
-    private static final int INGREDIENT_AREA_HEIGHT = BODY_Y + BODY_HEIGHT - 3 - LIST_Y;
+    private static final int VISIBLE_INGREDIENTS = (COUNT_Y - 3 - LIST_Y) / INGREDIENT_ROW_STEP;
 
     /** 큰 분류. 선언 순서가 탭 순서다. */
     private enum Group {
@@ -152,6 +152,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     private @Nullable Int2IntArrayMap playerIngredientCount;
     private int typeScroll;
     private int recipeScroll;
+    private int ingredientScroll;
 
     private boolean showingGuide;
     /** 한 번 만든 도감 칸. 자리가 그대로면 다시 배치할 때도 같은 칸을 써서 고른 항목·스크롤·검색어를 지킨다. */
@@ -243,9 +244,11 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         List<Identifier> list = visibleRecipes();
         if (this.selectedRecipe == null || !list.contains(this.selectedRecipe.getId())) {
             this.selectedRecipe = list.isEmpty() ? null : loadRecipe(list.get(0));
+            this.ingredientScroll = 0;
         }
-        this.typeScroll = clampScroll(this.typeScroll, types.size());
-        this.recipeScroll = clampScroll(this.recipeScroll, list.size());
+        this.typeScroll = clampScroll(this.typeScroll, types.size(), VISIBLE_ROWS);
+        this.recipeScroll = clampScroll(this.recipeScroll, list.size(), VISIBLE_ROWS);
+        this.ingredientScroll = clampScroll(this.ingredientScroll, ingredientCount(), VISIBLE_INGREDIENTS);
         countPlayerIngredients();
     }
 
@@ -257,8 +260,12 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         return this.selectedType == null ? List.of() : this.recipes.getOrDefault(this.selectedType, List.of());
     }
 
-    private static int clampScroll(int scroll, int size) {
-        return Math.max(0, Math.min(scroll, size - VISIBLE_ROWS));
+    private int ingredientCount() {
+        return this.selectedRecipe == null ? 0 : this.selectedRecipe.getInputs().size();
+    }
+
+    private static int clampScroll(int scroll, int size, int visibleRows) {
+        return Math.max(0, Math.min(scroll, size - visibleRows));
     }
 
     @Nullable
@@ -432,6 +439,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
             this.addRenderableWidget(new SmithRowButton(leftPos + RECIPE_X + 3, topPos + LIST_Y + row * ROW_STEP,
                     RECIPE_WIDTH - 9, recipe.getOutput(), recipe.getOutput().getHoverName(), selected, true, b -> {
                 this.selectedRecipe = recipe;
+                this.ingredientScroll = 0;
                 this.init();
             }));
         }
@@ -449,13 +457,18 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         }
         int step = scrollY > 0 ? -1 : 1;
         if (isOver(mouseX, mouseY, TYPE_X, TYPE_WIDTH)) {
-            this.typeScroll = clampScroll(this.typeScroll + step, visibleTypes().size());
+            this.typeScroll = clampScroll(this.typeScroll + step, visibleTypes().size(), VISIBLE_ROWS);
             this.init();
             return true;
         }
         if (isOver(mouseX, mouseY, RECIPE_X, RECIPE_WIDTH)) {
-            this.recipeScroll = clampScroll(this.recipeScroll + step, visibleRecipes().size());
+            this.recipeScroll = clampScroll(this.recipeScroll + step, visibleRecipes().size(), VISIBLE_ROWS);
             this.init();
+            return true;
+        }
+        if (isOver(mouseX, mouseY, DETAIL_X, DETAIL_WIDTH)) {
+            // 재료 줄은 위젯이 아니라 그릴 때마다 스크롤 위치를 읽으므로 다시 배치하지 않는다.
+            this.ingredientScroll = clampScroll(this.ingredientScroll + step, ingredientCount(), VISIBLE_INGREDIENTS);
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
@@ -543,8 +556,9 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.ingredient"),
                 leftPos + DETAIL_X + 8, headerY, DETAIL_WIDTH - 16, SmithTheme.CYAN);
 
-        drawScrollBar(gui, TYPE_X + TYPE_WIDTH - 5, this.typeScroll, visibleTypes().size());
-        drawScrollBar(gui, RECIPE_X + RECIPE_WIDTH - 5, this.recipeScroll, visibleRecipes().size());
+        drawScrollBar(gui, TYPE_X + TYPE_WIDTH - 5, this.typeScroll, visibleTypes().size(), VISIBLE_ROWS, ROW_STEP);
+        drawScrollBar(gui, RECIPE_X + RECIPE_WIDTH - 5, this.recipeScroll, visibleRecipes().size(),
+                VISIBLE_ROWS, ROW_STEP);
 
         if (this.selectedRecipe == null) {
             SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.empty"),
@@ -553,8 +567,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
             drawIngredients(gui);
             SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.count",
                             this.selectedRecipe.getOutput().getCount()),
-                    leftPos + DETAIL_X + 8, topPos + BODY_Y + BODY_HEIGHT - SmithTheme.BUTTON_HEIGHT - 18,
-                    DETAIL_WIDTH - 16, SmithTheme.MUTED);
+                    leftPos + DETAIL_X + 8, topPos + COUNT_Y, DETAIL_WIDTH - 16, SmithTheme.MUTED);
         }
 
         for (var widget : ((ScreenAccessor) this).tacz$getRenderables()) {
@@ -565,14 +578,14 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     }
 
     /** 목록이 화면보다 길 때만 오른쪽 가장자리에 가는 스크롤 막대를 그린다. */
-    private void drawScrollBar(GuiGraphicsExtractor gui, int barX, int scroll, int size) {
-        if (size <= VISIBLE_ROWS) {
+    private void drawScrollBar(GuiGraphicsExtractor gui, int barX, int scroll, int size, int visibleRows, int rowStep) {
+        if (size <= visibleRows) {
             return;
         }
         int trackTop = topPos + LIST_Y;
-        int trackHeight = VISIBLE_ROWS * ROW_STEP - 1;
-        int thumbHeight = Math.max(8, trackHeight * VISIBLE_ROWS / size);
-        int thumbTop = trackTop + (trackHeight - thumbHeight) * scroll / (size - VISIBLE_ROWS);
+        int trackHeight = visibleRows * rowStep - 1;
+        int thumbHeight = Math.max(8, trackHeight * visibleRows / size);
+        int thumbTop = trackTop + (trackHeight - thumbHeight) * scroll / (size - visibleRows);
         gui.fill(leftPos + barX, trackTop, leftPos + barX + 2, trackTop + trackHeight, SmithTheme.DIVIDER);
         gui.fill(leftPos + barX, thumbTop, leftPos + barX + 2, thumbTop + thumbHeight, SmithTheme.CYAN);
     }
@@ -583,24 +596,13 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
             return;
         }
         List<GunSmithTableIngredient> inputs = this.selectedRecipe.getInputs();
-        if (inputs.isEmpty()) {
-            return;
-        }
         LocalPlayer player = Minecraft.getInstance().player;
         boolean creative = player != null && player.isCreative();
         int x = leftPos + DETAIL_X + 6;
         int width = DETAIL_WIDTH - 12;
-        // 재료 가짓수에 맞춰 칸 높이를 줄인다. 제작 가능 판정은 모든 재료를 보므로 하나라도 감추면 이유 없이 제작이 막힌 것처럼 보인다.
-        int rowHeight = Mth.clamp(INGREDIENT_AREA_HEIGHT / inputs.size() - 1,
-                INGREDIENT_ROW_HEIGHT_MIN, INGREDIENT_ROW_HEIGHT);
-        int step = rowHeight + 1;
-        int rowCount = Math.min(inputs.size(), Math.max(1, INGREDIENT_AREA_HEIGHT / step));
-        // 칸을 최소 높이까지 줄여도 다 못 넣으면 마지막 칸을 남은 가짓수 안내로 쓴다.
-        int hidden = inputs.size() - rowCount;
-        int drawCount = hidden > 0 ? rowCount - 1 : rowCount;
-        boolean compact = rowHeight < INGREDIENT_ROW_HEIGHT;
-        for (int index = 0; index < drawCount; index++) {
-            int y = topPos + LIST_Y + index * step;
+        for (int row = 0; row < VISIBLE_INGREDIENTS && row + this.ingredientScroll < inputs.size(); row++) {
+            int index = row + this.ingredientScroll;
+            int y = topPos + LIST_Y + row * INGREDIENT_ROW_STEP;
             GunSmithTableIngredient input = inputs.get(index);
 
             // 태그 재료는 해당하는 아이템을 1초마다 돌려 가며 보여 준다.
@@ -609,33 +611,22 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
                     .resolveForStacks(SlotDisplayContext.fromLevel(Minecraft.getInstance().level));
             ItemStack shown = choices.isEmpty() ? ItemStack.EMPTY
                     : choices.get((int) (System.currentTimeMillis() / 1_000 % choices.size()));
-            SmithTheme.texture(gui, SmithTheme.Skin.INSET, x, y, width, rowHeight);
-            gui.fakeItem(shown, x + 3, y + (rowHeight - 16) / 2);
+            SmithTheme.texture(gui, SmithTheme.Skin.INSET, x, y, width, INGREDIENT_ROW_HEIGHT);
+            gui.fakeItem(shown, x + 3, y + 4);
             Component name = shown.isEmpty()
                     ? Component.translatable("gui.tacz.gun_smith_table.ingredient.unknown") : shown.getHoverName();
+            SmithTheme.text(gui, name, x + 23, y + 3, width - 27, SmithTheme.TEXT);
 
             int need = input.getCount();
             int have = this.playerIngredientCount == null ? 0 : this.playerIngredientCount.get(index);
             Component amount = creative
                     ? Component.translatable("gui.tacz.gun_smith_table.ingredient.creative", need)
                     : Component.translatable("gui.tacz.gun_smith_table.ingredient.amount", have, need);
-            int amountColor = creative || have >= need ? SmithTheme.CYAN : SmithTheme.ERROR;
-
-            if (compact) {
-                // 두 줄이 안 들어가는 높이라 이름과 수량을 한 줄에 붙인다. 폭이 모자라면 글자가 작아진다.
-                Component line = Component.empty().append(name).append(" ").append(amount);
-                SmithTheme.text(gui, line, x + 23, y + (rowHeight - 8) / 2, width - 27, amountColor);
-            } else {
-                SmithTheme.text(gui, name, x + 23, y + 3, width - 27, SmithTheme.TEXT);
-                SmithTheme.text(gui, amount, x + 23, y + 13, width - 27, amountColor);
-            }
+            SmithTheme.text(gui, amount, x + 23, y + 13, width - 27,
+                    creative || have >= need ? SmithTheme.CYAN : SmithTheme.ERROR);
         }
-        if (hidden > 0) {
-            int y = topPos + LIST_Y + drawCount * step;
-            SmithTheme.texture(gui, SmithTheme.Skin.INSET, x, y, width, rowHeight);
-            SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.ingredient.more", hidden + 1),
-                    x + 6, y + (rowHeight - 8) / 2, width - 10, SmithTheme.ERROR);
-        }
+        drawScrollBar(gui, DETAIL_X + DETAIL_WIDTH - 5, this.ingredientScroll, inputs.size(),
+                VISIBLE_INGREDIENTS, INGREDIENT_ROW_STEP);
     }
 
     @Override
