@@ -2,6 +2,7 @@ package com.mcserver.serverutilities;
 
 import com.mcserver.serverutilities.config.AtomicProperties;
 import com.mcserver.serverutilities.config.UtilitiesConfig;
+import com.mcserver.serverutilities.monster.MonsterLevel;
 import com.mcserver.serverutilities.sleep.SleepRuleManager;
 import com.mcserver.serverutilities.spawn.SpawnAnchor;
 
@@ -22,6 +23,7 @@ public final class RegressionTests {
             configTests(directory);
             sleepTests(directory);
             spawnTests(directory);
+            monsterLevelTests();
             System.out.println("Server Utilities regression checks passed: " + checks);
         } finally {
             try (var files = Files.walk(directory)) {
@@ -177,6 +179,34 @@ public final class RegressionTests {
         Files.writeString(blockedParent, "keep");
         expectFailure(() -> SleepRuleManager.apply(blockedParent.resolve("state"), true, rule::get, rule::set), "record write failure");
         check(rule.get() == 100, "do not change rule if backup cannot be saved");
+    }
+
+    private static void monsterLevelTests() {
+        // 등급 점수 F=1 ~ S=7 의 모든 조합이 평균 반올림(.5 올림)과 같은지 실수 계산으로 대조한다.
+        for (int armor = MonsterLevel.MIN_SCORE; armor <= MonsterLevel.MAX_SCORE; armor++) {
+            for (int weapon = MonsterLevel.MIN_SCORE; weapon <= MonsterLevel.MAX_SCORE; weapon++) {
+                int expected = (int) Math.floor((armor + weapon) / 2.0 + 0.5);
+                check(MonsterLevel.of(armor, weapon) == expected, "level armor " + armor + " weapon " + weapon);
+            }
+        }
+        check(MonsterLevel.of(1, 1) == 1, "leather with F gun");
+        check(MonsterLevel.of(7, 7) == 7, "netherite with S gun");
+        check(MonsterLevel.of(7, 1) == 4, "netherite with F gun");
+        check(MonsterLevel.of(6, 7) == 7, "half rounds up");
+        check(MonsterLevel.of(4, 3) == 4, "chainmail with D gun");
+
+        int missing = MonsterLevel.MISSING_SCORE;
+        int melee = MonsterLevel.MELEE_WEAPON_SCORE;
+        check(MonsterLevel.of(7, missing) == 4, "netherite without weapon");
+        check(MonsterLevel.of(missing, 7) == 4, "S gun without armor");
+        check(MonsterLevel.of(missing, missing) == 1, "no equipment");
+        check(MonsterLevel.of(missing, melee) == 2, "melee without armor");
+        check(MonsterLevel.of(7, melee) == 5, "netherite with melee");
+        check(MonsterLevel.of(0, 99) == 4, "scores clamped to grade range");
+
+        check(!MonsterLevel.isVisible(MonsterLevel.NONE), "no level hidden");
+        check(MonsterLevel.isVisible(1) && MonsterLevel.isVisible(7), "level range visible");
+        check(!MonsterLevel.isVisible(8), "level above range hidden");
     }
 
     private static void check(boolean condition, String message) {
