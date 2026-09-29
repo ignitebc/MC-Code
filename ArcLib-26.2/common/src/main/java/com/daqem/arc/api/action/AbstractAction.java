@@ -128,7 +128,12 @@ public abstract class AbstractAction implements IAction {
             if (Arc.isDebugEnvironment()) {
                 Arc.LOGGER.info("Action {} passed conditions for action holder {}", this.getType().getLocation(), this.actionHolderLocation);
             }
-            result = applyRewards(actionData);
+            ActionEvent.REWARDS_APPLYING.invoker().onRewardsApplying(this, actionData);
+            try {
+                result = applyRewards(actionData);
+            } finally {
+                ActionEvent.REWARDS_APPLIED.invoker().onRewardsApplied(this, actionData, result);
+            }
         }
 
         return result;
