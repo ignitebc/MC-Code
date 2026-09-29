@@ -8,7 +8,8 @@
     "common.MonsterEquipmentGunMixin",
     "common.ServerGamePacketListenerImplMixin",
     "common.ServerPlayerMixin",
-    "common.ServerPlayNetHandlerMixin"
+    "common.ServerPlayNetHandlerMixin",
+    "common.StarterKitGunMixin"
   ],
   "client": [
     "client.AbstractButtonMixin",
