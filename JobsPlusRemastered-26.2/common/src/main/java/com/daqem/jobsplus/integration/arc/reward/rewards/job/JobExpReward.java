@@ -8,6 +8,7 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
+import com.daqem.jobsplus.metrics.JobsPlusMetrics;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.coupon.RewardCouponLedger;
 import com.daqem.jobsplus.player.job.Job;
@@ -69,12 +70,15 @@ public class JobExpReward extends AbstractReward
 
                     ServerPlayer serverPlayer = jobsServerPlayer.jobsplus$getServerPlayer();
                     MinecraftServer server = serverPlayer.level().getServer();
+                    double baseExp = exp;
                     if (server != null)
                     {
                         exp *= RewardCouponLedger.get(server).getExperienceMultiplier(serverPlayer.getUUID());
                     }
 
                     job.addExperience(exp);
+                    // 쿠폰 제외 기본 EXP/h를 따로 계산할 수 있도록 기본 몫과 쿠폰 몫을 나누어 남긴다.
+                    JobsPlusMetrics.recordExperience(serverPlayer, job, baseExp, exp - baseExp);
                 }
             }
         }

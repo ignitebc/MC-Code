@@ -79,7 +79,7 @@ public class JobExpMultiplierReward extends AbstractReward
                 {
                     double experience = exp * this.multiplier - exp;
                     job.addExperienceWithoutEvent(experience);
-                    JobsPlusMetrics.recordExperience(jobsServerPlayer, job, experience);
+                    JobsPlusMetrics.recordSkillExperience(jobsServerPlayer.jobsplus$getServerPlayer(), job, experience);
                 }
             }
         }
