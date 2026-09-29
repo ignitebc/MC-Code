@@ -45,8 +45,8 @@ public final class RegressionTests {
         String[][] invalid = {
                 {"sleep.enabled", "yes"}, {"combat.range", "0"}, {"combat.range", "129"},
                 {"combat.range", "NaN"}, {"balance.hunger.multiplier", "Infinity"},
-                {"balance.creeper.multiplier", "-1"}, {"balance.creeper.multiplier", "101"},
-                {"balance.creeper.multiplier", "text"}, {"sleep.enable", "true"},
+                {"balance.creeper.enabled", "on"}, {"balance.creeper.multiplier", "1.3333334"},
+                {"sleep.enable", "true"},
                 {"spawn.scatter.enabled", "on"}, {"spawn.scatter.radius", "0"},
                 {"spawn.scatter.radius", "1.5"}, {"spawn.scatter.radius", "1000001"},
                 {"starter.kit.enabled", "1"}, {"death.chest.enabled", "on"},
@@ -61,10 +61,10 @@ public final class RegressionTests {
             expectFailure(() -> UtilitiesConfig.load(path), "invalid " + entry[0] + "=" + entry[1]);
         }
         values = UtilitiesConfig.DEFAULT.toProperties();
-        values.setProperty("balance.creeper.multiplier", "0");
+        values.setProperty("balance.creeper.enabled", "false");
         values.setProperty("combat.range", "128");
         AtomicProperties.write(path, values, "test");
-        check(UtilitiesConfig.load(path).creeperMultiplier() == 0, "zero damage multiplier");
+        check(!UtilitiesConfig.load(path).creeperLevels(), "creeper levels can be disabled");
         check(UtilitiesConfig.load(path).combatRange() == 128, "range boundary");
 
         values = UtilitiesConfig.DEFAULT.toProperties();
