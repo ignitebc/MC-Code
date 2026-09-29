@@ -38,27 +38,29 @@ final class ActionMetrics
     private final Map<Key, Bucket> buckets = new LinkedHashMap<>();
     private final ThreadLocal<ArrayDeque<Frame>> frames = ThreadLocal.withInitial(ArrayDeque::new);
 
-    void beginAction(IAction action, ActionData actionData)
+    /** 직업 액션이면 실행 횟수를 세고 그 플레이어 UUID를, 아니면 null을 돌려준다. */
+    UUID beginAction(IAction action, ActionData actionData)
     {
         if (!(actionData.getSourceActionHolder() instanceof JobInstance jobInstance))
         {
-            return;
+            return null;
         }
         if (!(actionData.getPlayer() instanceof JobsServerPlayer jobsPlayer))
         {
-            return;
+            return null;
         }
         ServerPlayer player = jobsPlayer.jobsplus$getServerPlayer();
         Job job = jobsPlayer.jobsplus$getJob(jobInstance);
         if (player == null || job == null)
         {
-            return;
+            return null;
         }
 
         Key key = createKey(System.currentTimeMillis(), player, jobInstance.getLocation().toString(), job.getLevel(),
                 action.getLocation().toString(), action.getType().getLocation().toString());
         frames.get().push(new Frame(action, actionData, key));
         bucket(key, player).count++;
+        return player.getUUID();
     }
 
     void endAction(IAction action, ActionData actionData)
