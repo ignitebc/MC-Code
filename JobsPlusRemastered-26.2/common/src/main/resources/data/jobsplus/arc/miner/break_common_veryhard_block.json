@@ -8,8 +8,8 @@
     {
       "type": "jobsplus:job_exp",
       "chance": 100,
-      "min": 3.12,
-      "max": 3.12
+      "min": 5.03,
+      "max": 5.03
     }
   ],
   "conditions": [
