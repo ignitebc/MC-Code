@@ -40,21 +40,19 @@ public final class DeathRules {
             for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
                 if (!inventory.getItem(slot).isEmpty()) filledSlots.add(slot);
             }
-            if (filledSlots.isEmpty()) {
-                broadcast(player, Component.empty().append(playerName(player))
-                        .append("님이 죽었습니다. 소지품이 없어 삭제된 아이템이 없습니다."));
-            } else {
-                List<Component> itemNames = new ArrayList<>();
-                while (itemNames.size() < PENALTY_ITEM_COUNT && !filledSlots.isEmpty()) {
-                    int slot = filledSlots.remove(player.getRandom().nextInt(filledSlots.size()));
-                    // 배낭 삭제 연동이 함께 비운 내부 칸은 두 번째 손실로 세지 않고 다시 뽑는다.
-                    if (inventory.getItem(slot).isEmpty()) continue;
-                    ItemStack removed = inventory.removeItemNoUpdate(slot);
-                    if (removed.isEmpty()) continue;
-                    itemNames.add(removed.getHoverName().copy()
-                            .append(removed.getCount() > 1 ? " " + removed.getCount() + "개" : "")
-                            .withStyle(ChatFormatting.RED));
-                }
+            List<Component> itemNames = new ArrayList<>();
+            while (itemNames.size() < PENALTY_ITEM_COUNT && !filledSlots.isEmpty()) {
+                int slot = filledSlots.remove(player.getRandom().nextInt(filledSlots.size()));
+                // 배낭 삭제 연동이 함께 비운 내부 칸은 두 번째 손실로 세지 않고 다시 뽑는다.
+                if (inventory.getItem(slot).isEmpty()) continue;
+                ItemStack removed = inventory.removeItemNoUpdate(slot);
+                if (removed.isEmpty()) continue;
+                itemNames.add(removed.getHoverName().copy()
+                        .append(removed.getCount() > 1 ? " " + removed.getCount() + "개" : "")
+                        .withStyle(ChatFormatting.RED));
+            }
+            // 소지품이 없어 사라진 아이템이 없으면 알리지 않는다.
+            if (!itemNames.isEmpty()) {
                 inventory.setChanged();
                 MutableComponent lostItems = Component.empty();
                 for (int i = 0; i < itemNames.size(); i++) {
