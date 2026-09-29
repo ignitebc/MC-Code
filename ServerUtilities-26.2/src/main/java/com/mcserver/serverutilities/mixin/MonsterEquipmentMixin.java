@@ -2,6 +2,7 @@ package com.mcserver.serverutilities.mixin;
 
 import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
 import com.mcserver.serverutilities.monster.MonsterEquipmentRules;
+import com.mcserver.serverutilities.monster.MonsterLevel;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
@@ -20,10 +21,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Mob.class)
 public abstract class MonsterEquipmentMixin implements MonsterEquipmentAccess {
+    /** 레벨 기능 이전에 저장된 개체를 구분하기 위한 값 */
+    @Unique private static final int SERVERUTILITIES_LEVEL_NOT_SAVED = -1;
+
     @Unique private boolean serverutilities$equipmentRolled;
     @Unique private boolean serverutilities$equipmentPending;
     @Unique private boolean serverutilities$randomArmor;
     @Unique private boolean serverutilities$randomWeapon;
+    @Unique private int serverutilities$monsterLevel;
 
     @Override
     public boolean serverutilities$equipmentRolled() { return serverutilities$equipmentRolled; }
@@ -32,12 +37,19 @@ public abstract class MonsterEquipmentMixin implements MonsterEquipmentAccess {
     public boolean serverutilities$equipmentPending() { return serverutilities$equipmentPending; }
 
     @Override
-    public void serverutilities$finishEquipmentRoll(boolean armorEquipped, boolean weaponEquipped) {
+    public void serverutilities$finishEquipmentRoll(boolean armorEquipped, boolean weaponEquipped, int level) {
         serverutilities$equipmentRolled = true;
         serverutilities$equipmentPending = false;
         serverutilities$randomArmor = armorEquipped;
         serverutilities$randomWeapon = weaponEquipped;
+        serverutilities$monsterLevel = level;
     }
+
+    @Override
+    public int serverutilities$monsterLevel() { return serverutilities$monsterLevel; }
+
+    @Override
+    public void serverutilities$setMonsterLevel(int level) { serverutilities$monsterLevel = level; }
 
     @Inject(method = "finalizeSpawn", at = @At("TAIL"))
     private void serverutilities$prepareEquipment(ServerLevelAccessor level, DifficultyInstance difficulty,
@@ -55,6 +67,7 @@ public abstract class MonsterEquipmentMixin implements MonsterEquipmentAccess {
         output.putBoolean("ServerUtilitiesEquipmentPending", serverutilities$equipmentPending);
         output.putBoolean("ServerUtilitiesRandomArmor", serverutilities$randomArmor);
         output.putBoolean("ServerUtilitiesRandomWeapon", serverutilities$randomWeapon);
+        output.putInt("ServerUtilitiesMonsterLevel", serverutilities$monsterLevel);
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
@@ -71,6 +84,17 @@ public abstract class MonsterEquipmentMixin implements MonsterEquipmentAccess {
             MonsterEquipmentRules.preventEquipmentDrops((Mob) (Object) this,
                     serverutilities$randomArmor, serverutilities$randomWeapon);
         }
+        serverutilities$monsterLevel = serverutilities$loadLevel(input);
+    }
+
+    /** 저장된 레벨. 레벨 기능 이전에 추첨을 마친 개체는 지급 기록과 현재 장비로 다시 계산한다. */
+    @Unique
+    private int serverutilities$loadLevel(ValueInput input) {
+        int savedLevel = input.getIntOr("ServerUtilitiesMonsterLevel", SERVERUTILITIES_LEVEL_NOT_SAVED);
+        if (savedLevel != SERVERUTILITIES_LEVEL_NOT_SAVED) return savedLevel;
+        if (!serverutilities$equipmentRolled) return MonsterLevel.NONE;
+        return MonsterEquipmentRules.calculateLevel((Mob) (Object) this,
+                serverutilities$randomArmor, serverutilities$randomWeapon);
     }
 
     @Inject(method = "dropCustomDeathLoot", at = @At("HEAD"))

@@ -1,6 +1,8 @@
 package com.tacz.guns.mixin.common;
 
+import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.builder.GunItemBuilder;
+import com.tacz.guns.util.GunGrades;
 import com.tacz.guns.util.RegisteredGuns;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.Item;
@@ -34,5 +36,13 @@ public abstract class MonsterEquipmentGunMixin {
                 .setFireMode(data.getFireModeSet().getFirst()).build();
         // 새 빌더의 빈 파츠 목록을 사용한다. 로딩 중 사라진 총기는 기본 무기로 대체한다.
         if (!stack.isEmpty()) cir.setReturnValue(stack);
+    }
+
+    /** 몬스터 레벨 계산에서 총기는 근접 무기 고정 점수 대신 총기 등급 점수를 쓴다. */
+    @Inject(method = "weaponScore", at = @At("HEAD"), cancellable = true, remap = false)
+    private static void tacz$scoreGun(ItemStack weapon, CallbackInfoReturnable<Integer> cir) {
+        IGun iGun = IGun.getIGunOrNull(weapon);
+        if (iGun == null) return;
+        cir.setReturnValue(GunGrades.score(iGun.getGunId(weapon)));
     }
 }
