@@ -1,52 +1,56 @@
 package com.daqem.jobsplus.metrics;
 
+import com.daqem.arc.api.action.IAction;
+import com.daqem.arc.api.action.data.ActionData;
+import com.daqem.arc.api.action.result.ActionResult;
+import com.daqem.arc.event.events.ActionEvent;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
-import com.daqem.jobsplus.player.JobsPlayer;
+import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.job.Job;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * Lightweight analysis metrics for real server play.
+ * 실제 서버 플레이의 직업 밸런스 분석용 메트릭.
  * <p>
- * Only job EXP, job BTC rewards and connection state are recorded. High-frequency
- * job events are aggregated into five-second buckets in memory and flushed in one
- * append operation every five minutes. Shop/stock data is intentionally excluded.
+ * logs/jobsplus-metrics/v2 아래에 파일별로 기록한다.
+ * <ul>
+ *     <li>actions.csv: 5초 버킷 × 플레이어 × 직업 액션별 실행 횟수, EXP(기본·쿠폰·스킬 보너스), BTC</li>
+ *     <li>events.csv: 접속·종료와 5분 접속 표시 등 개별 이벤트</li>
+ * </ul>
+ * 빈도가 높은 액션 기록은 메모리에서 묶었다가 저장 주기마다 한 번에 추가한다. 상점·주식 거래는 기록하지 않는다.
  */
 public final class JobsPlusMetrics
 {
-    public static final long BUCKET_MILLIS = 5_000L;
+    public static final int SCHEMA_VERSION = 2;
 
     private static final int FLUSH_INTERVAL_TICKS = 20 * 60 * 5;
-    private static final String FILE_NAME = "jobsplus_metrics.csv";
-    private static final String HEADER = "timestamp_ms,record_type,player_uuid,player_name,job_id,exp,btc,bucket_ms\n";
+    private static final String ACTIONS_FILE = "actions.csv";
+    private static final String EVENTS_FILE = "events.csv";
+    /** 디스크 오류가 계속될 때 메모리가 한없이 늘지 않도록 파일별 대기 행 수를 제한한다. */
+    private static final int MAX_PENDING_LINES = 500_000;
     private static final Object LOCK = new Object();
 
-    /** bucketStart -> player UUID -> job id -> accumulated metrics */
-    private static final Map<Long, Map<UUID, Map<Identifier, MetricBucket>>> BUCKETS = new LinkedHashMap<>();
-    private static final List<SessionEvent> SESSION_EVENTS = new ArrayList<>();
+    private static final ActionMetrics ACTIONS = new ActionMetrics();
+    private static final Map<String, PendingFile> PENDING_FILES = new LinkedHashMap<>();
     private static final Map<UUID, String> ONLINE_PLAYERS = new LinkedHashMap<>();
 
+    private static Path directory;
     private static int ticksUntilFlush = FLUSH_INTERVAL_TICKS;
     private static boolean registered;
+    private static boolean listenerFailureLogged;
 
     private JobsPlusMetrics()
     {
@@ -65,60 +69,102 @@ public final class JobsPlusMetrics
         PlayerEvent.PLAYER_JOIN.register(JobsPlusMetrics::onPlayerJoin);
         PlayerEvent.PLAYER_QUIT.register(JobsPlusMetrics::onPlayerQuit);
         TickEvent.SERVER_POST.register(JobsPlusMetrics::onServerTick);
+        ActionEvent.REWARDS_APPLYING.register(JobsPlusMetrics::onRewardsApplying);
+        ActionEvent.REWARDS_APPLIED.register(JobsPlusMetrics::onRewardsApplied);
     }
 
     /**
-     * Records actual job EXP granted by the reward pipeline. Base EXP and powerup
-     * bonus EXP are both sent here, so the bucket total is the real awarded amount.
+     * 직업 EXP 보상의 기본 EXP와 쿠폰으로 늘어난 몫을 나누어 기록한다.
+     * 스킬 보너스는 {@link #recordSkillExperience}로 따로 들어온다.
      */
-    public static void recordExperience(JobsPlayer jobsPlayer, Job job, double experience)
+    public static void recordExperience(ServerPlayer player, Job job, double baseExperience, double couponBonus)
     {
-        if (experience <= 0.0D || job == null)
+        if (player == null || job == null || baseExperience + couponBonus <= 0.0D)
         {
             return;
         }
-        if (!(jobsPlayer.jobsplus$getPlayer() instanceof ServerPlayer serverPlayer))
+        synchronized (LOCK)
         {
-            return;
+            ACTIONS.addExperience(player, job, baseExperience, couponBonus, 0.0D);
         }
-
-        recordBucket(serverPlayer, job.getJobInstance(), experience, 0);
     }
 
-    /** Records only BTC that was actually awarded to the player. */
+    /** EXP 배율 스킬이 추가로 지급한 EXP를 기록한다. */
+    public static void recordSkillExperience(ServerPlayer player, Job job, double skillBonus)
+    {
+        if (player == null || job == null || skillBonus <= 0.0D)
+        {
+            return;
+        }
+        synchronized (LOCK)
+        {
+            ACTIONS.addExperience(player, job, 0.0D, 0.0D, skillBonus);
+        }
+    }
+
+    /** 실제로 지급한 BTC만 기록한다. 쿠폰으로 확률이 오른 구간은 btc_coupon_multiplier 열로 구분된다. */
     public static void recordBitcoin(ServerPlayer player, JobInstance jobInstance, int amount)
     {
         if (player == null || jobInstance == null || amount <= 0)
         {
             return;
         }
-        recordBucket(player, jobInstance, 0.0D, amount);
-    }
-
-    private static void recordBucket(ServerPlayer player, JobInstance jobInstance, double experience, int bitcoin)
-    {
-        long now = System.currentTimeMillis();
-        long bucketStart = now - Math.floorMod(now, BUCKET_MILLIS);
-        UUID uuid = player.getUUID();
-        Identifier jobId = jobInstance.getLocation();
-        String playerName = player.getName().getString();
-
+        int jobLevel = 0;
+        if (player instanceof JobsServerPlayer jobsPlayer)
+        {
+            Job job = jobsPlayer.jobsplus$getJob(jobInstance);
+            if (job != null)
+            {
+                jobLevel = job.getLevel();
+            }
+        }
         synchronized (LOCK)
         {
-            Map<UUID, Map<Identifier, MetricBucket>> players = BUCKETS.computeIfAbsent(
-                    bucketStart,
-                    ignored -> new LinkedHashMap<>()
-            );
-            Map<Identifier, MetricBucket> jobs = players.computeIfAbsent(
-                    uuid,
-                    ignored -> new LinkedHashMap<>()
-            );
-            MetricBucket bucket = jobs.computeIfAbsent(
-                    jobId,
-                    ignored -> new MetricBucket(bucketStart, uuid, playerName, jobId.toString())
-            );
-            bucket.experience += experience;
-            bucket.bitcoin += bitcoin;
+            ACTIONS.addBitcoin(player, jobInstance, jobLevel, amount);
+        }
+    }
+
+    static void recordEvent(MetricsEvent event)
+    {
+        synchronized (LOCK)
+        {
+            pending(EVENTS_FILE, MetricsEvent.HEADER).add(event.toCsvLine());
+        }
+    }
+
+    private static void onRewardsApplying(IAction action, ActionData actionData)
+    {
+        if (!(actionData.getPlayer() instanceof JobsServerPlayer))
+        {
+            return;
+        }
+        try
+        {
+            synchronized (LOCK)
+            {
+                ACTIONS.beginAction(action, actionData);
+            }
+        }
+        catch (RuntimeException exception)
+        {
+            // 메트릭 오류가 직업 보상 지급을 막으면 안 되므로 삼키고 한 번만 남긴다.
+            if (!listenerFailureLogged)
+            {
+                listenerFailureLogged = true;
+                JobsPlus.LOGGER.error("Failed to record Jobs+ action metrics.", exception);
+            }
+        }
+    }
+
+    private static void onRewardsApplied(IAction action, ActionData actionData, ActionResult result)
+    {
+        if (!(actionData.getPlayer() instanceof JobsServerPlayer))
+        {
+            return;
+        }
+        synchronized (LOCK)
+        {
+            ACTIONS.endAction(action, actionData);
         }
     }
 
@@ -126,10 +172,16 @@ public final class JobsPlusMetrics
     {
         synchronized (LOCK)
         {
-            BUCKETS.clear();
-            SESSION_EVENTS.clear();
+            directory = server.getServerDirectory()
+                    .resolve("logs")
+                    .resolve("jobsplus-metrics")
+                    .resolve("v" + SCHEMA_VERSION);
+            ACTIONS.clear();
+            PENDING_FILES.clear();
             ONLINE_PLAYERS.clear();
+            MetricsCsv.resetVerifiedFiles();
             ticksUntilFlush = FLUSH_INTERVAL_TICKS;
+            listenerFailureLogged = false;
         }
     }
 
@@ -140,54 +192,43 @@ public final class JobsPlusMetrics
         {
             for (Map.Entry<UUID, String> entry : ONLINE_PLAYERS.entrySet())
             {
-                SESSION_EVENTS.add(new SessionEvent(now, "LOGOUT", entry.getKey(), entry.getValue()));
+                pending(EVENTS_FILE, MetricsEvent.HEADER).add(
+                        MetricsEvent.of("LOGOUT", now).player(entry.getKey(), entry.getValue()).detail("reason", "server_stop").toCsvLine());
             }
             ONLINE_PLAYERS.clear();
         }
-        flush(server, true);
+        flush(true);
     }
 
     private static void onPlayerJoin(ServerPlayer player)
     {
         UUID uuid = player.getUUID();
         String name = player.getName().getString();
-        long now = System.currentTimeMillis();
 
         synchronized (LOCK)
         {
             if (!ONLINE_PLAYERS.containsKey(uuid))
             {
-                SESSION_EVENTS.add(new SessionEvent(now, "LOGIN", uuid, name));
+                pending(EVENTS_FILE, MetricsEvent.HEADER).add(MetricsEvent.of("LOGIN").player(uuid, name).toCsvLine());
             }
             ONLINE_PLAYERS.put(uuid, name);
         }
-
-        MinecraftServer server = player.level().getServer();
-        if (server != null)
-        {
-            flush(server, false);
-        }
+        flush(false);
     }
 
     private static void onPlayerQuit(ServerPlayer player)
     {
         UUID uuid = player.getUUID();
         String name = player.getName().getString();
-        long now = System.currentTimeMillis();
 
         synchronized (LOCK)
         {
             if (ONLINE_PLAYERS.remove(uuid) != null)
             {
-                SESSION_EVENTS.add(new SessionEvent(now, "LOGOUT", uuid, name));
+                pending(EVENTS_FILE, MetricsEvent.HEADER).add(MetricsEvent.of("LOGOUT").player(uuid, name).toCsvLine());
             }
         }
-
-        MinecraftServer server = player.level().getServer();
-        if (server != null)
-        {
-            flush(server, false);
-        }
+        flush(false);
     }
 
     private static void onServerTick(MinecraftServer server)
@@ -203,184 +244,75 @@ public final class JobsPlusMetrics
                 long now = System.currentTimeMillis();
                 for (Map.Entry<UUID, String> entry : ONLINE_PLAYERS.entrySet())
                 {
-                    SESSION_EVENTS.add(new SessionEvent(now, "ONLINE", entry.getKey(), entry.getValue()));
+                    pending(EVENTS_FILE, MetricsEvent.HEADER).add(
+                            MetricsEvent.of("ONLINE", now).player(entry.getKey(), entry.getValue()).toCsvLine());
                 }
             }
         }
 
         if (shouldFlush)
         {
-            flush(server, false);
+            flush(false);
         }
     }
 
     /**
-     * Appends pending rows to one CSV. Normal flushes leave the current five-second
-     * bucket in memory so it cannot be split across two writes. Server shutdown flushes it too.
+     * 대기 중인 행을 파일별로 추가한다. 평소에는 채워지는 중인 현재 5초 버킷을 남겨 한 버킷이 두 번에 나뉘어 쓰이지 않게 한다.
+     * 서버 종료 때는 현재 버킷까지 모두 쓴다. 쓰기에 실패한 파일의 행은 다음 주기에 다시 시도한다.
      */
-    private static void flush(MinecraftServer server, boolean includeCurrentBucket)
+    private static void flush(boolean includeCurrentBucket)
     {
         synchronized (LOCK)
         {
-            long currentBucketStart = currentBucketStart();
-            List<MetricRow> rows = new ArrayList<>();
-            List<Long> bucketStartsToRemove = new ArrayList<>();
-
-            for (Map.Entry<Long, Map<UUID, Map<Identifier, MetricBucket>>> bucketEntry : BUCKETS.entrySet())
-            {
-                long bucketStart = bucketEntry.getKey();
-                if (!includeCurrentBucket && bucketStart >= currentBucketStart)
-                {
-                    continue;
-                }
-
-                for (Map<Identifier, MetricBucket> jobs : bucketEntry.getValue().values())
-                {
-                    for (MetricBucket bucket : jobs.values())
-                    {
-                        rows.add(new MetricRow(
-                                bucket.timestamp,
-                                "JOB_BUCKET",
-                                bucket.playerUuid,
-                                bucket.playerName,
-                                bucket.jobId,
-                                bucket.experience,
-                                bucket.bitcoin,
-                                BUCKET_MILLIS
-                        ));
-                    }
-                }
-                bucketStartsToRemove.add(bucketStart);
-            }
-
-            for (SessionEvent event : SESSION_EVENTS)
-            {
-                rows.add(new MetricRow(
-                        event.timestamp,
-                        event.type,
-                        event.playerUuid,
-                        event.playerName,
-                        "",
-                        0.0D,
-                        0,
-                        0L
-                ));
-            }
-
-            if (rows.isEmpty())
+            if (directory == null)
             {
                 return;
             }
 
-            rows.sort(Comparator.comparingLong(MetricRow::timestamp));
-            StringBuilder output = new StringBuilder(rows.size() * 96);
-            for (MetricRow row : rows)
+            List<String> actionLines = ACTIONS.drain(includeCurrentBucket, System.currentTimeMillis());
+            if (!actionLines.isEmpty())
             {
-                appendCsvRow(output, row);
+                pending(ACTIONS_FILE, ActionMetrics.HEADER).addAll(actionLines);
             }
 
-            try
+            for (Map.Entry<String, PendingFile> entry : PENDING_FILES.entrySet())
             {
-                Path directory = server.getServerDirectory().resolve("logs").resolve("jobsplus-metrics");
-                Files.createDirectories(directory);
-                Path file = directory.resolve(FILE_NAME);
-                boolean needsHeader = !Files.exists(file) || Files.size(file) == 0L;
-
-                if (needsHeader)
+                PendingFile pendingFile = entry.getValue();
+                if (pendingFile.lines.isEmpty())
                 {
-                    output.insert(0, HEADER);
+                    continue;
                 }
-
-                Files.writeString(
-                        file,
-                        output,
-                        StandardCharsets.UTF_8,
-                        StandardOpenOption.CREATE,
-                        StandardOpenOption.WRITE,
-                        StandardOpenOption.APPEND
-                );
-
-                for (Long bucketStart : bucketStartsToRemove)
+                try
                 {
-                    BUCKETS.remove(bucketStart);
+                    MetricsCsv.append(directory.resolve(entry.getKey()), pendingFile.header, pendingFile.lines);
+                    pendingFile.lines.clear();
                 }
-                SESSION_EVENTS.clear();
+                catch (IOException exception)
+                {
+                    JobsPlus.LOGGER.error("Failed to flush Jobs+ analysis metrics to {}.", entry.getKey(), exception);
+                    if (pendingFile.lines.size() > MAX_PENDING_LINES)
+                    {
+                        JobsPlus.LOGGER.error("Dropping {} pending Jobs+ metric rows for {}.", pendingFile.lines.size(), entry.getKey());
+                        pendingFile.lines.clear();
+                    }
+                }
             }
-            catch (IOException exception)
-            {
-                JobsPlus.LOGGER.error("Failed to flush Jobs+ analysis metrics.", exception);
-            }
         }
     }
 
-    private static long currentBucketStart()
+    private static List<String> pending(String fileName, String header)
     {
-        long now = System.currentTimeMillis();
-        return now - Math.floorMod(now, BUCKET_MILLIS);
+        return PENDING_FILES.computeIfAbsent(fileName, ignored -> new PendingFile(header)).lines;
     }
 
-    private static void appendCsvRow(StringBuilder output, MetricRow row)
+    private static final class PendingFile
     {
-        output.append(row.timestamp()).append(',')
-                .append(csv(row.type())).append(',')
-                .append(row.playerUuid()).append(',')
-                .append(csv(row.playerName())).append(',')
-                .append(csv(row.jobId())).append(',')
-                .append(formatDouble(row.experience())).append(',')
-                .append(row.bitcoin()).append(',')
-                .append(row.bucketMillis())
-                .append('\n');
-    }
+        private final String header;
+        private final List<String> lines = new ArrayList<>();
 
-    private static String formatDouble(double value)
-    {
-        return String.format(Locale.ROOT, "%.6f", value);
-    }
-
-    private static String csv(String value)
-    {
-        if (value == null)
+        private PendingFile(String header)
         {
-            return "";
+            this.header = header;
         }
-        if (value.indexOf(',') < 0 && value.indexOf('"') < 0 && value.indexOf('\n') < 0 && value.indexOf('\r') < 0)
-        {
-            return value;
-        }
-        return '"' + value.replace("\"", "\"\"") + '"';
-    }
-
-    private static final class MetricBucket
-    {
-        private final long timestamp;
-        private final UUID playerUuid;
-        private final String playerName;
-        private final String jobId;
-        private double experience;
-        private int bitcoin;
-
-        private MetricBucket(long timestamp, UUID playerUuid, String playerName, String jobId)
-        {
-            this.timestamp = timestamp;
-            this.playerUuid = playerUuid;
-            this.playerName = playerName;
-            this.jobId = jobId;
-        }
-    }
-
-    private record SessionEvent(long timestamp, String type, UUID playerUuid, String playerName)
-    {
-    }
-
-    private record MetricRow(
-            long timestamp,
-            String type,
-            UUID playerUuid,
-            String playerName,
-            String jobId,
-            double experience,
-            int bitcoin,
-            long bucketMillis)
-    {
     }
 }

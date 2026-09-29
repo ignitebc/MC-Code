@@ -8,7 +8,6 @@ import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.integration.arc.action.type.JobsPlusActionType;
 import com.daqem.jobsplus.integration.arc.data.type.JobsPlusActionDataType;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
-import com.daqem.jobsplus.metrics.JobsPlusMetrics;
 import com.daqem.jobsplus.networking.s2c.ClientboundLevelUpJobPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundUnlockItemRestrictionPacket;
 import com.daqem.jobsplus.player.JobsPlayer;
@@ -64,8 +63,7 @@ public class JobEvents
 
     public static void onJobExperience(JobsPlayer player, Job job, double experience)
     {
-        JobsPlusMetrics.recordExperience(player, job, experience);
-
+        // 메트릭은 기본·쿠폰 몫을 아는 JobExpReward와 스킬 보너스를 아는 JobExpMultiplierReward에서 나누어 기록한다.
         if (player instanceof ArcPlayer arcPlayer)
         {
             new ActionDataBuilder(arcPlayer, JobsPlusActionType.JOB_EXP).withData(JobsPlusActionDataType.JOB_EXP, experience).withData(JobsPlusActionDataType.ONLY_FOR_JOB, job).build().sendToAction();
