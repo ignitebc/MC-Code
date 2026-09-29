@@ -44,7 +44,9 @@ public final class JobsPlusMetrics
 {
     public static final int SCHEMA_VERSION = 2;
 
-    private static final int FLUSH_INTERVAL_TICKS = 20 * 60 * 5;
+    /** 서버가 비정상 종료돼도 잃는 기록이 1분 이내가 되도록 1분마다 저장한다. */
+    private static final int FLUSH_INTERVAL_TICKS = 20 * 60;
+    private static final int HEARTBEAT_INTERVAL_TICKS = 20 * 60 * 5;
     private static final String ACTIONS_FILE = "actions.csv";
     private static final String EVENTS_FILE = "events.csv";
     private static final String SNAPSHOTS_FILE = "snapshots.csv";
@@ -65,6 +67,7 @@ public final class JobsPlusMetrics
 
     private static Path directory;
     private static int ticksUntilFlush = FLUSH_INTERVAL_TICKS;
+    private static int ticksUntilHeartbeat = HEARTBEAT_INTERVAL_TICKS;
     private static boolean registered;
     private static boolean listenerFailureLogged;
     private static volatile String balanceVersion = "";
@@ -219,6 +222,7 @@ public final class JobsPlusMetrics
             WRITTEN_BALANCE_VERSIONS.clear();
             MetricsCsv.resetVerifiedFiles();
             ticksUntilFlush = FLUSH_INTERVAL_TICKS;
+            ticksUntilHeartbeat = HEARTBEAT_INTERVAL_TICKS;
             listenerFailureLogged = false;
             balanceVersion = "";
 
@@ -318,6 +322,12 @@ public final class JobsPlusMetrics
             if (shouldFlush)
             {
                 ticksUntilFlush = FLUSH_INTERVAL_TICKS;
+            }
+
+            ticksUntilHeartbeat--;
+            if (ticksUntilHeartbeat <= 0)
+            {
+                ticksUntilHeartbeat = HEARTBEAT_INTERVAL_TICKS;
                 long now = System.currentTimeMillis();
                 for (Map.Entry<UUID, String> entry : ONLINE_PLAYERS.entrySet())
                 {
