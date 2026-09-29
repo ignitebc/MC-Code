@@ -19,6 +19,8 @@ public class JobsPlusConfig
 
     public static final IConfigEntry<Integer> coinsPerLevelUp;
 
+    public static final IConfigEntry<String> metricsSeason;
+
     public static final IConfigEntry<Boolean> isDebug;
 
     static
@@ -46,6 +48,12 @@ public class JobsPlusConfig
                 COINS_PER_LEVEL_UP
         ).withComments("플레이어가 레벨업 시 얻는 직업코인의 양");
         config.pop();
+        config.pop();
+
+        config.push("metrics");
+        // 시즌마다 이름을 바꾸면 메트릭이 시즌별 폴더에 따로 쌓여 다른 시즌 기록과 섞이지 않는다.
+        metricsSeason = config.defineString("season", "", 0, 32, "[A-Za-z0-9_-]*")
+                .withComments("메트릭 저장 폴더 이름(영문·숫자·_·-). logs/jobsplus-metrics/v2/<이름>에 기록되며 비우면 unspecified 폴더를 씁니다.");
         config.pop();
 
         config.push("debug");

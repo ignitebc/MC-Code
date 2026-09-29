@@ -5,6 +5,7 @@ import com.daqem.arc.api.action.holder.IActionHolder;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.JobsPlusExpectPlatform;
 import com.daqem.jobsplus.integration.arc.holder.type.JobsPlusActionHolderType;
+import com.daqem.jobsplus.metrics.JobsPlusMetrics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -87,6 +88,8 @@ public class JobManager extends SimplePreparableReloadListener<List<IActionHolde
         actionHolderManager.clearAllActionHoldersForType(JobsPlusActionHolderType.JOB_INSTANCE);
         actionHolderManager.registerActionHolders(jobs);
         JobsPlus.LOGGER.info("Loaded {} jobs", jobs.size());
+        // 보상 수치가 바뀌었을 수 있으므로 메트릭 밸런스 버전을 다시 계산한다.
+        JobsPlusMetrics.markBalanceDirty();
     }
 
     public static JobManager getInstance()

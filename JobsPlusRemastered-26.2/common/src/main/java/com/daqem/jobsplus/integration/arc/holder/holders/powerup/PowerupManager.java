@@ -5,6 +5,7 @@ import com.daqem.arc.api.action.holder.IActionHolder;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.JobsPlusExpectPlatform;
 import com.daqem.jobsplus.integration.arc.holder.type.JobsPlusActionHolderType;
+import com.daqem.jobsplus.metrics.JobsPlusMetrics;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
 import net.minecraft.resources.Identifier;
@@ -85,6 +86,8 @@ public class PowerupManager extends SimplePreparableReloadListener<List<IActionH
         actionHolderManager.clearAllActionHoldersForType(JobsPlusActionHolderType.POWERUP_INSTANCE);
         actionHolderManager.registerActionHolders(powerups);
         JobsPlus.LOGGER.info("Loaded {} powerups", powerups.size());
+        // 스킬 가격·요구 레벨이 바뀌었을 수 있으므로 메트릭 밸런스 버전을 다시 계산한다.
+        JobsPlusMetrics.markBalanceDirty();
     }
 
     public static PowerupManager getInstance()

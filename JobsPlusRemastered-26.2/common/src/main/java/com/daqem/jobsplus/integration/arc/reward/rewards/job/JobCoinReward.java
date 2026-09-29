@@ -51,6 +51,11 @@ public class JobCoinReward extends AbstractReward
         return new ActionResult();
     }
 
+    public int getAmount()
+    {
+        return amount;
+    }
+
     @Override
     public Component getDescription()
     {

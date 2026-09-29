@@ -5,31 +5,37 @@ import com.daqem.arc.api.action.data.ActionData;
 import com.daqem.arc.api.action.result.ActionResult;
 import com.daqem.arc.event.events.ActionEvent;
 import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.job.Job;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
+import dev.architectury.platform.Mod;
+import dev.architectury.platform.Platform;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
  * 실제 서버 플레이의 직업 밸런스 분석용 메트릭.
  * <p>
- * logs/jobsplus-metrics/v2 아래에 파일별로 기록한다.
+ * logs/jobsplus-metrics/v2/&lt;시즌&gt; 아래에 파일별로 기록한다. 시즌 이름은 설정 metrics.season으로 정한다.
  * <ul>
  *     <li>actions.csv: 5초 버킷 × 플레이어 × 직업 액션별 실행 횟수, EXP(기본·쿠폰·스킬 보너스), BTC</li>
  *     <li>events.csv: 접속·종료, 5분 접속 표시, 레벨업, 스킬 구매·실패·전환, 직업 선택, 쿠폰 사용, 관리자 명령</li>
  *     <li>snapshots.csv: 접속·종료 시와 접속 중 1시간마다 직업별 레벨·EXP·스킬·코인 상태</li>
+ *     <li>balance_rewards.csv, balance_powerups.csv: 밸런스 버전별 실제 적용 보상표와 스킬 가격표</li>
  * </ul>
  * 빈도가 높은 액션 기록은 메모리에서 묶었다가 저장 주기마다 한 번에 추가한다. 상점·주식 거래는 기록하지 않는다.
  */
@@ -41,6 +47,8 @@ public final class JobsPlusMetrics
     private static final String ACTIONS_FILE = "actions.csv";
     private static final String EVENTS_FILE = "events.csv";
     private static final String SNAPSHOTS_FILE = "snapshots.csv";
+    private static final String BALANCE_REWARDS_FILE = "balance_rewards.csv";
+    private static final String BALANCE_POWERUPS_FILE = "balance_powerups.csv";
     private static final long SNAPSHOT_INTERVAL_MILLIS = 60L * 60L * 1000L;
     /** 디스크 오류가 계속될 때 메모리가 한없이 늘지 않도록 파일별 대기 행 수를 제한한다. */
     private static final int MAX_PENDING_LINES = 500_000;
@@ -50,11 +58,14 @@ public final class JobsPlusMetrics
     private static final Map<String, PendingFile> PENDING_FILES = new LinkedHashMap<>();
     private static final Map<UUID, String> ONLINE_PLAYERS = new LinkedHashMap<>();
     private static final Map<UUID, Long> LAST_SNAPSHOTS = new LinkedHashMap<>();
+    private static final Set<String> WRITTEN_BALANCE_VERSIONS = new HashSet<>();
 
     private static Path directory;
     private static int ticksUntilFlush = FLUSH_INTERVAL_TICKS;
     private static boolean registered;
     private static boolean listenerFailureLogged;
+    private static volatile String balanceVersion = "";
+    private static volatile boolean balanceDirty;
 
     private JobsPlusMetrics()
     {
@@ -128,6 +139,17 @@ public final class JobsPlusMetrics
         }
     }
 
+    /** 직업·스킬 데이터를 다시 읽으면 다음 틱에 보상표를 다시 확인한다. */
+    public static void markBalanceDirty()
+    {
+        balanceDirty = true;
+    }
+
+    static String balanceVersion()
+    {
+        return balanceVersion;
+    }
+
     static void recordEvent(MetricsEvent event)
     {
         synchronized (LOCK)
@@ -176,18 +198,43 @@ public final class JobsPlusMetrics
     {
         synchronized (LOCK)
         {
+            String season = seasonFolder();
             directory = server.getServerDirectory()
                     .resolve("logs")
                     .resolve("jobsplus-metrics")
-                    .resolve("v" + SCHEMA_VERSION);
+                    .resolve("v" + SCHEMA_VERSION)
+                    .resolve(season);
             ACTIONS.clear();
             PENDING_FILES.clear();
             ONLINE_PLAYERS.clear();
             LAST_SNAPSHOTS.clear();
+            WRITTEN_BALANCE_VERSIONS.clear();
             MetricsCsv.resetVerifiedFiles();
             ticksUntilFlush = FLUSH_INTERVAL_TICKS;
             listenerFailureLogged = false;
+            balanceVersion = "";
+
+            try
+            {
+                WRITTEN_BALANCE_VERSIONS.addAll(MetricsCsv.readFirstColumn(directory.resolve(BALANCE_REWARDS_FILE), BalanceTable.REWARDS_HEADER));
+            }
+            catch (IOException exception)
+            {
+                JobsPlus.LOGGER.error("Failed to read recorded Jobs+ balance versions.", exception);
+            }
+            refreshBalanceVersion();
+
+            // 재시작 전 세션이 LOGOUT 없이 끊겼다면 분석에서 이 행을 기준으로 이전 세션을 닫는다.
+            pending(EVENTS_FILE, MetricsEvent.HEADER).add(MetricsEvent.of("SERVER_START")
+                    .target(balanceVersion)
+                    .detail("schema", SCHEMA_VERSION)
+                    .detail("season", season)
+                    .detail("minecraft", server.getServerVersion())
+                    .detail("jobsplus", modVersion(JobsPlus.MOD_ID))
+                    .detail("arc", modVersion("arc"))
+                    .toCsvLine());
         }
+        flush(false);
     }
 
     private static void shutdownServer(MinecraftServer server)
@@ -207,6 +254,7 @@ public final class JobsPlusMetrics
             }
             ONLINE_PLAYERS.clear();
             LAST_SNAPSHOTS.clear();
+            pending(EVENTS_FILE, MetricsEvent.HEADER).add(MetricsEvent.of("SERVER_STOP", now).target(balanceVersion).toCsvLine());
         }
         flush(true);
     }
@@ -250,6 +298,10 @@ public final class JobsPlusMetrics
         boolean shouldFlush;
         synchronized (LOCK)
         {
+            if (balanceDirty && directory != null)
+            {
+                refreshBalanceVersion();
+            }
             ticksUntilFlush--;
             shouldFlush = ticksUntilFlush <= 0;
             if (shouldFlush)
@@ -318,6 +370,57 @@ public final class JobsPlusMetrics
                 }
             }
         }
+    }
+
+    /**
+     * 현재 적용된 보상표의 버전을 계산하고, 처음 보는 버전이면 보상표·스킬 가격표를 파일에 남긴다.
+     * 버전이 바뀌면 이후 actions.csv 행은 새 버전으로 기록된다.
+     */
+    private static void refreshBalanceVersion()
+    {
+        balanceDirty = false;
+        BalanceTable table;
+        try
+        {
+            table = BalanceTable.capture();
+        }
+        catch (RuntimeException exception)
+        {
+            JobsPlus.LOGGER.error("Failed to capture Jobs+ balance table for metrics.", exception);
+            return;
+        }
+        if (table.version().equals(balanceVersion))
+        {
+            return;
+        }
+
+        String previousVersion = balanceVersion;
+        balanceVersion = table.version();
+        if (WRITTEN_BALANCE_VERSIONS.add(table.version()))
+        {
+            pending(BALANCE_REWARDS_FILE, BalanceTable.REWARDS_HEADER).addAll(table.versionedRewardRows());
+            pending(BALANCE_POWERUPS_FILE, BalanceTable.POWERUPS_HEADER).addAll(table.versionedPowerupRows());
+        }
+        pending(EVENTS_FILE, MetricsEvent.HEADER).add(MetricsEvent.of("BALANCE_VERSION")
+                .target(table.version())
+                .before(previousVersion)
+                .after(table.version())
+                .detail("jobs", table.jobCount())
+                .detail("powerups", table.powerupCount())
+                .detail("reward_rows", table.rewardRowCount())
+                .toCsvLine());
+    }
+
+    private static String seasonFolder()
+    {
+        String season = JobsPlusConfig.metricsSeason.get();
+        season = season == null ? "" : season.trim().replaceAll("[^A-Za-z0-9_-]", "");
+        return season.isEmpty() ? "unspecified" : season;
+    }
+
+    private static String modVersion(String modId)
+    {
+        return Platform.getOptionalMod(modId).map(Mod::getVersion).orElse("");
     }
 
     private static void snapshot(ServerPlayer player, String reason, long now)
