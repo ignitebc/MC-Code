@@ -76,9 +76,14 @@ public class JobExpReward extends AbstractReward
                         exp *= RewardCouponLedger.get(server).getExperienceMultiplier(serverPlayer.getUUID());
                     }
 
+                    // 최대 레벨에서는 EXP가 쌓이지 않으므로 지급되지 않은 EXP를 메트릭에 남기지 않는다.
+                    boolean grantable = !job.isMaxLevel();
                     job.addExperience(exp);
-                    // 쿠폰 제외 기본 EXP/h를 따로 계산할 수 있도록 기본 몫과 쿠폰 몫을 나누어 남긴다.
-                    JobsPlusMetrics.recordExperience(serverPlayer, job, baseExp, exp - baseExp);
+                    if (grantable)
+                    {
+                        // 쿠폰 제외 기본 EXP/h를 따로 계산할 수 있도록 기본 몫과 쿠폰 몫을 나누어 남긴다.
+                        JobsPlusMetrics.recordExperience(serverPlayer, job, baseExp, exp - baseExp);
+                    }
                 }
             }
         }
