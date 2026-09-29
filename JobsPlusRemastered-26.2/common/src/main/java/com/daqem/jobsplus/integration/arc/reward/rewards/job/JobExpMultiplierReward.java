@@ -86,6 +86,11 @@ public class JobExpMultiplierReward extends AbstractReward
         return new ActionResult();
     }
 
+    public double getMultiplier()
+    {
+        return multiplier;
+    }
+
     @Override
     public Component getDescription()
     {

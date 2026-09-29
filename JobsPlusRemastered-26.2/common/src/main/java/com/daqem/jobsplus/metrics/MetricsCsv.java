@@ -64,6 +64,36 @@ final class MetricsCsv
         );
     }
 
+    /**
+     * 현재 형식 파일의 첫 열 값을 모은다. 이미 기록한 밸런스 버전을 재시작 때 다시 쓰지 않기 위해 쓴다.
+     * 파일이 없거나 헤더가 다르면 빈 집합을 돌려준다.
+     */
+    static Set<String> readFirstColumn(Path file, String header) throws IOException
+    {
+        Set<String> values = new HashSet<>();
+        if (!Files.exists(file))
+        {
+            return values;
+        }
+        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8))
+        {
+            if (!header.equals(reader.readLine()))
+            {
+                return values;
+            }
+            String line;
+            while ((line = reader.readLine()) != null)
+            {
+                int separator = line.indexOf(',');
+                if (separator > 0)
+                {
+                    values.add(line.substring(0, separator));
+                }
+            }
+        }
+        return values;
+    }
+
     private static void archiveIfHeaderChanged(Path file, String header) throws IOException
     {
         if (!Files.exists(file) || Files.size(file) == 0L)
