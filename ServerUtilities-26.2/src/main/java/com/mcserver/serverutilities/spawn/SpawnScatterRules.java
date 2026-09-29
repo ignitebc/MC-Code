@@ -1,6 +1,7 @@
 package com.mcserver.serverutilities.spawn;
 
 import com.mcserver.serverutilities.ServerUtilities;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -175,9 +176,10 @@ public final class SpawnScatterRules {
     private static void assignPersonalSpawn(ServerPlayer player, ServerLevel level, BlockPos position) {
         ((PersonalSpawnAccess) player).serverutilities$setPersonalSpawn(position);
         setRespawnConfig(player, level, position);
-        player.sendSystemMessage(Component.literal("시작 위치가 정해졌습니다. ("
-                + position.getX() + ", " + position.getY() + ", " + position.getZ()
-                + ") 사망하면 이 자리에서 다시 시작합니다."));
+        String coordinates = position.getX() + ", " + position.getY() + ", " + position.getZ();
+        player.sendSystemMessage(Component.literal("시작 위치가 정해졌습니다. (")
+                .append(Component.literal(coordinates).withStyle(ChatFormatting.RED))
+                .append(") 사망하면 이 자리에서 다시 시작합니다."));
     }
 
     private static void setRespawnConfig(ServerPlayer player, ServerLevel level, BlockPos position) {
