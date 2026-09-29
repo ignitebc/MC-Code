@@ -5,6 +5,7 @@ import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.command.arguments.EnumArgument;
 import com.daqem.jobsplus.command.arguments.JobArgument;
 import com.daqem.jobsplus.command.arguments.PowerupArgument;
+import com.daqem.jobsplus.metrics.MetricsEvent;
 
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.job.Job;
@@ -57,6 +58,15 @@ public class JobCommand
                                 })));
         }
 
+        /** 관리자 조작으로 바뀐 레벨·코인·스킬은 실측에서 제외해야 하므로 누가 무엇을 바꿨는지 남긴다. */
+        private static MetricsEvent adminEvent(String event, CommandSourceStack source, ServerPlayer target, JobInstance jobInstance)
+        {
+                return MetricsEvent.of(event)
+                                .player(target)
+                                .job(jobInstance == null ? "" : jobInstance.getLocation())
+                                .detail("source", source.getTextName());
+        }
+
         @SuppressWarnings("SameReturnValue")
         private static int clearPowerups(CommandSourceStack source, ServerPlayer targetPlayer, JobInstance jobInstance)
         {
@@ -65,8 +75,14 @@ public class JobCommand
                         Job job = jobsServerPlayer.jobsplus$getJob(jobInstance);
                         if (job != null)
                         {
+                                int powerupsBefore = job.getPowerupManager().getAllPowerups().size();
                                 job.getPowerupManager().clearPowerups();
                                 jobsServerPlayer.jobsplus$updateJob(job);
+                                adminEvent("ADMIN_CLEAR_POWERUPS", source, targetPlayer, jobInstance)
+                                        .before(powerupsBefore)
+                                        .after(0)
+                                        .jobLevel(job.getLevel())
+                                        .record();
                                 source.sendSuccess(() -> JobsPlus.translatable("command.set.powerup.success_clear", jobInstance.getName()), false);
                         }
                 }
@@ -95,6 +111,11 @@ public class JobCommand
                 {
                         Job job = jobsServerPlayer.jobsplus$getJob(jobInstance);
                         job.getPowerupManager().forceAddPowerup(jobsServerPlayer, job, powerupInstance, powerupState);
+                        adminEvent("ADMIN_SET_POWERUP", source, target, jobInstance)
+                                .target(powerupInstance.getLocation())
+                                .after(powerupState)
+                                .jobLevel(job.getLevel())
+                                .record();
                         source.sendSuccess(() -> JobsPlus.translatable("command.set.powerup.success", powerupInstance.getName(), jobInstance.getName(), powerupState.toString()), false);
                 }
                 return 1;
@@ -105,7 +126,11 @@ public class JobCommand
         {
                 if (target instanceof JobsServerPlayer jobsServerPlayer)
                 {
+                        int coinsBefore = jobsServerPlayer.jobsplus$getCoins();
                         jobsServerPlayer.jobsplus$setCoins(coins);
+                        adminEvent("ADMIN_SET_COINS", source, target, null)
+                                .coins(coinsBefore, coins)
+                                .record();
                         source.sendSuccess(() -> JobsPlus.translatable("command.set.coins.success", coins, jobsServerPlayer.jobsplus$getName()), false);
                 }
                 return 0;
@@ -125,7 +150,13 @@ public class JobCommand
                                         source.sendFailure(JobsPlus.translatable("command.set.experience.experience_too_high", maxExperienceForLevel));
                                         return experience;
                                 }
+                                int experienceBefore = job.getExperience();
                                 job.setExperience(experience, false);
+                                adminEvent("ADMIN_SET_EXPERIENCE", source, target, jobInstance)
+                                        .before(experienceBefore)
+                                        .after(experience)
+                                        .jobLevel(job.getLevel())
+                                        .record();
                                 source.sendSuccess(() -> JobsPlus.translatable("command.set.experience.success", jobInstance.getName(), experience, jobsServerPlayer.jobsplus$getPlayer().getDisplayName()), false);
                         } else
                         {
@@ -145,7 +176,12 @@ public class JobCommand
                         {
                                 if (job != null)
                                 {
+                                        int levelBefore = job.getLevel();
                                         jobsServerPlayer.jobsplus$removeJob(jobInstance);
+                                        adminEvent("ADMIN_REMOVE_JOB", source, target, jobInstance)
+                                                .before(levelBefore)
+                                                .after(0)
+                                                .record();
                                         source.sendSuccess(() -> JobsPlus.translatable("command.set.level.removed_job", jobInstance.getName(), jobsServerPlayer.jobsplus$getPlayer().getDisplayName()), false);
                                 } else
                                 {
@@ -156,7 +192,13 @@ public class JobCommand
 
                         if (job != null)
                         {
+                                int levelBefore = job.getLevel();
                                 job.setLevel(level);
+                                adminEvent("ADMIN_SET_LEVEL", source, target, jobInstance)
+                                        .before(levelBefore)
+                                        .after(job.getLevel())
+                                        .jobLevel(job.getLevel())
+                                        .record();
                                 source.sendSuccess(() -> JobsPlus.translatable("command.set.level.success", jobInstance.getName(), level, jobsServerPlayer.jobsplus$getPlayer().getDisplayName()), false);
 
                                 // 원본수정
@@ -186,9 +228,14 @@ public class JobCommand
 
                                 job = jobsServerPlayer.jobsplus$addNewJob(jobInstance);
 
-                                if (job != null) 
+                                if (job != null)
                                 {
                                         job.setLevel(level);
+                                        adminEvent("ADMIN_ADD_JOB", source, target, jobInstance)
+                                                .before(0)
+                                                .after(job.getLevel())
+                                                .jobLevel(job.getLevel())
+                                                .record();
                                         source.sendSuccess(() -> JobsPlus.translatable(
                                                         "command.set.level.success_new_job",
                                                         jobInstance.getName(),

@@ -2,6 +2,7 @@ package com.daqem.jobsplus.networking.c2s;
 
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
+import com.daqem.jobsplus.metrics.MetricsEvent;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import com.daqem.jobsplus.networking.s2c.ClientboundAlertPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
@@ -77,6 +78,7 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
         // - 본 서버 정책: 티켓으로 확보한 슬롯은 "무료 선택 가능 슬롯"으로 취급
         // => 따라서 "유효 무료 직업 수"를 기준으로 초과 시에만 코인 차감
         boolean coinsDeducted = false;
+        int coinsBefore = serverPlayer.jobsplus$getCoins();
         if (serverPlayer.jobsplus$getJobs().size() >= serverPlayer.jobsplus$getEffectiveFreeJobs()) {
             if (serverPlayer.jobsplus$getCoins() < jobInstance.getPrice()) {
                 sendAlert(serverPlayer, JobsPlus.translatable("error.not_enough_coins"));
@@ -97,6 +99,15 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
         }
 
         broadcastJobSelection(serverPlayer, jobInstance);
+        MetricsEvent.of("JOB_START")
+                .player(serverPlayer.jobsplus$getServerPlayer())
+                .job(jobInstance.getLocation())
+                .value(coinsDeducted ? jobInstance.getPrice() : 0)
+                .coins(coinsBefore, serverPlayer.jobsplus$getCoins())
+                .jobLevel(addedJob.getLevel())
+                .detail("jobs", serverPlayer.jobsplus$getJobs().size())
+                .detail("max_jobs", serverPlayer.jobsplus$getEffectiveMaxJobs())
+                .record();
 
         // 5) UI 갱신: maxJobs는 "유효 최대 직업 수"로 전송
         NetworkManager.sendToPlayer(

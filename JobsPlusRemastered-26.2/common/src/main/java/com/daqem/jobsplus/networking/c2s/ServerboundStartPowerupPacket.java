@@ -2,6 +2,7 @@ package com.daqem.jobsplus.networking.c2s;
 
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
+import com.daqem.jobsplus.metrics.MetricsEvent;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import com.daqem.jobsplus.networking.s2c.ClientboundAlertPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
@@ -67,10 +68,12 @@ public class ServerboundStartPowerupPacket implements CustomPacketPayload {
                 return;
             }
             if (serverPlayer.jobsplus$getCoins() < powerupInstance.getPrice()) {
+                recordPurchaseFailure(serverPlayer, job, powerupInstance, "not_enough_coins");
                 sendAlert(serverPlayer, JobsPlus.translatable("error.not_enough_coins"));
                 return;
             }
             if (job.getLevel() < powerupInstance.getRequiredLevel()) {
+                recordPurchaseFailure(serverPlayer, job, powerupInstance, "level_too_low");
                 sendAlert(serverPlayer, JobsPlus.translatable("error.not_high_enough_level"));
                 return;
             }
@@ -80,13 +83,27 @@ public class ServerboundStartPowerupPacket implements CustomPacketPayload {
                 return;
             }
             if (powerupInstance.getParent() != null && job.getPowerupManager().getPowerup(powerupInstance.getParent()).isEmpty()) {
+                recordPurchaseFailure(serverPlayer, job, powerupInstance, "parent_missing");
                 sendAlert(serverPlayer,
                         JobsPlus.translatable("error.could_not_add_powerup", powerupInstance.getName()));
                 return;
             }
 
             if (job.getPowerupManager().addPowerup(serverPlayer, job, powerupInstance)) {
-                serverPlayer.jobsplus$setCoins(serverPlayer.jobsplus$getCoins() - powerupInstance.getPrice());
+                int coinsBefore = serverPlayer.jobsplus$getCoins();
+                serverPlayer.jobsplus$setCoins(coinsBefore - powerupInstance.getPrice());
+                // 스킬 구매 순서·시각·재원은 최종 NBT로 알 수 없으므로 구매 시점에 남긴다.
+                MetricsEvent.of("POWERUP_BUY")
+                        .player(serverPlayer.jobsplus$getServerPlayer())
+                        .job(job.getJobInstance().getLocation())
+                        .target(powerupInstance.getLocation())
+                        .value(powerupInstance.getPrice())
+                        .coins(coinsBefore, serverPlayer.jobsplus$getCoins())
+                        .jobLevel(job.getLevel())
+                        .detail("required_level", powerupInstance.getRequiredLevel())
+                        .detail("parent", powerupInstance.getParent() == null ? "" : powerupInstance.getParent().getLocation())
+                        .detail("owned_after", job.getPowerupManager().getAllPowerups().size())
+                        .record();
                 sendAlert(serverPlayer,
                         JobsPlus.translatable("gui.confirmation.powerup_purchased", powerupInstance.getName()));
             } else {
@@ -94,6 +111,20 @@ public class ServerboundStartPowerupPacket implements CustomPacketPayload {
                         JobsPlus.translatable("error.could_not_add_powerup", powerupInstance.getName()));
             }
         }
+    }
+
+    /** 코인·레벨·선행 스킬 중 무엇이 구매를 막았는지 남겨 성장 병목을 구분한다. */
+    private static void recordPurchaseFailure(JobsServerPlayer serverPlayer, Job job, PowerupInstance powerupInstance, String reason) {
+        MetricsEvent.of("POWERUP_BUY_FAILED")
+                .player(serverPlayer.jobsplus$getServerPlayer())
+                .job(job.getJobInstance().getLocation())
+                .target(powerupInstance.getLocation())
+                .value(powerupInstance.getPrice())
+                .coins(serverPlayer.jobsplus$getCoins(), serverPlayer.jobsplus$getCoins())
+                .jobLevel(job.getLevel())
+                .detail("reason", reason)
+                .detail("required_level", powerupInstance.getRequiredLevel())
+                .record();
     }
 
     /** 스킬 구매 결과는 화면을 열어 둔 채로 확인하므로 채팅이 아니라 모달 알림으로 알린다. */

@@ -1,6 +1,7 @@
 package com.daqem.jobsplus.event.item;
 
 import com.daqem.jobsplus.event.player.EventRewardCouponEffectSync;
+import com.daqem.jobsplus.metrics.MetricsEvent;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.coupon.RewardCouponLedger;
 import dev.architectury.event.EventResult;
@@ -91,6 +92,16 @@ public final class EventRewardCouponUse
                     return EventResult.fromMinecraft(InteractionResult.CONSUME);
                 }
             }
+
+            // 쿠폰 저장 데이터에는 마지막 만료 시각만 남으므로, 쿠폰 구간을 분석에서 빼려면 사용 시점을 따로 남긴다.
+            MetricsEvent.of("COUPON_USE")
+                    .player(serverPlayer)
+                    .target(experienceCoupon ? "experience" : "bitcoin")
+                    .value(experienceCoupon ? (experienceTripleCoupon ? 3 : 2) : (bitcoinTripleCoupon ? 3 : 2))
+                    .after(expiresAt)
+                    .detail("item", itemId)
+                    .detail("remaining_ms", Math.max(0L, expiresAt - System.currentTimeMillis()))
+                    .record();
 
             // 사용 즉시 HUD에 상태 효과와 남은 시간을 표시한다.
             EventRewardCouponEffectSync.sync(serverPlayer);

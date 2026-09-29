@@ -1,8 +1,10 @@
 package com.daqem.jobsplus.networking.c2s;
 
+import com.daqem.jobsplus.metrics.MetricsEvent;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.job.Job;
+import com.daqem.jobsplus.player.job.powerup.PowerupState;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -48,8 +50,18 @@ public class ServerboundTogglePowerUpPacket implements CustomPacketPayload {
             Job job = serverPlayer.jobsplus$getJob(packet.jobLocation);
             if (job != null) {
                 job.getPowerupManager().getPowerup(packet.powerupLocation).ifPresent(powerup -> {
+                    PowerupState stateBefore = powerup.getState();
                     powerup.toggle();
                     serverPlayer.jobsplus$updateJob(job);
+                    // 꺼 둔 스킬은 효과가 없으므로 구간별 활성 스킬을 복원하려면 전환 시점이 필요하다.
+                    MetricsEvent.of("POWERUP_TOGGLE")
+                            .player(serverPlayer.jobsplus$getServerPlayer())
+                            .job(packet.jobLocation)
+                            .target(packet.powerupLocation)
+                            .before(stateBefore)
+                            .after(powerup.getState())
+                            .jobLevel(job.getLevel())
+                            .record();
                 });
             }
         }

@@ -2,6 +2,7 @@ package com.daqem.jobsplus.event.item;
 
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.config.JobsPlusConfig;
+import com.daqem.jobsplus.metrics.MetricsEvent;
 import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import dev.architectury.event.events.common.InteractionEvent;
@@ -68,7 +69,13 @@ public final class EventJobSelectTicketUse {
             }
 
             // 슬롯 +1
+            int maxJobsBefore = jobsServerPlayer.jobsplus$getEffectiveMaxJobs();
             jobsServerPlayer.jobsplus$addExtraJobSlots(1);
+            MetricsEvent.of("JOB_SLOT_ADD")
+                    .player(serverPlayer)
+                    .before(maxJobsBefore)
+                    .after(jobsServerPlayer.jobsplus$getEffectiveMaxJobs())
+                    .record();
 
             // 무조건 1개 소모
             stack.shrink(1);
