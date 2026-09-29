@@ -7,8 +7,8 @@
   "rewards": [
     {
       "type": "jobsplus:job_exp",
-      "min": 35,
-      "max": 35
+      "min": 75.1,
+      "max": 75.1
     }
   ],
   "conditions": [
