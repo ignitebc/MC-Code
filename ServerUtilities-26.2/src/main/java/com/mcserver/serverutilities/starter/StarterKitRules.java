@@ -13,14 +13,15 @@ import java.util.List;
 /** 최초 접속 한 번만 시작 장비를 지급한다. */
 public final class StarterKitRules {
     private static final Component GIVEN_MESSAGE =
-            Component.literal("시작 장비를 지급했습니다. 금 방어구 한 벌과 방패, 금 곡괭이·도끼·삽입니다.");
+            Component.literal("시작 장비를 지급했습니다. 금 방어구 한 벌과 방패, 금 곡괭이·도끼·삽·괭이·검입니다.");
     private static final List<ArmorPiece> ARMOR = List.of(
             new ArmorPiece(EquipmentSlot.HEAD, Items.GOLDEN_HELMET),
             new ArmorPiece(EquipmentSlot.CHEST, Items.GOLDEN_CHESTPLATE),
             new ArmorPiece(EquipmentSlot.LEGS, Items.GOLDEN_LEGGINGS),
             new ArmorPiece(EquipmentSlot.FEET, Items.GOLDEN_BOOTS));
     private static final List<Item> CARRIED = List.of(
-            Items.SHIELD, Items.GOLDEN_PICKAXE, Items.GOLDEN_AXE, Items.GOLDEN_SHOVEL);
+            Items.SHIELD, Items.GOLDEN_PICKAXE, Items.GOLDEN_AXE, Items.GOLDEN_SHOVEL, Items.GOLDEN_HOE,
+            Items.GOLDEN_SWORD);
 
     private StarterKitRules() { }
 
