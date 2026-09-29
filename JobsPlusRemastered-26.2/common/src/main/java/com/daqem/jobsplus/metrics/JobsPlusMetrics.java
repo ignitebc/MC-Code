@@ -29,6 +29,7 @@ import java.util.UUID;
  * <ul>
  *     <li>actions.csv: 5초 버킷 × 플레이어 × 직업 액션별 실행 횟수, EXP(기본·쿠폰·스킬 보너스), BTC</li>
  *     <li>events.csv: 접속·종료, 5분 접속 표시, 레벨업, 스킬 구매·실패·전환, 직업 선택, 쿠폰 사용, 관리자 명령</li>
+ *     <li>snapshots.csv: 접속·종료 시와 접속 중 1시간마다 직업별 레벨·EXP·스킬·코인 상태</li>
  * </ul>
  * 빈도가 높은 액션 기록은 메모리에서 묶었다가 저장 주기마다 한 번에 추가한다. 상점·주식 거래는 기록하지 않는다.
  */
@@ -39,6 +40,8 @@ public final class JobsPlusMetrics
     private static final int FLUSH_INTERVAL_TICKS = 20 * 60 * 5;
     private static final String ACTIONS_FILE = "actions.csv";
     private static final String EVENTS_FILE = "events.csv";
+    private static final String SNAPSHOTS_FILE = "snapshots.csv";
+    private static final long SNAPSHOT_INTERVAL_MILLIS = 60L * 60L * 1000L;
     /** 디스크 오류가 계속될 때 메모리가 한없이 늘지 않도록 파일별 대기 행 수를 제한한다. */
     private static final int MAX_PENDING_LINES = 500_000;
     private static final Object LOCK = new Object();
@@ -46,6 +49,7 @@ public final class JobsPlusMetrics
     private static final ActionMetrics ACTIONS = new ActionMetrics();
     private static final Map<String, PendingFile> PENDING_FILES = new LinkedHashMap<>();
     private static final Map<UUID, String> ONLINE_PLAYERS = new LinkedHashMap<>();
+    private static final Map<UUID, Long> LAST_SNAPSHOTS = new LinkedHashMap<>();
 
     private static Path directory;
     private static int ticksUntilFlush = FLUSH_INTERVAL_TICKS;
@@ -179,6 +183,7 @@ public final class JobsPlusMetrics
             ACTIONS.clear();
             PENDING_FILES.clear();
             ONLINE_PLAYERS.clear();
+            LAST_SNAPSHOTS.clear();
             MetricsCsv.resetVerifiedFiles();
             ticksUntilFlush = FLUSH_INTERVAL_TICKS;
             listenerFailureLogged = false;
@@ -194,8 +199,14 @@ public final class JobsPlusMetrics
             {
                 pending(EVENTS_FILE, MetricsEvent.HEADER).add(
                         MetricsEvent.of("LOGOUT", now).player(entry.getKey(), entry.getValue()).detail("reason", "server_stop").toCsvLine());
+                ServerPlayer player = server.getPlayerList().getPlayer(entry.getKey());
+                if (player != null)
+                {
+                    snapshot(player, "SERVER_STOP", now);
+                }
             }
             ONLINE_PLAYERS.clear();
+            LAST_SNAPSHOTS.clear();
         }
         flush(true);
     }
@@ -212,6 +223,7 @@ public final class JobsPlusMetrics
                 pending(EVENTS_FILE, MetricsEvent.HEADER).add(MetricsEvent.of("LOGIN").player(uuid, name).toCsvLine());
             }
             ONLINE_PLAYERS.put(uuid, name);
+            snapshot(player, "LOGIN", System.currentTimeMillis());
         }
         flush(false);
     }
@@ -226,7 +238,9 @@ public final class JobsPlusMetrics
             if (ONLINE_PLAYERS.remove(uuid) != null)
             {
                 pending(EVENTS_FILE, MetricsEvent.HEADER).add(MetricsEvent.of("LOGOUT").player(uuid, name).toCsvLine());
+                snapshot(player, "LOGOUT", System.currentTimeMillis());
             }
+            LAST_SNAPSHOTS.remove(uuid);
         }
         flush(false);
     }
@@ -246,6 +260,12 @@ public final class JobsPlusMetrics
                 {
                     pending(EVENTS_FILE, MetricsEvent.HEADER).add(
                             MetricsEvent.of("ONLINE", now).player(entry.getKey(), entry.getValue()).toCsvLine());
+                    Long lastSnapshot = LAST_SNAPSHOTS.get(entry.getKey());
+                    ServerPlayer player = server.getPlayerList().getPlayer(entry.getKey());
+                    if (player != null && (lastSnapshot == null || now - lastSnapshot >= SNAPSHOT_INTERVAL_MILLIS))
+                    {
+                        snapshot(player, "PERIODIC", now);
+                    }
                 }
             }
         }
@@ -298,6 +318,12 @@ public final class JobsPlusMetrics
                 }
             }
         }
+    }
+
+    private static void snapshot(ServerPlayer player, String reason, long now)
+    {
+        pending(SNAPSHOTS_FILE, PlayerSnapshots.HEADER).addAll(PlayerSnapshots.capture(player, reason, now));
+        LAST_SNAPSHOTS.put(player.getUUID(), now);
     }
 
     private static List<String> pending(String fileName, String header)
