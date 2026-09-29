@@ -69,7 +69,7 @@ public final class FishingAutomationGuard {
             return;
         }
         arcServerPlayer.arc$setLastFishingNoticeTick(now);
-        serverPlayer.displayClientMessage(
+        serverPlayer.sendSystemMessage(
                 Component.literal("자동 낚시로 판정되어 직업 경험치와 비트코인이 지급되지 않습니다."), true);
     }
 }
