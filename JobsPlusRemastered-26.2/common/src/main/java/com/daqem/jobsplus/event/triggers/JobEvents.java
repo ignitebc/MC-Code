@@ -8,6 +8,7 @@ import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.integration.arc.action.type.JobsPlusActionType;
 import com.daqem.jobsplus.integration.arc.data.type.JobsPlusActionDataType;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
+import com.daqem.jobsplus.metrics.MetricsEvent;
 import com.daqem.jobsplus.networking.s2c.ClientboundLevelUpJobPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundUnlockItemRestrictionPacket;
 import com.daqem.jobsplus.player.JobsPlayer;
@@ -55,8 +56,18 @@ public class JobEvents
             triggerLevelUpEffects(serverPlayer);
 
             // 플레이어 코인 얻는 이벤트
+            int coinsBefore = player.jobsplus$getCoins();
             player.jobsplus$addCoins(JobsPlusConfig.COINS_PER_LEVEL_UP);
             JobInstance jobInstance = job.getJobInstance();
+            // 코인은 직업 공용이므로 어느 직업 레벨업에서 들어온 코인인지 남겨야 스킬 구매 재원을 추적할 수 있다.
+            MetricsEvent.of("LEVEL_UP")
+                    .player(serverPlayer)
+                    .job(jobInstance.getLocation())
+                    .before(job.getLevel() - 1)
+                    .after(job.getLevel())
+                    .coins(coinsBefore, player.jobsplus$getCoins())
+                    .jobLevel(job.getLevel())
+                    .record();
             serverPlayer.level().getServer().getPlayerList().broadcastSystemMessage(JobsPlus.translatable("job.level_up", serverPlayer.getName().copy().withStyle(style -> style.withColor(jobInstance.getColorDecimal())), JobsPlus.literal(String.valueOf(job.getLevel())).withStyle(style -> style.withColor(jobInstance.getColorDecimal())), jobInstance.getName().getString()), false);
         }
     }

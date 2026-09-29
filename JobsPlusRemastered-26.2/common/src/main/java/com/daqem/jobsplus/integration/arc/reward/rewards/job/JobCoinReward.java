@@ -8,6 +8,7 @@ import com.daqem.arc.api.reward.IReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.jobsplus.integration.arc.reward.type.JobsPlusRewardType;
+import com.daqem.jobsplus.metrics.MetricsEvent;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
@@ -38,7 +39,14 @@ public class JobCoinReward extends AbstractReward
         ArcPlayer player = actionData.getPlayer();
         if (player instanceof JobsServerPlayer jobsServerPlayer)
         {
+            int coinsBefore = jobsServerPlayer.jobsplus$getCoins();
             jobsServerPlayer.jobsplus$addCoins(this.amount);
+            MetricsEvent.of("COIN_REWARD")
+                    .player(jobsServerPlayer.jobsplus$getServerPlayer())
+                    .job(actionData.getSourceActionHolder() == null ? "" : actionData.getSourceActionHolder().getLocation())
+                    .value(this.amount)
+                    .coins(coinsBefore, jobsServerPlayer.jobsplus$getCoins())
+                    .record();
         }
         return new ActionResult();
     }
