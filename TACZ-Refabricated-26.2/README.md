@@ -27,6 +27,7 @@ Forge Config API Port는 TaCZ 설정 구현에 필요한 Fabric 라이브러리�
 - 임의 장비 지급은 Server Utilities, 총기 발사는 TACZ에서 담당합니다. 두 모듈을 함께 업데이트합니다. Server Utilities 미설치 시에도 TACZ는 로드됩니다.
 - 비인간형 몬스터의 총기·방어구 외형은 기존 렌더러의 장비 레이어 지원 범위에 따릅니다. 일반 몬스터 모델을 새로 제작하지는 않습니다.
 - Server Utilities의 몬스터 레벨 계산에 총기 등급(F=1 ~ S=7)을 알려 줍니다. 등급은 `src/main/resources/tacz/gun_grades.json`에서 읽으며, 이 파일은 `tools/apply_tier_colors.py`가 이름 색과 같은 표에서 만듭니다.
+- Server Utilities의 시작 장비에 등록된 총기 중 무작위 1정(빈 탄창)과 그 총의 탄약을 기본 장탄수만큼 넣습니다.
 
 확인할 동작:
 
