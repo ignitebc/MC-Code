@@ -10,6 +10,7 @@
 |---|---|
 | 등급표 | `tools/apply_tier_colors.py` 의 `GUNS` / `ATTACHMENTS` / `AMMO` |
 | 이름 색 | 위 표에서 `python tools/apply_tier_colors.py` 로 생성. 직접 고치지 않습니다 |
+| 서버용 총기 등급표 | `src/main/resources/tacz/gun_grades.json`. 같은 스크립트가 `GUNS` 표에서 생성합니다. 이름 색은 클라이언트 언어 파일에만 있어 서버가 읽지 못하므로 몬스터 레벨 계산이 이 파일을 씁니다. 직접 고치지 않습니다 |
 | 제작식 | `data/tacz/recipe/{gun,attachments,ammo}` |
 
 등급표에 없는 항목이 있으면 `apply_tier_colors.py` 가 실행을 멈춥니다. 총기나 부착물을 추가하면 표에 먼저 넣어야 합니다.
@@ -266,7 +267,7 @@ F 부터 S 까지 연두, 하늘, 파랑, 보라, 노랑, 빨강, 주황입니�
 ## 7. 다시 뽑는 방법
 
 ```
-python tools/apply_tier_colors.py    # 등급표 -> 이름 색
+python tools/apply_tier_colors.py    # 등급표 -> 이름 색, 서버용 총기 등급표
 ```
 
 등급을 옮기려면 `apply_tier_colors.py` 의 표에서 ID 를 다른 줄로 옮긴 뒤 다시 실행합니다. 제작식은 이 문서의 팔레트와 기준 난이도를 그대로 적용해 다시 계산합니다.
