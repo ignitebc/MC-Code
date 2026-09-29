@@ -2,6 +2,7 @@ package com.mcserver.serverutilities;
 
 import com.mcserver.serverutilities.config.AtomicProperties;
 import com.mcserver.serverutilities.config.UtilitiesConfig;
+import com.mcserver.serverutilities.monster.CreeperLevel;
 import com.mcserver.serverutilities.monster.MonsterLevel;
 import com.mcserver.serverutilities.sleep.SleepRuleManager;
 import com.mcserver.serverutilities.spawn.SpawnAnchor;
@@ -24,6 +25,7 @@ public final class RegressionTests {
             sleepTests(directory);
             spawnTests(directory);
             monsterLevelTests();
+            creeperLevelTests();
             System.out.println("Server Utilities regression checks passed: " + checks);
         } finally {
             try (var files = Files.walk(directory)) {
@@ -207,6 +209,22 @@ public final class RegressionTests {
         check(!MonsterLevel.isVisible(MonsterLevel.NONE), "no level hidden");
         check(MonsterLevel.isVisible(1) && MonsterLevel.isVisible(7), "level range visible");
         check(!MonsterLevel.isVisible(8), "level above range hidden");
+    }
+
+    private static void creeperLevelTests() throws Exception {
+        check(CreeperLevel.LEVEL_COUNT == MonsterLevel.MAX_SCORE, "creeper levels match label range");
+        // 표의 배율 LV1 1.0, LV2 1.3, LV3 1.6, LV4 1.9, LV5 2.1, LV6 2.4, LV7 2.7 을 그대로 쓰는지 확인한다.
+        float[] expected = {1.0F, 1.3F, 1.6F, 1.9F, 2.1F, 2.4F, 2.7F};
+        for (int roll = 0; roll < CreeperLevel.LEVEL_COUNT; roll++) {
+            int level = CreeperLevel.fromRoll(roll);
+            check(level == roll + 1, "roll " + roll + " becomes level " + (roll + 1));
+            check(CreeperLevel.explosionMultiplier(level) == expected[roll], "creeper LV" + level + " multiplier");
+        }
+        check(CreeperLevel.explosionMultiplier(MonsterLevel.NONE) == CreeperLevel.VANILLA_MULTIPLIER,
+                "creeper without level stays vanilla");
+        check(CreeperLevel.explosionMultiplier(8) == CreeperLevel.VANILLA_MULTIPLIER, "unknown level stays vanilla");
+        expectFailure(() -> CreeperLevel.fromRoll(-1), "creeper roll below zero");
+        expectFailure(() -> CreeperLevel.fromRoll(CreeperLevel.LEVEL_COUNT), "creeper roll above range");
     }
 
     private static void check(boolean condition, String message) {
