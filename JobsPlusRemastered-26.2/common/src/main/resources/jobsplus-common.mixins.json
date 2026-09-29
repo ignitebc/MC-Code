@@ -9,7 +9,8 @@
   "mixins": [
     "CropBlockAccessor",
     "MixinServerPlayer",
-    "MixinLivingEntityDropMultiplier"
+    "MixinLivingEntityDropMultiplier",
+    "MixinMobSpawnReason"
   ],
   "injectors": {
     "defaultRequire": 1

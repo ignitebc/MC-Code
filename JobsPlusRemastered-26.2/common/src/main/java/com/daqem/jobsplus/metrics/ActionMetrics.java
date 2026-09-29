@@ -2,6 +2,7 @@ package com.daqem.jobsplus.metrics;
 
 import com.daqem.arc.api.action.IAction;
 import com.daqem.arc.api.action.data.ActionData;
+import com.daqem.arc.api.action.data.type.ActionDataType;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.coupon.RewardCouponLedger;
@@ -23,13 +24,13 @@ import java.util.UUID;
  * <p>
  * Arc가 직업 액션의 보상 적용을 시작하면 실행 프레임을 쌓고, 보상 안에서 기록되는 EXP·BTC를 그 프레임의 액션에 붙인다.
  * EXP 배율 스킬처럼 보상 안에서 실행되는 스킬 액션의 보너스도 원래 직업 액션으로 묶인다.
- * 쿠폰 배율·직업 레벨·게임 모드·밸런스 버전이 다르면 다른 행으로 나누어, 분석에서 쿠폰 구간과 관리자 모드,
- * 수치 변경 전후를 걸러낼 수 있게 한다.
+ * 쿠폰 배율·직업 레벨·게임 모드·밸런스 버전·대상 몹의 스폰 원인이 다르면 다른 행으로 나누어, 분석에서 쿠폰 구간과 관리자 모드,
+ * 수치 변경 전후, 스포너·공장 처치를 걸러낼 수 있게 한다.
  */
 final class ActionMetrics
 {
     static final long BUCKET_MILLIS = 5_000L;
-    static final String HEADER = "bucket_start_ms,bucket_ms,player_uuid,player_name,job_id,action_id,trigger,job_level,game_mode,"
+    static final String HEADER = "bucket_start_ms,bucket_ms,player_uuid,player_name,job_id,action_id,trigger,source,job_level,game_mode,"
             + "exp_coupon_multiplier,btc_coupon_multiplier,balance_version,count,exp_base,exp_coupon_bonus,exp_skill_bonus,exp_total,btc";
 
     /** 직업 액션 밖에서 기록된 보상. 정상 경로에서는 나오지 않으며 나오면 누락 경로를 찾는 단서가 된다. */
@@ -56,8 +57,10 @@ final class ActionMetrics
             return null;
         }
 
+        // 처치·교배처럼 대상 몹이 있는 액션은 그 몹의 스폰 원인을 함께 남긴다.
+        String source = SpawnReasonTag.read(actionData.getData(ActionDataType.ENTITY));
         Key key = createKey(System.currentTimeMillis(), player, jobInstance.getLocation().toString(), job.getLevel(),
-                action.getLocation().toString(), action.getType().getLocation().toString());
+                action.getLocation().toString(), action.getType().getLocation().toString(), source);
         frames.get().push(new Frame(action, actionData, key));
         bucket(key, player).count++;
         return player.getUUID();
@@ -130,10 +133,10 @@ final class ActionMetrics
                 return frame.key();
             }
         }
-        return createKey(System.currentTimeMillis(), player, jobId, jobLevel, UNKNOWN, UNKNOWN);
+        return createKey(System.currentTimeMillis(), player, jobId, jobLevel, UNKNOWN, UNKNOWN, "");
     }
 
-    private Key createKey(long now, ServerPlayer player, String jobId, int jobLevel, String actionId, String trigger)
+    private Key createKey(long now, ServerPlayer player, String jobId, int jobLevel, String actionId, String trigger, String source)
     {
         UUID uuid = player.getUUID();
         int experienceCouponMultiplier = 1;
@@ -145,7 +148,7 @@ final class ActionMetrics
             experienceCouponMultiplier = ledger.getExperienceMultiplier(uuid);
             bitcoinCouponMultiplier = ledger.getBitcoinChanceMultiplier(uuid);
         }
-        return new Key(bucketStart(now), uuid, jobId, actionId, trigger, jobLevel, player.gameMode().getName(),
+        return new Key(bucketStart(now), uuid, jobId, actionId, trigger, source, jobLevel, player.gameMode().getName(),
                 experienceCouponMultiplier, bitcoinCouponMultiplier, JobsPlusMetrics.balanceVersion());
     }
 
@@ -169,6 +172,7 @@ final class ActionMetrics
                 + MetricsCsv.text(key.jobId()) + ","
                 + MetricsCsv.text(key.actionId()) + ","
                 + MetricsCsv.text(key.trigger()) + ","
+                + MetricsCsv.text(key.source()) + ","
                 + key.jobLevel() + ","
                 + MetricsCsv.text(key.gameMode()) + ","
                 + key.experienceCouponMultiplier() + ","
@@ -182,7 +186,7 @@ final class ActionMetrics
                 + bucket.bitcoin;
     }
 
-    private record Key(long bucketStart, UUID playerUuid, String jobId, String actionId, String trigger, int jobLevel,
+    private record Key(long bucketStart, UUID playerUuid, String jobId, String actionId, String trigger, String source, int jobLevel,
                        String gameMode, int experienceCouponMultiplier, int bitcoinCouponMultiplier, String balanceVersion)
     {
     }
