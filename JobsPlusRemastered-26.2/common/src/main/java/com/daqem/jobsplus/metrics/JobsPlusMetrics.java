@@ -35,6 +35,7 @@ import java.util.UUID;
  *     <li>actions.csv: 5초 버킷 × 플레이어 × 직업 액션별 실행 횟수, EXP(기본·쿠폰·스킬 보너스), BTC</li>
  *     <li>events.csv: 접속·종료, 5분 접속 표시, 레벨업, 스킬 구매·실패·전환, 직업 선택, 쿠폰 사용, 관리자 명령</li>
  *     <li>snapshots.csv: 접속·종료 시와 접속 중 1시간마다 직업별 레벨·EXP·스킬·코인 상태</li>
+ *     <li>activity.csv: 1분마다 위치·이동량·입력 흔적·잠수 여부</li>
  *     <li>balance_rewards.csv, balance_powerups.csv: 밸런스 버전별 실제 적용 보상표와 스킬 가격표</li>
  * </ul>
  * 빈도가 높은 액션 기록은 메모리에서 묶었다가 저장 주기마다 한 번에 추가한다. 상점·주식 거래는 기록하지 않는다.
@@ -47,6 +48,7 @@ public final class JobsPlusMetrics
     private static final String ACTIONS_FILE = "actions.csv";
     private static final String EVENTS_FILE = "events.csv";
     private static final String SNAPSHOTS_FILE = "snapshots.csv";
+    private static final String ACTIVITY_FILE = "activity.csv";
     private static final String BALANCE_REWARDS_FILE = "balance_rewards.csv";
     private static final String BALANCE_POWERUPS_FILE = "balance_powerups.csv";
     private static final long SNAPSHOT_INTERVAL_MILLIS = 60L * 60L * 1000L;
@@ -55,6 +57,7 @@ public final class JobsPlusMetrics
     private static final Object LOCK = new Object();
 
     private static final ActionMetrics ACTIONS = new ActionMetrics();
+    private static final PlayerActivity ACTIVITY = new PlayerActivity();
     private static final Map<String, PendingFile> PENDING_FILES = new LinkedHashMap<>();
     private static final Map<UUID, String> ONLINE_PLAYERS = new LinkedHashMap<>();
     private static final Map<UUID, Long> LAST_SNAPSHOTS = new LinkedHashMap<>();
@@ -168,7 +171,11 @@ public final class JobsPlusMetrics
         {
             synchronized (LOCK)
             {
-                ACTIONS.beginAction(action, actionData);
+                UUID playerUuid = ACTIONS.beginAction(action, actionData);
+                if (playerUuid != null)
+                {
+                    ACTIVITY.recordJobAction(playerUuid);
+                }
             }
         }
         catch (RuntimeException exception)
@@ -205,6 +212,7 @@ public final class JobsPlusMetrics
                     .resolve("v" + SCHEMA_VERSION)
                     .resolve(season);
             ACTIONS.clear();
+            ACTIVITY.clear();
             PENDING_FILES.clear();
             ONLINE_PLAYERS.clear();
             LAST_SNAPSHOTS.clear();
@@ -252,6 +260,7 @@ public final class JobsPlusMetrics
                     snapshot(player, "SERVER_STOP", now);
                 }
             }
+            pending(ACTIVITY_FILE, PlayerActivity.HEADER).addAll(ACTIVITY.finishAll(server));
             ONLINE_PLAYERS.clear();
             LAST_SNAPSHOTS.clear();
             pending(EVENTS_FILE, MetricsEvent.HEADER).add(MetricsEvent.of("SERVER_STOP", now).target(balanceVersion).toCsvLine());
@@ -288,6 +297,7 @@ public final class JobsPlusMetrics
                 pending(EVENTS_FILE, MetricsEvent.HEADER).add(MetricsEvent.of("LOGOUT").player(uuid, name).toCsvLine());
                 snapshot(player, "LOGOUT", System.currentTimeMillis());
             }
+            ACTIVITY.finish(player, pending(ACTIVITY_FILE, PlayerActivity.HEADER));
             LAST_SNAPSHOTS.remove(uuid);
         }
         flush(false);
@@ -302,6 +312,7 @@ public final class JobsPlusMetrics
             {
                 refreshBalanceVersion();
             }
+            ACTIVITY.tick(server, pending(ACTIVITY_FILE, PlayerActivity.HEADER));
             ticksUntilFlush--;
             shouldFlush = ticksUntilFlush <= 0;
             if (shouldFlush)
