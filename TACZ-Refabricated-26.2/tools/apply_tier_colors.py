@@ -1,10 +1,13 @@
-"""기본 총기팩의 총기·부착물·탄약 이름에 등급 색을 입힌다.
+"""기본 총기팩의 총기·부착물·탄약 이름에 등급 색을 입히고, 서버가 읽는 총기 등급표를 만든다.
 
     python tools/apply_tier_colors.py
 
 등급은 아래 표에서 정한다. 등급을 옮기려면 ID를 다른 줄로 옮긴 뒤 다시 실행하면 된다.
 이름 맨 앞의 색 코드만 바꾸며, 표에 없는 항목은 색을 떼어 흰색으로 둔다.
 새 총기나 부착물을 추가하고 표에 넣지 않으면 실행이 멈춘다.
+
+이름 색은 클라이언트 언어 파일에만 들어가 서버가 등급을 알 수 없다. 그래서 총기 등급은
+GUN_GRADES_FILE 에도 따로 적는다. 몬스터 레벨 계산이 이 파일을 읽는다.
 """
 
 import glob
@@ -13,7 +16,10 @@ import os
 import re
 from pathlib import Path
 
-PACK = Path(__file__).resolve().parents[1] / "src/main/resources/assets/tacz/custom/tacz_default_gun"
+ROOT = Path(__file__).resolve().parents[1]
+PACK = ROOT / "src/main/resources/assets/tacz/custom/tacz_default_gun"
+GUN_GRADES_FILE = ROOT / "src/main/resources/tacz/gun_grades.json"
+GUN_NAMESPACE = "tacz"
 
 # F부터 S까지: 연두, 하늘, 파랑, 보라, 노랑, 빨강, 주황
 TIER_COLORS = {"F": "§a", "E": "§b", "D": "§9", "C": "§5", "B": "§e", "A": "§c", "S": "§6"}
@@ -86,6 +92,18 @@ def tier_of(table, all_ids, ungraded=()):
     return tiers
 
 
+def write_gun_grades(gun_tiers):
+    """총기 ID → 등급 글자 표를 JSON 으로 쓴다. 내용이 같으면 파일을 건드리지 않는다."""
+    grades = {f"{GUN_NAMESPACE}:{gun}": tier for gun, tier in sorted(gun_tiers.items())}
+    text = json.dumps(grades, ensure_ascii=False, indent=2) + "\n"
+    if GUN_GRADES_FILE.exists() and GUN_GRADES_FILE.read_text(encoding="utf-8") == text:
+        print(f"{GUN_GRADES_FILE.name}: unchanged ({len(grades)} guns)")
+        return
+    GUN_GRADES_FILE.parent.mkdir(parents=True, exist_ok=True)
+    GUN_GRADES_FILE.write_text(text, encoding="utf-8", newline="\n")
+    print(f"{GUN_GRADES_FILE.name}: {len(grades)} guns written")
+
+
 def main():
     colors = {}  # 번역 키 → 색 코드 ("" 이면 색 없음)
     for kind, table, ungraded in (("guns", GUNS, ()), ("attachments", ATTACHMENTS, ()), ("ammo", AMMO, UNGRADED_AMMO)):
@@ -93,6 +111,8 @@ def main():
         tiers = tier_of(table, keys, ungraded)
         for item, key in keys.items():
             colors[key] = TIER_COLORS[tiers[item]] if item in tiers else ""
+        if kind == "guns":
+            write_gun_grades(tiers)
 
     for lang in ("ko_kr", "en_us"):
         path = PACK / f"assets/tacz/lang/{lang}.json"
