@@ -1,7 +1,9 @@
 package com.mcserver.serverutilities.starter;
 
 import com.mcserver.serverutilities.ServerUtilities;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -13,6 +15,8 @@ import java.util.List;
 
 /** 최초 접속 한 번만 시작 장비를 지급한다. */
 public final class StarterKitRules {
+    private static final Identifier LEGEND_PET_BOX_ID =
+            Identifier.fromNamespaceAndPath("advancednetherite", "legend_petbox");
     private static final Component GIVEN_MESSAGE =
             Component.literal("시작 장비를 지급했습니다. 금 방어구 한 벌과 방패, 금 곡괭이·도끼·삽·괭이·검입니다.");
     private static final List<ArmorPiece> ARMOR = List.of(
@@ -40,6 +44,12 @@ public final class StarterKitRules {
             store(player, new ItemStack(item));
         }
         player.sendSystemMessage(GIVEN_MESSAGE);
+
+        // 테스트 서버 보상. Advanced Netherite가 설치된 경우에만 지급한다.
+        BuiltInRegistries.ITEM.get(LEGEND_PET_BOX_ID).ifPresent(holder -> {
+            store(player, new ItemStack(holder.value(), 1));
+            player.sendSystemMessage(Component.literal("전설 펫 상자 1개를 지급했습니다."));
+        });
 
         List<ItemStack> gunKit = createStarterGunKit(player.getRandom());
         if (gunKit.isEmpty()) return;

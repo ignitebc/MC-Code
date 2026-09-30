@@ -61,7 +61,7 @@ public class ServerboundStartJobPacket implements CustomPacketPayload {
             return;
         }
 
-        // 1) 최대 직업 수 제한: "유효 최대 직업 수"(무료 2 + 티켓 누적, 단 config max_jobs로 상한) 기준
+        // 1) 최대 직업 수 제한: "유효 최대 직업 수"(무료 슬롯 + 티켓 누적, 단 config max_jobs로 상한) 기준
         if (serverPlayer.jobsplus$getJobs().size() >= serverPlayer.jobsplus$getEffectiveMaxJobs()) {
             sendAlert(serverPlayer, JobsPlus.translatable("error.max_jobs_reached"));
             return;
