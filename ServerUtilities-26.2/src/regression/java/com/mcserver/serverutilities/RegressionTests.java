@@ -76,7 +76,7 @@ public final class RegressionTests {
         values.setProperty("spawn.scatter.radius", "1000000");
         AtomicProperties.write(path, values, "test");
         check(UtilitiesConfig.load(path).spawnScatterRadius() == 1_000_000, "largest scatter radius");
-        check(UtilitiesConfig.DEFAULT.spawnScatter() && UtilitiesConfig.DEFAULT.spawnScatterRadius() == 2000,
+        check(UtilitiesConfig.DEFAULT.spawnScatter() && UtilitiesConfig.DEFAULT.spawnScatterRadius() == 3000,
                 "scatter defaults");
         check(UtilitiesConfig.DEFAULT.starterKit(), "starter kit default");
         values = new Properties();

@@ -13,7 +13,7 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
                               boolean spawnScatter, int spawnScatterRadius, boolean starterKit) {
     public static final UtilitiesConfig DEFAULT = new UtilitiesConfig(
             true, true, true, 80.0, true, true, 1.5F, true, true, true, true, true, 300, 3,
-            true, 2000, true);
+            true, 3000, true);
 
     public static UtilitiesConfig load(Path path) throws IOException {
         Properties defaults = DEFAULT.toProperties();
