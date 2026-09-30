@@ -47,13 +47,16 @@ public final class PetManager
      */
     private static final Map<UUID, Float> LAST_HEALTH = new ConcurrentHashMap<>();
 
-    /** 경험치가 바뀌었지만 아직 클라이언트에 알리지 않은 플레이어. 한 대마다 패킷을 보내지 않으려고 모아 둔다. */
-    private static final Set<UUID> EXP_DIRTY_PLAYERS = ConcurrentHashMap.newKeySet();
+    /**
+     * 펫의 경험치나 체력이 바뀌었지만 아직 클라이언트에 알리지 않은 플레이어.
+     * 한 대 맞거나 때릴 때마다 패킷을 보내지 않으려고 모아 둔다.
+     */
+    private static final Set<UUID> STATUS_DIRTY_PLAYERS = ConcurrentHashMap.newKeySet();
 
     /** 부활 시각 확인 주기(1초) */
     private static final int REVIVE_CHECK_INTERVAL_TICKS = 20;
-    /** 모아 둔 경험치 변경을 클라이언트에 보내는 주기(5초) */
-    private static final int EXP_SYNC_INTERVAL_TICKS = 100;
+    /** 모아 둔 경험치·체력 변경을 클라이언트에 보내는 주기(5초) */
+    private static final int STATUS_SYNC_INTERVAL_TICKS = 100;
 
     /** 펫 목록이 바뀔 때 클라이언트에 동기화 패킷을 보내는 훅. 플랫폼 초기화 코드가 등록한다. */
     private static Consumer<ServerPlayer> syncHandler;
@@ -209,7 +212,7 @@ public final class PetManager
             }
         }
         LAST_TOGGLE_TICKS.remove(player.getUUID());
-        EXP_DIRTY_PLAYERS.remove(player.getUUID());
+        STATUS_DIRTY_PLAYERS.remove(player.getUUID());
 
         // 아직 파일에 반영되지 않은 토글 상태가 남아 있으면 이 시점에 기록해 둔다.
         PetStorage.saveIfDirty();
@@ -372,7 +375,7 @@ public final class PetManager
 
         if (after.level() == before.level())
         {
-            EXP_DIRTY_PLAYERS.add(owner.getUUID());
+            markStatusChanged(owner);
             return;
         }
 
@@ -419,7 +422,41 @@ public final class PetManager
         syncPets(owner);
     }
 
-    /** 서버가 매 틱 호출한다. 부활 시각이 지난 펫을 풀어 주고, 모아 둔 경험치 변경을 보낸다. */
+    /** 펫의 경험치나 체력이 바뀌었음을 표시한다. 다음 동기화 주기에 펫 목록을 한 번에 보낸다. */
+    public static void markStatusChanged(ServerPlayer owner)
+    {
+        STATUS_DIRTY_PLAYERS.add(owner.getUUID());
+    }
+
+    /**
+     * 펫관리 탭에 보여 줄 현재 체력.
+     * <p>
+     * 소환된 펫은 실제 체력, 부활을 기다리는 펫은 0, 꺼 둔 펫은 회수될 때의 체력이다.
+     * 회수될 때의 체력이 없으면(서버 재시작 등) 다음 소환 때처럼 가득 찬 체력으로 본다.
+     * 꺼 둔 펫의 값은 {@link #summonPet}이 다시 소환할 때 쓰는 값과 같게 맞춘다.
+     */
+    public static float currentHealth(PetRecord record, long nowMillis)
+    {
+        DialgaPetEntity livePet = LIVE_PETS.get(record.id());
+        if (livePet != null && !livePet.isRemoved())
+        {
+            return livePet.getHealth();
+        }
+        if (record.isReviving(nowMillis))
+        {
+            return 0.0F;
+        }
+
+        float maxHealth = (float) PetStats.maxHealth(record.rarity(), record.level());
+        Float lastHealth = LAST_HEALTH.get(record.id());
+        if (lastHealth == null)
+        {
+            return maxHealth;
+        }
+        return Math.max(1.0F, Math.min(lastHealth, maxHealth));
+    }
+
+    /** 서버가 매 틱 호출한다. 부활 시각이 지난 펫을 풀어 주고, 모아 둔 경험치·체력 변경을 보낸다. */
     public static void tick(MinecraftServer server)
     {
         int tick = server.getTickCount();
@@ -432,11 +469,11 @@ public final class PetManager
             }
         }
 
-        if (tick % EXP_SYNC_INTERVAL_TICKS == 0 && !EXP_DIRTY_PLAYERS.isEmpty())
+        if (tick % STATUS_SYNC_INTERVAL_TICKS == 0 && !STATUS_DIRTY_PLAYERS.isEmpty())
         {
-            for (UUID playerId : List.copyOf(EXP_DIRTY_PLAYERS))
+            for (UUID playerId : List.copyOf(STATUS_DIRTY_PLAYERS))
             {
-                EXP_DIRTY_PLAYERS.remove(playerId);
+                STATUS_DIRTY_PLAYERS.remove(playerId);
                 ServerPlayer player = server.getPlayerList().getPlayer(playerId);
                 if (player != null)
                 {
@@ -496,7 +533,7 @@ public final class PetManager
         LIVE_PETS.clear();
         LAST_TOGGLE_TICKS.clear();
         LAST_HEALTH.clear();
-        EXP_DIRTY_PLAYERS.clear();
+        STATUS_DIRTY_PLAYERS.clear();
     }
 
     /**

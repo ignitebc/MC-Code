@@ -72,8 +72,9 @@ public final class PetNetworking
         List<PetStatusEntry> entries = new ArrayList<>();
         for (PetRecord record : PetStorage.getPets(player.getUUID()))
         {
+            float health = PetManager.currentHealth(record, now);
             entries.add(new PetStatusEntry(record.id(), record.petTypeId(), record.enabled(), record.name(),
-                    record.level(), record.exp(), Math.max(0L, record.reviveAtMillis() - now)));
+                    record.level(), record.exp(), health, Math.max(0L, record.reviveAtMillis() - now)));
         }
         ServerPlayNetworking.send(player, new PetListSyncPayload(entries));
     }

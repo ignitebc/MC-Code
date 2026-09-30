@@ -209,12 +209,23 @@ public class PetCareComponent extends EmptyComponent
                 ? "EXP MAX"
                 : "EXP " + entry.exp() + "/" + PetStats.expToLevelUp(entry.level());
         String stats = exp + " · 공격력 " + formatNumber(PetStats.attackDamage(rarity, entry.level()))
-                + " · 체력 " + formatNumber(PetStats.maxHealth(rarity, entry.level()));
+                + " · 체력 " + formatHealth(entry, rarity);
         if (entry.name().isEmpty())
         {
             return Component.literal(stats);
         }
         return PetNames.typeName(entry.petTypeId()).copy().append(Component.literal(" · " + stats));
+    }
+
+    /**
+     * 현재/최대 체력. 현재 체력은 서버가 5초마다 모아 보내므로 싸우는 중에는 조금 늦게 바뀐다.
+     * 1 미만으로 남은 체력이 0으로 보이지 않도록 현재 체력은 올림한다.
+     */
+    private static String formatHealth(PetStatusEntry entry, PetRarity rarity)
+    {
+        int currentHealth = (int) Math.ceil(entry.health());
+        String maxHealth = formatNumber(PetStats.maxHealth(rarity, entry.level()));
+        return currentHealth + "/" + maxHealth;
     }
 
     /** 알 수 없는 종류는 일반으로 묶는다. */

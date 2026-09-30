@@ -67,6 +67,9 @@ public class DialgaPetEntity extends TamableAnimal
 
     private int ownerMissingTicks;
 
+    /** 주인의 펫관리 탭에 마지막으로 알린 체력. 달라지면 다음 동기화 때 목록을 다시 보낸다. */
+    private float lastReportedHealth = -1.0F;
+
     /** 주인 둘레에서 맡은 자리 번호와 같이 서 있는 펫 수. 주기적으로 다시 읽는다. */
     private int ringSlot;
     private int ringCount = 1;
@@ -129,6 +132,13 @@ public class DialgaPetEntity extends TamableAnimal
         {
             this.discard();
             return;
+        }
+
+        // 피격·회복·레벨업 등 체력이 바뀌는 경로가 여러 곳이라 한 곳에서 비교해 알린다.
+        if (owner instanceof ServerPlayer healthOwner && this.getHealth() != this.lastReportedHealth)
+        {
+            this.lastReportedHealth = this.getHealth();
+            PetManager.markStatusChanged(healthOwner);
         }
 
         if (owner instanceof ServerPlayer slotOwner && this.tickCount % RING_REFRESH_INTERVAL_TICKS == 0)
