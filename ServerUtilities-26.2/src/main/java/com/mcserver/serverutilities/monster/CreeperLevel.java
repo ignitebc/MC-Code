@@ -9,7 +9,7 @@ package com.mcserver.serverutilities.monster;
  */
 public final class CreeperLevel {
     /** LV1~LV7 폭발 배율(%). 표와 같은 값을 그대로 쓰도록 백분율 정수로 둔다. */
-    private static final int[] EXPLOSION_PERCENT = {100, 130, 160, 190, 210, 240, 270};
+    private static final int[] EXPLOSION_PERCENT = {100, 130, 160, 190, 220, 250, 280};
     private static final float PERCENT = 100.0F;
     /** 뽑는 레벨 수. LV1부터 이 값까지 같은 확률이다. */
     public static final int LEVEL_COUNT = EXPLOSION_PERCENT.length;

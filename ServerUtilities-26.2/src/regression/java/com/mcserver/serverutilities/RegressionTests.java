@@ -213,8 +213,8 @@ public final class RegressionTests {
 
     private static void creeperLevelTests() throws Exception {
         check(CreeperLevel.LEVEL_COUNT == MonsterLevel.MAX_SCORE, "creeper levels match label range");
-        // 표의 배율 LV1 1.0, LV2 1.3, LV3 1.6, LV4 1.9, LV5 2.1, LV6 2.4, LV7 2.7 을 그대로 쓰는지 확인한다.
-        float[] expected = {1.0F, 1.3F, 1.6F, 1.9F, 2.1F, 2.4F, 2.7F};
+        // 레벨마다 0.3배씩 올라 LV1 1.0 ~ LV7 2.8배가 되는지 확인한다.
+        float[] expected = {1.0F, 1.3F, 1.6F, 1.9F, 2.2F, 2.5F, 2.8F};
         for (int roll = 0; roll < CreeperLevel.LEVEL_COUNT; roll++) {
             int level = CreeperLevel.fromRoll(roll);
             check(level == roll + 1, "roll " + roll + " becomes level " + (roll + 1));
