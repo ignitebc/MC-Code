@@ -2,7 +2,22 @@
   "providers": [
     {
       "type": "reference",
-      "id": "minecraft:uniform"
+      "id": "minecraft:include/space"
+    },
+    {
+      "type": "ttf",
+      "file": "jobsplus:pretendard-medium.ttf",
+      "size": 9.0,
+      "oversample": 4.0,
+      "shift": [0.0, 0.0]
+    },
+    {
+      "type": "reference",
+      "id": "minecraft:include/default"
+    },
+    {
+      "type": "reference",
+      "id": "minecraft:include/unifont"
     }
   ]
 }
