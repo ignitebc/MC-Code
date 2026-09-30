@@ -52,7 +52,8 @@ public class JobsPlusConfig
 
         config.push("metrics");
         // 시즌마다 이름을 바꾸면 메트릭이 시즌별 폴더에 따로 쌓여 다른 시즌 기록과 섞이지 않는다.
-        metricsSeason = config.defineString("season", "", 0, 32, "[A-Za-z0-9_-]*")
+        // 기본값은 현재 운영 시즌이다. 다음 시즌을 열 때 설정 파일이나 이 기본값을 새 시즌 이름으로 바꾼다.
+        metricsSeason = config.defineString("season", "season3", 0, 32, "[A-Za-z0-9_-]*")
                 .withComments("메트릭 저장 폴더 이름(영문·숫자·_·-). logs/jobsplus-metrics/v2/<이름>에 기록되며 비우면 unspecified 폴더를 씁니다.");
         config.pop();
 
