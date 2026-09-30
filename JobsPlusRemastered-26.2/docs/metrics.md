@@ -19,7 +19,7 @@ logs/jobsplus-metrics/v2/<시즌>/
 └─ balance_powerups.csv   밸런스 버전별 스킬 가격·요구 레벨·선행 스킬
 ```
 
-시즌 폴더 이름은 `config/jobsplus-common.yaml`의 `metrics.season`으로 정합니다. 비우면 `unspecified`입니다.
+시즌 폴더 이름은 `config/jobsplus-common.yaml`의 `metrics.season`으로 정합니다. 기본값은 현재 운영 시즌인 `season3`이고, 비우면 `unspecified`입니다.
 **시즌을 열기 전에** 새 이름(예: `season3`)을 넣어 두면 이전 시즌 기록과 섞이지 않습니다.
 
 파일은 1분마다 추가 저장합니다. 서버가 비정상 종료되면 마지막 1분 이내 기록이 빠질 수 있습니다.
@@ -64,6 +64,7 @@ logs/jobsplus-metrics/v2/<시즌>/
 | `COUPON_USE` | 쿠폰 종류·배율·만료 시각 |
 | `COIN_REWARD` | 직업 코인 보상(현재 데이터에서는 사용하지 않음) |
 | `ADMIN_*` | `/job set` 명령으로 바뀐 레벨·EXP·코인·스킬, 직업 추가·삭제. `detail`의 `source`가 실행자 |
+| `DEATH` | 플레이어 사망. `target_id`는 피해 종류(예: `tacz:bullet`), `value`는 처치 기여 생물(예: `minecraft:skeleton`). `detail`에 직접 원인 `direct`, `dimension`·`x`·`y`·`z`, 가해 생물의 주 손 `attacker_weapon`·총기 ID `attacker_gun`·흉갑 `attacker_armor` |
 
 ## snapshots.csv
 
@@ -100,26 +101,31 @@ python JobsPlusRemastered-26.2/tools/metrics/analyze_metrics.py <시즌 폴더> 
 | `--exclude-sources` | `spawner,trial_spawner` | 기본 집계에서 뺄 스폰 원인 |
 | `--afk-seconds` | 300 | 잠수 기준 |
 | `--gap-minutes` | 10 | 직업 Action 없는 활동 구간을 붙일 최대 거리 |
+| `--no-session-fill` | 꺼짐 | 직업이 하나뿐인 세션이라도 gap 밖의 활동을 그 직업에 붙이지 않음 |
 | `--stages` | `32,64` | 초반/중반, 중반/후반을 나누는 직업 레벨 |
 
 결과는 `<시즌 폴더>/analysis`에 CSV로 쓰고 직업 요약 표를 출력합니다.
 
 | 파일 | 내용 |
 | --- | --- |
-| `jobs.csv` | 직업별 작업시간, Action/h, 기본·실제 EXP/h, 기대·실제 BTC/h, 구간별 값 |
+| `jobs.csv` | 직업별 작업시간, Action/h, 기본·실제 EXP/h, 기대·실제 BTC/h, 사망 수·사망/h, 구간별 값 |
 | `stages.csv`, `actions.csv` | 초·중·후반별, Action별 같은 지표와 Action의 EXP 비중 |
-| `players.csv` | 플레이어별 접속·잠수·활동 시간과 직업별 배분 시간 |
+| `players.csv` | 플레이어별 접속·잠수·활동 시간, 사망 수와 직업별 배분 시간 |
 | `level_timeline.csv`, `powerup_timeline.csv` | 레벨업·스킬 구매 시점의 누적 직업 작업시간, 전체 스킬 해방 여부 |
 | `powerup_failures.csv` | 스킬 구매 실패 사유별 횟수 |
 | `coin_flow.csv` | 직업별 획득·사용 코인과 다른 직업 코인으로 산 몫 |
 | `excluded_sources.csv` | 기본 집계에서 뺀 스포너 처치 기록 |
+| `deaths.csv` | 사망 시각의 작업 직업·피해 종류·가해 생물·무기(총기면 총기 ID)별 사망 수 |
 | `warnings.csv` | 데이터 품질 경고 |
 
 ### 지표 정의
 
 - **작업시간**: 잠수 구간을 뺀 활동시간. 잠수는 `idle_seconds`만큼 거슬러 올라가 앞 구간까지 포함합니다.
   직업 Action이 있는 1분은 비모험가 직업들의 기본 EXP 비율로 나누고, Action 없는 1분(이동·탐색·재료 준비)은
-  같은 세션에서 10분 이내 가장 가까운 직업 구간에 붙입니다. 붙일 곳이 없으면 모험가 이동 구간이면 모험가, 아니면 미배분입니다.
+  같은 세션에서 10분 이내 가장 가까운 직업 구간에 붙입니다. 10분 밖이어도 그 세션의 직업 Action이 한 직업뿐이면
+  재료 준비·이동으로 보고 그 직업에 붙입니다(예: 대장장이가 35분 동안 광석을 모은 뒤 제련). 여러 직업을 오간 세션에서
+  붙일 곳이 없으면 모험가 이동 구간이면 모험가, 아니면 미배분입니다.
+- **사망/h**: 사망 시각에 배분된 직업의 사망 수 ÷ 그 직업 작업시간. 직업 효율이 시뮬레이션보다 낮을 때 전투 난이도 영향을 가리는 데 씁니다.
 - **기본 EXP/h**: `exp_base` 합 ÷ 작업시간. 쿠폰·스킬 제외.
 - **실제 EXP/h(쿠폰 제외)**: 기본 EXP + 쿠폰 배율로 나눈 스킬 보너스.
 - **기대 BTC/h**: Action 횟수 × 보상표 확률 × 지급 개수 ÷ 작업시간. 쿠폰 제외. BTC는 드물게 나와 실제 지급량의 오차가 크므로 이 값을 주 지표로 씁니다.
@@ -140,7 +146,7 @@ python JobsPlusRemastered-26.2/tools/metrics/analyze_metrics.py <시즌 폴더> 
 
 | 시점 | 할 일 |
 | --- | --- |
-| 시즌 오픈 전 | ArcLib·Jobs+를 함께 배포하고 `metrics.season`에 새 시즌 이름 입력 |
+| 시즌 오픈 전 | ArcLib·Jobs+를 함께 배포하고 `metrics.season`에 새 시즌 이름 입력(시즌3은 기본값 `season3`) |
 | 시즌 오픈 전 | 테스트 서버에서 직업별 대표 Action 1회씩 실행 후 `actions.csv` 행 확인 |
 | 시즌 오픈 전 | 관리자·테스트 계정 이름을 정리해 집계 때 `--exclude`로 지정 |
 | 시즌 중 | 수치 패치 후 `events.csv`에 새 `BALANCE_VERSION`이 찍혔는지 확인 |

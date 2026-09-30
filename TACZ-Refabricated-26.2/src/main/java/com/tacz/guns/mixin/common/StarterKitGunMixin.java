@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-/** Server Utilities의 시작 장비에 무작위 총기 1정과 탄약 한 탄창을 넣는다. Server Utilities 없이도 로드된다. */
+/** Server Utilities의 시작 장비에 무작위 권총 1정과 탄약 3탄창을 넣는다. Server Utilities 없이도 로드된다. */
 @Pseudo
 @Mixin(targets = "com.mcserver.serverutilities.starter.StarterKitRules", remap = false)
 public abstract class StarterKitGunMixin {

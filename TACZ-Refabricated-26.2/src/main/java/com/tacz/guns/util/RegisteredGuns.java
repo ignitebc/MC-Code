@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-/** 아이템으로 만들 수 있는 총기 목록. 몬스터 장비 추첨과 시작 장비가 같은 후보를 쓴다. */
+/** 아이템으로 만들 수 있는 총기 목록. 몬스터 장비 추첨은 전체를, 시작 장비는 이 중 권총만 후보로 쓴다. */
 public final class RegisteredGuns {
     private RegisteredGuns() {
     }

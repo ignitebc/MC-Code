@@ -20,12 +20,6 @@ public class DialgaPetRenderer extends PetRenderer< DialgaPetModel>
     }
 
     @Override
-    public LivingEntityRenderState createRenderState()
-    {
-        return new LivingEntityRenderState();
-    }
-
-    @Override
     protected void scale(LivingEntityRenderState renderState, PoseStack poseStack)
     {
         poseStack.scale(0.35F, 0.35F, 0.35F);

@@ -18,6 +18,8 @@ public final class JobHealthSync
     private static final Identifier JOB_BASE_HEALTH_MODIFIER_ID = JobsPlus.getId("job_base_health");
     private static final int ALL_JOBS_COUNT = JobsPlusConfig.MAX_JOB_COUNT;
     private static final double ALL_JOBS_HEALTH = 20.0D;
+    /** 직업을 하나도 고르지 않은 플레이어의 최대 체력. 하트 3칸이다. */
+    private static final double NO_JOB_HEALTH = 6.0D;
 
     private JobHealthSync()
     {
@@ -53,15 +55,19 @@ public final class JobHealthSync
             jobCount++;
         }
 
+        double desiredHealth;
         if (jobCount == 0)
         {
-            maxHealth.removeModifier(JOB_BASE_HEALTH_MODIFIER_ID);
-            return;
+            desiredHealth = NO_JOB_HEALTH;
         }
-
-        double desiredHealth = jobCount == ALL_JOBS_COUNT
-                ? ALL_JOBS_HEALTH
-                : Math.round(totalHealth / jobCount);
+        else if (jobCount == ALL_JOBS_COUNT)
+        {
+            desiredHealth = ALL_JOBS_HEALTH;
+        }
+        else
+        {
+            desiredHealth = Math.round(totalHealth / jobCount);
+        }
         double modifierAmount = desiredHealth - maxHealth.getBaseValue();
         AttributeModifier currentModifier = maxHealth.getModifier(JOB_BASE_HEALTH_MODIFIER_ID);
         if (currentModifier == null

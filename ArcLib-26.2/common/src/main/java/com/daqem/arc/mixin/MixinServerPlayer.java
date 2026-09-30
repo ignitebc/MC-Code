@@ -140,6 +140,10 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     @Unique
     private long arc$lastFishingNoticeTick = Long.MIN_VALUE;
     @Unique
+    private boolean arc$skillNotificationsEnabled = true;
+    @Unique
+    private static final String arc$SKILL_NOTIFICATIONS_TAG = "ArcSkillNotificationsEnabled";
+    @Unique
     private static final String arc$BLOCK_POS_CACHE_TAG = "ArcBlockPosCacheByDimension";
     @Unique
     private static final String arc$LEGACY_BLOCK_POS_CACHE_TAG = "ArcBlockPosCache";
@@ -367,6 +371,16 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     @Override
     public void arc$setLastFishingNoticeTick(long gameTime) {
         this.arc$lastFishingNoticeTick = gameTime;
+    }
+
+    @Override
+    public boolean arc$isSkillNotificationsEnabled() {
+        return this.arc$skillNotificationsEnabled;
+    }
+
+    @Override
+    public void arc$setSkillNotificationsEnabled(boolean enabled) {
+        this.arc$skillNotificationsEnabled = enabled;
     }
 
     /**
@@ -620,6 +634,7 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
             this.arc$crouchingDistance = arcServerPlayer.arc$getCrouchingDistance();
             this.arc$elytraFlyingDistance = arcServerPlayer.arc$getElytraFlyingDistance();
             this.arc$blockPosCache = arcServerPlayer.arc$getBlockPosCache();
+            this.arc$skillNotificationsEnabled = arcServerPlayer.arc$isSkillNotificationsEnabled();
 
             // A respawned player has a new movement counter. Keeping the old baseline makes
             // walking stop until the new counter catches up and can add negative sprint distance.
@@ -658,6 +673,17 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
                 .map(pos -> CachedBlockPos.of(this.level(), pos))
                 .toList();
         this.arc$blockPosCache.restore(migratedPositions);
+    }
+
+    @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
+    private void arc$saveSkillNotificationSetting(ValueOutput valueOutput, CallbackInfo ci) {
+        valueOutput.putBoolean(arc$SKILL_NOTIFICATIONS_TAG, this.arc$skillNotificationsEnabled);
+    }
+
+    @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
+    private void arc$loadSkillNotificationSetting(ValueInput valueInput, CallbackInfo ci) {
+        // 이 값이 생기기 전에 저장된 플레이어는 기존처럼 알림을 받는다.
+        this.arc$skillNotificationsEnabled = valueInput.getBooleanOr(arc$SKILL_NOTIFICATIONS_TAG, true);
     }
 
     @Inject(at = @At("TAIL"), method = "<init>")

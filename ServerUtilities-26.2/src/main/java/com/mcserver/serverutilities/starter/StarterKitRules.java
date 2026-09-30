@@ -54,7 +54,7 @@ public final class StarterKitRules {
     /**
      * 시작 장비에 함께 줄 총기와 탄약. 첫 번째가 총기이고 나머지는 탄약이다.
      * <p>
-     * TACZ의 선택적 Mixin이 무작위 총기 1정과 그 총의 탄약 한 탄창으로 바꾼다. TACZ가 없으면 주지 않는다.
+     * TACZ의 선택적 Mixin이 무작위 권총 1정과 그 총의 탄약 3탄창으로 바꾼다. TACZ가 없으면 주지 않는다.
      */
     private static List<ItemStack> createStarterGunKit(RandomSource random) {
         return List.of();
@@ -66,8 +66,8 @@ public final class StarterKitRules {
         for (ItemStack ammo : gunKit.subList(1, gunKit.size())) {
             ammoCount += ammo.getCount();
         }
-        return Component.literal("무작위 총기: ").append(gunName(gun))
-                .append(Component.literal(", 탄약 " + ammoCount + "발 (한 탄창)"));
+        return Component.literal("무작위 권총: ").append(gunName(gun))
+                .append(Component.literal(", 탄약 " + ammoCount + "발 (3탄창)"));
     }
 
     // TACZ 총기의 이름 메서드는 클라이언트 전용이라 서버에서는 공통 이름이 나온다.

@@ -49,6 +49,8 @@ public final class PetNetworking
             }
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            // 접속 종료 처리보다 먼저 불려 살아 있는 펫 목록이 비기 전이다. 여기서 체력을 남겨야 재시작 후에도 유지된다.
+            PetManager.storeLiveHealth();
             PetStorage.save();
             PetManager.clearRuntimeState();
         });
@@ -72,8 +74,9 @@ public final class PetNetworking
         List<PetStatusEntry> entries = new ArrayList<>();
         for (PetRecord record : PetStorage.getPets(player.getUUID()))
         {
+            float health = PetManager.currentHealth(record, now);
             entries.add(new PetStatusEntry(record.id(), record.petTypeId(), record.enabled(), record.name(),
-                    record.level(), record.exp(), Math.max(0L, record.reviveAtMillis() - now)));
+                    record.level(), record.exp(), health, Math.max(0L, record.reviveAtMillis() - now)));
         }
         ServerPlayNetworking.send(player, new PetListSyncPayload(entries));
     }

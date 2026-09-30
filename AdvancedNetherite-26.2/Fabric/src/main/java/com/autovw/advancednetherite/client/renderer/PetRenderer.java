@@ -11,8 +11,8 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 모든 펫 렌더러의 공통 부모. 머리 위 이름표를 바닐라보다 작게 그려 펫끼리 구별만 되게 한다.
- * 종류별 모델·크기·텍스처는 각 하위 렌더러가 정한다.
+ * 모든 펫 렌더러의 공통 부모. 머리 위 이름표를 바닐라보다 작게 그려 펫끼리 구별만 되게 하고,
+ * 이름표 아래 줄에 체력 막대를 그린다. 종류별 모델·크기·텍스처는 각 하위 렌더러가 정한다.
  */
 public abstract class PetRenderer<M extends EntityModel<LivingEntityRenderState>>
         extends MobRenderer<DialgaPetEntity, LivingEntityRenderState, M>
@@ -23,6 +23,24 @@ public abstract class PetRenderer<M extends EntityModel<LivingEntityRenderState>
     protected PetRenderer(EntityRendererProvider.Context context, M model, float shadowRadius)
     {
         super(context, model, shadowRadius);
+    }
+
+    /** 체력 막대를 그리려고 모든 펫이 체력을 담는 상태를 쓴다. */
+    @Override
+    public final LivingEntityRenderState createRenderState()
+    {
+        return new PetRenderState();
+    }
+
+    @Override
+    public void extractRenderState(DialgaPetEntity pet, LivingEntityRenderState renderState, float partialTick)
+    {
+        super.extractRenderState(pet, renderState, partialTick);
+        if (renderState instanceof PetRenderState petState)
+        {
+            petState.health = pet.getHealth();
+            petState.maxHealth = pet.getMaxHealth();
+        }
     }
 
     @Override
@@ -40,6 +58,13 @@ public abstract class PetRenderer<M extends EntityModel<LivingEntityRenderState>
         poseStack.translate(attachment.x, attachment.y, attachment.z);
         poseStack.scale(NAME_TAG_SCALE, NAME_TAG_SCALE, NAME_TAG_SCALE);
         poseStack.translate(-attachment.x, -attachment.y, -attachment.z);
+        if (renderState instanceof PetRenderState petState && PetHealthBar.isVisible(petState))
+        {
+            // 바닐라가 점수 줄을 그리는 방식처럼 기준점 줄에 체력을 두고 이름은 한 줄 위로 올린다.
+            // 체력을 이름 아래로 내리면 펫 머리와 겹친다.
+            PetHealthBar.submit(petState, attachment, poseStack, collector, camera);
+            poseStack.translate(0.0F, PetHealthBar.LINE_HEIGHT, 0.0F);
+        }
         super.submitNameDisplay(renderState, poseStack, collector, camera);
         poseStack.popPose();
     }

@@ -15,14 +15,14 @@ import java.util.function.Supplier;
  */
 public enum PetRarity
 {
-    NORMAL("일반", 1.0, 100.0, 0xFFFFFF, List.of(
+    NORMAL("일반", 1.0, 50.0, 0xFFFFFF, List.of(
             () -> ModEntityTypes.DIALGA_PET,
             () -> ModEntityTypes.KIRBY_PET,
             () -> ModEntityTypes.GOMI_PET)),
-    RARE("희귀", 2.0, 300.0, 0x3FB9FF, List.of(
+    RARE("희귀", 2.0, 150.0, 0x3FB9FF, List.of(
             () -> ModEntityTypes.UNICORN_PET,
             () -> ModEntityTypes.GAZELLE_PET)),
-    LEGEND("전설", 3.0, 500.0, 0xFFB84D, List.of(
+    LEGEND("전설", 3.0, 250.0, 0xFFB84D, List.of(
             () -> ModEntityTypes.FAIRLINS_PET,
             () -> ModEntityTypes.DARK_DRAGON_PET,
             () -> ModEntityTypes.SCULKEN_RAVEN_PET,

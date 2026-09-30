@@ -22,6 +22,8 @@ public abstract class ServerPlayerDeathMixin implements DeathProtectedPlayer {
     @Unique private static final String SERVERUTILITIES_PROTECTION_KEY = "JobsPlusDeathItemProtected";
     @Unique private boolean serverutilities$deathProtected;
     @Unique private boolean serverutilities$deathHandled;
+    @Unique private boolean serverutilities$deathChestHandled;
+    @Unique private Component serverutilities$lostItemMessage;
 
     @Override
     public boolean serverutilities$isDeathProtected() { return serverutilities$deathProtected; }
@@ -37,19 +39,38 @@ public abstract class ServerPlayerDeathMixin implements DeathProtectedPlayer {
         // 투사체의 소유자 및 전투 직후 낙사 등 바닐라가 인정하는 플레이어 처치를 포함한다.
         boolean killedByPlayer = attacker instanceof ServerPlayer && attacker != victim;
         boolean combatAccident = attacker == null && victim.getKillCredit() instanceof ServerPlayer killer && killer != victim;
+        Component deathMessage;
         if (killedByPlayer || combatAccident) {
-            return Component.literal(victim.getName().getString() + " 님이 누군가에게 살해당했습니다.");
+            deathMessage = Component.literal(victim.getName().getString() + " 님이 누군가에게 살해당했습니다");
+        } else {
+            deathMessage = tracker.getDeathMessage();
         }
-        return tracker.getDeathMessage();
+
+        if (serverutilities$lostItemMessage == null) {
+            if (killedByPlayer || combatAccident) {
+                return deathMessage.copy().append(".");
+            }
+            return deathMessage;
+        }
+        return deathMessage.copy().append(". ").append(serverutilities$lostItemMessage);
     }
 
-    // 취소 가능한 사망 허용 이벤트 대신, 실제 사망의 드롭 직전에 한 번만 처리한다.
+    // 바닐라 사망 문구가 만들어지기 전에 손실 아이템을 확정해야 같은 문구에 붙일 수 있다.
+    @Inject(method = "die", at = @At("HEAD"))
+    private void serverutilities$prepareDeathMessage(DamageSource source, CallbackInfo ci) {
+        if (!serverutilities$deathHandled) {
+            serverutilities$deathHandled = true;
+            serverutilities$lostItemMessage = DeathRules.beforeDrops((ServerPlayer) (Object) this);
+        }
+    }
+
+    // 손실 처리 뒤 남은 소지품은 실제 바닐라 드롭 직전에 한 번만 유품 상자로 옮긴다.
     @Inject(method = "die", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/server/level/ServerPlayer;dropAllDeathLoot(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;)V"))
     private void serverutilities$beforeDeathDrops(DamageSource source, CallbackInfo ci) {
-        if (!serverutilities$deathHandled) {
-            serverutilities$deathHandled = true;
-            DeathRules.beforeDrops((ServerPlayer) (Object) this);
+        if (!serverutilities$deathChestHandled) {
+            serverutilities$deathChestHandled = true;
+            DeathRules.storeRemainingItems((ServerPlayer) (Object) this);
         }
     }
 
@@ -62,6 +83,8 @@ public abstract class ServerPlayerDeathMixin implements DeathProtectedPlayer {
         }
         serverutilities$deathProtected = false;
         serverutilities$deathHandled = false;
+        serverutilities$deathChestHandled = false;
+        serverutilities$lostItemMessage = null;
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))

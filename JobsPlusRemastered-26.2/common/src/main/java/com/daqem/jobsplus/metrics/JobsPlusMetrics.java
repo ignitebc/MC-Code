@@ -9,6 +9,8 @@ import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.job.Job;
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
@@ -16,6 +18,8 @@ import dev.architectury.platform.Mod;
 import dev.architectury.platform.Platform;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -92,6 +96,17 @@ public final class JobsPlusMetrics
         TickEvent.SERVER_POST.register(JobsPlusMetrics::onServerTick);
         ActionEvent.REWARDS_APPLYING.register(JobsPlusMetrics::onRewardsApplying);
         ActionEvent.REWARDS_APPLIED.register(JobsPlusMetrics::onRewardsApplied);
+        EntityEvent.LIVING_DEATH.register(JobsPlusMetrics::onLivingDeath);
+    }
+
+    /** 플레이어 사망만 기록한다. 사망 처리를 막지 않도록 항상 통과시킨다. */
+    private static EventResult onLivingDeath(LivingEntity entity, DamageSource source)
+    {
+        if (entity instanceof ServerPlayer player)
+        {
+            recordEvent(PlayerDeaths.event(player, source));
+        }
+        return EventResult.pass();
     }
 
     /**

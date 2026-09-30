@@ -3,6 +3,7 @@ package com.mcserver.serverutilities;
 import com.mcserver.serverutilities.config.AtomicProperties;
 import com.mcserver.serverutilities.config.UtilitiesConfig;
 import com.mcserver.serverutilities.monster.CreeperLevel;
+import com.mcserver.serverutilities.monster.MonsterExperience;
 import com.mcserver.serverutilities.monster.MonsterLevel;
 import com.mcserver.serverutilities.sleep.SleepRuleManager;
 import com.mcserver.serverutilities.spawn.SpawnAnchor;
@@ -26,6 +27,7 @@ public final class RegressionTests {
             spawnTests(directory);
             monsterLevelTests();
             creeperLevelTests();
+            monsterExperienceTests();
             System.out.println("Server Utilities regression checks passed: " + checks);
         } finally {
             try (var files = Files.walk(directory)) {
@@ -76,7 +78,7 @@ public final class RegressionTests {
         values.setProperty("spawn.scatter.radius", "1000000");
         AtomicProperties.write(path, values, "test");
         check(UtilitiesConfig.load(path).spawnScatterRadius() == 1_000_000, "largest scatter radius");
-        check(UtilitiesConfig.DEFAULT.spawnScatter() && UtilitiesConfig.DEFAULT.spawnScatterRadius() == 2000,
+        check(UtilitiesConfig.DEFAULT.spawnScatter() && UtilitiesConfig.DEFAULT.spawnScatterRadius() == 3000,
                 "scatter defaults");
         check(UtilitiesConfig.DEFAULT.starterKit(), "starter kit default");
         values = new Properties();
@@ -213,8 +215,8 @@ public final class RegressionTests {
 
     private static void creeperLevelTests() throws Exception {
         check(CreeperLevel.LEVEL_COUNT == MonsterLevel.MAX_SCORE, "creeper levels match label range");
-        // 표의 배율 LV1 1.0, LV2 1.3, LV3 1.6, LV4 1.9, LV5 2.1, LV6 2.4, LV7 2.7 을 그대로 쓰는지 확인한다.
-        float[] expected = {1.0F, 1.3F, 1.6F, 1.9F, 2.1F, 2.4F, 2.7F};
+        // 레벨마다 0.3배씩 올라 LV1 1.0 ~ LV7 2.8배가 되는지 확인한다.
+        float[] expected = {1.0F, 1.3F, 1.6F, 1.9F, 2.2F, 2.5F, 2.8F};
         for (int roll = 0; roll < CreeperLevel.LEVEL_COUNT; roll++) {
             int level = CreeperLevel.fromRoll(roll);
             check(level == roll + 1, "roll " + roll + " becomes level " + (roll + 1));
@@ -225,6 +227,34 @@ public final class RegressionTests {
         check(CreeperLevel.explosionMultiplier(8) == CreeperLevel.VANILLA_MULTIPLIER, "unknown level stays vanilla");
         expectFailure(() -> CreeperLevel.fromRoll(-1), "creeper roll below zero");
         expectFailure(() -> CreeperLevel.fromRoll(CreeperLevel.LEVEL_COUNT), "creeper roll above range");
+    }
+
+    private static void monsterExperienceTests() {
+        // 레벨마다 0.3배씩 올라 LV1 1.0 ~ LV7 2.8배가 되는지 확인한다.
+        int[] expectedPercent = {100, 130, 160, 190, 220, 250, 280};
+        for (int level = MonsterLevel.MIN_SCORE; level <= MonsterLevel.MAX_SCORE; level++) {
+            int percent = MonsterExperience.experiencePercent(level);
+            check(percent == expectedPercent[level - MonsterLevel.MIN_SCORE], "experience LV" + level + " percent");
+        }
+        check(MonsterExperience.experiencePercent(MonsterLevel.NONE) == MonsterExperience.VANILLA_PERCENT,
+                "no level keeps vanilla experience");
+        check(MonsterExperience.experiencePercent(8) == MonsterExperience.VANILLA_PERCENT,
+                "unknown level keeps vanilla experience");
+
+        check(MonsterExperience.scale(5, 1) == 5, "LV1 keeps experience");
+        check(MonsterExperience.scale(5, 2) == 7, "6.5 rounds up");
+        check(MonsterExperience.scale(5, 4) == 10, "9.5 rounds up");
+        check(MonsterExperience.scale(3, 2) == 4, "3.9 rounds up");
+        check(MonsterExperience.scale(1, 2) == 1, "1.3 rounds down");
+        check(MonsterExperience.scale(10, 7) == 28, "LV7 multiplies 2.8");
+        check(MonsterExperience.scale(5, MonsterLevel.NONE) == 5, "unlevelled keeps experience");
+        check(MonsterExperience.scale(0, 7) == 0, "no experience stays zero");
+
+        long credit = MonsterExperience.PLAYER_HURT_CREDIT_TICKS;
+        check(credit == 400, "player hurt credit is 20 seconds");
+        check(MonsterExperience.withinPlayerHurtCredit(1_000, 1_000 + credit), "credit boundary included");
+        check(!MonsterExperience.withinPlayerHurtCredit(1_000, 1_000 + credit + 1), "credit expires");
+        check(!MonsterExperience.withinPlayerHurtCredit(1_000, 999), "future hurt ignored");
     }
 
     private static void check(boolean condition, String message) {

@@ -20,12 +20,6 @@ public class SuperGomiPetRenderer extends PetRenderer< SuperGomiPetModel>
     }
 
     @Override
-    public LivingEntityRenderState createRenderState()
-    {
-        return new LivingEntityRenderState();
-    }
-
-    @Override
     protected void scale(LivingEntityRenderState renderState, PoseStack poseStack)
     {
         // 모델 좌표는 1.0 기준으로 잡았으므로 최종 크기는 여기서만 조정한다

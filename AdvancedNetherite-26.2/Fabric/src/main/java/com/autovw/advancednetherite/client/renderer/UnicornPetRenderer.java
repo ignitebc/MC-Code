@@ -23,12 +23,6 @@ public class UnicornPetRenderer extends PetRenderer< UnicornPetModel>
     }
 
     @Override
-    public LivingEntityRenderState createRenderState()
-    {
-        return new LivingEntityRenderState();
-    }
-
-    @Override
     protected void scale(LivingEntityRenderState renderState, PoseStack poseStack)
     {
         poseStack.scale(SCALE, SCALE, SCALE);

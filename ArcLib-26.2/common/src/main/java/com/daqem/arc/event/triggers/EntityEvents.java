@@ -23,8 +23,12 @@ public class EntityEvents {
                         .withData(ActionDataType.DAMAGE_SOURCE, source)
                         .build()
                         .sendToAction();
-            } else if (source.getEntity() instanceof ArcServerPlayer arcServerPlayer) {
-                new ActionDataBuilder(arcServerPlayer, ActionType.KILL_ENTITY)
+                return EventResult.pass();
+            }
+            // 불·독처럼 공격자가 없는 피해로 죽어도 직전에 피해를 준 플레이어의 처치로 인정한다.
+            ArcServerPlayer killer = KillCreditTracker.findKiller(entity, source);
+            if (killer != null) {
+                new ActionDataBuilder(killer, ActionType.KILL_ENTITY)
                         .withData(ActionDataType.ENTITY, entity)
                         .withData(ActionDataType.BLOCK_POSITION, entity.blockPosition())
                         .withData(ActionDataType.WORLD, entity.level())
@@ -77,6 +81,7 @@ public class EntityEvents {
                 if (actionResult.shouldCancelAction()) {
                     return EventResult.interruptFalse();
                 }
+                KillCreditTracker.recordHit(entity, arcServerPlayer);
             }
             return EventResult.pass();
         });

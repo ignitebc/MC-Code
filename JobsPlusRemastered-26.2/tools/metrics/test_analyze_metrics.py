@@ -77,6 +77,10 @@ class AnalyzeMetricsTest(unittest.TestCase):
             [T0 + 260_000, "POWERUP_BUY_FAILED", A, "Alpha", MINER, "jobsplus:miner/job_exp_ii", 20, "", "", 70,
              70, 5, "reason=level_too_low;required_level=15"],
             [T0 + 270_000, "ADMIN_SET_COINS", B, "Admin", "", "", "", "", "", 0, 999, "", "source=Server"],
+            # 채굴 중(3분 구간) 총을 든 스켈레톤에게 사망
+            [T0 + 150_000, "DEATH", A, "Alpha", "", "tacz:bullet", "minecraft:skeleton", "", "", "", "", "",
+             "direct=tacz:bullet;dimension=minecraft:overworld;x=0;y=64;z=0;"
+             "attacker_weapon=tacz:modern_kinetic_gun;attacker_gun=tacz:ak47;attacker_armor=minecraft:iron_chestplate"],
         ]
         write(self.directory / "actions.csv", ACTIONS_HEADER, action_rows)
         write(self.directory / "activity.csv", ACTIVITY_HEADER, activity_rows)
@@ -168,12 +172,48 @@ class AnalyzeMetricsTest(unittest.TestCase):
         self.assertIn(MINER, minutes[1].allocation)
         self.assertIn(am.UNASSIGNED, minutes[2].allocation)
 
+    def test_deaths_attributed_to_working_job(self):
+        miner = self.job(MINER)
+        self.assertEqual(miner["deaths"], 1)
+        self.assertAlmostEqual(miner["deaths_per_h"], round(1 / (300 / 3600), 3), places=3)
+        death = self.result["deaths"][0]
+        self.assertEqual(death["job_id"], MINER)
+        self.assertEqual(death["attacker"], "minecraft:skeleton")
+        self.assertEqual(death["attacker_weapon"], "tacz:ak47")
+        player = next(row for row in self.result["players"] if row["player_name"] == "Alpha")
+        self.assertEqual(player["deaths"], 1)
+
+    def test_single_job_session_fills_preparation(self):
+        # 0분에만 채굴하고 24분 동안 액션 없이 활동: 10분 밖이라도 직업이 하나뿐인 세션이면 채굴 준비로 본다.
+        minutes = [am.Minute(index * 60_000, (index + 1) * 60_000, False) for index in range(25)]
+        minutes[0].weights = {MINER: 1.0}
+        am.mark_sessions(minutes)
+        am.allocate(minutes, am.Options(gap_seconds=600))
+        self.assertIn(MINER, minutes[20].allocation)
+
+        strict = [am.Minute(index * 60_000, (index + 1) * 60_000, False) for index in range(25)]
+        strict[0].weights = {MINER: 1.0}
+        am.mark_sessions(strict)
+        am.allocate(strict, am.Options(gap_seconds=600, session_fill=False))
+        self.assertIn(am.UNASSIGNED, strict[20].allocation)
+
+    def test_multi_job_session_leaves_far_minutes_unassigned(self):
+        # 채굴과 사냥 사이 12분 지점은 양쪽 모두 10분 밖이라 어느 직업의 준비인지 알 수 없다.
+        minutes = [am.Minute(index * 60_000, (index + 1) * 60_000, False) for index in range(25)]
+        minutes[0].weights = {MINER: 1.0}
+        minutes[24].weights = {"jobsplus:hunter": 1.0}
+        am.mark_sessions(minutes)
+        am.allocate(minutes, am.Options(gap_seconds=600))
+        self.assertIn(am.UNASSIGNED, minutes[12].allocation)
+        self.assertIn("jobsplus:hunter", minutes[20].allocation)
+
     def test_main_writes_outputs(self):
         out = self.directory / "out"
         code = am.main([str(self.directory), "--out", str(out), "--exclude", "Admin"])
         self.assertEqual(code, 0)
         self.assertTrue((out / "jobs.csv").exists())
         self.assertTrue((out / "actions.csv").exists())
+        self.assertTrue((out / "deaths.csv").exists())
 
 
 if __name__ == "__main__":

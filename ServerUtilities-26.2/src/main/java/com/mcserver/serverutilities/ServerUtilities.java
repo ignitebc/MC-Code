@@ -1,6 +1,7 @@
 package com.mcserver.serverutilities;
 
 import com.mcserver.serverutilities.combat.CombatRules;
+import com.mcserver.serverutilities.monster.BossMinionRules;
 import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
 import com.mcserver.serverutilities.monster.MonsterEquipmentRules;
 import com.mcserver.serverutilities.monster.MonsterLevelSync;
@@ -59,6 +60,7 @@ public final class ServerUtilities implements ModInitializer {
         });
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             SpawnScatterRules.shutdown();
+            BossMinionRules.shutdown();
             config = UtilitiesConfig.DEFAULT;
         });
         ServerPlayerEvents.JOIN.register(SpawnScatterRules::onJoin);
@@ -71,6 +73,7 @@ public final class ServerUtilities implements ModInitializer {
                 EquipmentTierRules.tick(player);
                 SpawnScatterRules.tick(player);
             }
+            BossMinionRules.tick(server);
         });
         CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) ->
                 dispatcher.register(Commands.literal("serverutilities")

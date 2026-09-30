@@ -34,6 +34,8 @@ class Options:
     excluded_sources: Set[str] = field(default_factory=lambda: set(DEFAULT_EXCLUDED_SOURCES.split(",")))
     afk_seconds: int = 300
     gap_seconds: int = 600
+    # 직업이 하나뿐인 세션은 gap 밖의 활동도 그 직업의 재료 준비·이동으로 본다.
+    session_fill: bool = True
     stage_levels: Tuple[int, int] = (32, 64)
     since_ms: Optional[int] = None
     until_ms: Optional[int] = None
@@ -280,9 +282,16 @@ def find_minute(minutes: List[Minute], ends: List[int], timestamp_ms: int) -> Op
 
 
 def allocate(minutes: List[Minute], options: Options) -> None:
-    """직업 액션이 있는 구간은 기본 EXP 비율로 나누고, 없는 활동 구간은 같은 세션의 가까운 직업 구간에 붙인다."""
+    """직업 액션이 있는 구간은 기본 EXP 비율로 나누고, 없는 활동 구간은 같은 세션의 가까운 직업 구간에 붙인다.
+
+    가까운 직업 구간이 gap 밖이어도 그 세션의 직업 액션이 한 직업뿐이면 재료 준비·이동으로 보고 그 직업에 붙인다.
+    여러 직업을 오간 세션에서 gap 밖에 있는 구간은 어느 직업의 준비인지 알 수 없어 미배분으로 둔다.
+    """
     sources = [index for index, minute in enumerate(minutes) if minute.weights and not minute.afk]
     source_ends = [minutes[index].end_ms for index in sources]
+    session_sources: Dict[int, List[Minute]] = defaultdict(list)
+    for index in sources:
+        session_sources[minutes[index].session].append(minutes[index])
 
     for minute in minutes:
         if minute.afk or not minute.weights:
@@ -296,6 +305,8 @@ def allocate(minutes: List[Minute], options: Options) -> None:
         if minute.afk or minute.weights:
             continue
         source = nearest_source(minutes, sources, source_ends, minute, options.gap_seconds)
+        if source is None and options.session_fill:
+            source = single_job_source(session_sources.get(minute.session, []), minute)
         if source is not None:
             job = max(source.weights.items(), key=lambda item: item[1])[0]
             minute.allocation[job] = minute.seconds
@@ -320,6 +331,46 @@ def nearest_source(minutes: List[Minute], sources: List[int], source_ends: List[
             if distance <= gap_seconds * 1000 and (best_distance is None or distance < best_distance):
                 best, best_distance = candidate, distance
     return best
+
+
+def single_job_source(session_sources: List[Minute], minute: Minute) -> Optional[Minute]:
+    """세션의 직업 액션이 한 직업뿐이면 그 직업의 가장 가까운 구간을 돌려준다."""
+    jobs = {job for source in session_sources for job in source.weights}
+    if len(jobs) != 1:
+        return None
+    return min(session_sources, key=lambda source: abs(source.end_ms - minute.end_ms))
+
+
+def job_at(minutes: List[Minute], ends: List[int], timestamp_ms: int) -> str:
+    """그 시각에 가장 많은 시간을 배분받은 직업. 활동 기록이 없거나 잠수 구간이면 미배분."""
+    minute = find_minute(minutes, ends, timestamp_ms)
+    if minute is None or not minute.allocation:
+        return UNASSIGNED
+    return max(minute.allocation.items(), key=lambda item: item[1])[0]
+
+
+def deaths(metrics: Metrics, minutes_by_player: Dict[str, List[Minute]], options: Options):
+    """DEATH 이벤트를 사망 시각의 작업 직업에 붙이고, 직업·피해 종류·가해자·무기별로 묶는다."""
+    ends_by_player = {uuid: [minute.end_ms for minute in minutes] for uuid, minutes in minutes_by_player.items()}
+    by_job: Dict[str, int] = defaultdict(int)
+    by_player: Dict[str, int] = defaultdict(int)
+    groups: Dict[Tuple[str, str, str, str], int] = defaultdict(int)
+    for event in metrics.events:
+        if event["event"] != "DEATH":
+            continue
+        uuid = event["player_uuid"]
+        if player_excluded(uuid, event["player_name"], options) or not in_window(event["timestamp_ms"], options):
+            continue
+        job = job_at(minutes_by_player.get(uuid, []), ends_by_player.get(uuid, []), event["timestamp_ms"])
+        by_job[job] += 1
+        by_player[uuid] += 1
+        details = event["details"]
+        # 총기면 총기 ID, 아니면 주 손 아이템을 무기로 본다.
+        weapon = details.get("attacker_gun") or details.get("attacker_weapon", "")
+        groups[(job, event["target_id"], event["value"], weapon)] += 1
+    rows = [{"job_id": job, "damage_type": damage_type, "attacker": attacker, "attacker_weapon": weapon, "deaths": count}
+            for (job, damage_type, attacker, weapon), count in sorted(groups.items(), key=lambda item: (-item[1], item[0]))]
+    return by_job, by_player, rows
 
 
 # ---------------------------------------------------------------- 집계
@@ -389,6 +440,8 @@ def analyze(metrics: Metrics, options: Options) -> Dict[str, List[dict]]:
         if row.get("player_uuid") and row.get("player_name"):
             names[row["player_uuid"]] = row["player_name"]
 
+    deaths_by_job, deaths_by_player, death_rows = deaths(metrics, minutes_by_player, options)
+
     # 직업·구간별 작업시간
     job_seconds: Dict[str, float] = defaultdict(float)
     stage_seconds: Dict[Tuple[str, str], float] = defaultdict(float)
@@ -406,7 +459,8 @@ def analyze(metrics: Metrics, options: Options) -> Dict[str, List[dict]]:
                     stage_seconds[(job, stage_of(minute.allocation_levels.get(job, 0), options))] += seconds
                     job_players[job].add(uuid)
         row = {"player_uuid": uuid, "player_name": names.get(uuid, ""), "online_h": round(online / 3600, 3),
-               "afk_h": round(afk / 3600, 3), "active_h": round((online - afk) / 3600, 3)}
+               "afk_h": round(afk / 3600, 3), "active_h": round((online - afk) / 3600, 3),
+               "deaths": deaths_by_player.get(uuid, 0)}
         for job, seconds in sorted(per_job.items()):
             row[f"h:{job}"] = round(seconds / 3600, 3)
         player_rows.append(row)
@@ -432,6 +486,9 @@ def analyze(metrics: Metrics, options: Options) -> Dict[str, List[dict]]:
         hours = job_seconds.get(job, 0.0) / 3600
         row = {"job_id": job, "players": len(job_players.get(job, set()))}
         row.update(rates(job_stats[job], hours))
+        job_deaths = deaths_by_job.get(job, 0)
+        row["deaths"] = job_deaths
+        row["deaths_per_h"] = round(job_deaths / hours, 3) if hours > 0 else ""
         for stage in STAGES:
             stage_hours = stage_seconds.get((job, stage), 0.0) / 3600
             stage_rate = rates(stage_stats[(job, stage)], stage_hours)
@@ -445,6 +502,8 @@ def analyze(metrics: Metrics, options: Options) -> Dict[str, List[dict]]:
         job_rows.append(row)
     if UNASSIGNED in job_seconds:
         warnings.append(f"직업 액션과 연결되지 않은 활동시간 {round(job_seconds[UNASSIGNED] / 3600, 2)}h는 어느 직업에도 넣지 않았습니다.")
+    if deaths_by_job.get(UNASSIGNED):
+        warnings.append(f"작업 직업에 연결되지 않은 사망 {deaths_by_job[UNASSIGNED]}회는 deaths.csv에만 (unassigned)로 남겼습니다.")
 
     stage_rows = []
     for (job, stage), stat in sorted(stage_stats.items()):
@@ -482,6 +541,7 @@ def analyze(metrics: Metrics, options: Options) -> Dict[str, List[dict]]:
         "powerup_failures": failure_rows,
         "coin_flow": coin_rows,
         "excluded_sources": excluded_rows,
+        "deaths": death_rows,
         "warnings": [{"warning": warning} for warning in warnings],
     }
 
@@ -584,12 +644,12 @@ def write_csv(path: Path, rows: List[dict]) -> None:
 
 
 def summary_markdown(result: Dict[str, List[dict]]) -> str:
-    lines = ["| 직업 | 인원 | 작업h | 기본 EXP/h | 실제 EXP/h(쿠폰 제외) | 기대 BTC/h | 실제 BTC/h | 실제/기대 | 초반 EXP/h | 중반 EXP/h | 후반 EXP/h |",
-             "| -- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: |"]
+    lines = ["| 직업 | 인원 | 작업h | 기본 EXP/h | 실제 EXP/h(쿠폰 제외) | 기대 BTC/h | 실제 BTC/h | 실제/기대 | 사망/h | 초반 EXP/h | 중반 EXP/h | 후반 EXP/h |",
+             "| -- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: |"]
     for row in result["jobs"]:
         lines.append("| {job_id} | {players} | {hours} | {exp_base_per_h} | {exp_actual_no_coupon_per_h} | "
-                     "{btc_expected_per_h} | {btc_actual_per_h} | {btc_actual_vs_expected} | {early_exp_base_per_h} | "
-                     "{mid_exp_base_per_h} | {late_exp_base_per_h} |".format(**row))
+                     "{btc_expected_per_h} | {btc_actual_per_h} | {btc_actual_vs_expected} | {deaths_per_h} | "
+                     "{early_exp_base_per_h} | {mid_exp_base_per_h} | {late_exp_base_per_h} |".format(**row))
     if result["warnings"]:
         lines.append("")
         lines.append("경고")
@@ -617,6 +677,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                         help="기본 집계에서 뺄 대상 몹 스폰 원인 (쉼표 구분, 빈 값이면 모두 포함)")
     parser.add_argument("--afk-seconds", type=int, default=300, help="입력 없이 이 시간 이상이면 잠수로 본다")
     parser.add_argument("--gap-minutes", type=int, default=10, help="직업 액션 없는 활동 구간을 붙일 최대 거리")
+    parser.add_argument("--no-session-fill", action="store_true",
+                        help="직업이 하나뿐인 세션이라도 gap 밖의 활동을 그 직업에 붙이지 않는다")
     parser.add_argument("--stages", default="32,64", help="초반/중반, 중반/후반을 나누는 직업 레벨")
     args = parser.parse_args(argv)
 
@@ -629,6 +691,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         excluded_sources={value.strip() for value in args.exclude_sources.split(",") if value.strip()},
         afk_seconds=args.afk_seconds,
         gap_seconds=args.gap_minutes * 60,
+        session_fill=not args.no_session_fill,
         stage_levels=stage_levels,
         since_ms=parse_date(args.since),
         until_ms=parse_date(args.until),

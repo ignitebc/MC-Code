@@ -11,16 +11,22 @@
     "texture": "tacz:attachment/lod/scope_lpvo_1_6"
   },
   "zoom": [
-    6.25,
-    1.25
+    6,
+    5,
+    4,
+    3
   ],
   "views": [
+    2,
+    2,
     2,
     2
   ],
   "views_fov": [
     30.0,
-    60.0
+    30.0,
+    30.0,
+    30.0
   ],
   // 如果配件是瞄具，且为筒状放大瞄具，此选项应为true
   "scope": true,

@@ -79,11 +79,11 @@ F 부터 S 까지 연두, 하늘, 파랑, 보라, 노랑, 빨강, 주황입니�
 | 등급 | 총기 |
 |---|---|
 | S | M107, M95, M134 Minigun, AWM, MG3, FN EVOLYS |
-| A | MK14 EBR, SCAR-H, M24, RPG-7, RPD, FN FAL, HK G3, M700, DBS, RPK, O12, Taurus 500 |
+| A | Mk14 EBR, SCAR-H, M24, RPG-7, RPD, FN FAL, HK G3, M700, DBS, RPK, O12, Taurus 500 |
 | B | AA12, M249, 드라구노프, SLR, SPAS-12, Mk12, Mk47 뮤턴트, QBZ-191, M1014, 그로자, P90, SPR-15 HB, 베릴 M762, QBZ-95, Kar98k, ACE32, SKS Tactical, M16A1, M870 |
 | C | AKM, M320, S12K, SCAR-L, 미니14, Type 81-1, M416, 토미 건, Springfield 1873, M16A4, Win94, G36K, K2, AUG, FAMAS, Lonetrail, M4A1, UMP45, Vector, Deagle 50 |
 | D | Timeless .50, Micro UZI, DB-4 Ursus, JS9, VSS, Golden Deagle, B93R, Rhino .357, MP5K |
-| E | P320, R1895, M1911, 소드오프, MK23, MP9, CZ 75 |
+| E | P320, R1895, M1911, 소드오프, Mk23, MP9, CZ 75 |
 | F | P18C, 스콜피온, M9A4 |
 
 ---
