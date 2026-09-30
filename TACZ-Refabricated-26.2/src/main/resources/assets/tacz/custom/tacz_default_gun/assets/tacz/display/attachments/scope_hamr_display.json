@@ -7,16 +7,13 @@
     "texture": "tacz:attachment/lod/scope_hamr"
   },
   "zoom": [
-    3.25,
-    1.25
+    3.25
   ],
   "views": [
-    2,
-    1
+    2
   ],
   "views_fov": [
-    50.0,
-    60.0
+    50.0
   ],
   "scope": true,
   "sight": true,
