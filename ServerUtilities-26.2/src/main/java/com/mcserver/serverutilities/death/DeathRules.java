@@ -22,18 +22,19 @@ public final class DeathRules {
 
     // Advanced Netherite의 배낭 삭제 연동이 이 메서드 안의 removeItemNoUpdate 호출을 Redirect로 잡는다.
     // 손실 루프는 이 메서드에 두고, 상자 담기는 별도 클래스에서 처리해 Redirect가 겹치지 않게 한다.
-    public static void beforeDrops(ServerPlayer player) {
-        if (player.isCreative() || player.isSpectator()) return;
+    // 반환한 문구는 바닐라 사망 문구 뒤에 붙여 한 번만 전송한다.
+    public static Component beforeDrops(ServerPlayer player) {
+        if (player.isCreative() || player.isSpectator()) return null;
         DeathProtectedPlayer protectedPlayer = (DeathProtectedPlayer) player;
         // 이미 성립한 보호는 설정 변경·재접속과 무관하게 리스폰까지 유지한다.
-        if (protectedPlayer.serverutilities$isDeathProtected()) return;
+        if (protectedPlayer.serverutilities$isDeathProtected()) return null;
         var config = ServerUtilities.config();
         Inventory inventory = player.getInventory();
         if (config.deathProtection() && consumeProtectionScroll(inventory)) {
             protectedPlayer.serverutilities$setDeathProtected(true);
             broadcast(player, Component.empty().append(playerName(player))
                     .append("님의 사망 시 아이템 보존권이 사용되어 모든 소지품이 보호되었습니다."));
-            return;
+            return null;
         }
         if (config.deathPenalty()) {
             List<Integer> filledSlots = new ArrayList<>();
@@ -59,10 +60,17 @@ public final class DeathRules {
                     if (i > 0) lostItems.append(", ");
                     lostItems.append(itemNames.get(i));
                 }
-                broadcast(player, Component.empty().append(playerName(player)).append("님이 죽어, ")
-                        .append(lostItems).append("이(가) 사라집니다."));
+                return Component.empty().append(lostItems).append("이(가) 사라집니다.");
             }
         }
+        return null;
+    }
+
+    /** 손실 처리가 끝난 인벤토리를 바닐라 사망 드롭 직전에 유품 상자로 옮긴다. */
+    public static void storeRemainingItems(ServerPlayer player) {
+        if (player.isCreative() || player.isSpectator()) return;
+        DeathProtectedPlayer protectedPlayer = (DeathProtectedPlayer) player;
+        if (protectedPlayer.serverutilities$isDeathProtected()) return;
         // 손실이 끝난 뒤 남은 소지품을 사망 지점의 유품 상자에 담는다.
         DeathChests.store(player);
     }
