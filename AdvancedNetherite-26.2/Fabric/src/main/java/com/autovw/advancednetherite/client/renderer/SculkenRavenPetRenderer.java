@@ -23,12 +23,6 @@ public class SculkenRavenPetRenderer extends PetRenderer< SculkenRavenPetModel>
     }
 
     @Override
-    public LivingEntityRenderState createRenderState()
-    {
-        return new LivingEntityRenderState();
-    }
-
-    @Override
     protected void scale(LivingEntityRenderState renderState, PoseStack poseStack)
     {
         poseStack.scale(SCALE, SCALE, SCALE);

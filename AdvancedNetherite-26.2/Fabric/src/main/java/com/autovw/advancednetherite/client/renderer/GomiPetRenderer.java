@@ -20,12 +20,6 @@ public class GomiPetRenderer extends PetRenderer< GomiPetModel>
     }
 
     @Override
-    public LivingEntityRenderState createRenderState()
-    {
-        return new LivingEntityRenderState();
-    }
-
-    @Override
     protected void scale(LivingEntityRenderState renderState, PoseStack poseStack)
     {
         poseStack.scale(0.75F, 0.75F, 0.75F);
