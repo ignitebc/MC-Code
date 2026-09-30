@@ -324,7 +324,8 @@ public final class PetManager
         if (recordId != null)
         {
             // 죽어서 사라진 펫은 부활할 때 체력이 가득 차므로 기억하지 않는다.
-            if (pet.isAlive())
+            // 제거가 끝난 뒤 불리므로 isAlive()는 언제나 false다. 죽은 펫만 체력이 0이라는 점으로 가른다.
+            if (pet.getHealth() > 0.0F)
             {
                 LAST_HEALTH.put(recordId, pet.getHealth());
             }
