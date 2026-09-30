@@ -491,7 +491,8 @@ public class UserGuideScrollComponent extends EmptyComponent
         for (int i = 0; i < lines.length; i++) {
             MutableComponent line = Component.literal(lines[i]);
             if (lines[i].stripLeading().startsWith("■") || lines[i].stripLeading().startsWith("★")) {
-                line.withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD);
+                // 축소된 한글은 굵게 표시하면 획이 겹쳐 보여 색상만으로 강조한다.
+                line.withStyle(ChatFormatting.AQUA);
             }
             result.append(line);
             if (i < lines.length - 1) {
