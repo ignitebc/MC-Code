@@ -123,7 +123,8 @@ public final class PetStorage
                 JsonArray entries = root.getAsJsonArray(playerId);
                 entries.forEach(entry -> {
                     JsonObject pet = entry.getAsJsonObject();
-                    // 이름·레벨·경험치·부활 시각은 나중에 생긴 항목이라 이전 파일에는 없다.
+                    // 이름·레벨·경험치·잃은 체력·부활 시각은 나중에 생긴 항목이라 이전 파일에는 없다.
+                    // 잃은 체력이 없으면 가득 찬 체력으로 본다.
                     // 이전 파일의 attackDamage 는 읽지 않는다. 공격력은 등급과 레벨에서 계산한다.
                     records.add(new PetRecord(
                             UUID.fromString(pet.get("id").getAsString()),
@@ -132,6 +133,7 @@ public final class PetStorage
                             pet.has("name") && !pet.get("name").isJsonNull() ? pet.get("name").getAsString() : "",
                             pet.has("level") ? pet.get("level").getAsInt() : 1,
                             pet.has("exp") ? pet.get("exp").getAsInt() : 0,
+                            pet.has("missingHealth") ? pet.get("missingHealth").getAsFloat() : 0.0F,
                             pet.has("reviveAt") ? pet.get("reviveAt").getAsLong() : 0L));
                 });
                 loadedPets.put(UUID.fromString(playerId), records);
@@ -159,6 +161,7 @@ public final class PetStorage
                 if (!record.name().isEmpty()) pet.addProperty("name", record.name());
                 pet.addProperty("level", record.level());
                 pet.addProperty("exp", record.exp());
+                if (record.missingHealth() > 0.0F) pet.addProperty("missingHealth", record.missingHealth());
                 if (record.reviveAtMillis() > 0L) pet.addProperty("reviveAt", record.reviveAtMillis());
                 entries.add(pet);
             }

@@ -42,12 +42,6 @@ public final class PetManager
     private static final Map<UUID, Integer> LAST_TOGGLE_TICKS = new ConcurrentHashMap<>();
 
     /**
-     * 기록 ID → 회수될 때의 체력. 껐다 켜는 것만으로 체력이 가득 차지 않게 한다.
-     * 파일에는 남기지 않으므로 서버를 다시 켜면 가득 찬 체력으로 시작한다.
-     */
-    private static final Map<UUID, Float> LAST_HEALTH = new ConcurrentHashMap<>();
-
-    /**
      * 펫의 경험치나 체력이 바뀌었지만 아직 클라이언트에 알리지 않은 플레이어.
      * 한 대 맞거나 때릴 때마다 패킷을 보내지 않으려고 모아 둔다.
      */
@@ -172,11 +166,7 @@ public final class PetManager
         boolean changed = false;
         for (PetRecord record : PetStorage.getPets(player.getUUID()))
         {
-            DialgaPetEntity livePet = LIVE_PETS.remove(record.id());
-            if (livePet != null)
-            {
-                livePet.discard();
-            }
+            recallPet(record.id());
             if (record.enabled() && PetStorage.setEnabled(player.getUUID(), record.id(), false) != null)
             {
                 changed = true;
@@ -205,11 +195,7 @@ public final class PetManager
     {
         for (PetRecord record : PetStorage.getPets(player.getUUID()))
         {
-            DialgaPetEntity livePet = LIVE_PETS.remove(record.id());
-            if (livePet != null)
-            {
-                livePet.discard();
-            }
+            recallPet(record.id());
         }
         LAST_TOGGLE_TICKS.remove(player.getUUID());
         STATUS_DIRTY_PLAYERS.remove(player.getUUID());
@@ -278,11 +264,7 @@ public final class PetManager
         }
         else
         {
-            DialgaPetEntity livePet = LIVE_PETS.remove(recordId);
-            if (livePet != null)
-            {
-                livePet.discard();
-            }
+            recallPet(recordId);
         }
         syncPets(player);
     }
@@ -324,15 +306,58 @@ public final class PetManager
     public static void releasePet(DialgaPetEntity pet)
     {
         UUID recordId = pet.getRecordId();
-        if (recordId != null)
+        if (recordId == null)
         {
-            // 죽어서 사라진 펫은 부활할 때 체력이 가득 차므로 기억하지 않는다.
-            // 제거가 끝난 뒤 불리므로 isAlive()는 언제나 false다. 죽은 펫만 체력이 0이라는 점으로 가른다.
-            if (pet.getHealth() > 0.0F)
+            return;
+        }
+        // 등록된 개체만 체력을 남긴다. 청크에 남아 있던 옛 개체가 정리될 때 기록을 덮어쓰지 않게 한다.
+        boolean wasLivePet = LIVE_PETS.remove(recordId, pet);
+        // 죽은 펫은 handlePetDeath가 먼저 목록에서 빼고 가득 찬 체력으로 부활하게 기록해 둔다.
+        // 제거가 끝난 뒤 불리므로 isAlive()는 언제나 false다. 죽은 펫만 체력이 0이라는 점으로 가른다.
+        if (wasLivePet && pet.getHealth() > 0.0F)
+        {
+            storeHealth(pet);
+        }
+    }
+
+    /**
+     * 살아 있는 펫을 회수한다. 제거 과정에서 {@link #releasePet}이 현재 체력을 기록에 남기므로
+     * 꺼 둔 동안에는 회복하지 않고, 다시 켜면 그 체력으로 나온다.
+     */
+    private static void recallPet(UUID recordId)
+    {
+        DialgaPetEntity livePet = LIVE_PETS.get(recordId);
+        if (livePet == null)
+        {
+            return;
+        }
+        livePet.discard();
+        // 이미 제거된 개체라 releasePet이 불리지 않았더라도 목록에는 남기지 않는다.
+        LIVE_PETS.remove(recordId, livePet);
+    }
+
+    /** 펫의 현재 체력을 잃은 체력으로 기록에 남긴다. 파일 기록은 주기 저장에 맡긴다. */
+    private static void storeHealth(DialgaPetEntity pet)
+    {
+        UUID recordId = pet.getRecordId();
+        if (recordId == null || pet.getOwnerReference() == null)
+        {
+            return;
+        }
+        UUID ownerId = pet.getOwnerReference().getUUID();
+        float missingHealth = Math.max(0.0F, pet.getMaxHealth() - pet.getHealth());
+        PetStorage.update(ownerId, recordId, record -> record.withMissingHealth(missingHealth));
+    }
+
+    /** 서버를 끄기 전에 소환된 펫의 체력을 기록에 남긴다. 다시 켜면 이 체력으로 소환된다. */
+    public static void storeLiveHealth()
+    {
+        for (DialgaPetEntity livePet : LIVE_PETS.values())
+        {
+            if (!livePet.isRemoved() && livePet.getHealth() > 0.0F)
             {
-                LAST_HEALTH.put(recordId, pet.getHealth());
+                storeHealth(livePet);
             }
-            LIVE_PETS.remove(recordId, pet);
         }
     }
 
@@ -390,7 +415,7 @@ public final class PetManager
 
     /**
      * 펫이 죽으면 기록을 끄고 부활 시각을 남긴다. 부활 시각이 지나기 전에는 다시 켤 수 없다.
-     * 부활해도 꺼진 상태로 남으므로 주인이 펫관리에서 직접 켜야 한다.
+     * 부활하면 체력은 가득 차지만 꺼진 상태로 남으므로 주인이 펫관리에서 직접 켜야 한다.
      */
     public static void handlePetDeath(DialgaPetEntity pet)
     {
@@ -408,10 +433,9 @@ public final class PetManager
         }
 
         LIVE_PETS.remove(recordId, pet);
-        LAST_HEALTH.remove(recordId);
         long reviveAt = System.currentTimeMillis() + PetStats.reviveMillis(record.level());
         PetRecord updated = PetStorage.update(ownerId, recordId,
-                current -> current.withEnabled(false).withReviveAt(reviveAt));
+                current -> current.withEnabled(false).withReviveAt(reviveAt).withMissingHealth(0.0F));
         if (updated == null || !(pet.getOwner() instanceof ServerPlayer owner))
         {
             return;
@@ -431,9 +455,8 @@ public final class PetManager
     /**
      * 펫관리 탭에 보여 줄 현재 체력.
      * <p>
-     * 소환된 펫은 실제 체력, 부활을 기다리는 펫은 0, 꺼 둔 펫은 회수될 때의 체력이다.
-     * 회수될 때의 체력이 없으면(서버 재시작 등) 다음 소환 때처럼 가득 찬 체력으로 본다.
-     * 꺼 둔 펫의 값은 {@link #summonPet}이 다시 소환할 때 쓰는 값과 같게 맞춘다.
+     * 소환된 펫은 실제 체력, 부활을 기다리는 펫은 0, 꺼 둔 펫은 기록에 남은 체력이다.
+     * 꺼 둔 펫의 값은 {@link #summonPet}이 다시 소환할 때 쓰는 값과 같다.
      */
     public static float currentHealth(PetRecord record, long nowMillis)
     {
@@ -447,13 +470,7 @@ public final class PetManager
             return 0.0F;
         }
 
-        float maxHealth = (float) PetStats.maxHealth(record.rarity(), record.level());
-        Float lastHealth = LAST_HEALTH.get(record.id());
-        if (lastHealth == null)
-        {
-            return maxHealth;
-        }
-        return Math.max(1.0F, Math.min(lastHealth, maxHealth));
+        return record.storedHealth();
     }
 
     /** 서버가 매 틱 호출한다. 부활 시각이 지난 펫을 풀어 주고, 모아 둔 경험치·체력 변경을 보낸다. */
@@ -532,7 +549,6 @@ public final class PetManager
     {
         LIVE_PETS.clear();
         LAST_TOGGLE_TICKS.clear();
-        LAST_HEALTH.clear();
         STATUS_DIRTY_PLAYERS.clear();
     }
 
@@ -575,10 +591,12 @@ public final class PetManager
     private static void summonPet(ServerPlayer player, PetRecord record)
     {
         // 같은 기록의 펫이 이미 살아 있으면 회수하고 새로 소환한다. (재접속 시 행동 초기화)
-        DialgaPetEntity existingPet = LIVE_PETS.remove(record.id());
-        if (existingPet != null && !existingPet.isRemoved())
+        // 회수하면서 체력이 기록에 남으므로 기록을 다시 읽는다.
+        recallPet(record.id());
+        PetRecord current = PetStorage.findPet(player.getUUID(), record.id());
+        if (current == null)
         {
-            existingPet.discard();
+            current = record;
         }
 
         if (!(player.level() instanceof ServerLevel serverLevel))
@@ -606,8 +624,8 @@ public final class PetManager
         applyNameTag(pet, PetStorage.getPets(player.getUUID()), record);
 
         applyStats(pet, record);
-        Float lastHealth = LAST_HEALTH.remove(record.id());
-        pet.setHealth(lastHealth == null ? pet.getMaxHealth() : Math.max(1.0F, Math.min(lastHealth, pet.getMaxHealth())));
+        // 꺼 두거나 접속을 끊은 동안에는 회복하지 않으므로 기록에 남은 체력으로 나온다.
+        pet.setHealth(current.storedHealth());
 
         if (serverLevel.addFreshEntity(pet))
         {
