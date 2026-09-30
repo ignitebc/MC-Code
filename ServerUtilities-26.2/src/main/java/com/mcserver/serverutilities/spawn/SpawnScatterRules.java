@@ -3,6 +3,7 @@ package com.mcserver.serverutilities.spawn;
 import com.mcserver.serverutilities.ServerUtilities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.PlayerSpawnFinder;
@@ -30,6 +31,8 @@ import java.util.UUID;
 public final class SpawnScatterRules {
     // 개인 리스폰 지점이 막혔을 때 둘러볼 청크 범위. 넓힐수록 사망 시 청크 적재가 늘어난다.
     private static final int FALLBACK_CHUNK_RADIUS = 2;
+    // 바다·큰 호수 한가운데가 뽑히면 바닐라 탐색이 수면 바로 위 좌표를 돌려준다. 그때 새 좌표를 다시 뽑는 최대 횟수.
+    private static final int MAX_PLACEMENT_ATTEMPTS = 20;
     private static final double HOLD_TOLERANCE = 0.01;
     private static final Component WAIT_MESSAGE =
             Component.literal("시작 위치를 정하는 중입니다. 잠시만 기다려 주세요.");
@@ -145,32 +148,56 @@ public final class SpawnScatterRules {
     private static void beginPlacement(ServerPlayer player, ServerLevel level, BlockPos suggestion) {
         hold(player);
         player.sendSystemMessage(WAIT_MESSAGE);
-        MinecraftServer server = level.getServer();
         UUID id = player.getUUID();
         // 이미 탐색 중이면 그 결과를 그대로 쓴다. 잠금만 다시 걸어 두면 된다.
         if (!PENDING.add(id)) return;
+        searchSpawn(level, id, suggestion, 1);
+    }
+
+    private static void searchSpawn(ServerLevel level, UUID id, BlockPos suggestion, int attempt) {
+        MinecraftServer server = level.getServer();
         // 먼 좌표의 청크 생성이 끝날 때까지 서버를 붙잡지 않고, 결과만 서버 스레드로 되돌린다.
         PlayerSpawnFinder.findSpawn(level, suggestion).whenComplete((position, error) ->
-                server.execute(() -> finishPlacement(server, level, id, position, error)));
+                server.execute(() -> finishPlacement(server, level, id, position, error, attempt)));
     }
 
     private static void finishPlacement(MinecraftServer server, ServerLevel level, UUID id,
-                                        Vec3 position, Throwable error) {
-        PENDING.remove(id);
+                                        Vec3 position, Throwable error, int attempt) {
         ServerPlayer player = server.getPlayerList().getPlayer(id);
         if (player == null) {
             // 좌표를 기다리는 사이에 나간 경우. 기록이 없으므로 다음 접속에서 다시 배정한다.
+            PENDING.remove(id);
             HOLDS.remove(id);
             return;
         }
-        release(player);
         if (error != null || position == null) {
+            PENDING.remove(id);
+            release(player);
             ServerUtilities.LOGGER.error("시작 위치를 찾지 못했습니다: " + player.getName().getString(), error);
             player.sendSystemMessage(FAILED_MESSAGE);
             return;
         }
+
+        BlockPos landing = BlockPos.containing(position);
+        if (!hasGround(level, landing)) {
+            // 주변에 땅이 없으면 바닐라는 수면 바로 위 좌표를 돌려준다. 물 위에 떨어지지 않도록 좌표를 새로 뽑는다.
+            boolean canRetry = attempt < MAX_PLACEMENT_ATTEMPTS && anchor != null;
+            if (canRetry) {
+                searchSpawn(level, id, randomStart(player.getRandom()), attempt + 1);
+                return;
+            }
+            PENDING.remove(id);
+            release(player);
+            ServerUtilities.LOGGER.warn("발밑에 블록이 있는 시작 위치를 {}번 안에 찾지 못했습니다: {}",
+                    attempt, player.getName().getString());
+            player.sendSystemMessage(FAILED_MESSAGE);
+            return;
+        }
+
+        PENDING.remove(id);
+        release(player);
         moveTo(player, level, position);
-        assignPersonalSpawn(player, level, BlockPos.containing(position));
+        assignPersonalSpawn(player, level, landing);
     }
 
     private static void assignPersonalSpawn(ServerPlayer player, ServerLevel level, BlockPos position) {
@@ -205,7 +232,9 @@ public final class SpawnScatterRules {
                     if (!onRing) continue;
                     ChunkPos chunk = new ChunkPos(originChunkX + offsetX, originChunkZ + offsetZ);
                     BlockPos candidate = PlayerSpawnFinder.getSpawnPosInChunk(level, chunk);
-                    if (candidate != null && isOpen(level, candidate)) return candidate;
+                    // 이미 배정된 개인 좌표는 그대로 인정하고, 새로 고르는 대체 자리만 발밑 블록을 요구한다.
+                    boolean usable = candidate != null && isOpen(level, candidate) && hasGround(level, candidate);
+                    if (usable) return candidate;
                 }
             }
         }
@@ -219,6 +248,15 @@ public final class SpawnScatterRules {
         boolean floorOpen = floor.getBlock().isPossibleToRespawnInThis(floor);
         boolean headOpen = head.getBlock().isPossibleToRespawnInThis(head);
         return floorOpen && headOpen;
+    }
+
+    /** 발밑 한 칸이 물·용암이 섞이지 않은, 윗면이 단단한 블록인지 본다. */
+    private static boolean hasGround(ServerLevel level, BlockPos feet) {
+        BlockPos groundPos = feet.below();
+        BlockState ground = level.getBlockState(groundPos);
+        boolean dry = ground.getFluidState().isEmpty();
+        boolean sturdyTop = ground.isFaceSturdy(level, groundPos, Direction.UP);
+        return dry && sturdyTop;
     }
 
     private static void hold(ServerPlayer player) {
