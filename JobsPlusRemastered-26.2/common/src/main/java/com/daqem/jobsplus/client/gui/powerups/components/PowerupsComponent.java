@@ -6,6 +6,7 @@ import com.daqem.jobsplus.client.gui.powerups.skilltree.PowerupsSkillTree;
 import com.daqem.jobsplus.client.gui.powerups.skilltree.PowerupsSkillTreeItem;
 import com.daqem.jobsplus.client.gui.powerups.tab.PowerupTab;
 import com.daqem.jobsplus.client.gui.powerups.widgets.PowerupTabWidget;
+import com.daqem.jobsplus.client.gui.powerups.widgets.SkillNotificationButtonWidget;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
 import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
@@ -108,6 +109,7 @@ public class PowerupsComponent extends JobsSpriteComponent
         }
         this.hyperComponent = new HyperPowerupsComponent(10, CONTENT_Y + 2, getWidth() - 20, contentHeight - 4);
         this.addTabWidgets();
+        this.addSkillNotificationButton();
         this.cachedTab = state.getSelectedTab();
         this.applySelectedTab();
     }
@@ -121,6 +123,14 @@ public class PowerupsComponent extends JobsSpriteComponent
             this.addWidget(new PowerupTabWidget(this.state, tab, tabX, TAB_ROW_Y, tabWidth));
             tabX += tabWidth + TAB_GAP;
         }
+    }
+
+    /** 탭 줄 오른쪽 끝에 두어 어느 탭을 보고 있어도 같은 자리에서 누를 수 있게 한다. */
+    private void addSkillNotificationButton()
+    {
+        int buttonX = getWidth() - SkillNotificationButtonWidget.getButtonWidth() - 8;
+        int buttonY = TAB_ROW_Y + (JobsTheme.TAB_HEIGHT - JobsTheme.BUTTON_HEIGHT) / 2;
+        this.addWidget(new SkillNotificationButtonWidget(buttonX, buttonY));
     }
 
     private static int getTabWidth(PowerupTab tab)
