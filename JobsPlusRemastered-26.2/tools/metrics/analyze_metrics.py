@@ -34,6 +34,8 @@ class Options:
     excluded_sources: Set[str] = field(default_factory=lambda: set(DEFAULT_EXCLUDED_SOURCES.split(",")))
     afk_seconds: int = 300
     gap_seconds: int = 600
+    # 직업이 하나뿐인 세션은 gap 밖의 활동도 그 직업의 재료 준비·이동으로 본다.
+    session_fill: bool = True
     stage_levels: Tuple[int, int] = (32, 64)
     since_ms: Optional[int] = None
     until_ms: Optional[int] = None
@@ -280,9 +282,16 @@ def find_minute(minutes: List[Minute], ends: List[int], timestamp_ms: int) -> Op
 
 
 def allocate(minutes: List[Minute], options: Options) -> None:
-    """직업 액션이 있는 구간은 기본 EXP 비율로 나누고, 없는 활동 구간은 같은 세션의 가까운 직업 구간에 붙인다."""
+    """직업 액션이 있는 구간은 기본 EXP 비율로 나누고, 없는 활동 구간은 같은 세션의 가까운 직업 구간에 붙인다.
+
+    가까운 직업 구간이 gap 밖이어도 그 세션의 직업 액션이 한 직업뿐이면 재료 준비·이동으로 보고 그 직업에 붙인다.
+    여러 직업을 오간 세션에서 gap 밖에 있는 구간은 어느 직업의 준비인지 알 수 없어 미배분으로 둔다.
+    """
     sources = [index for index, minute in enumerate(minutes) if minute.weights and not minute.afk]
     source_ends = [minutes[index].end_ms for index in sources]
+    session_sources: Dict[int, List[Minute]] = defaultdict(list)
+    for index in sources:
+        session_sources[minutes[index].session].append(minutes[index])
 
     for minute in minutes:
         if minute.afk or not minute.weights:
@@ -296,6 +305,8 @@ def allocate(minutes: List[Minute], options: Options) -> None:
         if minute.afk or minute.weights:
             continue
         source = nearest_source(minutes, sources, source_ends, minute, options.gap_seconds)
+        if source is None and options.session_fill:
+            source = single_job_source(session_sources.get(minute.session, []), minute)
         if source is not None:
             job = max(source.weights.items(), key=lambda item: item[1])[0]
             minute.allocation[job] = minute.seconds
@@ -320,6 +331,14 @@ def nearest_source(minutes: List[Minute], sources: List[int], source_ends: List[
             if distance <= gap_seconds * 1000 and (best_distance is None or distance < best_distance):
                 best, best_distance = candidate, distance
     return best
+
+
+def single_job_source(session_sources: List[Minute], minute: Minute) -> Optional[Minute]:
+    """세션의 직업 액션이 한 직업뿐이면 그 직업의 가장 가까운 구간을 돌려준다."""
+    jobs = {job for source in session_sources for job in source.weights}
+    if len(jobs) != 1:
+        return None
+    return min(session_sources, key=lambda source: abs(source.end_ms - minute.end_ms))
 
 
 # ---------------------------------------------------------------- 집계
@@ -617,6 +636,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                         help="기본 집계에서 뺄 대상 몹 스폰 원인 (쉼표 구분, 빈 값이면 모두 포함)")
     parser.add_argument("--afk-seconds", type=int, default=300, help="입력 없이 이 시간 이상이면 잠수로 본다")
     parser.add_argument("--gap-minutes", type=int, default=10, help="직업 액션 없는 활동 구간을 붙일 최대 거리")
+    parser.add_argument("--no-session-fill", action="store_true",
+                        help="직업이 하나뿐인 세션이라도 gap 밖의 활동을 그 직업에 붙이지 않는다")
     parser.add_argument("--stages", default="32,64", help="초반/중반, 중반/후반을 나누는 직업 레벨")
     args = parser.parse_args(argv)
 
@@ -629,6 +650,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         excluded_sources={value.strip() for value in args.exclude_sources.split(",") if value.strip()},
         afk_seconds=args.afk_seconds,
         gap_seconds=args.gap_minutes * 60,
+        session_fill=not args.no_session_fill,
         stage_levels=stage_levels,
         since_ms=parse_date(args.since),
         until_ms=parse_date(args.until),
