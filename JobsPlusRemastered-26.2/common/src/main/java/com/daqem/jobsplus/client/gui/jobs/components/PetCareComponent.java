@@ -46,6 +46,7 @@ public class PetCareComponent extends EmptyComponent
     private static final int MAX_CODEX_WIDTH = 174;
     private static final int MIN_PREVIEW_SCALE = 24;
     private static final int MAX_PREVIEW_SCALE = 180;
+    private static final int PREVIEW_ENTITY_ID = -1;
 
     private final List<CatalogEntry> catalog;
     private final int codexWidth;
@@ -55,6 +56,8 @@ public class PetCareComponent extends EmptyComponent
     private final int infoX;
     private final int infoWidth;
     private final ActionScrollWidget codexScroll;
+    private final PetManagementComponent petManagement;
+    private final int previewHeight;
 
     private List<PetStatusEntry> renderedPets;
     private String selectedTypeId;
@@ -88,6 +91,12 @@ public class PetCareComponent extends EmptyComponent
         this.codexScroll = new ActionScrollWidget(this.codexWidth, columnHeight);
         this.codexScroll.setY(TITLE_HEIGHT);
         addWidget(this.codexScroll);
+
+        int managementHeight = Math.min(104, Math.max(72, columnHeight / 2));
+        this.previewHeight = Math.max(1, columnHeight - managementHeight - INNER_GAP);
+        this.petManagement = new PetManagementComponent(this.rightX,
+                TITLE_HEIGHT + this.previewHeight + INNER_GAP, this.modelWidth, managementHeight);
+        addComponent(this.petManagement);
 
         refresh();
     }
@@ -170,6 +179,7 @@ public class PetCareComponent extends EmptyComponent
             return;
         }
         this.selectedTypeId = typeId;
+        this.petManagement.selectType(typeId);
         this.previewTypeId = null;
         this.previewPet = null;
     }
@@ -193,10 +203,10 @@ public class PetCareComponent extends EmptyComponent
         int bodyHeight = Math.max(1, getHeight() - TITLE_HEIGHT);
         int modelX = x + this.rightX;
         int infoX = x + this.infoX;
-        JobsTheme.texture(graphics, JobsTheme.Skin.INSET, modelX, bodyY, this.modelWidth, bodyHeight);
+        JobsTheme.texture(graphics, JobsTheme.Skin.INSET, modelX, bodyY, this.modelWidth, this.previewHeight);
         JobsTheme.texture(graphics, JobsTheme.Skin.INSET, infoX, bodyY, this.infoWidth, bodyHeight);
 
-        drawPreview(graphics, mouseX, mouseY, modelX, bodyY, this.modelWidth, bodyHeight);
+        drawPreview(graphics, mouseX, mouseY, modelX, bodyY, this.modelWidth, this.previewHeight);
         drawDetails(graphics, infoX, bodyY, this.infoWidth, bodyHeight);
     }
 
@@ -254,6 +264,8 @@ public class PetCareComponent extends EmptyComponent
             this.previewPet = null;
             return null;
         }
+        // 클라이언트에서 만든 미리보기는 ID가 0이라 렌더링할 수 없다. 월드에 등록하지 않는 전용 ID를 준다.
+        created.setId(PREVIEW_ENTITY_ID);
         created.setNoAi(true);
         created.setSilent(true);
         created.setCustomNameVisible(false);
