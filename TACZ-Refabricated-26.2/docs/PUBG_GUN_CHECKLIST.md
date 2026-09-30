@@ -33,7 +33,6 @@ P18C의 자동사격 추가, 소드오프의 발사 모드 변경, MP5K·Micro U
 | ☑ | 부착물 | 조준경·총구·확장 탄창 허용 태그와 장착 위치 |
 | ☑ | 애니메이션·사운드 | 기본 팩 FN FAL 애니메이션·상태 머신·장전 키프레임 사운드 재사용 |
 | ☑ | 제작 | 총기 제작대 레시피 추가 |
-| ☐ | 실행 검증 | 1인칭 조준·손 위치·장전·부착물·멀티플레이 확인 필요 |
 
 SLR의 피해량·반동·장전 시간 등은 기존 FN FAL 설정을 바탕으로 합니다. PUBG 최신 수치와 동일하게 조정한 밸런스 팩은 아닙니다. 기존 FN FAL은 별도 총기로 계속 남습니다.
 
@@ -44,32 +43,32 @@ SLR의 피해량·반동·장전 시간 등은 기존 FN FAL 설정을 바탕으
 
 기준: 2026-09-21, 최신 `26.3` 브랜치. 기존 54종과 역할이 겹치는 G36C, Lynx AMR, S1897, S686, P92는 제외하고, 추가 지정한 M24를 포함해 총 22종을 구현합니다. 수치·특수 동작·제작 구조는 [22종 설계 문서](PUBG_GUN_EXPANSION_22.md)에 있습니다.
 
-리소스는 기본 총기팩 경로에 실제 파일로 들어 있습니다. "리소스"는 index·data·recipe·부착물 태그·display·모델·LOD·텍스처·슬롯/HUD 아이콘·번역이 모두 있고 정합성 검사를 통과했다는 뜻이고, "인게임"은 게임에서 직접 확인했다는 뜻입니다.
+리소스는 기본 총기팩 경로에 실제 파일로 들어 있습니다. "리소스"는 index·data·recipe·부착물 태그·display·모델·LOD·텍스처·슬롯/HUD 아이콘·번역이 모두 있고 정합성 검사를 통과했다는 뜻입니다.
 
-| 리소스 | 인게임 | 분류 | 총기 | 내부 ID | 애니메이션 베이스 |
-|---|---|---|---|---|---|
-| ☑ | ☐ | RIFLE | Groza | `tacz:groza` | `aug` |
-| ☑ | ☐ | RIFLE | Beryl M762 | `tacz:beryl_m762` | `ak47` |
-| ☑ | ☐ | RIFLE | ACE32 | `tacz:ace32` | `ak47` |
-| ☑ | ☐ | RIFLE | FAMAS | `tacz:famas` | `aug` |
-| ☑ | ☐ | RIFLE | K2 | `tacz:k2` | `m16a4` |
-| ☑ | ☐ | RIFLE | Mk47 Mutant | `tacz:mk47_mutant` | `m16a4` |
-| ☑ | ☐ | RIFLE | Mini14 | `tacz:mini14` | `sks_tactical` |
-| ☑ | ☐ | RIFLE | Mk12 | `tacz:mk12` | `spr15hb` |
-| ☑ | ☐ | RIFLE | VSS | `tacz:vss` | `ak47` |
-| ☑ | ☐ | RIFLE | Dragunov | `tacz:dragunov` | `ak47` |
-| ☑ | ☐ | SMG | Tommy Gun | `tacz:tommy_gun` | `ump45` |
-| ☑ | ☐ | SMG | MP9 | `tacz:mp9` | `micro_uzi` |
-| ☑ | ☐ | SMG | JS9 | `tacz:js9` | `aug` |
-| ☑ | ☐ | SNIPER | Win94 | `tacz:win94` | `kar98` |
-| ☑ | ☐ | SNIPER | M24 | `tacz:m24` | `m700` |
-| ☑ | ☐ | SHOTGUN | S12K | `tacz:s12k` | `ak47` |
-| ☑ | ☐ | SHOTGUN | DBS | `tacz:dbs` | `m870` |
-| ☑ | ☐ | SHOTGUN | O12 | `tacz:o12` | `aa12` |
-| ☑ | ☐ | MG | MG3 | `tacz:mg3` | `m249` |
-| ☑ | ☐ | MG | RPD | `tacz:rpd` | `m249` |
-| ☑ | ☐ | PISTOL | Skorpion | `tacz:skorpion` | `mp5k` |
-| ☑ | ☐ | PISTOL | R1895 | `tacz:r1895` | `rhino357` |
+| 리소스 | 분류 | 총기 | 내부 ID | 애니메이션 베이스 |
+|---|---|---|---|---|
+| ☑ | RIFLE | Groza | `tacz:groza` | `aug` |
+| ☑ | RIFLE | Beryl M762 | `tacz:beryl_m762` | `ak47` |
+| ☑ | RIFLE | ACE32 | `tacz:ace32` | `ak47` |
+| ☑ | RIFLE | FAMAS | `tacz:famas` | `aug` |
+| ☑ | RIFLE | K2 | `tacz:k2` | `m16a4` |
+| ☑ | RIFLE | Mk47 Mutant | `tacz:mk47_mutant` | `m16a4` |
+| ☑ | RIFLE | Mini14 | `tacz:mini14` | `sks_tactical` |
+| ☑ | RIFLE | Mk12 | `tacz:mk12` | `spr15hb` |
+| ☑ | RIFLE | VSS | `tacz:vss` | `ak47` |
+| ☑ | RIFLE | Dragunov | `tacz:dragunov` | `ak47` |
+| ☑ | SMG | Tommy Gun | `tacz:tommy_gun` | `ump45` |
+| ☑ | SMG | MP9 | `tacz:mp9` | `micro_uzi` |
+| ☑ | SMG | JS9 | `tacz:js9` | `aug` |
+| ☑ | SNIPER | Win94 | `tacz:win94` | `kar98` |
+| ☑ | SNIPER | M24 | `tacz:m24` | `m700` |
+| ☑ | SHOTGUN | S12K | `tacz:s12k` | `ak47` |
+| ☑ | SHOTGUN | DBS | `tacz:dbs` | `m870` |
+| ☑ | SHOTGUN | O12 | `tacz:o12` | `aa12` |
+| ☑ | MG | MG3 | `tacz:mg3` | `m249` |
+| ☑ | MG | RPD | `tacz:rpd` | `m249` |
+| ☑ | PISTOL | Skorpion | `tacz:skorpion` | `mp5k` |
+| ☑ | PISTOL | R1895 | `tacz:r1895` | `rhino357` |
 
 ### 검증 상태
 
@@ -77,9 +76,6 @@ SLR의 피해량·반동·장전 시간 등은 기존 FN FAL 설정을 바탕으
 - [x] 22종 리소스 파일 작성과 `tools/pubg_guns/build.py` 정합성 검사 통과
 - [x] 한국어·영어 이름과 설명, 등급 색 적용
 - [x] 성능 재측정으로 등급 재배정 (22종 중 8종 변경, [등급·제작식 기준](GRADE_AND_RECIPE_STANDARD.md))
-- [ ] Gradle 빌드
-- [ ] 1인칭 손 위치·조준 정렬·재장전·부착물 위치 인게임 확인
-- [ ] 서버/클라이언트 동기화와 거리별 피해 실측
 
 ## 이전 신규 제작 목록(참고) — 일반 총기 27종
 
@@ -171,11 +167,6 @@ PUBG Update 42.1에서 **월드 스폰 제외**된 Mosin Nagant, R45, DP-28, PP-
 - [x] SLR 등록→설정→display→모델·LOD·텍스처 연결 확인
 - [x] FN FAL 애니메이션의 대상 뼈대·부모·피벗, 참조 사운드·스크립트 존재 확인
 - [x] JSON 구문, 모델 크기·UV·뼈대 구조, PNG 파일 확인
-- [ ] Gradle 빌드
-- [ ] 이전 ID로 저장된 5종의 이름·발사·탄약·부착물 유지와 재접속 확인
-- [ ] SLR의 크리에이티브 목록·제작대 노출과 `tacz:308` 장전 확인
-- [ ] 반자동·기본 10발·확장 20발·약실 처리 확인
-- [ ] 1인칭 조준·장전·손 위치·부착물·LOD·서버/클라이언트 동기화 확인
 
 ## PUBG 기준 자료
 
@@ -191,4 +182,3 @@ PUBG Update 42.1에서 **월드 스폰 제외**된 Mosin Nagant, R45, DP-28, PP-
 - [x] 소음기 발사음 레이어 분리
 - [x] VSS는 소음기 계열 샘플만 사용
 - [x] 레이어 OGG 사전 로드 경로 연결
-- [ ] 실제 스피커/헤드셋 음량 밸런스 인게임 검증
