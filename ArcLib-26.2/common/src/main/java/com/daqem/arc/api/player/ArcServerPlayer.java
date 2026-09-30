@@ -59,4 +59,9 @@ public interface ArcServerPlayer extends ArcPlayer {
     long arc$getLastFishingNoticeTick();
 
     void arc$setLastFishingNoticeTick(long gameTime);
+
+    /** 스킬 발동 채팅 알림을 받을지 여부. 기본은 켜짐이며 재접속과 부활 뒤에도 유지된다. */
+    boolean arc$isSkillNotificationsEnabled();
+
+    void arc$setSkillNotificationsEnabled(boolean enabled);
 }

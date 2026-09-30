@@ -3,6 +3,7 @@ package com.daqem.arc.player;
 import com.daqem.arc.api.action.data.ActionData;
 import com.daqem.arc.api.action.holder.IActionHolder;
 import com.daqem.arc.api.player.ArcPlayer;
+import com.daqem.arc.api.player.ArcServerPlayer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -70,6 +71,10 @@ public final class SkillActivationNotifier {
     }
 
     public static void notifyExtraDrop(ServerPlayer player, @Nullable Component skillName, List<ItemStack> itemStacks) {
+        if (hasMutedSkillNotifications(player)) {
+            return;
+        }
+
         List<ItemStack> mergedStacks = mergeStacks(itemStacks);
         if (mergedStacks.isEmpty()) {
             return;
@@ -102,7 +107,19 @@ public final class SkillActivationNotifier {
     }
 
     public static void notifySkillActivated(ServerPlayer player, Component message) {
+        if (hasMutedSkillNotifications(player)) {
+            return;
+        }
         player.sendSystemMessage(message.copy().withStyle(ChatFormatting.GOLD));
+    }
+
+    /**
+     * 플레이어가 스킬 화면에서 알림을 끈 경우.
+     * 채팅 알림만 막으며 추가 아이템과 보상 지급, 다른 플레이어에게 가는 공지는 그대로다.
+     */
+    private static boolean hasMutedSkillNotifications(ServerPlayer player) {
+        return player instanceof ArcServerPlayer arcServerPlayer
+                && !arcServerPlayer.arc$isSkillNotificationsEnabled();
     }
 
     private static List<ItemStack> mergeStacks(List<ItemStack> itemStacks) {
