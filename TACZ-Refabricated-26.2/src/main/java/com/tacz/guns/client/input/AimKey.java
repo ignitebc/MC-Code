@@ -32,14 +32,15 @@ public class AimKey {
                 return;
             }
             if (IGun.mainHandHoldGun(player)) {
+                boolean holdToAim = isHoldToAim(player);
                 boolean action = true;
-                if (!KeyConfig.HOLD_TO_AIM.get()) {
+                if (!holdToAim) {
                     action = !operator.isAim();
                 }
                 if (event.getAction() == GLFW.GLFW_PRESS) {
                     IClientPlayerGunOperator.fromLocalPlayer(player).aim(action);
                 }
-                if (KeyConfig.HOLD_TO_AIM.get() && event.getAction() == GLFW.GLFW_RELEASE) {
+                if (holdToAim && event.getAction() == GLFW.GLFW_RELEASE) {
                     IClientPlayerGunOperator.fromLocalPlayer(player).aim(false);
                 }
             }
@@ -65,6 +66,10 @@ public class AimKey {
                 return;
             }
             if (!(player instanceof IClientPlayerGunOperator operator)) {
+                return;
+            }
+            // 배율 조준경은 토글 조준이므로 키를 뗐다고 조준을 풀지 않는다.
+            if (!isHoldToAim(player)) {
                 return;
             }
             if (operator.isAim() && press) {
@@ -95,19 +100,33 @@ public class AimKey {
         if (!IGun.mainHandHoldGun(player)) {
             return false;
         }
+        boolean holdToAim = isHoldToAim(player);
         boolean action = true;
-        if (!KeyConfig.HOLD_TO_AIM.get()) {
+        if (!holdToAim) {
             action = !operator.isAim();
         }
         if (isPress) {
             IClientPlayerGunOperator.fromLocalPlayer(player).aim(action);
             return true;
         }
-        if (KeyConfig.HOLD_TO_AIM.get()) {
+        if (holdToAim) {
             IClientPlayerGunOperator.fromLocalPlayer(player).aim(false);
             return true;
         }
         return false;
+    }
+
+    /**
+     * 조준 키를 누르고 있는 동안만 조준하는지.
+     *
+     * <p>배율 조준경(부착형·일체형)이 달린 총은 설정과 관계없이 한 번 누르면 조준을 유지하고 다시 누르면 푼다.
+     * 레드닷·홀로그래픽과 기본 가늠자는 {@link KeyConfig#HOLD_TO_AIM} 설정을 따른다.
+     */
+    private static boolean isHoldToAim(LocalPlayer player) {
+        if (ScopeZoomWheel.hasMagnifiedScope(player.getMainHandItem())) {
+            return false;
+        }
+        return KeyConfig.HOLD_TO_AIM.get();
     }
 
     public static void cancelAim(Minecraft mc) {
