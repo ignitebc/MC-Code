@@ -28,7 +28,7 @@ Forge Config API Port는 TaCZ 설정 구현에 필요한 Fabric 라이브러리�
 - 임의 장비 지급은 Server Utilities, 총기 발사는 TACZ에서 담당합니다. 두 모듈을 함께 업데이트합니다. Server Utilities 미설치 시에도 TACZ는 로드됩니다.
 - 비인간형 몬스터의 총기·방어구 외형은 기존 렌더러의 장비 레이어 지원 범위에 따릅니다. 일반 몬스터 모델을 새로 제작하지는 않습니다.
 - Server Utilities의 몬스터 레벨 계산에 총기 등급(F=1 ~ S=7)을 알려 줍니다. 등급은 `src/main/resources/tacz/gun_grades.json`에서 읽으며, 이 파일은 `tools/apply_tier_colors.py`가 이름 색과 같은 표에서 만듭니다.
-- Server Utilities의 시작 장비에 등록된 총기 중 무작위 1정(빈 탄창)과 그 총의 탄약을 기본 장탄수만큼 넣습니다.
+- Server Utilities의 시작 장비에 등록된 권총 중 무작위 1정(빈 탄창)과 그 총의 탄약 3탄창 분량(기본 장탄수의 3배)을 넣습니다. 권총마다 같은 확률입니다.
 
 ## PUBG 총기 명칭 및 SLR
 
@@ -37,6 +37,23 @@ Forge Config API Port는 TaCZ 설정 구현에 필요한 Fabric 라이브러리�
 - PUBG 계열 신규 총기 22종(Groza, Beryl M762, ACE32, FAMAS, K2, Mk47 Mutant, Mini14, Mk12, VSS, Dragunov, Tommy Gun, MP9, JS9, Win94, M24, S12K, DBS, O12, MG3, RPD, Skorpion, R1895)을 기본 총기팩에 추가했습니다. 수치와 제작 구조는 [22종 설계 문서](docs/PUBG_GUN_EXPANSION_22.md)에 있고, 외형은 `tools/pubg_guns/build.py`로 다시 만들 수 있습니다.
 - 이름 변경·SLR·22종 반영 내역은 [PUBG 총기 제작 체크리스트](docs/PUBG_GUN_CHECKLIST.md)에 정리했습니다.
 - 리소스 연결·뼈대·변경 범위는 정적으로 확인했습니다.
+
+## 조준경 조작
+
+- 배율 조준경(표시 설정 `scope: true`)이 부착됐거나 일체형으로 달린 총은 우클릭 한 번으로 조준을 유지하고, 다시 누르면 풉니다. 개인 설정 `HoldToAim`과 관계없이 적용합니다.
+- 레드닷·홀로그래픽(`scope: false`)과 기본 가늠자는 기존처럼 `HoldToAim` 설정을 따릅니다. 무기를 바꾸면 조준은 풀립니다.
+- 배율 단계가 둘 이상인 부착 조준경은 조준 중 마우스 휠로 한 단계씩 바꿉니다. 위로 굴리면 확대, 아래로 굴리면 축소하며 끝 단계에서 넘어가지 않습니다. 이때는 핫바 칸이 바뀌지 않습니다. `V` 키 순환도 그대로 쓸 수 있습니다.
+- 휠로 고른 단계는 `c2s_player_zoom_level` 메시지로 서버의 부착물 NBT(`ZoomNumber`)에 저장합니다. 일체형 조준경은 배율을 바꾸지 않습니다.
+- 배그처럼 6배율급 조준경만 가변입니다.
+
+| 조준경 | 배율 |
+|---|---|
+| 3-6x 가변 광학조준경 (`scope_lpvo_1_6`), Vudu 3-6x (`scope_vudu`) | 6 / 5 / 4 / 3배, 마우스 휠 조정. 처음에는 6배 |
+| Elcan (`scope_elcan_4x`) | 4.25배 고정 |
+| HAMR (`scope_hamr`) | 3.25배 고정 |
+| 스카우트 10배율 (`scope_standard_8x`) | 10배 고정 |
+| Mark 5 HD 25배율 (`scope_mk5hd`) | 25배 고정 |
+| 그 밖의 배율 조준경 | 원래부터 고정 배율 |
 
 ## 빌드
 
