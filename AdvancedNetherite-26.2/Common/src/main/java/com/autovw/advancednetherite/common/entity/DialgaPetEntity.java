@@ -55,8 +55,10 @@ public class DialgaPetEntity extends TamableAnimal
     /** 원이 너무 커져 펫이 멀어지지 않도록 둔 상한 */
     private static final double RING_MAX_RADIUS = 4.0;
 
-    /** 싸우지 않을 때 체력을 회복하는 주기(2초)와 한 번에 회복하는 최대 체력 비율(1%) */
-    private static final int REGEN_INTERVAL_TICKS = 40;
+    /** 전투가 끝난 뒤 맞지도 때리지도 않고 기다려야 회복이 시작되는 시간(5초) */
+    private static final int REGEN_DELAY_TICKS = 100;
+    /** 회복 주기(5초)와 한 번에 회복하는 최대 체력 비율(1%). 0에서 가득 차기까지 약 8분 20초다. */
+    private static final int REGEN_INTERVAL_TICKS = 100;
     private static final float REGEN_FRACTION = 0.01F;
 
     /**
@@ -69,6 +71,12 @@ public class DialgaPetEntity extends TamableAnimal
 
     /** 주인의 펫관리 탭에 마지막으로 알린 체력. 달라지면 다음 동기화 때 목록을 다시 보낸다. */
     private float lastReportedHealth = -1.0F;
+
+    /**
+     * 다음에 체력을 회복할 수 있는 틱. 맞거나 때리거나 추격 대상이 있으면 5초 뒤로 미룬다.
+     * 소환된 뒤에도 한 주기(5초)가 지나야 첫 회복이 일어난다.
+     */
+    private int nextRegenTick = REGEN_INTERVAL_TICKS;
 
     /** 주인 둘레에서 맡은 자리 번호와 같이 서 있는 펫 수. 주기적으로 다시 읽는다. */
     private int ringSlot;
@@ -156,11 +164,7 @@ public class DialgaPetEntity extends TamableAnimal
 
         updatePursuit(owner);
 
-        // 싸우지 않는 동안에는 체력을 조금씩 회복한다.
-        if (this.getTarget() == null && this.tickCount % REGEN_INTERVAL_TICKS == 0 && this.getHealth() < this.getMaxHealth())
-        {
-            this.heal(Math.max(1.0F, this.getMaxHealth() * REGEN_FRACTION));
-        }
+        regenerateOutOfCombat();
 
         // 추격 중이 아닐 때 주인과 10칸 이상 벌어지면 곁으로 순간이동한다.
         boolean isIdle = this.getTarget() == null;
@@ -170,6 +174,34 @@ public class DialgaPetEntity extends TamableAnimal
         }
 
         super.customServerAiStep(serverLevel);
+    }
+
+    /**
+     * 전투가 끝나고 5초 동안 맞지도 때리지도 않으면 5초마다 최대 체력의 1%를 회복한다.
+     * 추격 대상이 있는 동안은 아직 전투 중으로 본다.
+     * 소환된 펫만 이 코드를 돌므로 꺼 두거나 접속을 끊은 동안에는 회복하지 않는다.
+     */
+    private void regenerateOutOfCombat()
+    {
+        if (this.getTarget() != null)
+        {
+            delayRegeneration();
+            return;
+        }
+
+        boolean regenDue = this.tickCount >= this.nextRegenTick;
+        boolean damaged = this.getHealth() < this.getMaxHealth();
+        if (regenDue && damaged)
+        {
+            this.heal(this.getMaxHealth() * REGEN_FRACTION);
+            this.nextRegenTick = this.tickCount + REGEN_INTERVAL_TICKS;
+        }
+    }
+
+    /** 맞거나 때리거나 추격 중이면 회복을 5초 뒤로 미룬다. */
+    private void delayRegeneration()
+    {
+        this.nextRegenTick = this.tickCount + REGEN_DELAY_TICKS;
     }
 
     public UUID getRecordId()
@@ -406,7 +438,12 @@ public class DialgaPetEntity extends TamableAnimal
         {
             return false;
         }
-        return super.hurtServer(serverLevel, damageSource, amount);
+        boolean damaged = super.hurtServer(serverLevel, damageSource, amount);
+        if (damaged)
+        {
+            delayRegeneration();
+        }
+        return damaged;
     }
 
     /** 주인과 주인의 다른 펫에게서는 피해를 받지 않는다. */
@@ -420,11 +457,18 @@ public class DialgaPetEntity extends TamableAnimal
         return attacker == owner || (attacker instanceof DialgaPetEntity otherPet && otherPet.getOwner() == owner);
     }
 
-    /** 몹을 한 대 때릴 때마다 경험치를 얻는다. 플레이어를 때린 것은 세지 않는다. */
+    /**
+     * 몹을 한 대 때릴 때마다 경험치를 얻는다. 플레이어를 때린 것은 세지 않는다.
+     * 누구를 때렸든 전투 중이므로 회복은 미룬다.
+     */
     @Override
     public boolean doHurtTarget(ServerLevel serverLevel, Entity target)
     {
         boolean hit = super.doHurtTarget(serverLevel, target);
+        if (hit)
+        {
+            delayRegeneration();
+        }
         if (hit && target instanceof Mob)
         {
             PetManager.handlePetHit(this);
