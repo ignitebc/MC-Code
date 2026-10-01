@@ -65,6 +65,10 @@ public class ShopOfferEntryWidget extends CustomButtonWidget
         // 스크롤 컨테이너가 Scissor를 쓰고 있어서, 여기서 툴팁/disableScissor를 만지면 underflow로 터진다.
         // 따라서 "이름만" ShopTooltipState에 기록하고,
         // 실제 박스/표시는 JobsScreen.extractRenderState(...) 마지막에서 그린다.
+        if (!guiGraphics.containsPointInScissor(mouseX, mouseY))
+        {
+            return;
+        }
         if (!inStack.isEmpty() && isMouseOverSlot(mouseX, mouseY, inputSlotX, slotY))
         {
             ShopTooltipState.setHoveredName(inStack.getHoverName(), mouseX, mouseY);
