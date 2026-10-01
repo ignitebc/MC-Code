@@ -51,6 +51,44 @@ public class JobPowerupManager
         return false;
     }
 
+    /** 검증을 모두 통과한 뒤 스킬을 한꺼번에 추가해 일부만 구매되는 상황을 막는다. */
+    public boolean addPowerups(JobsPlayer player, Job job, List<PowerupInstance> powerupInstances)
+    {
+        if (powerupInstances == null || powerupInstances.isEmpty())
+        {
+            return false;
+        }
+
+        Set<Identifier> ownedOrValidatedLocations = new HashSet<>();
+        for (Powerup powerup : this.powerups)
+        {
+            ownedOrValidatedLocations.add(powerup.getPowerupLocation());
+        }
+
+        for (PowerupInstance powerupInstance : powerupInstances)
+        {
+            if (powerupInstance == null
+                    || ownedOrValidatedLocations.contains(powerupInstance.getLocation()))
+            {
+                return false;
+            }
+
+            Identifier parentLocation = powerupInstance.getParentLocation();
+            if (parentLocation != null && !ownedOrValidatedLocations.contains(parentLocation))
+            {
+                return false;
+            }
+            ownedOrValidatedLocations.add(powerupInstance.getLocation());
+        }
+
+        for (PowerupInstance powerupInstance : powerupInstances)
+        {
+            this.powerups.add(new Powerup(powerupInstance, PowerupState.ACTIVE));
+        }
+        this.sendJobUpdatePacket(job, player);
+        return true;
+    }
+
     private void sendJobUpdatePacket(Job job, JobsPlayer player)
     {
         if (player instanceof JobsServerPlayer jobsServerPlayer)

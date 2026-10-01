@@ -7,6 +7,7 @@ import com.daqem.jobsplus.client.gui.powerups.skilltree.PowerupsSkillTreeItem;
 import com.daqem.jobsplus.client.gui.powerups.tab.PowerupTab;
 import com.daqem.jobsplus.client.gui.powerups.widgets.PowerupTabWidget;
 import com.daqem.jobsplus.client.gui.powerups.widgets.SkillNotificationButtonWidget;
+import com.daqem.jobsplus.client.gui.powerups.widgets.StartAllPowerupsButtonWidget;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
 import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupAvailability;
@@ -28,6 +29,7 @@ public class PowerupsComponent extends JobsSpriteComponent
 {
     private static final int TAB_ROW_Y = 31;
     private static final int TAB_GAP = 1;
+    private static final int ACTION_BUTTON_GAP = 4;
     private static final int MIN_TAB_WIDTH = 76;
     private static final int CONTENT_Y = TAB_ROW_Y + JobsTheme.TAB_HEIGHT + 3;
     private static final int CONTENT_BOTTOM_MARGIN = 21;
@@ -109,29 +111,57 @@ public class PowerupsComponent extends JobsSpriteComponent
             this.detailsComponent = null;
         }
         this.hyperComponent = new HyperPowerupsComponent(10, CONTENT_Y + 2, getWidth() - 20, contentHeight - 4);
-        this.addTabWidgets();
-        this.addSkillNotificationButton();
+        this.addTopRowWidgets();
         this.cachedTab = state.getSelectedTab();
         this.applySelectedTab();
     }
 
-    private void addTabWidgets()
+    /** 스킬 탭과 공통 동작 버튼을 같은 줄에 겹치지 않도록 배치한다. */
+    private void addTopRowWidgets()
     {
+        int buttonY = TAB_ROW_Y + (JobsTheme.TAB_HEIGHT - JobsTheme.BUTTON_HEIGHT) / 2;
+        int notificationButtonX = getWidth() - SkillNotificationButtonWidget.getButtonWidth() - 8;
+        this.addWidget(new SkillNotificationButtonWidget(notificationButtonX, buttonY));
+
+        int allPowerupsButtonX = notificationButtonX
+                - StartAllPowerupsButtonWidget.getButtonWidth() - ACTION_BUTTON_GAP;
+        this.addWidget(new StartAllPowerupsButtonWidget(this.state, allPowerupsButtonX, buttonY));
+
+        int tabRightBoundary = allPowerupsButtonX - ACTION_BUTTON_GAP;
+        this.addTabWidgets(tabRightBoundary);
+    }
+
+    private void addTabWidgets(int rightBoundary)
+    {
+        PowerupTab[] tabs = PowerupTab.values();
         int tabX = 8;
-        for (PowerupTab tab : PowerupTab.values())
+        int totalGap = TAB_GAP * (tabs.length - 1);
+        int availableTabWidth = Math.max(tabs.length, rightBoundary - tabX - totalGap);
+
+        int preferredWidth = 0;
+        for (PowerupTab tab : tabs)
         {
+            preferredWidth += getTabWidth(tab);
+        }
+
+        boolean usePreferredWidths = preferredWidth <= availableTabWidth;
+        int baseTabWidth = availableTabWidth / tabs.length;
+        int remainingWidth = availableTabWidth % tabs.length;
+        for (int index = 0; index < tabs.length; index++)
+        {
+            PowerupTab tab = tabs[index];
             int tabWidth = getTabWidth(tab);
+            if (!usePreferredWidths)
+            {
+                tabWidth = baseTabWidth;
+                if (index < remainingWidth)
+                {
+                    tabWidth++;
+                }
+            }
             this.addWidget(new PowerupTabWidget(this.state, tab, tabX, TAB_ROW_Y, tabWidth));
             tabX += tabWidth + TAB_GAP;
         }
-    }
-
-    /** 탭 줄 오른쪽 끝에 두어 어느 탭을 보고 있어도 같은 자리에서 누를 수 있게 한다. */
-    private void addSkillNotificationButton()
-    {
-        int buttonX = getWidth() - SkillNotificationButtonWidget.getButtonWidth() - 8;
-        int buttonY = TAB_ROW_Y + (JobsTheme.TAB_HEIGHT - JobsTheme.BUTTON_HEIGHT) / 2;
-        this.addWidget(new SkillNotificationButtonWidget(buttonX, buttonY));
     }
 
     private static int getTabWidth(PowerupTab tab)
