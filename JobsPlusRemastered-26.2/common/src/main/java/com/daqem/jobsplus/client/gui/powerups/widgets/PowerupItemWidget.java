@@ -54,8 +54,8 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
                 Identifier location = button.getState().getJob().getJobInstance().getLocation();
                 if (powerUp.getState() == PowerupState.ACTIVE || powerUp.getState() == PowerupState.INACTIVE) {
                     NetworkManager.sendToServer(new ServerboundTogglePowerUpPacket(location, powerupInstance.getLocation()));
-                    if (Minecraft.getInstance().gui.screen() instanceof PowerupsScreen powerupsScreen) {
-                        button.getPowerup().setState(powerUp.getState() == PowerupState.ACTIVE ? PowerupState.INACTIVE : PowerupState.ACTIVE);
+                    if (Minecraft.getInstance().gui.screen() instanceof PowerupsScreen) {
+                        button.togglePowerup();
                     }
                 } else if (powerUp.getState() == PowerupState.NOT_OWNED) {
                     Minecraft.getInstance().gui.setScreen(new ConfirmationScreen(Minecraft.getInstance().gui.screen(), new ConfirmationScreenState(JobsPlus.translatable("gui.confirmation.purchase_powerup", powerupInstance.getName(), powerupInstance.getPrice()), () -> {
@@ -93,6 +93,21 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
 
     public Powerup getPowerup() {
         return powerup;
+    }
+
+    /** 구매 후 분리된 위젯과 직업 데이터에 같은 활성 상태를 반영한다. */
+    private void togglePowerup() {
+        PowerupState nextState = PowerupState.ACTIVE;
+        if (this.powerup.getState() == PowerupState.ACTIVE) {
+            nextState = PowerupState.INACTIVE;
+        }
+        this.powerup.setState(nextState);
+
+        Powerup ownedPowerup = this.state.getJob().getPowerupManager()
+                .getPowerup(this.powerup.getPowerupLocation()).orElse(null);
+        if (ownedPowerup != null) {
+            ownedPowerup.setState(nextState);
+        }
     }
 
     private Identifier getSprite() {
