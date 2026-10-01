@@ -11,20 +11,22 @@
 - Minecraft 26.2
 - Java 25 이상
 - Fabric Loader 0.19.3 이상
-- Fabric API 0.157.0+26.2 이상 (이번 Illager Invasion 빌드에 사용한 버전: 0.160.0+26.2)
+- Fabric API 0.156.0+26.2 이상 (Minecraft 26.2용 Fabric 버전)
 - Architectury API 21.0.6 이상
-- Puzzles Lib 26.2.4 이상 (Minecraft 26.2용 Fabric 버전)
+- Puzzles Lib 26.2.1 이상 (Minecraft 26.2용 Fabric 버전)
 - Forge Config API Port 26.2.1 이상 (Minecraft 26.2용 Fabric 버전)
 
-Illager Invasion 배포 JAR의 `fabric.mod.json`은 Fabric API `>=0.157.0`,
-Puzzles Lib `>=26.2.4`를 요구합니다. Fabric API `0.156.0+26.2`와
-Puzzles Lib `26.2.1` 조합에서는 Fabric Loader가 게임 기동을 거부합니다.
-서버와 클라이언트의 기존 두 라이브러리 JAR을 교체하고 다시 시작합니다.
-Fabric Loader 자체와 Fabric API는 별개이므로 Loader만 교체해서 해결되지 않습니다.
+Illager Invasion은 `project.libs=26.2-SNAPSHOT` 공유 카탈로그를 사용하지만,
+모듈의 `gradle.properties`에서 Fabric API와 Puzzles Lib의 컴파일 버전 및
+최소 요구 버전을 위 버전으로 고정합니다. 생성된 JAR의 `fabric.mod.json`은
+Fabric API `>=0.156.0`, Puzzles Lib `>=26.2.1`을 요구해야 합니다.
 
-Illager Invasion은 `project.libs=26.2-SNAPSHOT` 공유 카탈로그에서 의존성 버전을
-가져오므로 재빌드 시 요구 버전이 바뀔 수 있습니다. 배포할 때는 생성된 JAR의
-`fabric.mod.json`과 설치할 라이브러리 JAR의 실제 버전을 함께 확인합니다.
+이전 빌드에서 Fabric API `>=0.157.0`, Puzzles Lib `>=26.2.4` 오류가 발생했다면
+수정된 소스로 다시 빌드한 Illager Invasion JAR을 서버와 클라이언트에 교체합니다.
+같은 모드 ID의 이전 JAR은 `mods`에 남기지 않습니다. Fabric API `0.156.0+26.2`와
+Puzzles Lib `26.2.1`은 이 빌드의 의존성 조건을 만족합니다.
+배포할 때는 생성된 JAR의 `fabric.mod.json`과 설치할 라이브러리 JAR의 실제 버전을
+함께 확인합니다. Fabric Loader 자체와 Fabric API는 별개입니다.
 
 ## 수집되는 모드 간 의존성
 
