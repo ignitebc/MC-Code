@@ -1,6 +1,7 @@
 package fuzs.illagerinvasion.common;
 
 import fuzs.illagerinvasion.common.config.ServerConfig;
+import fuzs.illagerinvasion.common.handler.MonsterAwarenessHandler;
 import fuzs.illagerinvasion.common.handler.VillagerGoalHandler;
 import fuzs.illagerinvasion.common.init.ModEntityTypes;
 import fuzs.illagerinvasion.common.init.ModEnumConstants;
@@ -43,6 +44,7 @@ public class IllagerInvasion implements ModConstructor {
     }
 
     private static void registerEventHandlers() {
+        ServerEntityEvents.LOAD.register(MonsterAwarenessHandler::onEntityLoad);
         ServerEntityEvents.LOAD.register(VillagerGoalHandler::onEntityLoad);
         LootTableLoadCallback.EVENT.register(ModLootTables::onLootTableLoad);
         RegisterPotionBrewingMixesCallback.EVENT.register(IllagerInvasion::registerPotionRecipes);
