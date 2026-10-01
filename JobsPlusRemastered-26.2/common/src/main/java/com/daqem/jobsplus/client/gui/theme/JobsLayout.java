@@ -51,7 +51,10 @@ public record JobsLayout(int width, int height) {
     }
 
     public int actionY() {
-        return wide() ? bodyY() + bodyHeight() - 14 - 8 : bodyY() + 46;
+        if (wide()) {
+            return bodyY() + bodyHeight() - 14 - 8;
+        }
+        return bodyY() + 56;
     }
 
     public boolean expandedPage(RightTab tab) {

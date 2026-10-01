@@ -1,6 +1,8 @@
 {
   "jobsplus.gui.jobs.job_selection": "직업",
   "jobsplus.gui.jobs.powerups": "스킬",
+  "jobsplus.gui.jobs.new_powerups": "신규 스킬 %d개 해방",
+  "jobsplus.gui.jobs.new_powerups_short": "신규 %d",
   "jobsplus.gui.jobs.level": "레벨: %d",
   "jobsplus.gui.jobs.experience": "경험치: %d/%d",
   "jobsplus.gui.jobs.experience.reward": "경험치 획득량: %s",

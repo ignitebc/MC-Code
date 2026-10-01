@@ -4,9 +4,11 @@ import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.player.job.Job;
+import com.daqem.jobsplus.player.job.powerup.PowerupAvailability;
 import com.daqem.uilib.gui.widget.CustomButtonWidget;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.network.chat.Component;
 
 public class JobSelectionItemWidget extends CustomButtonWidget
 {
@@ -15,12 +17,14 @@ public class JobSelectionItemWidget extends CustomButtonWidget
 
     private final Job job;
     private final JobsScreenState state;
+    private final int availablePowerupCount;
 
     public JobSelectionItemWidget(Job job, JobsScreenState state, int width)
     {
         super(0, 0, width, 23, job.getJobInstance().getName(), SPRITES, button -> state.setSelectedJob(job));
         this.job = job;
         this.state = state;
+        this.availablePowerupCount = PowerupAvailability.countAvailablePowerups(job);
     }
 
     @Override
@@ -39,10 +43,33 @@ public class JobSelectionItemWidget extends CustomButtonWidget
         guiGraphics.pose().scale(1.0f, 1.0f);
         guiGraphics.fakeItem(this.job.getJobInstance().getIconItem(), 0, 0);
         guiGraphics.pose().popMatrix();
-        JobsTheme.text(guiGraphics, getMessage(), getX() + 25, getY() + 8, getWidth() - 56,
-                this.job.getLevel() > 0 ? JobsTheme.TEXT : JobsTheme.MUTED);
-        JobsTheme.text(guiGraphics, JobsPlus.literal(this.job.getLevel() > 0 ? "보유" : "미보유"),
-                getX() + getWidth() - 27, getY() + 8, 24,
-                this.job.getLevel() > 0 ? JobsTheme.CYAN : JobsTheme.MUTED);
+        int statusWidth = 26;
+        Component status;
+        int statusColor;
+        int jobNameColor;
+        if (this.job.getLevel() > 0)
+        {
+            status = JobsPlus.literal("보유");
+            statusColor = JobsTheme.CYAN;
+            jobNameColor = JobsTheme.TEXT;
+        }
+        else
+        {
+            status = JobsPlus.literal("미보유");
+            statusColor = JobsTheme.MUTED;
+            jobNameColor = JobsTheme.MUTED;
+        }
+
+        if (this.availablePowerupCount > 0)
+        {
+            statusWidth = 40;
+            status = JobsPlus.translatable("gui.jobs.new_powerups_short", this.availablePowerupCount);
+            statusColor = JobsTheme.WARNING;
+        }
+
+        int nameWidth = Math.max(1, getWidth() - 31 - statusWidth);
+        JobsTheme.text(guiGraphics, getMessage(), getX() + 25, getY() + 8, nameWidth, jobNameColor);
+        JobsTheme.textRight(guiGraphics, status, getX() + getWidth() - 4, getY() + 8,
+                statusWidth, statusColor);
     }
 }

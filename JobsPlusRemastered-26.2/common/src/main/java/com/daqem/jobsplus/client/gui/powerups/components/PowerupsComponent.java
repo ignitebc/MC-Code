@@ -9,6 +9,7 @@ import com.daqem.jobsplus.client.gui.powerups.widgets.PowerupTabWidget;
 import com.daqem.jobsplus.client.gui.powerups.widgets.SkillNotificationButtonWidget;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
 import com.daqem.jobsplus.player.job.powerup.Powerup;
+import com.daqem.jobsplus.player.job.powerup.PowerupAvailability;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
 import com.daqem.uilib.gui.component.skilltree.SkillTreeComponent;
 import com.daqem.jobsplus.client.gui.theme.JobsSpriteComponent;
@@ -223,17 +224,16 @@ public class PowerupsComponent extends JobsSpriteComponent
             return false;
         }
 
-        if (state.getJob().getLevel() < powerup.getPowerupInstance().getRequiredLevel())
+        Identifier parentLocation = powerup.getPowerupInstance().getParentLocation();
+        if (parentLocation != null && parentItem == null)
         {
             return false;
         }
 
-        if (parentItem == null)
+        if (!PowerupAvailability.canUnlock(state.getJob(), powerup.getPowerupInstance()))
         {
-            return true;
+            return false;
         }
-
-        Powerup parentPowerup = parentItem.getPowerup();
-        return parentPowerup != null && (parentPowerup.getState() == PowerupState.ACTIVE || parentPowerup.getState() == PowerupState.INACTIVE);
+        return true;
     }
 }
