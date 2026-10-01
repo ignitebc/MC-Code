@@ -22,7 +22,6 @@ import net.minecraft.world.entity.EntityType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
@@ -104,13 +103,11 @@ public class PetCareComponent extends EmptyComponent
     private static List<CatalogEntry> buildCatalog()
     {
         List<CatalogEntry> entries = new ArrayList<>();
-        int number = 1;
         for (PetRarity rarity : PetRarity.values())
         {
             for (String typeId : rarity.petTypeIds())
             {
-                entries.add(new CatalogEntry(number, typeId, rarity));
-                number++;
+                entries.add(new CatalogEntry(typeId, rarity));
             }
         }
         return List.copyOf(entries);
@@ -303,8 +300,7 @@ public class PetCareComponent extends EmptyComponent
 
         JobsTheme.text(graphics, PetNames.typeName(catalogEntry.typeId()), textX, currentY, textWidth, color);
         currentY += 14;
-        Component identity = Component.literal(formatCatalogNumber(catalogEntry.number()) + " · "
-                + catalogEntry.rarity().label());
+        Component identity = Component.literal(catalogEntry.rarity().label());
         JobsTheme.text(graphics, identity, textX, currentY, textWidth, JobsTheme.MUTED);
         currentY += 15;
         graphics.fill(textX, currentY, x + width - 6, currentY + 1, JobsTheme.DIVIDER);
@@ -446,11 +442,6 @@ public class PetCareComponent extends EmptyComponent
         return currentHealth + "/" + maxHealth;
     }
 
-    private static String formatCatalogNumber(int number)
-    {
-        return String.format(Locale.ROOT, "No.%03d", number);
-    }
-
     private static String formatNumber(double value)
     {
         double rounded = Math.round(value * 10.0) / 10.0;
@@ -471,7 +462,7 @@ public class PetCareComponent extends EmptyComponent
         };
     }
 
-    private record CatalogEntry(int number, String typeId, PetRarity rarity)
+    private record CatalogEntry(String typeId, PetRarity rarity)
     {
     }
 
@@ -501,10 +492,8 @@ public class PetCareComponent extends EmptyComponent
                     isHoveredOrFocused(), isSelected, false);
 
             int color = rarityColor(this.entry.rarity());
-            JobsTheme.text(graphics, Component.literal(String.format(Locale.ROOT, "%03d", this.entry.number())),
-                    getX() + 4, getY() + 5, 28, JobsTheme.MUTED);
-            JobsTheme.text(graphics, this.name, getX() + 34, getY() + 5,
-                    Math.max(1, getWidth() - 78), color);
+            JobsTheme.text(graphics, this.name, getX() + 6, getY() + 5,
+                    Math.max(1, getWidth() - 54), color);
 
             Component ownership;
             int ownershipColor;
