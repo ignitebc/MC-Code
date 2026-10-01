@@ -13,6 +13,7 @@
     "EquipmentTierTooltipMixin",
     "HungerExhaustionMixin",
     "LodestonePlacementMixin",
+    "LodestonePistonMixin",
     "MerchantTradeLimitMixin",
     "MonsterEquipmentMixin",
     "MonsterExperienceMixin",

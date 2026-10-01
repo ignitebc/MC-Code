@@ -31,7 +31,7 @@ public abstract class LodestonePlacementMixin {
         if (LodestoneOwnership.canPlace(serverPlayer)) {
             return;
         }
-        serverPlayer.displayClientMessage(SERVERUTILITIES_LIMIT_MESSAGE, true);
+        serverPlayer.sendSystemMessage(SERVERUTILITIES_LIMIT_MESSAGE, true);
         cir.setReturnValue(InteractionResult.FAIL);
     }
 
