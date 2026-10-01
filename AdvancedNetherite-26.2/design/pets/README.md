@@ -1,6 +1,7 @@
-# 복셀 펫 (꼬미 · 슈퍼꼬미 · 암흑드래곤 · 스컬큰 레이븐)
+# 복셀 펫
 
-네 펫은 블록벤치 파일이 아니라 파이썬으로 **복셀을 조각**해서 만든다.
+디아루가·커비·유니콘·가젤·꼬미·슈퍼꼬미·암흑드래곤·스컬큰 레이븐은
+파이썬으로 **복셀을 조각**해서 만든다.
 스크립트 하나가 모델 메시(Java), 텍스처(PNG), 미리보기를 함께 만들어 내므로
 모양과 UV 가 어긋날 일이 없다.
 
@@ -8,8 +9,9 @@
 
 ```
 pip install pillow numpy
-python design/pets/build_pets.py              # 네 종 전부
+python design/pets/build_pets.py              # 여덟 종 전부
 python design/pets/build_pets.py gomi_pet     # 하나만
+python design/pets/build_pets.py dialga_pet kirby_pet unicorn_pet gazelle_pet
 ```
 
 | 결과물 | 위치 |
@@ -25,6 +27,8 @@ python design/pets/build_pets.py gomi_pet     # 하나만
 - `dogs.py` : 꼬미, 슈퍼꼬미. 복셀 한 칸 = 0.5 유닛. 참고 그림(`gomi.png`, `super_gomi.png`)은
   저장소에 두지 않는다.
 - `legendaries.py` : 암흑드래곤, 스컬큰 레이븐. 복셀 한 칸 = 1 유닛 (렌더러에서 0.3 배 안팎으로 축소).
+- `companions.py` : 디아루가, 커비, 유니콘, 가젤. 기존 캐릭터의 특징과 애니메이션 파트 이름을
+  유지하면서 표면과 형태를 조각한다. 디아루가·유니콘은 1 유닛, 커비·가젤은 0.5 유닛이다.
 
 ## 고칠 때 지킬 것
 

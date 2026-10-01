@@ -1,22 +1,18 @@
 package com.autovw.advancednetherite.client.model;
 
 import com.autovw.advancednetherite.AdvancedNetherite;
+import com.autovw.advancednetherite.client.model.mesh.KirbyPetMesh;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 /**
- * 일반 펫: 커비(kirby.bbmodel).
- * 원본은 구체 메시 모델이라 구 단면을 따라 쌓은 슬랩 큐브로 옮겼고,
- * 텍스처는 각 면에서 구 중심 방향으로 레이캐스트해 원본 픽셀을 투영해 구웠다.
+ * 커비. 둥근 분홍 몸, 구면에 이어지는 표정, 붉은 발을 작은 복셀로 조각한다.
+ * 형태와 텍스처는 design/pets/companions.py 에서 함께 생성한다.
  */
 public class KirbyPetModel extends EntityModel<LivingEntityRenderState>
 {
@@ -45,57 +41,7 @@ public class KirbyPetModel extends EntityModel<LivingEntityRenderState>
 
     public static LayerDefinition createBodyLayer()
     {
-        MeshDefinition meshDefinition = new MeshDefinition();
-        PartDefinition root = meshDefinition.getRoot();
-
-        PartDefinition kirby = root.addOrReplaceChild(
-                "kirby",
-                CubeListBuilder.create(),
-                PartPose.offsetAndRotation(-0.04029F, 15.66252F, -0.04F, 0.00F, 1.5708F, 0.00F));
-
-        kirby.addOrReplaceChild(
-                "body",
-                CubeListBuilder.create()
-                        .texOffs(74, 60).addBox(-4.50F, 6.80F, -4.50F, 9.00F, 1.70F, 9.00F)
-                        .texOffs(0, 22).addBox(-7.50F, 4.20F, -7.50F, 15.00F, 2.60F, 15.00F)
-                        .texOffs(61, 22).addBox(-7.50F, 1.40F, -7.50F, 15.00F, 2.80F, 15.00F)
-                        .texOffs(0, 0).addBox(-9.00F, -1.40F, -9.00F, 18.00F, 2.80F, 18.00F)
-                        .texOffs(0, 41).addBox(-7.50F, -4.20F, -7.50F, 15.00F, 2.80F, 15.00F)
-                        .texOffs(61, 41).addBox(-7.50F, -6.80F, -7.50F, 15.00F, 2.60F, 15.00F)
-                        .texOffs(0, 73).addBox(-4.50F, -8.50F, -4.50F, 9.00F, 1.70F, 9.00F),
-                PartPose.offset(0.04029F, -2.66252F, 0.04F));
-
-        kirby.addOrReplaceChild(
-                "hand_left",
-                CubeListBuilder.create()
-                        .texOffs(33, 85).addBox(-2.00F, 2.60F, -2.00F, 4.00F, 1.80F, 4.00F)
-                        .texOffs(37, 73).addBox(-2.50F, -2.60F, -2.50F, 5.00F, 5.20F, 5.00F)
-                        .texOffs(50, 85).addBox(-2.00F, -4.40F, -2.00F, 4.00F, 1.80F, 4.00F),
-                PartPose.offsetAndRotation(0.04029F, -1.76252F, 8.34F, -2.11429F, 0.18077F, -0.16531F));
-
-        kirby.addOrReplaceChild(
-                "hand_right",
-                CubeListBuilder.create()
-                        .texOffs(67, 85).addBox(-2.00F, 2.60F, -2.00F, 4.00F, 1.80F, 4.00F)
-                        .texOffs(58, 73).addBox(-2.50F, -2.60F, -2.50F, 5.00F, 5.20F, 5.00F)
-                        .texOffs(84, 85).addBox(-2.00F, -4.40F, -2.00F, 4.00F, 1.80F, 4.00F),
-                PartPose.offsetAndRotation(0.04029F, -5.06252F, -7.46F, -2.46091F, 0.00F, -0.24435F));
-
-        kirby.addOrReplaceChild(
-                "foot_left",
-                CubeListBuilder.create()
-                        .texOffs(0, 60).addBox(-4.50F, 2.00F, -4.50F, 9.00F, 2.60F, 9.00F)
-                        .texOffs(79, 73).addBox(-4.00F, -0.5F, -4.00F, 8.00F, 2.50F, 8.00F),
-                PartPose.offsetAndRotation(2.14029F, 3.34016F, 2.84F, 0.00F, 0.00F, -0.20944F));
-
-        kirby.addOrReplaceChild(
-                "foot_right",
-                CubeListBuilder.create()
-                        .texOffs(37, 60).addBox(-4.50F, 2.00F, -4.50F, 9.00F, 2.60F, 9.00F)
-                        .texOffs(0, 85).addBox(-4.00F, -0.5F, -4.00F, 8.00F, 2.50F, 8.00F),
-                PartPose.offsetAndRotation(-2.25971F, 3.34016F, -3.76F, 0.00F, 0.00F, 0.61087F));
-
-        return LayerDefinition.create(meshDefinition, 128, 128);
+        return KirbyPetMesh.create();
     }
 
     @Override
