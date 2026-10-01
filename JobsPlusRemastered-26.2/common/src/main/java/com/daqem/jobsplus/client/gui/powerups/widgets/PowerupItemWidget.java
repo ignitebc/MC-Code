@@ -7,7 +7,6 @@ import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreenState;
 import com.daqem.jobsplus.client.gui.powerups.PowerupsScreen;
 import com.daqem.jobsplus.client.gui.powerups.PowerupsScreenState;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
-import com.daqem.jobsplus.networking.c2s.ServerboundOpenPowerupsScreenPacket;
 import com.daqem.jobsplus.networking.c2s.ServerboundStartPowerupPacket;
 import com.daqem.jobsplus.networking.c2s.ServerboundTogglePowerUpPacket;
 import com.daqem.jobsplus.player.job.Job;
@@ -61,7 +60,6 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
                 } else if (powerUp.getState() == PowerupState.NOT_OWNED) {
                     Minecraft.getInstance().gui.setScreen(new ConfirmationScreen(Minecraft.getInstance().gui.screen(), new ConfirmationScreenState(JobsPlus.translatable("gui.confirmation.purchase_powerup", powerupInstance.getName(), powerupInstance.getPrice()), () -> {
                         NetworkManager.sendToServer(new ServerboundStartPowerupPacket(location, powerupInstance.getLocation()));
-                        NetworkManager.sendToServer(new ServerboundOpenPowerupsScreenPacket(location));
                     })));
                 }
             }
@@ -76,7 +74,7 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
 
     @Override
     protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        if (isHoveredOrFocused() && this.powerup != null) {
+        if (isHovered() && this.powerup != null) {
             this.state.setPreviewWidget(this);
         }
         this.blitSlot(guiGraphics);

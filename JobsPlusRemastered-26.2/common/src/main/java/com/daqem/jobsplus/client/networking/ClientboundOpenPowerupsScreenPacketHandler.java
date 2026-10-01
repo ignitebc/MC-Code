@@ -41,7 +41,8 @@ public class ClientboundOpenPowerupsScreenPacketHandler {
                 && powerupsScreen.getState().getJob().getJobInstance().getLocation().equals(packet.getJobLocation())) {
             powerupsScreen.update(job, packet.getCoins());
             if (powerupsScreen.getPreviousScreen() instanceof JobsScreen parent) {
-                parent.getState().setCoins(packet.getCoins());
+                parent.getState().updateJobData(
+                        packet.getJobs(), packet.getCoins(), packet.getMaxJobs(), job);
             }
             if (current != powerupsScreen) {
                 setScreenKeepingAlert(minecraft, powerupsScreen, openAlert);

@@ -14,16 +14,16 @@ import java.util.Comparator;
 import java.util.List;
 
 public class JobsScreenState {
-    private final List<Job> jobs;
-    private final List<Job> preformingJobs;
-    private final List<Job> notPreformingJobs;
+    private List<Job> jobs;
+    private List<Job> preformingJobs;
+    private List<Job> notPreformingJobs;
     private int coins;
 
     /**
      * 서버에서 전달받는 "유효 최대 직업 수"
      * (전역 기본 + 플레이어 추가 슬롯)
      */
-    private final int maxJobs;
+    private int maxJobs;
 
     private Job selectedJob;
     private RightTab selectedRightTab;
@@ -56,17 +56,7 @@ public class JobsScreenState {
 
     public JobsScreenState(List<Job> jobs, int coins, int maxJobs, Job selectedJob, RightTab selectedRightTab,
                            StockAccount stockAccount) {
-        this.jobs = jobs.stream()
-                .sorted(Comparator.comparing(Job::getLevel).reversed()
-                        .thenComparingInt(job -> -job.getExperience())
-                        .thenComparing(job -> job.getJobInstance().getName().getString()))
-                .toList();
-        this.preformingJobs = this.jobs.stream().filter(job -> job.getLevel() > 0).toList();
-        this.notPreformingJobs = this.jobs.stream().filter(job -> job.getLevel() <= 0).toList();
-        this.coins = coins;
-        this.maxJobs = Math.max(0, maxJobs);
-
-        this.selectedJob = selectedJob != null ? selectedJob : (this.jobs.isEmpty() ? null : this.jobs.getFirst());
+        this.updateJobData(jobs, coins, maxJobs, selectedJob);
         this.selectedRightTab = selectedRightTab;
         this.selectedShopOffer = null;
         this.stockAccount = stockAccount;
@@ -107,6 +97,31 @@ public class JobsScreenState {
 
     public void setCoins(int coins) {
         this.coins = coins;
+    }
+
+    /** 스킬 구매 후 부모 직업 화면도 서버가 보낸 최신 직업 상태를 사용하게 한다. */
+    public void updateJobData(List<Job> jobs, int coins, int maxJobs, @Nullable Job selectedJob) {
+        this.jobs = jobs.stream()
+                .sorted(Comparator.comparing(Job::getLevel).reversed()
+                        .thenComparingInt(job -> -job.getExperience())
+                        .thenComparing(job -> job.getJobInstance().getName().getString()))
+                .toList();
+        this.preformingJobs = this.jobs.stream().filter(job -> job.getLevel() > 0).toList();
+        this.notPreformingJobs = this.jobs.stream().filter(job -> job.getLevel() <= 0).toList();
+        this.coins = coins;
+        this.maxJobs = Math.max(0, maxJobs);
+
+        if (selectedJob != null)
+        {
+            this.selectedJob = selectedJob;
+            return;
+        }
+
+        this.selectedJob = null;
+        if (!this.jobs.isEmpty())
+        {
+            this.selectedJob = this.jobs.getFirst();
+        }
     }
 
     public void setSelectedJob(Job selectedJob) {

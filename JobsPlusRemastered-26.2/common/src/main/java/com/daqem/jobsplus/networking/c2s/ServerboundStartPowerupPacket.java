@@ -4,6 +4,7 @@ import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
 import com.daqem.jobsplus.metrics.MetricsEvent;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
+import com.daqem.jobsplus.networking.PowerupsScreenSync;
 import com.daqem.jobsplus.networking.s2c.ClientboundAlertPacket;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.job.Job;
@@ -106,6 +107,7 @@ public class ServerboundStartPowerupPacket implements CustomPacketPayload {
                         .record();
                 sendAlert(serverPlayer,
                         JobsPlus.translatable("gui.confirmation.powerup_purchased", powerupInstance.getName()));
+                PowerupsScreenSync.send(serverPlayer, packet.jobLocation);
             } else {
                 sendAlert(serverPlayer,
                         JobsPlus.translatable("error.could_not_add_powerup", powerupInstance.getName()));
