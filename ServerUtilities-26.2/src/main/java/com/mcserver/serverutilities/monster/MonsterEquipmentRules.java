@@ -118,8 +118,9 @@ public final class MonsterEquipmentRules {
     /**
      * 추첨으로 지급한 장비로 정한 머리 위 레벨. 추첨 대상이 아닌 몬스터는 레벨을 표시하지 않는다.
      * <p>
-     * 몬스터가 원래 가진 장비(스켈레톤의 활, 드라운드의 삼지창, 피글린의 금 검 등)는 등급이 없으므로
-     * 지급받지 못한 것과 같게 본다. 추첨이 끝난 뒤에는 장비가 바뀌지 않으므로 한 번만 계산한다.
+     * 피글린 계열은 무기를 추첨하지 않으므로 방어구 등급을 그대로 레벨로 사용한다. 그 외 몬스터가 원래
+     * 가진 장비(스켈레톤의 활, 드라운드의 삼지창 등)는 등급이 없으므로 지급받지 못한 것과 같게 본다.
+     * 추첨이 끝난 뒤에는 장비가 바뀌지 않으므로 한 번만 계산한다.
      */
     public static int calculateLevel(Mob mob, boolean armorEquipped, boolean weaponEquipped) {
         if (!rollsArmor(mob)) return MonsterLevel.NONE;
@@ -128,6 +129,8 @@ public final class MonsterEquipmentRules {
         if (armorEquipped) {
             armorScore = armorScore(mob.getItemBySlot(EquipmentSlot.CHEST));
         }
+        if (isArmorOnlyMonster(mob)) return armorScore;
+
         int weaponScore = MonsterLevel.MISSING_SCORE;
         if (weaponEquipped) {
             weaponScore = weaponScore(mob.getItemBySlot(EquipmentSlot.MAINHAND));

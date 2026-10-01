@@ -3,6 +3,7 @@ package com.mcserver.serverutilities.mixin;
 import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
 import com.mcserver.serverutilities.monster.MonsterEquipmentRules;
 import com.mcserver.serverutilities.monster.MonsterLevel;
+import com.mcserver.serverutilities.monster.MonsterLevelRewards;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
@@ -98,9 +99,12 @@ public abstract class MonsterEquipmentMixin implements MonsterEquipmentAccess {
     }
 
     @Inject(method = "dropCustomDeathLoot", at = @At("HEAD"))
-    private void serverutilities$noEquipmentDrops(ServerLevel level, DamageSource source,
+    private void serverutilities$prepareDeathDrops(ServerLevel level, DamageSource source,
             boolean killedByPlayer, CallbackInfo ci) {
         MonsterEquipmentRules.preventEquipmentDrops((Mob) (Object) this,
                 serverutilities$randomArmor, serverutilities$randomWeapon);
+        // 기존 전리품 처리는 취소하지 않고 레벨 재료 보상만 별도로 추가한다.
+        MonsterLevelRewards.dropMaterialReward(level, (Mob) (Object) this,
+                serverutilities$monsterLevel, killedByPlayer);
     }
 }
