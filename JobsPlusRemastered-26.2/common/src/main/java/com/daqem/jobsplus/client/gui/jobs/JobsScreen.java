@@ -7,6 +7,7 @@ import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
 import com.daqem.jobsplus.client.gui.jobs.widgets.ShopTooltipState;
 import com.daqem.jobsplus.client.stock.ClientStockMarket;
 import com.daqem.jobsplus.networking.c2s.ServerboundStockViewStatePacket;
+import com.daqem.jobsplus.player.job.Job;
 import com.daqem.uilib.gui.AbstractScreen;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
@@ -15,10 +16,15 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
+import java.util.List;
+
 public class JobsScreen extends AbstractScreen
 {
     private final JobsScreenState state;
     private final Screen previousScreen;
+    private List<Job> layoutJobs;
+    private int layoutWidth;
+    private int layoutHeight;
 
     public JobsScreen(JobsScreenState state, Screen previousScreen)
     {
@@ -30,12 +36,28 @@ public class JobsScreen extends AbstractScreen
     @Override
     protected void init()
     {
+        this.layoutWidth = this.width;
+        this.layoutHeight = this.height;
+        this.layoutJobs = this.state.getJobs();
         JobsComponent jobsComponent = new JobsComponent(this.state);
         jobsComponent.center();
 
         this.addComponent(jobsComponent);
 
         super.init();
+    }
+
+    @Override
+    protected void repositionElements()
+    {
+        // 확인창에서 돌아올 때 입력값·선택·스크롤을 유지한다.
+        // 스킬 구매로 직업 목록이 교체되었거나 창 크기가 바뀌었으면 다시 구성한다.
+        if (this.layoutJobs == this.state.getJobs()
+                && this.layoutWidth == this.width && this.layoutHeight == this.height)
+        {
+            return;
+        }
+        super.repositionElements();
     }
 
     @Override
