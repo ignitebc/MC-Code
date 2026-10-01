@@ -28,6 +28,10 @@ public class SelectedJobComponent extends EmptyComponent {
         this.state = state;
         this.wide = layout.wide();
         this.spacious = wide && getHeight() >= 225;
+        if (!this.wide) {
+            // 직업 보유 개수 머리글 아래에 선택한 직업 정보를 배치한다.
+            this.setY(layout.bodyY() + 20);
+        }
         this.startJobButtonWidget = new StartJobButtonWidget(state);
         this.startJobButtonWidget.setWidth(Math.min(90, getWidth() - 16));
         this.startJobButtonWidget.setX((getWidth() - this.startJobButtonWidget.getWidth()) / 2);
