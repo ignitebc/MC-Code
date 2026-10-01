@@ -1,6 +1,7 @@
 package com.daqem.jobsplus.client.gui.jobs;
 
 import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
+import com.daqem.jobsplus.client.gui.jobs.tab.UserGuideTab;
 import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.shop.ShopOffer;
 import com.daqem.jobsplus.player.job.Job;
@@ -27,6 +28,7 @@ public class JobsScreenState {
 
     private Job selectedJob;
     private RightTab selectedRightTab;
+    private UserGuideTab selectedUserGuideTab = UserGuideTab.BASICS_AND_JOBS;
 
     private @Nullable ShopOffer selectedShopOffer;
     private StockAccount stockAccount;
@@ -130,6 +132,19 @@ public class JobsScreenState {
 
     public void setSelectedRightTab(RightTab selectedRightTab) {
         this.selectedRightTab = selectedRightTab;
+    }
+
+    public UserGuideTab getSelectedUserGuideTab()
+    {
+        return this.selectedUserGuideTab;
+    }
+
+    public void setSelectedUserGuideTab(UserGuideTab selectedUserGuideTab)
+    {
+        if (selectedUserGuideTab != null)
+        {
+            this.selectedUserGuideTab = selectedUserGuideTab;
+        }
     }
 
     public @Nullable ShopOffer getSelectedShopOffer() {

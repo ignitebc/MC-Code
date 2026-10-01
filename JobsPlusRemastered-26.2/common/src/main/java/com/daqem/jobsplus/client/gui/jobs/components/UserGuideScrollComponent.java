@@ -1,576 +1,203 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
-import com.daqem.jobsplus.client.gui.theme.JobsTheme;
-import java.lang.reflect.Method;
-
+import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
+import com.daqem.jobsplus.client.gui.jobs.tab.UserGuideTab;
 import com.daqem.jobsplus.client.gui.jobs.widgets.GuideScrollWidget;
+import com.daqem.jobsplus.client.gui.jobs.widgets.UserGuideTabWidget;
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import com.daqem.uilib.gui.component.text.multiline.MultiLineTextComponent;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
+import java.lang.reflect.Method;
+import java.util.EnumMap;
+import java.util.Map;
+
+/** 주제별 탭마다 일반 안내와 중요 안내를 좌우 두 칸으로 보여 준다. */
 public class UserGuideScrollComponent extends EmptyComponent
 {
-    private static final String RED_TEXT_START = "<red>";
-    private static final String RED_TEXT_END = "</red>";
+    private static final Component GENERAL_TITLE = Component.literal("일반 안내");
+    private static final Component IMPORTANT_TITLE = Component.literal("중요 안내");
 
-    /**
-     * 스킬 설명이 아닌, 별도 팝업만으로 확인하기 어려운
-     * 공통 시스템과 아이템 이용 방법을 안내한다.
-     */
-    private static final String USER_GUIDE_LEFT = """
-            ★ 게임 이용 안내 ★
-            이 화면에서는 플레이 중 놓치기 쉬운 공통 규칙과 주요 아이템 사용 방법을 안내합니다.
-            - 처음 접속하면 서버 기준 지점에서 가로·세로 최대 3000블록 안의 무작위 위치에서 시작합니다.
-            - 시작 위치는 물 위가 아닌, 발밑에 블록이 있는 자리로만 정해집니다.
-            - 시작 위치를 찾는 동안에는 제자리에 멈춰 있으며 피해를 받지 않습니다.
-            - 정해진 시작 위치 좌표는 채팅에 빨간 글씨로 안내됩니다.
-            - 침대 없이 사망하면 이 시작 위치에서 다시 시작합니다. 자리가 막혀 있으면 근처의 빈 자리에서 시작합니다.
-            - 침대로 리스폰 지점을 정하면 침대가 우선이며, 침대가 없어지면 다시 시작 위치에서 부활합니다.
-            - 첫 접속 때 시작 장비를 한 번 지급합니다. 사망하거나 다시 접속해도 다시 받지 않습니다.
-            - 시작 장비: 금 투구·흉갑·레깅스·부츠(바로 착용), 방패, 금 곡괭이·도끼·삽·괭이·검
-            - 무작위 권총 1정과 그 총의 탄약 3탄창 분량도 함께 지급됩니다. 총은 빈 탄창 상태이니 장전한 뒤 사용하세요.
-            - 테스트 서버에서는 전설 펫 상자 1개도 함께 지급됩니다. 손에 들고 우클릭하면 전설 펫을 얻습니다.
-
-            ■ 직업 시작하기
-            - J 키를 누르면 직업 화면이 열리며, [직업정보] 탭 왼쪽 목록에서 원하는 직업을 선택해 시작할 수 있습니다.
-            - 테스트 서버에서는 처음부터 직업 8개를 모두 무료로 선택할 수 있습니다.
-            - 직업 레벨이 오를 때마다 스킬 해방에 사용하는 직업코인 20개가 지급됩니다.
-            <red>- 한 번 시작한 직업은 스스로 탈퇴할 수 없으니 신중하게 선택해 주세요.</red>
-
-            ■ 직업 기본 최대 체력
-            <red>- 직업을 고르기 전에는 체력이 3칸으로 고정됩니다. 직업을 고르면 아래 체력으로 바뀝니다.
-            - 시작체력 5칸: 대장장이·사냥꾼·연금술사
-            - 시작체력 6칸: 농부·낚시꾼·광부
-            - 시작체력 7칸: 굴착공·모험가</red>
-
-            <red>- 여러 직업의 체력은 평균을 내어 0.5칸 단위로 반올림합니다. 
-            - 8개 직업을 모두 보유하면 총 체력 10칸이 되며, 대장장이의 강철 체질(체력증가)은 이후 별도로 더해집니다.</red>
-
-            ■ 직업 경험치·비트코인 기준
-            <red>- 비트코인은 평균 시간당 약 6개, 약 10분당 1개를 획득하도록 조정되어 있습니다.</red>
-            <red>- 직업 경험치는 정상 행동마다 100% 누적되며, 1 미만의 소수 경험치는 합계가 1 이상이 되면 실제 경험치에 반영됩니다.</red>
-            <red>- 경험치 증가 스킬을 우선적으로 해금하길 추천드립니다.
-            - 하루 1시간씩 플레이하면 모든 스킬 해방까지 약 29~30시간이 걸리도록 조정되어 있습니다.</red>
-
-            ■ 스킬 발동 알림
-            - 스킬이 발동해 추가 아이템이나 경험치를 얻으면 본인 채팅에 알림이 표시됩니다.
-            - 스킬 화면 오른쪽 위의 [스킬 알림] 버튼을 누르고 [네]를 선택하면 알림을 끄거나 다시 켤 수 있습니다.
-            - 알림만 꺼지며 스킬 효과와 보상은 그대로 적용됩니다. 비트코인 획득 공지와 레벨업 알림도 그대로 표시됩니다.
-            - 설정은 다시 접속하거나 사망한 뒤에도 유지됩니다.
-
-            ■ 보상 쿠폰
-            - 직업 경험치 2배·3배 쿠폰과 비트코인 획득 확률 2배·3배 쿠폰이 있으며, 손에 들고 우클릭하면 10분간 적용됩니다.
-            - 같은 쿠폰을 다시 쓰면 남은 시간에 10분이 더해집니다.
-            <red>- 2배와 3배는 함께 켤 수 없습니다. 다른 배율의 효과가 남아 있으면 쿠폰이 사용되지 않고 소모되지도 않습니다.</red>
-            - 경험치 쿠폰과 비트코인 쿠폰은 서로 다른 효과라 함께 사용할 수 있습니다.
-            - 비트코인 쿠폰은 획득 개수가 아니라 획득 확률을 올립니다. 예: 기본 1% → 2배 쿠폰 2%, 3배 쿠폰 3%
-            - 남은 시간은 실제 시간으로 흐르므로 로그아웃하거나 죽어 있는 동안에도 줄어듭니다.
-            - 쿠폰은 랜덤 상자 I·II 보상으로 얻을 수 있습니다.
-
-            ■ 직업 선택권
-            - 테스트 서버에서는 처음부터 8칸이 열려 있으므로 직업 선택권이 필요하지 않습니다.
-            - 직업 선택권을 손에 들고 우클릭하면 동시에 보유할 수 있는 최대 직업 수가 1칸 증가합니다.
-            - 최대 8개 직업에 도달한 경우에는 직업 선택권이 사용되지 않으며 아이템도 소모되지 않습니다.
-            - 우클릭을 계속 누르고 있어도 연속으로 사용되지 않도록 사용 후 약 1초의 대기 시간이 적용됩니다.
-
-            ■ 배고픔
-            <red>- 이 서버는 이동·점프·공격·채굴 등 행동으로 소모되는 배고픔이 일반 서버보다 1.5배 빨리 소모됩니다.
-            - 식량을 넉넉히 준비하세요.</red>
-
-            ■ 수면
-            - 한 명만 침대에서 잠들어도 밤이 넘어갑니다.
-            - 주변에 몬스터가 있는 등 원래 잠들 수 없는 상황에서는 기존과 같이 잠들 수 없습니다.
-
-            ■ 사망 시 아이템 손실과 보존권
-            <red>- 사망하면 소지품 중 무작위로 서로 다른 2칸이 통째로 삭제됩니다. 소지품이 1칸뿐이면 그 1칸만 삭제됩니다.
-            - 방어구·보조 손·배낭 칸도 삭제 대상입니다. 장착한 배낭이 뽑히면 배낭 안의 물건도 함께 사라집니다.
-            - 삭제된 아이템은 되찾을 수 없으며, 무엇이 사라졌는지는 사망 원인 뒤에 이어 서버 전체에 공지됩니다. (예: OOO(가) 익사했습니다. 금 도끼, 금 투구이(가) 사라집니다.)</red>
-            - 남은 소지품은 바닥에 떨어지지 않고 사망 지점에 놓이는 [유품 상자]에 담깁니다. 상자 좌표는 본인 채팅에만 안내됩니다.
-            <red>- 유품 상자는 5분 뒤 남은 내용물과 함께 사라집니다. 서버를 나가 있어도 시간은 흐릅니다.
-            - 유품 상자는 누구나 열 수 있으니 서둘러 회수하세요.</red>
-            - 유품 상자는 27칸이며, 넘치는 물건만 바닥에 떨어집니다. 내용물을 모두 꺼내면 3초 뒤 상자가 사라집니다.
-            - 상자는 회수하거나 만료되기 전에는 부서지지 않습니다. 위가 블록으로 막혀 있으면 열리지 않으니 위를 뚫어 주세요.
-            - 경험치는 기존처럼 바닥에 떨어집니다.
-            - 사망 시 아이템 보존권을 소지하고 있으면(방어구·보조 손 포함) 자동으로 1개가 소모되어 모든 소지품을 지킵니다.
-            - 보존권이 발동하면 삭제도 유품 상자도 없이 모든 소지품을 그대로 가진 채 리스폰합니다.
-            - 보존권은 우클릭으로 사용하는 아이템이 아니며, 가지고만 있으면 사망 시 자동으로 발동됩니다.
-            - 보존권은 랜덤 상자 III·IV 보상으로 획득할 수 있습니다.
-
-            ■ 배낭
-            - 배낭은 I·II·III 세 등급이며 일반 인벤토리를 각각 4·8·12칸 늘려 줍니다. 핫바는 9칸 그대로입니다.
-            - 인벤토리(E 키) 오른쪽의 배낭 칸에 놓거나 Shift 클릭으로 장착하면 추가 칸이 열립니다.
-            - 더 큰 배낭으로 바꿀 때는 새 배낭을 커서에 든 채 배낭 칸을 클릭해 맞바꾸세요. 내용물과 위치가 유지됩니다.
-            <red>- 배낭을 그냥 빼면(집어 들기·Shift 클릭·숫자키·Q) 추가 칸의 물건이 모두 바닥에 떨어집니다.</red>
-            - 일반 인벤토리가 가득 차면 주운 물건과 Shift 이동한 물건이 추가 칸으로 들어갑니다.
-            - 추가 칸의 물건도 제작 재료, 총기 탄약, 도감의 보유 수량에 포함됩니다.
-
-            ■ 일괄 벌목
-            - 웅크리지 않은 상태에서 도끼로 원목을 부수면 연결된 나무 전체가 한 번에 벌목되며, 잎도 함께 사라집니다.
-            - 한 번에 최대 150블록까지만 벌목되며, 나무가 그보다 크면 일괄 벌목이 발동하지 않습니다.
-            - 웅크린 상태로 부수면 해당 블록만 캐는 일반 채굴로 동작합니다.
-          
-            ■ 상점 이용 방법
-            - 직업 화면(J 키)의 [상점] 탭에서 아이템을 사고팔 수 있습니다.
-            - 목록에서 원하는 거래를 선택한 뒤 [판매] 버튼을 누르면 1회 교환됩니다.
-            - 인벤토리가 가득 차면 교환 결과물은 주변 바닥에 떨어집니다.
-        
-            ■ 상점 판매 품목 (에메랄드 획득)
-            - [상점] 탭에 표시된 수량을 지불하면 에메랄드 1개를 받습니다.
-            - 주민 거래 대비 -50% 효율이므로 주민 거래 효율이 훨씬 좋습니다.
-
-            ■ 주민·떠돌이 상인 거래
-            - 주민과 떠돌이 상인은 거래 횟수 제한이 없어 품절 없이 같은 거래를 계속할 수 있습니다.
-            - 거래를 반복해도 수요에 따른 가격 인상이 생기지 않습니다. 좀비 치료·마을의 영웅·평판에 따른 가격 변동은 그대로 적용됩니다.
-        
-            ■ 땅 구입과 보호
-            - 땅 구입 문서를 손에 들고 우클릭하면 서 있는 청크 1칸(16X16)이 본인 소유가 되고 문서 1개가 소모됩니다.
-            - 이미 주인이 있는 청크에서는 문서가 소모되지 않고 안내 메시지만 표시됩니다.
-            - 다른 플레이어의 땅과 앞·뒤·양옆으로 바로 맞닿은 청크는 구매할 수 없습니다. 본인 땅과 맞닿거나 대각선으로 맞닿은 청크는 구매할 수 있습니다.
-            - 상자·통·셜커 상자 등 아이템 보관 블록이 있는 청크는 구매할 수 없습니다. (공용 상자 사유화 방지)
-            - 제작대·모루·숫돌 같은 작업대 블록이나 울타리(울타리 문 포함)가 있는 청크도 구매할 수 없습니다. (공용 시설 사유화 방지)
-            - 내 청크에서는 다른 플레이어의 블록 파괴·설치, 상자·문 등 블록 사용, 아이템 줍기, 액자·거치대·동물 상호작용이 차단됩니다.
-            - 다른 플레이어의 통행과 몬스터와의 전투는 막지 않습니다.
-            - 보호 청크 근처에서는 TNT·엔드 수정 등 폭발물 설치가 막히고, 폭발이 발생해도 취소됩니다.
-
-            ■ 비트코인 계좌
-            - 인벤토리에 보유한 비트코인은 주식 화면의 입출금 메뉴에서 계좌로 입금할 수 있습니다.
-            - 입금과 출금은 10개 단위로만 가능하며, 한 번에 최대 1,000개까지 처리할 수 있습니다.
-            - 비트코인을 입금하면 인벤토리에서 해당 수량이 차감되고 주식 계좌 잔액이 증가합니다.
-            - 비트코인을 출금하면 주식 계좌에서 금액이 차감되고 인벤토리로 비트코인이 지급됩니다.
-            - 출금 시 출금 금액의 0.2%가 세금으로 추가 차감됩니다.
-            - 출금한 비트코인이 인벤토리에 모두 들어가지 않으면 남은 수량은 플레이어 주변 바닥에 떨어집니다.
-
-            예시)
-            비트코인 100개 출금
-            계좌 차감 금액: 100.2개
-            실제 지급 금액: 100개
-
-            ■ 주식 시세와 구매 예약
-            - 주식 가격은 약 1분마다 갱신됩니다.
-            - 가격이 갱신되기 전까지는 주식 표에 표시된 동일한 가격이 유지됩니다.
-            - 구매 버튼을 누르면 즉시 체결되지 않고 다음 분 시작가로 구매가 예약됩니다.
-            - 다음 분에 거래 기록이 없는 종목은 예약할 때 확인한 가격을 진입가로 사용합니다.
-            - 예약과 동시에 투자금이 계좌에서 먼저 차감되며, 다음 분이 끝난 뒤 진입 가격과 해당 분의 가격 변동을 확인하여 결과가 안내됩니다.
-            - <red>구매 예약은 한 번 접수되면 직접 취소할 수 없습니다. 예약 전에 종목과 투자금을 신중하게 확인해 주세요.</red>            
-            - 시세 확인이 지연되면 투자금과 예약은 안전하게 유지되며, 확인이 끝날 때까지 같은 종목을 추가 구매하거나 판매할 수 없습니다.
-            - 예약이 취소되면 차감했던 투자금은 계좌로 자동 반환됩니다.
-            - 주식 화면을 닫거나 로그아웃해도 구매 예약 처리와 보유 포지션의 강제청산 감시는 계속됩니다.
-
-            예시)
-            14:30에 비트코인 100개로 구매 예약
-            14:31 시작가로 포지션 진입 (거래 기록이 없으면 예약 확인가 사용)
-            14:31의 가격 변동과 강제청산 여부를 확인한 뒤 예약 결과 안내
-
-            - 구매 예약과 판매는 비트코인 1개 단위로 입력할 수 있으며, 한 번에 최대 1,000개까지 가능합니다.
-            - 한 종목에는 하나의 포지션만 보유할 수 있습니다.
-            - 같은 종목을 추가 구매하려면 기존 포지션과 롱·숏 방향 및 배율이 모두 같아야 합니다.
-            - 방향이나 배율을 바꾸려면 기존 포지션을 먼저 모두 판매해야 합니다.
-
-            ■ 롱·숏과 배율
-            - 롱은 종목 가격이 오르면 수익을 얻고, 가격이 내리면 손실을 봅니다.
-            - 숏은 종목 가격이 내리면 수익을 얻고, 가격이 오르면 손실을 봅니다.
-            - 배율은 기본(X1), X2, X3, X5, X10, X15, X20 중에서 선택할 수 있습니다.
-            - 기본(X1)은 배율을 사용하지 않는 일반 포지션입니다.
-            - 선택한 배율만큼 수익률과 손실률이 함께 커집니다.
-
-            예시)
-            종목 가격이 5% 상승한 경우
-            롱 X2 수익률: +10%
-            숏 X2 수익률: -10%
-
-            <red>- 포지션 수익률이 -100% 이하가 되면 투자금 전액을 잃고 즉시 강제청산됩니다.
-            - 강제청산은 현재가뿐 아니라 확인 대상인 각 분의 저가와 고가까지 검사합니다.
-            - X20은 반대 방향으로 약 5%만 움직여도 강제청산될 수 있으므로 신중하게 선택해 주세요.
-            </red>
-
-            ■ 평가금액과 판매
-            - 포지션 평가금액은 투자원금에 롱·숏 방향과 선택한 배율의 수익률을 적용하여 계산합니다.
-            - 판매 입력 금액은 현재 평가금액이 아니라 해당 종목에 남아 있는 투자원금을 기준으로 합니다.
-
-            예시)
-            비트코인 100개를 투자한 종목에서
-            판매 금액으로 50개 입력
-            해당 포지션의 50%를 현재 가격으로 정산
-
-            - 수익 상태라면 입력한 투자원금보다 실제 판매 금액이 많을 수 있고, 손실 상태라면 더 적을 수 있습니다.
-            - 기본(X1) 판매 수수료는 판매 금액의 0.015%이며, 배율을 사용하면 수수료에도 같은 배율이 적용됩니다.
-            - 출금 세금 0.2%에는 포지션 배율이 적용되지 않습니다.
-            - 시세를 불러오거나 과거 가격을 확인하는 동안에는 안전한 정산을 위해 거래가 잠시 제한될 수 있습니다.
-            - 거래내역에서는 최근 거래 50건까지 확인할 수 있습니다.
-            """;
-
-    /** 오른쪽 칸: 모험 구조물, 랜덤 상자, 펫, 장비 강화, 전투 주의사항 */
-    private static final String USER_GUIDE_RIGHT = """
-            ■ 던전 및 탐험
-            신규 모험이 업데이트되었습니다. 
-            미궁, 일리저요새, 환영술사탑, 주술사오두막, 화염술사오두막을 찾아 상자 전리품을 찾으세요.
-            전리품 - 보상 열쇠 I~IV, 강화 조각, 강화 원석 보상이 추가 되었습니다.
-
-            ■ 랜덤 상자 이용 방법
-            - 랜덤 상자는 등급별로 같은 번호의 보상 열쇠가 필요합니다. (랜덤 상자 I = 보상 열쇠 I)
-            - 랜덤 상자를 한 번 열면 상자 1개와 해당 등급 보상 열쇠 1개가 소모됩니다.
-            - 상자와 열쇠는 상점에서 구매할 수 있으며, 열쇠는 모험 구조물 전리품으로도 얻을 수 있습니다.
-            - 랜덤 상자를 열면 아래 보상 중 하나만 표시된 확률에 따라 지급됩니다.
-            - 보상은 인벤토리로 바로 지급됩니다.
-            - 보상이 전부 들어갈 공간이 없으면 상자가 열리지 않으며 상자와 열쇠도 소모되지 않습니다. 인벤토리를 비운 뒤 다시 열어 주세요.
-
-            ■ 랜덤 상자 I 보상
-            직업 선택권 × 1 (5%)
-            불사의 토템 3개 (12%)
-            네더라이트 주괴 3개 (12%)
-            다이아몬드 검 × 1 (10%)
-            다이아몬드 투구 × 1 (8%)
-            다이아몬드 흉갑 × 1 (7%)
-            다이아몬드 레깅스 × 1 (7%)
-            다이아몬드 부츠 × 1 (8%)
-            황금 사과 12개 (8%)
-            다이아몬드 12개 (5%)
-            비트코인 20개 (3%)
-            비트코인 30개 (2%)
-            비트코인 50개 (1%)
-            직업 경험치 2배 쿠폰 × 1 (5%)
-            비트코인 획득 확률 2배 쿠폰 × 1 (4%)
-            직업 경험치 3배 쿠폰 × 1 (2%)
-            비트코인 획득 확률 3배 쿠폰 × 1 (1%)
-
-            ■ 랜덤 상자 II 보상
-            직업 선택권 × 1 (10%)
-            불사의 토템 5개 (8%)
-            네더라이트 주괴 10개 (8%)
-            다이아몬드 26개 (9%)
-            마법이 부여된 황금 사과 2개 (9%)
-            마법이 부여된 황금 사과 4개 (8%)
-            다이아몬드 검 × 1 (4.5%)
-            다이아몬드 투구 × 1 (4%)
-            다이아몬드 흉갑 × 1 (5%)
-            다이아몬드 레깅스 × 1 (5%)
-            다이아몬드 부츠 × 1 (4%)
-            일반 펫 상자 × 1 (1%)
-            비트코인 70개 (2%)
-            비트코인 100개 (1.5%)
-            비트코인 200개 (1%)
-            직업 경험치 2배 쿠폰 × 3 (6%)
-            비트코인 획득 확률 2배 쿠폰 × 3 (5%)
-            직업 경험치 3배 쿠폰 × 2 (5%)
-            비트코인 획득 확률 3배 쿠폰 × 2 (4%)
-
-            ■ 랜덤 상자 III 보상
-            직업 선택권 × 1 (20%)
-            불사의 토템 10개 (8%)
-            네더라이트 주괴 12개 (10%)
-            사망 시 아이템 보존권 × 2 (8%)
-            강화 조각 6개 (7%)
-            강화 원석 3개 (10%)
-            강화 파괴 방지권 × 2 (7%)
-            견습공의 축복 주문서(+3%) × 2 (8%)
-            숙련공의 축복 주문서(+5%) × 2 (6%)
-            다이아몬드 40개 (3%)
-            희귀 펫 상자 × 1 (4%)
-            비트코인 200개 (1.5%)
-            비트코인 300개 (1%)
-            비트코인 400개 (0.5%)
-            마법이 부여된 황금 사과 15개 (6%)
-
-            ■ 랜덤 상자 IV 보상
-            직업 선택권 × 1 (40%)
-            네더라이트 주괴 60개 (10%)
-            마법이 부여된 황금 사과 60개 (10%)
-            불사의 토템 20개 (6%)
-            강화 조각 10개 (4.5%)
-            강화 원석 8개 (5%)
-            강화 파괴 방지권 × 5 (5%)
-            사망 시 아이템 보존권 × 8 (4.5%)
-            장인의 축복 주문서(+7%) × 2 (6%)
-            명장의 축복 주문서(+10%) × 2 (4%)
-            전설 펫 상자 × 1 (2%)
-            비트코인 500개 (1.5%)
-            비트코인 700개 (1%)
-            비트코인 1000개 (0.5%)
-
-            ■ 펫 상자 확률
-            - 펫 상자를 손에 들고 우클릭하면 상자 1개가 소모되고 아래 확률에 따라 펫 한 마리가 소환됩니다.
-            일반 펫 상자: 디아루가, 커비, 꼬미 (각 33.3%)
-            희귀 펫 상자: 유니콘, 가젤 (각 50%)
-            전설 펫 상자: 페어린, 암흑드래곤, 스컬큰 레이븐, 슈퍼 꼬미 (각 25%)
-            - 등급별 펫 종류와 보유 수는 펫도감 탭에서 볼 수 있습니다.
-
-            ■ 펫 설명
-            - 소환된 펫은 즉시 길들여진 상태로 주인을 따라다니며, 주인과 10칸 이상 멀어지면 곁으로 순간이동합니다.
-            - 주인이 다른 차원으로 이동하면 펫도 함께 따라옵니다.
-            - 주인을 공격한 대상은 그 대상이 죽을 때까지 추격해 공격합니다. (대상이 사망하거나 주인에게서 20칸 이상 멀어지면 추격을 멈춥니다)
-            - 주인이 다른 플레이어의 펫에게 맞으면, 그 펫이 아니라 펫의 주인을 공격 대상으로 잡습니다. (펫끼리는 서로 공격하지 않습니다)
-            - 펫의 1레벨 능력치는 등급에 따라 다릅니다. 일반: 공격력 +1·체력 50 / 희귀: 공격력 +2·체력 150 / 전설: 공격력 +3·체력 250
-            - 펫은 1레벨로 시작하며, 몹을 한 대 때릴 때마다 경험치 1을 얻습니다. 필요 경험치는 직업 레벨과 같습니다.
-            - 레벨이 오를 때마다 공격력 +0.1, 체력 +10이 됩니다. 이름 옆에 레벨이 표시되고 이름 색은 등급을 나타냅니다.
-            - 펫은 몹이나 다른 플레이어에게 맞으면 체력이 줄어듭니다. 낙하·화염 같은 환경 피해는 받지 않으며 공허에 떨어져도 주인 곁으로 돌아옵니다.
-            <red>- 펫은 전투 중에는 회복하지 않습니다. 전투가 끝나고 5초 동안 맞지도 때리지도 않으면 5초마다 최대 체력의 1%씩 회복합니다. (0에서 가득 차기까지 약 8분 20초)</red>
-            - 펫 머리 위 이름 아래에 체력 막대와 현재/최대 체력이 표시됩니다. 32블록 안에서 보이며 벽에 가려지면 보이지 않습니다.
-            - 펫도감에서 종류를 선택하면 3D 모델, 보유 여부, 레벨, 경험치, 공격력, 현재/최대 체력을 볼 수 있습니다.
-            - 같은 종류를 여러 마리 보유했다면 레벨이 가장 높은 펫을 표시하며, 레벨도 같으면 경험치가 가장 높은 펫을 표시합니다.
-            <red>- 펫은 ON으로 꺼내 둔 동안에만 회복합니다. OFF로 넣거나 접속을 종료하면 그때의 체력이 그대로 유지되고, 다시 꺼낼 때 그 체력으로 나옵니다.</red>
-            - 펫이 죽으면 (레벨 × 10)초 뒤에 체력이 가득 찬 상태로 부활하며 OFF 상태로 남습니다.
-            - 펫에게는 먹이를 줄 수 없고 번식도 되지 않으며, 주인을 밀치지 않습니다.
-            - 주인이 접속을 종료하면 펫도 함께 사라지고, 다시 접속하면 곁에 다시 소환됩니다.
-            - 펫도감에서 종류를 선택하면 모델 아래 내 펫 관리에서 각 펫을 ON/OFF하거나 이름을 바꿀 수 있습니다. 이름은 16자까지이며, 비워서 저장하면 원래 이름으로 돌아갑니다.
-            - 펫 이름과 레벨은 펫 머리 위에 작게 표시됩니다.
-            - 주인이 죽으면 펫이 모두 회수되고 OFF가 됩니다.
-
-            ■ 네더라이트 장비 업그레이드 방법
-            - 네더라이트 장비는 잿빛 → 태양빛 → 영혼빛 → 서리빛 순서로 한 단계씩 업그레이드할 수 있습니다.
-            - 업그레이드 주괴는 조합창에서 만듭니다. 잿빛 주괴 = 네더라이트 주괴 1개 + 철 주괴 4개
-            - 태양빛 주괴 = 잿빛 주괴 1개 + 금 주괴 4개 / 영혼빛 주괴 = 태양빛 주괴 1개 + 에메랄드 4개
-            - 서리빛 주괴 = 영혼빛 주괴 1개 + 다이아몬드 4개
-            - 대장장이 작업대에 [네더라이트 강화 형판 + 이전 단계 장비 + 다음 단계 주괴]를 넣으면 장비가 업그레이드됩니다.
-            - 예시: 네더라이트 검 + 잿빛 주괴 → 잿빛 검, 잿빛 검 + 태양빛 주괴 → 태양빛 검
-            - 네더라이트 창도 같은 방식으로 잿빛 → 태양빛 → 영혼빛 → 서리빛 순서로 업그레이드할 수 있습니다.
-
-            ■ 네더라이트 업그레이드 방어구 특수 효과
-            - 잿빛 방어구: 팬텀이 먼저 공격하지 않습니다.
-            - 태양빛 방어구: 피글린이 먼저 공격하지 않습니다.
-            - 영혼빛 방어구: 엔더맨과 눈이 마주쳐도 적대하지 않습니다.
-            - 서리빛 방어구: 위 세 가지 효과를 모두 가집니다.
-            - 방어구는 한 부위만 착용해도 효과가 적용되며, 먼저 공격하면 해당 몬스터는 반격합니다.
-            - 곡괭이·괭이·검에도 등급별 광물·작물·전리품 추가 드롭 효과가 있습니다. 
-            - 자세한 내용은 해당 아이템에 SHIFT 키를 눌러 확인하세요.
-
-            ■ 장비 등급 (S~F)
-            - 내구도가 있는 모든 장비에는 S·A·B·C·D·E·F 일곱 등급 중 하나가 같은 확률로 붙습니다.
-            - 등급별 확률: S 1/7(약 14.29%) / A 1/7(약 14.29%) / B 1/7(약 14.29%) / C 1/7(약 14.29%)
-            - D 1/7(약 14.29%) / E 1/7(약 14.29%) / F 1/7(약 14.29%)
-            - 등급은 제작·상자·상점·랜덤 상자 등 어떤 경로로 얻든 인벤토리에 들어온 순간 정해지며, 한 번 정해지면 바뀌지 않습니다.
-            - 등급은 아이템 이름 바로 아래에 빨간 글씨로 표시됩니다. (예: B티어)
-            - 등급별 적용 수치(내구도 / 채굴 속도·공격력·방어도): S 100% / 100%, A 93% / 96%, B 86% / 92%, C 79% / 88%
-            - D 72% / 84%, E 65% / 80%, F 58% / 76%입니다.
-            - 굴착 도구(곡괭이·도끼·삽·괭이)는 내구도와 채굴 속도, 근접 무기는 내구도와 공격력, 방어구는 내구도와 방어도에 적용됩니다.
-            - 활·쇠뇌·방패·겉날개·낚싯대는 내구도에만 적용됩니다. 도끼는 굴착 도구로 보아 공격력은 바뀌지 않습니다.
-            - 강화(+1~+10강)로 오르는 수치는 등급의 영향을 받지 않습니다.
-
-            ■ 방어도
-            - 이 서버는 방어도 20을 넘는 구간도 피해 감소에 반영됩니다. 상위 네더라이트 방어구일수록 실제로 더 단단합니다.
-            - 같은 조건의 피해 감소율: 네더라이트 64% / 잿빛 73% / 태양빛 82% / 영혼빛 84% / 서리빛 86%
-
-            ■ 강화 제작대 이용 방법
-            - 강화 제작대는 조합창에서 다이아몬드 블록 8개로 테두리를 채우고 중앙에 네더라이트 블록 1개를 넣어 제작합니다.
-            - 강화 제작대에서는 서리빛 장비를 최대 +10강까지 강화할 수 있습니다.
-            - 강화 가능 장비는 서리빛 검·도끼·곡괭이·삽·괭이와 방어구 4종이며, 네더라이트 창은 강화할 수 없습니다.
-            - 장비 칸에 강화할 장비를 넣고 원석 칸에 강화 원석 1개를 넣으면 강화를 시도할 수 있습니다.
-            - 강화를 시도하면 성공·실패와 관계없이 강화 원석 1개가 소모됩니다.
-            - 강화 원석은 랜덤 상자와 모험 구조물에서 얻거나, 상점에서 강화 조각 3개로 교환할 수 있습니다.
-            - 검·도끼·곡괭이·삽·괭이는 강화 단계마다 공격력이 오르고, 굴착 도구는 채굴 효율도 0.1씩 증가합니다.
-            - 10강까지 올렸을 때 공격력은 검과 도끼가 15, 곡괭이와 삽이 12, 괭이가 11 증가합니다.
-            - 방어구는 부위마다 최대 체력이 1(하트 반 칸)씩 증가하며 방어도는 오르지 않습니다.
-            - 성공률은 +1강 시도 90%에서 시작해 단계마다 10%씩 감소하며, +9강 시도는 10%, +10강 시도는 5%입니다.
-            - 축복 주문서를 확률권 칸에 넣으면 표시된 수치만큼 성공률이 올라가며, 강화 시도 시 1개가 소모됩니다.
-            - 강화에 실패하면 현재 강화 단계가 1단계 내려갑니다.
-            <red>- +1강 시도부터 장비 파괴 확률이 있으며, +1강 1%에서 시작해 +8강 15%, +9강 25%, +10강 시도는 30%입니다.
-            - 강화 파괴 방지권을 방지권 칸에 넣으면 파괴 판정이 발생했을 때 방지권 1개를 소모하고 장비 파괴를 한 번 막습니다.</red>
-
-            ■ 총기 작업대 제작 및 이용 방법
-            - 총기 작업대는 조합대에서 원목 계열 3개, 철 주괴 4개, 철 블록 1개로 제작합니다.
-            - 3×3 배치: 위쪽 줄 [원목 / 원목 / 원목], 가운데 줄 [철 주괴 / 철 블록 / 철 주괴], 아래쪽 줄 [철 주괴 / 빈칸 / 철 주괴]
-            - 총기 작업대를 설치하고 우클릭한 뒤, 위쪽에서 [총기]·[부착물]·[탄약] 중 원하는 탭을 선택합니다.
-            - 왼쪽에서 세부 분류를 고르고 가운데 제작 목록에서 만들 물건을 선택하면, 오른쪽에 필요한 재료와 보유 수량이 표시됩니다.
-            - 필요한 재료를 인벤토리에 보유한 상태로 오른쪽 아래의 [제작] 버튼을 누르면 재료가 자동으로 소모되고 완성품이 지급됩니다.
-            - 인벤토리가 가득 찬 경우 완성품은 플레이어 주변 바닥에 남습니다.
-            - 총기별 수치, 호환되는 탄약·부착물, 제작 재료는 [총기 도감]에서 볼 수 있습니다. 직업 화면(J 키)의 [총기 도감] 탭과 총기 작업대 맨 끝의 [총기 도감] 탭은 같은 화면입니다.
-            - 총기·부착물·탄약의 이름 색은 성능 등급(S~F)을 나타냅니다.
-            - 탄 퍼짐은 자세와 움직임에 따라 달라집니다. 정확한 순서는 조준 → 엎드림 → 웅크림 → 정지 → 이동 → 질주 직후 → 비행입니다.
-            <red>- 질주 중에는 발사되지 않으며, 질주를 멈춘 뒤 1초 안에 쏘면 '질주 직후'가 적용되어 크게 퍼집니다.
-            - 겉날개 활공이나 비행 중에 조준 없이 쏘면 가장 크게 퍼집니다. 조준을 끝까지 하면 조준 값이 적용됩니다.</red>
-            - 반동은 엎드리면 줄고 조준하면 조금 줄어듭니다. 서 있든 움직이든 반동은 같습니다.
-            - 탄약 수와 발사 모드는 화면 오른쪽 위에 표시됩니다.
-            - 배율 조준경(부착형·일체형)이 달린 총은 우클릭을 한 번 누르면 조준이 유지되고, 다시 누르면 풀립니다. 레드닷·홀로그래픽과 기본 가늠자는 누르고 있는 동안만 조준합니다.
-            - 3-6x 가변 광학조준경과 Vudu 3-6x 조준경은 조준 중 마우스 휠로 3~6배를 조정합니다. 위로 굴리면 확대됩니다. 나머지 조준경은 배율이 고정입니다.
-            - 총에 맞아 죽으면 어떤 총이었는지 함께 공지됩니다. (예: OOO이(가) 스켈레톤 돌격소총에 사살되었습니다)
-
-            <red>■ 무장한 몬스터</red>
-            <red>- 오버월드의 좀비 계열과 스켈레톤 계열은 생성될 때 방어구 풀세트와 무기를 각각 30% 확률로 갖춥니다.
-            - 방어구는 가죽·사슬·구리·철·금·다이아몬드·네더라이트 중 한 재질이고, 무기는 검·도끼·창 또는 총기입니다.
-            - 총을 든 몬스터는 탄약 아이템 없이 사격합니다. 멀리서도 맞을 수 있으니 주의하세요.</red>
-            - 몬스터도 탄창을 다 쓰면 재장전하며, 그동안은 쏘지 못합니다. 재장전 횟수에는 제한이 없고 탄창 크기는 부착물 없는 기본값입니다.
-            - 몬스터는 대상을 향해 몸을 돌린 뒤에만 쏩니다. 등 뒤로 돌아 들어가면 돌아설 때까지 사격이 끊깁니다.
-            - 피글린과 피글린 야수는 방어구 풀세트만 30% 확률로 갖춥니다. 무기는 원래대로이며 금 물물교환도 그대로 됩니다.
-            - 몬스터가 지급받은 장비는 떨어뜨리지 않습니다. 약탈 마법부여로도 얻을 수 없습니다.
-            - 오버월드 좀비·스켈레톤 계열과 피글린·피글린 야수 머리 위에 LV1~LV7이 표시됩니다.
-            - 지급받은 방어구와 무기가 좋을수록 레벨이 높습니다. 장비가 없으면 LV1, 네더라이트 풀세트와 S등급 총기면 LV7입니다.
-            - 레벨은 장비 수준을 보여 주는 표시이며 몬스터 능력치를 따로 올리지 않습니다. 벽 뒤에 있거나 32블록보다 멀면 보이지 않습니다.
-            - 레벨이 높을수록 경험치 구슬을 더 많이 떨어뜨립니다. LV1 1.0배에서 레벨마다 0.3배씩 늘어 LV7은 2.8배이며, 크리퍼도 같습니다.
-
-            ■ 강화된 엔드시티
-            기존 엔드시티와는 차원이 다른 컨텐츠입니다 (강화버전)
-            엔드시티에 갈때는 준비를 잘 하고 가세요.
-
-            ■ 크리퍼 폭발 주의
-            <red>- 크리퍼 머리 위에 LV1~LV7이 표시됩니다. 레벨은 크리퍼마다 무작위로 정해지며 높을수록 폭발이 강합니다.
-            - 폭발 피해와 지형 파괴 범위가 LV1 1.0배, LV2 1.3배, LV3 1.6배, LV4 1.9배, LV5 2.2배, LV6 2.5배, LV7 2.8배가 됩니다.
-            - 방어구 없이 높은 레벨의 근접 폭발을 맞으면 즉사할 수 있으니 주의하세요.</red>
-
-            <red>■ 레이드 및 위더 전투 주의사항</red>
-            <red>- 레이드가 진행 중인 지역에서는 플레이어 주변 80블록 이내의 철 골렘이 즉시 제거됩니다.
-            - 살아 있는 위더가 플레이어 주변 80블록 이내에 있는 경우에도 주변 80블록 이내의 철 골렘이 즉시 제거됩니다.
-            - 레이드 진행 중 겉날개로 활강하면 즉시 사망합니다.
-            - 살아 있는 위더가 주변 80블록 이내에 있는 상태에서 겉날개로 활강해도 즉시 사망합니다.
-            - 겉날개를 착용한 것만으로는 사망하지 않습니다. 실제로 겉날개 활강 상태가 되었을 때 적용됩니다.</red>
-
-            <red>■ 워든·위더 소환수</red>
-            <red>- 오버월드의 워든·위더가 플레이어를 노리면 주변 10블록 안에 좀비 5마리와 스켈레톤 5마리를 소환합니다.
-            - 처음 노릴 때 바로 소환하고, 이후 30초마다 죽은 수만큼만 다시 채웁니다.
-            - 소환된 몹도 무장한 몬스터와 같은 확률로 방어구와 무기·총을 갖춥니다. 보스가 죽어도 소환된 몹은 남습니다.
-            - 위더를 가둬 움직이지 못하게 하면 가장 가까운 플레이어 뒤로 순간이동합니다.</red>
-            """;
-
-    /** 왼쪽 칸과 오른쪽 칸의 제목 */
-    private static final Component LEFT_TITLE = Component.literal("직업 · 생활 · 경제");
-    private static final Component RIGHT_TITLE = Component.literal("모험 · 아이템 · 전투");
-
-    /** 두 칸 사이의 간격 */
+    private static final int TAB_GAP = 1;
     private static final int COLUMN_GAP = 8;
-    /** 칸 제목이 쓰는 높이 */
+    private static final int COLUMN_TITLE_Y = JobsTheme.TAB_HEIGHT + 4;
     private static final int TITLE_HEIGHT = 12;
+    private static final int CONTENT_Y = COLUMN_TITLE_Y + TITLE_HEIGHT;
 
+    private final JobsScreenState state;
     private final int columnWidth;
+    private final Map<UserGuideTab, GuideColumns> columns = new EnumMap<>(UserGuideTab.class);
+    private UserGuideTab cachedTab;
 
-    public UserGuideScrollComponent(int width, int height)
+    public UserGuideScrollComponent(JobsScreenState state, int width, int height)
     {
         super(0, 0, width, height);
-
+        this.state = state;
         this.columnWidth = (getWidth() - COLUMN_GAP) / 2;
-        int columnHeight = Math.max(1, getHeight() - TITLE_HEIGHT);
-        addColumn(0, columnHeight, USER_GUIDE_LEFT);
-        addColumn(this.columnWidth + COLUMN_GAP, columnHeight, USER_GUIDE_RIGHT);
+        this.addTabWidgets();
+        this.addGuideColumns();
+
+        this.cachedTab = state.getSelectedUserGuideTab();
+        this.updateColumnVisibility();
+    }
+
+    /** 화면 너비를 남김없이 나누어 모든 안내 탭을 한 줄에 배치한다. */
+    private void addTabWidgets()
+    {
+        UserGuideTab[] tabs = UserGuideTab.values();
+        int totalGap = TAB_GAP * (tabs.length - 1);
+        int availableWidth = Math.max(1, getWidth() - totalGap);
+        int baseTabWidth = availableWidth / tabs.length;
+        int remainingWidth = availableWidth % tabs.length;
+        int tabX = 0;
+
+        for (int index = 0; index < tabs.length; index++)
+        {
+            int tabWidth = baseTabWidth;
+            if (index < remainingWidth)
+            {
+                tabWidth++;
+            }
+
+            UserGuideTab tab = tabs[index];
+            this.addWidget(new UserGuideTabWidget(this.state, tab, tabX, tabWidth));
+            tabX += tabWidth + TAB_GAP;
+        }
+    }
+
+    /** 모든 탭의 두 스크롤을 한 번만 만들고 표시 여부만 바꾸어 탭별 스크롤 위치를 보존한다. */
+    private void addGuideColumns()
+    {
+        int columnHeight = Math.max(1, getHeight() - CONTENT_Y);
+        for (UserGuideTab tab : UserGuideTab.values())
+        {
+            UserGuidePages.GuidePage page = UserGuidePages.get(tab);
+            GuideScrollWidget general = this.addColumn(0, columnHeight, page.general(), false);
+            GuideScrollWidget important = this.addColumn(
+                    this.columnWidth + COLUMN_GAP, columnHeight, page.important(), true);
+            this.columns.put(tab, new GuideColumns(general, important));
+        }
     }
 
     /** 안내 한 칸을 따로 굴러가는 스크롤 영역으로 만들어 붙인다. */
-    private void addColumn(int x, int height, String guide)
+    private GuideScrollWidget addColumn(int x, int height, String guide, boolean important)
     {
         GuideScrollWidget scrollWidget = new GuideScrollWidget(this.columnWidth, height);
         scrollWidget.setX(x);
-        scrollWidget.setY(TITLE_HEIGHT);
+        scrollWidget.setY(CONTENT_Y);
 
         int textWidth = Math.max(1, this.columnWidth - 10);
-        float textScale = 0.70f;
+        float textScale = 0.70F;
 
         /*
-         * 화면에 실제로 표시되는 너비는
-         * wrapWidth × textScale이므로 스케일만큼 역보정한다.
+         * 화면에 실제로 표시되는 너비는 wrapWidth × textScale이므로
+         * 스케일만큼 역보정한다.
          */
-        int wrapWidth = Math.max(
-                1,
-                (int) Math.ceil(textWidth / textScale)
+        int wrapWidth = Math.max(1, (int) Math.ceil(textWidth / textScale));
+        int textColor = important ? JobsTheme.ERROR : JobsTheme.TEXT;
+        ScaledMultiLineTextComponent guideText = new ScaledMultiLineTextComponent(
+                0,
+                0,
+                wrapWidth,
+                createGuideComponent(guide, important),
+                textColor,
+                textScale
         );
 
-        ScaledMultiLineTextComponent guideText =
-                new ScaledMultiLineTextComponent(
-                        0,
-                        0,
-                        wrapWidth,
-                        createGuideComponent(guide),
-                        JobsTheme.TEXT,
-                        textScale
-                );
-
-        EmptyComponent guideContainer =
-                new EmptyComponent(0, 0, textWidth, 0);
-
+        EmptyComponent guideContainer = new EmptyComponent(0, 0, textWidth, 0);
         guideContainer.addComponent(guideText);
         guideContainer.setHeight(guideText.getScaledHeight());
 
         scrollWidget.addComponent(guideContainer);
         this.addWidget(scrollWidget);
+        return scrollWidget;
+    }
+
+    private void updateColumnVisibility()
+    {
+        for (Map.Entry<UserGuideTab, GuideColumns> entry : this.columns.entrySet())
+        {
+            boolean selected = entry.getKey() == this.cachedTab;
+            GuideColumns guideColumns = entry.getValue();
+            guideColumns.general().visible = selected;
+            guideColumns.general().active = selected;
+            guideColumns.important().visible = selected;
+            guideColumns.important().active = selected;
+        }
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY,
                                    float partialTick, int parentWidth, int parentHeight)
     {
-        JobsTheme.text(guiGraphics, LEFT_TITLE, getTotalX(), getTotalY(),
+        if (this.cachedTab != this.state.getSelectedUserGuideTab())
+        {
+            this.cachedTab = this.state.getSelectedUserGuideTab();
+            this.updateColumnVisibility();
+        }
+
+        int totalX = getTotalX();
+        int totalY = getTotalY();
+        JobsTheme.text(guiGraphics, GENERAL_TITLE, totalX, totalY + COLUMN_TITLE_Y,
                 this.columnWidth, JobsTheme.CYAN);
-        JobsTheme.text(guiGraphics, RIGHT_TITLE, getTotalX() + this.columnWidth + COLUMN_GAP, getTotalY(),
-                this.columnWidth, JobsTheme.CYAN);
+        JobsTheme.text(guiGraphics, IMPORTANT_TITLE,
+                totalX + this.columnWidth + COLUMN_GAP, totalY + COLUMN_TITLE_Y,
+                this.columnWidth, JobsTheme.ERROR);
+
+        int dividerX = totalX + this.columnWidth + COLUMN_GAP / 2;
+        guiGraphics.fill(dividerX, totalY + COLUMN_TITLE_Y,
+                dividerX + 1, totalY + getHeight(), JobsTheme.DIVIDER);
     }
 
-    private static Component styleSections(String text) {
+    private static Component createGuideComponent(String page, boolean important)
+    {
+        String guide = page.strip();
+        if (important)
+        {
+            return Component.literal(guide).withStyle(ChatFormatting.RED);
+        }
+        return styleSections(guide);
+    }
+
+    private static Component styleSections(String text)
+    {
         MutableComponent result = Component.empty();
         String[] lines = text.split("\n", -1);
-        for (int i = 0; i < lines.length; i++) {
-            MutableComponent line = Component.literal(lines[i]);
-            if (lines[i].stripLeading().startsWith("■") || lines[i].stripLeading().startsWith("★")) {
+        for (int index = 0; index < lines.length; index++)
+        {
+            MutableComponent line = Component.literal(lines[index]);
+            String strippedLine = lines[index].stripLeading();
+            if (strippedLine.startsWith("■") || strippedLine.startsWith("★"))
+            {
                 // 축소된 한글은 굵게 표시하면 획이 겹쳐 보여 색상만으로 강조한다.
                 line.withStyle(ChatFormatting.AQUA);
             }
             result.append(line);
-            if (i < lines.length - 1) {
+            if (index < lines.length - 1)
+            {
                 result.append("\n");
             }
         }
         return result;
     }
 
-    private static Component createGuideComponent(String page)
+    private record GuideColumns(GuideScrollWidget general, GuideScrollWidget important)
     {
-        String guide = page.strip();
-        MutableComponent component = Component.empty();
-        int currentIndex = 0;
-
-        while (currentIndex < guide.length())
-        {
-            int redStart = guide.indexOf(RED_TEXT_START, currentIndex);
-            if (redStart < 0)
-            {
-                component.append(styleSections(guide.substring(currentIndex)));
-                break;
-            }
-
-            component.append(styleSections(guide.substring(currentIndex, redStart)));
-            int contentStart = redStart + RED_TEXT_START.length();
-            int redEnd = guide.indexOf(RED_TEXT_END, contentStart);
-            if (redEnd < 0)
-            {
-                component.append(
-                        Component.literal(guide.substring(contentStart))
-                                .withStyle(ChatFormatting.RED)
-                );
-                break;
-            }
-
-            component.append(
-                    Component.literal(guide.substring(contentStart, redEnd))
-                            .withStyle(ChatFormatting.RED)
-            );
-            currentIndex = redEnd + RED_TEXT_END.length();
-        }
-
-        return component;
     }
 
-    /**
-     * MultiLineTextComponent에 출력 배율을 적용하기 위한 컴포넌트.
-     *
-     * 매핑에 따라 PoseStack 메서드 이름이 달라질 수 있으므로
-     * push, pop, translate, scale 호출은 리플렉션으로 처리한다.
-     */
-    private static final class ScaledMultiLineTextComponent
-            extends MultiLineTextComponent
+    /** MultiLineTextComponent에 출력 배율을 적용하기 위한 컴포넌트. */
+    private static final class ScaledMultiLineTextComponent extends MultiLineTextComponent
     {
         private static final int BASE_LINE_HEIGHT = 9;
-
-        // 축소 배율(0.5)이 적용되므로 화면상 실제 행간은 절반이 된다.
         private static final int LINE_SPACING = 2;
 
         private final float scale;
 
-        public ScaledMultiLineTextComponent(
-                int x,
-                int y,
-                int maxWidth,
-                Component text,
-                int color,
-                float scale
-        )
+        public ScaledMultiLineTextComponent(int x, int y, int maxWidth, Component text, int color, float scale)
         {
             super(x, y, maxWidth, text, color);
             this.scale = scale <= 0.0F ? 1.0F : scale;
@@ -584,21 +211,13 @@ public class UserGuideScrollComponent extends EmptyComponent
         }
 
         @Override
-        public void extractRenderState(
-                GuiGraphicsExtractor graphics,
-                int mouseX,
-                int mouseY,
-                float delta,
-                int x,
-                int y
-        )
+        public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY,
+                                       float delta, int x, int y)
         {
             Object pose = graphics.pose();
-
-            boolean pushed =
-                    invokeNoArg(pose, "pushPose")
-                            || invokeNoArg(pose, "push")
-                            || invokeNoArg(pose, "pushMatrix");
+            boolean pushed = invokeNoArg(pose, "pushPose")
+                    || invokeNoArg(pose, "push")
+                    || invokeNoArg(pose, "pushMatrix");
 
             if (!pushed)
             {
@@ -608,7 +227,6 @@ public class UserGuideScrollComponent extends EmptyComponent
 
             float totalX = (float) getTotalX();
             float totalY = (float) getTotalY();
-
             if (!invoke2f(pose, "translate", totalX, totalY))
             {
                 invoke3f(pose, "translate", totalX, totalY, 0.0F);
@@ -616,13 +234,7 @@ public class UserGuideScrollComponent extends EmptyComponent
 
             if (!invoke2f(pose, "scale", this.scale, this.scale))
             {
-                invoke3f(
-                        pose,
-                        "scale",
-                        this.scale,
-                        this.scale,
-                        1.0F
-                );
+                invoke3f(pose, "scale", this.scale, this.scale, 1.0F);
             }
 
             for (int index = 0; index < getLines().size(); index++)
@@ -637,27 +249,17 @@ public class UserGuideScrollComponent extends EmptyComponent
                 );
             }
 
-            /*
-             * 위에서 성공한 push 방식과 같은 pop 방식만 호출해야 하지만,
-             * 기존 구현과의 호환성을 유지하기 위해 사용 가능한 메서드를 찾는다.
-             */
-            if (!invokeNoArg(pose, "popPose")
-                    && !invokeNoArg(pose, "pop"))
+            if (!invokeNoArg(pose, "popPose") && !invokeNoArg(pose, "pop"))
             {
                 invokeNoArg(pose, "popMatrix");
             }
         }
 
-        private static boolean invokeNoArg(
-                Object target,
-                String methodName
-        )
+        private static boolean invokeNoArg(Object target, String methodName)
         {
             try
             {
-                Method method =
-                        target.getClass().getMethod(methodName);
-
+                Method method = target.getClass().getMethod(methodName);
                 method.invoke(target);
                 return true;
             }
@@ -667,21 +269,11 @@ public class UserGuideScrollComponent extends EmptyComponent
             }
         }
 
-        private static boolean invoke2f(
-                Object target,
-                String methodName,
-                float first,
-                float second
-        )
+        private static boolean invoke2f(Object target, String methodName, float first, float second)
         {
             try
             {
-                Method method = target.getClass().getMethod(
-                        methodName,
-                        float.class,
-                        float.class
-                );
-
+                Method method = target.getClass().getMethod(methodName, float.class, float.class);
                 method.invoke(target, first, second);
                 return true;
             }
@@ -691,13 +283,8 @@ public class UserGuideScrollComponent extends EmptyComponent
             }
         }
 
-        private static boolean invoke3f(
-                Object target,
-                String methodName,
-                float first,
-                float second,
-                float third
-        )
+        private static boolean invoke3f(Object target, String methodName,
+                                        float first, float second, float third)
         {
             try
             {
@@ -707,7 +294,6 @@ public class UserGuideScrollComponent extends EmptyComponent
                         float.class,
                         float.class
                 );
-
                 method.invoke(target, first, second, third);
                 return true;
             }
