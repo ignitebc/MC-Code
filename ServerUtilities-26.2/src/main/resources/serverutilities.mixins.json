@@ -12,6 +12,7 @@
     "DeathChestProtectionMixin",
     "EquipmentTierTooltipMixin",
     "HungerExhaustionMixin",
+    "LodestonePlacementMixin",
     "MerchantTradeLimitMixin",
     "MonsterEquipmentMixin",
     "MonsterExperienceMixin",
