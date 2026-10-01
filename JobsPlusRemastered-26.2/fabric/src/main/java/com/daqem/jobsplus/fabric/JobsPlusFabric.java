@@ -5,6 +5,7 @@ import com.daqem.jobsplus.accessor.HyperMiningAccess;
 import com.daqem.jobsplus.command.arguments.EnumArgument;
 import com.daqem.jobsplus.command.arguments.JobArgument;
 import com.daqem.jobsplus.command.arguments.PowerupArgument;
+import com.daqem.jobsplus.fabric.networking.JobProtocolPayload;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.event.Event;
@@ -17,6 +18,7 @@ public class JobsPlusFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        JobProtocolPayload.register();
         JobsPlus.init();
 
         registerCommandArgumentTypes();

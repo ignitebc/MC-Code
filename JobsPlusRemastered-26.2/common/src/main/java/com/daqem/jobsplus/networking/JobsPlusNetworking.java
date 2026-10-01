@@ -30,9 +30,10 @@ public interface JobsPlusNetworking
         CustomPacketPayload.Type<ServerboundStockViewStatePacket> SERVERBOUND_STOCK_VIEW_STATE = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_stock_view_state"));
 
         CustomPacketPayload.Type<ClientboundUnlockItemRestrictionPacket> CLIENTBOUND_UNLOCK_ITEM_RESTRICTION = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_unlock_item_restriction"));
-        CustomPacketPayload.Type<ClientboundOpenJobsScreenPacket> CLIENTBOUND_OPEN_JOBS_SCREEN = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_open_jobs_screen"));
+        // Job.Serializer에 하이퍼 스킬 상태가 추가되어 구형 화면 패킷과 구분한다.
+        CustomPacketPayload.Type<ClientboundOpenJobsScreenPacket> CLIENTBOUND_OPEN_JOBS_SCREEN = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_open_jobs_screen_v2"));
         CustomPacketPayload.Type<ClientboundLevelUpJobPacket> CLIENTBOUND_LEVEL_UP_JOB = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_level_up_job"));
-        CustomPacketPayload.Type<ClientboundOpenPowerupsScreenPacket> CLIENTBOUND_OPEN_POWERUPS_SCREEN = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_open_powerups_screen"));
+        CustomPacketPayload.Type<ClientboundOpenPowerupsScreenPacket> CLIENTBOUND_OPEN_POWERUPS_SCREEN = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_open_powerups_screen_v2"));
         CustomPacketPayload.Type<ClientboundAlertPacket> CLIENTBOUND_ALERT = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_alert"));
 
         // 서버가 확정한 1분 시세 스냅샷 전달용
