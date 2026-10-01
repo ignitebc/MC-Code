@@ -73,32 +73,67 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     private static final int WIDTH = 420;
     private static final int HEIGHT = 236;
     private static final int BODY_Y = 32;
-    private static final int BODY_HEIGHT = HEIGHT - BODY_Y - 21;
     private static final int PANEL_HEADER = 18;
 
     private static final int TYPE_X = 8;
     private static final int TYPE_WIDTH = 104;
-    private static final int RECIPE_X = TYPE_X + TYPE_WIDTH + 4;
     private static final int RECIPE_WIDTH = 170;
-    private static final int DETAIL_X = RECIPE_X + RECIPE_WIDTH + 4;
-    private static final int DETAIL_WIDTH = WIDTH - 8 - DETAIL_X;
-    /** 도감 칸은 분류·제작 목록·재료 세 칸을 합친 자리를 쓴다. */
     private static final int GUIDE_X = TYPE_X;
-    private static final int GUIDE_WIDTH = WIDTH - GUIDE_X * 2;
 
     private static final int LIST_Y = BODY_Y + PANEL_HEADER + 4;
     private static final int ROW_STEP = SmithRowButton.HEIGHT + 1;
-    private static final int VISIBLE_ROWS = (BODY_Y + BODY_HEIGHT - 3 - LIST_Y) / ROW_STEP;
     private static final int GROUP_TAB_WIDTH = 64;
     private static final int INGREDIENT_ROW_HEIGHT = 24;
     private static final int INGREDIENT_ROW_STEP = INGREDIENT_ROW_HEIGHT + 1;
-    /** 재료 칸 아래의 제작 개수 줄. 그 아래에는 제작 버튼이 있다. */
-    private static final int COUNT_Y = BODY_Y + BODY_HEIGHT - SmithTheme.BUTTON_HEIGHT - 18;
-    /**
-     * 재료 목록이 한 번에 보여 주는 줄 수. 제작 개수 줄 위까지만 쓴다.
-     * 제작 가능 판정은 모든 재료를 보므로, 넘치는 재료는 감추지 않고 휠로 넘겨 볼 수 있게 한다.
-     */
-    private static final int VISIBLE_INGREDIENTS = (COUNT_Y - 3 - LIST_Y) / INGREDIENT_ROW_STEP;
+
+    /** 화면 크기에 맞춘 좌표를 그리기·클릭·스크롤에서 함께 사용한다. */
+    private record SmithLayout(int width, int height) {
+        static SmithLayout forScreen(int screenWidth, int screenHeight) {
+            int width = Math.max(1, Math.min(WIDTH, screenWidth - 16));
+            int height = Math.max(1, Math.min(HEIGHT, screenHeight - 16));
+            return new SmithLayout(width, height);
+        }
+
+        int bodyHeight() {
+            return this.height - BODY_Y - 21;
+        }
+
+        int typeWidth() {
+            return (this.width - 24) * TYPE_WIDTH / (WIDTH - 24);
+        }
+
+        int recipeX() {
+            return TYPE_X + typeWidth() + 4;
+        }
+
+        int recipeWidth() {
+            return (this.width - 24) * RECIPE_WIDTH / (WIDTH - 24);
+        }
+
+        int detailX() {
+            return recipeX() + recipeWidth() + 4;
+        }
+
+        int detailWidth() {
+            return this.width - 8 - detailX();
+        }
+
+        int guideWidth() {
+            return this.width - GUIDE_X * 2;
+        }
+
+        int visibleRows() {
+            return Math.max(1, (BODY_Y + bodyHeight() - 3 - LIST_Y) / ROW_STEP);
+        }
+
+        int countY() {
+            return BODY_Y + bodyHeight() - SmithTheme.BUTTON_HEIGHT - 18;
+        }
+
+        int visibleIngredients() {
+            return Math.max(1, (countY() - 3 - LIST_Y) / INGREDIENT_ROW_STEP);
+        }
+    }
 
     /** 큰 분류. 선언 순서가 탭 순서다. */
     private enum Group {
@@ -154,6 +189,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     private int recipeScroll;
     private int ingredientScroll;
 
+    private SmithLayout layout = new SmithLayout(WIDTH, HEIGHT);
     private boolean showingGuide;
     /** 한 번 만든 도감 칸. 자리가 그대로면 다시 배치할 때도 같은 칸을 써서 고른 항목·스크롤·검색어를 지킨다. */
     private @Nullable GuiEventListener guidePanel;
@@ -246,9 +282,9 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
             this.selectedRecipe = list.isEmpty() ? null : loadRecipe(list.get(0));
             this.ingredientScroll = 0;
         }
-        this.typeScroll = clampScroll(this.typeScroll, types.size(), VISIBLE_ROWS);
-        this.recipeScroll = clampScroll(this.recipeScroll, list.size(), VISIBLE_ROWS);
-        this.ingredientScroll = clampScroll(this.ingredientScroll, ingredientCount(), VISIBLE_INGREDIENTS);
+        this.typeScroll = clampScroll(this.typeScroll, types.size(), this.layout.visibleRows());
+        this.recipeScroll = clampScroll(this.recipeScroll, list.size(), this.layout.visibleRows());
+        this.ingredientScroll = clampScroll(this.ingredientScroll, ingredientCount(), this.layout.visibleIngredients());
         countPlayerIngredients();
     }
 
@@ -332,13 +368,16 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
 
     @Override
     public void init() {
+        this.layout = SmithLayout.forScreen(this.width, this.height);
         super.init();
+        this.leftPos = (this.width - this.layout.width()) / 2;
+        this.topPos = (this.height - this.layout.height()) / 2;
         this.classifyRecipes();
         this.repairSelection();
         this.clearWidgets();
 
         this.addGroupTabs();
-        this.addRenderableWidget(new SmithTextButton(leftPos + WIDTH - 8 - SmithTheme.BUTTON_HEIGHT, topPos + 7,
+        this.addRenderableWidget(new SmithTextButton(leftPos + this.layout.width() - 8 - SmithTheme.BUTTON_HEIGHT, topPos + 7,
                 SmithTheme.BUTTON_HEIGHT, SmithTheme.BUTTON_HEIGHT, Component.literal("×"),
                 SmithTextButton.Style.CLOSE, b -> this.onClose()));
         if (this.showingGuide) {
@@ -348,8 +387,8 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
 
         this.addTypeRows();
         this.addRecipeRows();
-        SmithTextButton craft = new SmithTextButton(leftPos + DETAIL_X + 6,
-                topPos + BODY_Y + BODY_HEIGHT - SmithTheme.BUTTON_HEIGHT - 6, DETAIL_WIDTH - 12,
+        SmithTextButton craft = new SmithTextButton(leftPos + this.layout.detailX() + 6,
+                topPos + BODY_Y + this.layout.bodyHeight() - SmithTheme.BUTTON_HEIGHT - 6, this.layout.detailWidth() - 12,
                 SmithTheme.BUTTON_HEIGHT, Component.translatable("gui.tacz.gun_smith_table.craft"),
                 SmithTextButton.Style.PRIMARY, b -> this.craft());
         craft.active = this.canCraft();
@@ -363,9 +402,18 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     }
 
     private void addGroupTabs() {
+        int tabCount = this.groupTabs.size();
+        if (guidePanelFactory != null) {
+            tabCount++;
+        }
+        if (tabCount == 0) {
+            return;
+        }
+        int availableWidth = this.layout.width() - 8 - 8 - SmithTheme.BUTTON_HEIGHT - 6;
+        int tabWidth = Math.min(GROUP_TAB_WIDTH, (availableWidth - (tabCount - 1) * 2) / tabCount);
         int x = leftPos + 8;
         for (Group group : this.groupTabs.keySet()) {
-            this.addRenderableWidget(new SmithTabButton(x, topPos + 6, GROUP_TAB_WIDTH,
+            this.addRenderableWidget(new SmithTabButton(x, topPos + 6, tabWidth,
                     Component.translatable(group.nameKey), !this.showingGuide && group == this.selectedGroup, b -> {
                 // 도감을 보다가 원래 분류로 돌아오면 고르던 세부 분류와 제작법을 그대로 둔다.
                 if (group != this.selectedGroup) {
@@ -375,11 +423,11 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
                 this.showingGuide = false;
                 this.init();
             }));
-            x += GROUP_TAB_WIDTH + 2;
+            x += tabWidth + 2;
         }
 
         if (guidePanelFactory != null) {
-            this.addRenderableWidget(new SmithTabButton(x, topPos + 6, GROUP_TAB_WIDTH,
+            this.addRenderableWidget(new SmithTabButton(x, topPos + 6, tabWidth,
                     Component.translatable("gui.tacz.gun_smith_table.group.guide"), this.showingGuide, b -> {
                 this.showingGuide = true;
                 this.init();
@@ -392,7 +440,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         if (factory == null) {
             return;
         }
-        ScreenRectangle area = new ScreenRectangle(leftPos + GUIDE_X, topPos + BODY_Y, GUIDE_WIDTH, BODY_HEIGHT);
+        ScreenRectangle area = new ScreenRectangle(leftPos + GUIDE_X, topPos + BODY_Y, this.layout.guideWidth(), this.layout.bodyHeight());
         // 창 크기가 바뀌어 자리가 옮겨졌을 때만 새로 만든다. 만들기에 실패해도 자리를 기억해 같은 경고를 되풀이하지 않는다.
         if (!area.equals(this.guidePanelArea)) {
             this.guidePanel = createGuidePanel(factory, area);
@@ -415,11 +463,11 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
 
     private void addTypeRows() {
         List<Identifier> types = visibleTypes();
-        for (int row = 0; row < VISIBLE_ROWS && row + this.typeScroll < types.size(); row++) {
+        for (int row = 0; row < this.layout.visibleRows() && row + this.typeScroll < types.size(); row++) {
             Identifier type = types.get(row + this.typeScroll);
             TabConfig tab = this.tabs.get(type);
             this.addRenderableWidget(new SmithRowButton(leftPos + TYPE_X + 3, topPos + LIST_Y + row * ROW_STEP,
-                    TYPE_WIDTH - 9, tab.icon().get(), tab.getName(), type.equals(this.selectedType), false, b -> {
+                    this.layout.typeWidth() - 9, tab.icon().get(), tab.getName(), type.equals(this.selectedType), false, b -> {
                 this.selectedType = type;
                 this.selectedRecipe = null;
                 this.recipeScroll = 0;
@@ -430,14 +478,14 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
 
     private void addRecipeRows() {
         List<Identifier> list = visibleRecipes();
-        for (int row = 0; row < VISIBLE_ROWS && row + this.recipeScroll < list.size(); row++) {
+        for (int row = 0; row < this.layout.visibleRows() && row + this.recipeScroll < list.size(); row++) {
             GunSmithTableRecipe recipe = loadRecipe(list.get(row + this.recipeScroll));
             if (recipe == null) {
                 continue;
             }
             boolean selected = this.selectedRecipe != null && recipe.getId().equals(this.selectedRecipe.getId());
-            this.addRenderableWidget(new SmithRowButton(leftPos + RECIPE_X + 3, topPos + LIST_Y + row * ROW_STEP,
-                    RECIPE_WIDTH - 9, recipe.getOutput(), recipe.getOutput().getHoverName(), selected, true, b -> {
+            this.addRenderableWidget(new SmithRowButton(leftPos + this.layout.recipeX() + 3, topPos + LIST_Y + row * ROW_STEP,
+                    this.layout.recipeWidth() - 9, recipe.getOutput(), recipe.getOutput().getHoverName(), selected, true, b -> {
                 this.selectedRecipe = recipe;
                 this.ingredientScroll = 0;
                 this.init();
@@ -456,27 +504,38 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
             return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
         }
         int step = scrollY > 0 ? -1 : 1;
-        if (isOver(mouseX, mouseY, TYPE_X, TYPE_WIDTH)) {
-            this.typeScroll = clampScroll(this.typeScroll + step, visibleTypes().size(), VISIBLE_ROWS);
+        if (isOver(mouseX, mouseY, TYPE_X, this.layout.typeWidth())) {
+            this.typeScroll = clampScroll(this.typeScroll + step, visibleTypes().size(), this.layout.visibleRows());
             this.init();
             return true;
         }
-        if (isOver(mouseX, mouseY, RECIPE_X, RECIPE_WIDTH)) {
-            this.recipeScroll = clampScroll(this.recipeScroll + step, visibleRecipes().size(), VISIBLE_ROWS);
+        if (isOver(mouseX, mouseY, this.layout.recipeX(), this.layout.recipeWidth())) {
+            this.recipeScroll = clampScroll(this.recipeScroll + step, visibleRecipes().size(), this.layout.visibleRows());
             this.init();
             return true;
         }
-        if (isOver(mouseX, mouseY, DETAIL_X, DETAIL_WIDTH)) {
+        if (isOver(mouseX, mouseY, this.layout.detailX(), this.layout.detailWidth())) {
             // 재료 줄은 위젯이 아니라 그릴 때마다 스크롤 위치를 읽으므로 다시 배치하지 않는다.
-            this.ingredientScroll = clampScroll(this.ingredientScroll + step, ingredientCount(), VISIBLE_INGREDIENTS);
+            this.ingredientScroll = clampScroll(this.ingredientScroll + step, ingredientCount(), this.layout.visibleIngredients());
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
+    @Override
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int leftPos, int topPos) {
+        if (mouseX < leftPos || mouseY < topPos) {
+            return true;
+        }
+        if (mouseX >= leftPos + this.layout.width() || mouseY >= topPos + this.layout.height()) {
+            return true;
+        }
+        return false;
+    }
+
     private boolean isOver(double mouseX, double mouseY, int panelX, int panelWidth) {
         return mouseX >= leftPos + panelX && mouseX < leftPos + panelX + panelWidth
-                && mouseY >= topPos + BODY_Y && mouseY < topPos + BODY_Y + BODY_HEIGHT;
+                && mouseY >= topPos + BODY_Y && mouseY < topPos + BODY_Y + this.layout.bodyHeight();
     }
 
     /**
@@ -514,23 +573,23 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         super.extractBackground(gui, mouseX, mouseY, partialTick);
         int x = leftPos;
         int y = topPos;
-        SmithTheme.texture(gui, SmithTheme.Skin.PANEL, x, y, WIDTH, HEIGHT);
-        SmithTheme.texture(gui, SmithTheme.Skin.HEADER, x + 2, y + 2, WIDTH - 4, 25);
-        gui.fill(x + 8, y + 27, x + WIDTH - 8, y + 28, SmithTheme.DIVIDER);
+        SmithTheme.texture(gui, SmithTheme.Skin.PANEL, x, y, this.layout.width(), this.layout.height());
+        SmithTheme.texture(gui, SmithTheme.Skin.HEADER, x + 2, y + 2, this.layout.width() - 4, 25);
+        gui.fill(x + 8, y + 27, x + this.layout.width() - 8, y + 28, SmithTheme.DIVIDER);
 
         if (this.showingGuide) {
-            drawPanel(gui, GUIDE_X, GUIDE_WIDTH);
+            drawPanel(gui, GUIDE_X, this.layout.guideWidth());
         } else {
-            drawPanel(gui, TYPE_X, TYPE_WIDTH);
-            drawPanel(gui, RECIPE_X, RECIPE_WIDTH);
-            drawPanel(gui, DETAIL_X, DETAIL_WIDTH);
+            drawPanel(gui, TYPE_X, this.layout.typeWidth());
+            drawPanel(gui, this.layout.recipeX(), this.layout.recipeWidth());
+            drawPanel(gui, this.layout.detailX(), this.layout.detailWidth());
         }
 
-        gui.fill(x + 8, y + HEIGHT - 20, x + WIDTH - 8, y + HEIGHT - 19, SmithTheme.DIVIDER);
+        gui.fill(x + 8, y + this.layout.height() - 20, x + this.layout.width() - 8, y + this.layout.height() - 19, SmithTheme.DIVIDER);
     }
 
     private void drawPanel(GuiGraphicsExtractor gui, int panelX, int panelWidth) {
-        SmithTheme.texture(gui, SmithTheme.Skin.PANEL, leftPos + panelX, topPos + BODY_Y, panelWidth, BODY_HEIGHT);
+        SmithTheme.texture(gui, SmithTheme.Skin.PANEL, leftPos + panelX, topPos + BODY_Y, panelWidth, this.layout.bodyHeight());
         SmithTheme.texture(gui, SmithTheme.Skin.HEADER, leftPos + panelX + 1, topPos + BODY_Y + 1,
                 panelWidth - 2, PANEL_HEADER);
     }
@@ -539,35 +598,35 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     public void extractRenderState(@NotNull GuiGraphicsExtractor gui, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(gui, mouseX, mouseY, partialTick);
         SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.close_hint"),
-                leftPos + 10, topPos + HEIGHT - 14, 80, SmithTheme.MUTED);
+                leftPos + 10, topPos + this.layout.height() - 14, 80, SmithTheme.MUTED);
         int headerY = topPos + BODY_Y + 6;
         if (this.showingGuide) {
             // 머리글 오른쪽 절반에는 도감 검색창이 들어간다.
             SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.group.guide"),
-                    leftPos + GUIDE_X + 8, headerY, GUIDE_WIDTH / 2, SmithTheme.CYAN);
+                    leftPos + GUIDE_X + 8, headerY, this.layout.guideWidth() / 2, SmithTheme.CYAN);
             return;
         }
 
         SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.category"),
-                leftPos + TYPE_X + 8, headerY, TYPE_WIDTH - 16, SmithTheme.CYAN);
+                leftPos + TYPE_X + 8, headerY, this.layout.typeWidth() - 16, SmithTheme.CYAN);
         TabConfig tab = this.selectedType == null ? null : this.tabs.get(this.selectedType);
         SmithTheme.text(gui, tab == null ? Component.translatable("gui.tacz.gun_smith_table.recipes") : tab.getName(),
-                leftPos + RECIPE_X + 8, headerY, RECIPE_WIDTH - 16, SmithTheme.CYAN);
+                leftPos + this.layout.recipeX() + 8, headerY, this.layout.recipeWidth() - 16, SmithTheme.CYAN);
         SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.ingredient"),
-                leftPos + DETAIL_X + 8, headerY, DETAIL_WIDTH - 16, SmithTheme.CYAN);
+                leftPos + this.layout.detailX() + 8, headerY, this.layout.detailWidth() - 16, SmithTheme.CYAN);
 
-        drawScrollBar(gui, TYPE_X + TYPE_WIDTH - 5, this.typeScroll, visibleTypes().size(), VISIBLE_ROWS, ROW_STEP);
-        drawScrollBar(gui, RECIPE_X + RECIPE_WIDTH - 5, this.recipeScroll, visibleRecipes().size(),
-                VISIBLE_ROWS, ROW_STEP);
+        drawScrollBar(gui, TYPE_X + this.layout.typeWidth() - 5, this.typeScroll, visibleTypes().size(), this.layout.visibleRows(), ROW_STEP);
+        drawScrollBar(gui, this.layout.recipeX() + this.layout.recipeWidth() - 5, this.recipeScroll, visibleRecipes().size(),
+                this.layout.visibleRows(), ROW_STEP);
 
         if (this.selectedRecipe == null) {
             SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.empty"),
-                    leftPos + RECIPE_X + 8, topPos + LIST_Y + 4, RECIPE_WIDTH - 16, SmithTheme.MUTED);
+                    leftPos + this.layout.recipeX() + 8, topPos + LIST_Y + 4, this.layout.recipeWidth() - 16, SmithTheme.MUTED);
         } else {
             drawIngredients(gui);
             SmithTheme.text(gui, Component.translatable("gui.tacz.gun_smith_table.count",
                             this.selectedRecipe.getOutput().getCount()),
-                    leftPos + DETAIL_X + 8, topPos + COUNT_Y, DETAIL_WIDTH - 16, SmithTheme.MUTED);
+                    leftPos + this.layout.detailX() + 8, topPos + this.layout.countY(), this.layout.detailWidth() - 16, SmithTheme.MUTED);
         }
 
         for (var widget : ((ScreenAccessor) this).tacz$getRenderables()) {
@@ -598,9 +657,9 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         List<GunSmithTableIngredient> inputs = this.selectedRecipe.getInputs();
         LocalPlayer player = Minecraft.getInstance().player;
         boolean creative = player != null && player.isCreative();
-        int x = leftPos + DETAIL_X + 6;
-        int width = DETAIL_WIDTH - 12;
-        for (int row = 0; row < VISIBLE_INGREDIENTS && row + this.ingredientScroll < inputs.size(); row++) {
+        int x = leftPos + this.layout.detailX() + 6;
+        int width = this.layout.detailWidth() - 12;
+        for (int row = 0; row < this.layout.visibleIngredients() && row + this.ingredientScroll < inputs.size(); row++) {
             int index = row + this.ingredientScroll;
             int y = topPos + LIST_Y + row * INGREDIENT_ROW_STEP;
             GunSmithTableIngredient input = inputs.get(index);
@@ -625,8 +684,8 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
             SmithTheme.text(gui, amount, x + 23, y + 13, width - 27,
                     creative || have >= need ? SmithTheme.CYAN : SmithTheme.ERROR);
         }
-        drawScrollBar(gui, DETAIL_X + DETAIL_WIDTH - 5, this.ingredientScroll, inputs.size(),
-                VISIBLE_INGREDIENTS, INGREDIENT_ROW_STEP);
+        drawScrollBar(gui, this.layout.detailX() + this.layout.detailWidth() - 5, this.ingredientScroll, inputs.size(),
+                this.layout.visibleIngredients(), INGREDIENT_ROW_STEP);
     }
 
     @Override
