@@ -110,7 +110,7 @@ public class PowerupsComponent extends JobsSpriteComponent
         } else {
             this.detailsComponent = null;
         }
-        this.hyperComponent = new HyperPowerupsComponent(10, CONTENT_Y + 2, getWidth() - 20, contentHeight - 4);
+        this.hyperComponent = new HyperPowerupsComponent(state, 10, CONTENT_Y + 2, getWidth() - 20, contentHeight - 4);
         this.addTopRowWidgets();
         this.cachedTab = state.getSelectedTab();
         this.applySelectedTab();
@@ -235,14 +235,24 @@ public class PowerupsComponent extends JobsSpriteComponent
         super.extractRenderState(graphics, mouseX, mouseY, partialTick, parentWidth, parentHeight);
         JobsTheme.texture(graphics, JobsTheme.Skin.HEADER, getTotalX() + 2, getTotalY() + 2,
                 getWidth() - 4, 25);
-        JobsTheme.text(graphics, this.state.getJob().getJobInstance().getName().copy()
-                        .append(Component.literal("  /  스킬  ·  Lv. " + this.state.getJob().getLevel())),
+        Component title = this.state.getJob().getJobInstance().getName().copy()
+                .append(Component.literal("  /  스킬  ·  Lv. " + this.state.getJob().getLevel()));
+        if (this.cachedTab == PowerupTab.HYPER)
+        {
+            title = JobsPlus.translatable("hyper.title");
+        }
+        JobsTheme.text(graphics, title,
                 getTotalX() + 12, getTotalY() + 11, getWidth() - 48, JobsTheme.CYAN);
         graphics.fill(getTotalX() + 8, getTotalY() + 27, getTotalX() + getWidth() - 8,
                 getTotalY() + 28, JobsTheme.DIVIDER);
         JobsTheme.cutBox(graphics, getTotalX() + 8, getTotalY() + CONTENT_Y,
                 getWidth() - 16, getContentHeight(), JobsTheme.INSET, JobsTheme.BORDER);
-        JobsTheme.text(graphics, Component.literal("드래그 이동  ·  스킬 선택  ·  ESC 돌아가기"),
+        Component footer = Component.literal("드래그 이동  ·  스킬 선택  ·  ESC 돌아가기");
+        if (this.cachedTab == PowerupTab.HYPER)
+        {
+            footer = JobsPlus.translatable("hyper.footer");
+        }
+        JobsTheme.text(graphics, footer,
                 getTotalX() + 10, getTotalY() + getHeight() - 12, getWidth() - 100, JobsTheme.MUTED);
     }
 

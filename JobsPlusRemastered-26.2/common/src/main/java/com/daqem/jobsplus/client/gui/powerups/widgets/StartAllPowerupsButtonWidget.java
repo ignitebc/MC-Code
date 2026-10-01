@@ -4,6 +4,7 @@ import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreen;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreenState;
 import com.daqem.jobsplus.client.gui.powerups.PowerupsScreenState;
+import com.daqem.jobsplus.client.gui.powerups.tab.PowerupTab;
 import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupInstance;
 import com.daqem.jobsplus.networking.c2s.ServerboundStartAllPowerupsPacket;
@@ -44,6 +45,10 @@ public class StartAllPowerupsButtonWidget extends CustomButtonWidget
 
     private void openConfirmation()
     {
+        if (this.state.getSelectedTab() != PowerupTab.NORMAL)
+        {
+            return;
+        }
         Minecraft minecraft = Minecraft.getInstance();
         Screen skillScreen = minecraft.gui.screen();
         if (skillScreen == null)
@@ -90,6 +95,7 @@ public class StartAllPowerupsButtonWidget extends CustomButtonWidget
     @Override
     protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick)
     {
+        this.active = this.state.getSelectedTab() == PowerupTab.NORMAL;
         JobsTheme.button(graphics, getX(), getY(), getWidth(), getHeight(),
                 this.active, isHoveredOrFocused(), false, false);
         JobsTheme.label(graphics, BUTTON_MESSAGE, getX(), getY(), getWidth(), getHeight(), JobsTheme.TEXT);

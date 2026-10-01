@@ -6,6 +6,8 @@ import com.daqem.jobsplus.player.job.Job;
 import com.daqem.uilib.gui.AbstractScreen;
 import net.minecraft.client.gui.screens.Screen;
 
+import java.util.List;
+
 public class PowerupsScreen extends AbstractScreen
 {
 
@@ -44,9 +46,9 @@ public class PowerupsScreen extends AbstractScreen
         super.repositionElements();
     }
 
-    public void update(Job job, int coins)
+    public void update(List<Job> jobs, int coins)
     {
-        this.state.update(job, coins);
+        this.state.update(jobs, coins);
         if (this.powerupsComponent != null) this.powerupsComponent.refreshPowerups();
     }
 

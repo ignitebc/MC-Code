@@ -37,14 +37,15 @@ public class ClientboundOpenPowerupsScreenPacketHandler {
                 .orElse(null);
 
         if (job == null) return;
-        if (underlying instanceof PowerupsScreen powerupsScreen
-                && powerupsScreen.getState().getJob().getJobInstance().getLocation().equals(packet.getJobLocation())) {
-            powerupsScreen.update(job, packet.getCoins());
+        // 공통 하이퍼 화면에서는 다른 직업의 응답도 같은 화면에 반영한다.
+        // 일반 스킬 직업, 하이퍼 선택 슬롯, 현재 탭과 스크롤은 유지한다.
+        if (underlying instanceof PowerupsScreen powerupsScreen) {
+            powerupsScreen.update(packet.getJobs(), packet.getCoins());
             if (powerupsScreen.getPreviousScreen() instanceof JobsScreen parent) {
                 parent.getState().updateJobData(
-                        packet.getJobs(), packet.getCoins(), packet.getMaxJobs(), job);
+                        packet.getJobs(), packet.getCoins(), packet.getMaxJobs(), powerupsScreen.getState().getJob());
             }
-            if (current != powerupsScreen) {
+            if (current != powerupsScreen && openAlert != null) {
                 setScreenKeepingAlert(minecraft, powerupsScreen, openAlert);
             }
             return;
@@ -55,7 +56,7 @@ public class ClientboundOpenPowerupsScreenPacketHandler {
                 previousScreen);
 
         setScreenKeepingAlert(minecraft,
-                new PowerupsScreen(new PowerupsScreenState(job, packet.getCoins()), jobsScreen), openAlert);
+                new PowerupsScreen(new PowerupsScreenState(packet.getJobs(), job, packet.getCoins()), jobsScreen), openAlert);
     }
 
     /**
