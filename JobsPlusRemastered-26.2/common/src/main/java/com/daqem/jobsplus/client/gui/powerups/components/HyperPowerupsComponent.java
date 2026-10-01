@@ -33,12 +33,12 @@ public class HyperPowerupsComponent extends EmptyComponent
     private static final List<SlotPosition> SLOT_POSITIONS = List.of(
             new SlotPosition(HyperSkillRules.MINER, 44, 0),
             new SlotPosition(HyperSkillRules.DIGGER, 120, 0),
-            new SlotPosition(JobsPlus.getId("farmer"), 0, 56),
-            new SlotPosition(JobsPlus.getId("fisherman"), 164, 56),
-            new SlotPosition(JobsPlus.getId("hunter"), 0, 112),
-            new SlotPosition(JobsPlus.getId("smith"), 164, 112),
-            new SlotPosition(JobsPlus.getId("alchemist"), 44, 168),
-            new SlotPosition(JobsPlus.getId("adventurer"), 120, 168));
+            new SlotPosition(HyperSkillRules.FARMER, 0, 56),
+            new SlotPosition(HyperSkillRules.FISHERMAN, 164, 56),
+            new SlotPosition(HyperSkillRules.HUNTER, 0, 112),
+            new SlotPosition(HyperSkillRules.SMITH, 164, 112),
+            new SlotPosition(HyperSkillRules.ALCHEMIST, 44, 168),
+            new SlotPosition(HyperSkillRules.ADVENTURER, 120, 168));
 
     private final PowerupsScreenState state;
     private final EmptyComponent content;

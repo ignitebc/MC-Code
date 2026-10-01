@@ -45,6 +45,7 @@ public class HyperSkillSlotWidget extends CustomButtonWidget
         this.active = !this.state.isHyperRequestPending();
         Job job = this.state.getJob(this.jobLocation);
         boolean implemented = HyperSkillRules.supports(this.jobLocation);
+        boolean hasIcon = HyperSkillRules.hasIcon(this.jobLocation);
         boolean available = false;
         if (implemented && job != null && job.getLevel() >= HyperSkillRules.REQUIRED_JOB_LEVEL)
         {
@@ -71,7 +72,7 @@ public class HyperSkillSlotWidget extends CustomButtonWidget
 
         int iconX = getX() + (getWidth() - ICON_SIZE) / 2;
         int iconY = getY() + 3;
-        if (implemented)
+        if (hasIcon)
         {
             Identifier icon = JobsPlus.getId("textures/gui/hyper/" + this.jobLocation.getPath() + ".png");
             graphics.blit(RenderPipelines.GUI_TEXTURED, icon, iconX, iconY,
@@ -83,7 +84,7 @@ public class HyperSkillSlotWidget extends CustomButtonWidget
         }
         else
         {
-            // 여섯 예정 슬롯이 같은 X 모양을 공유한다.
+            // 이미지가 없는 예정 슬롯은 같은 X 모양을 공유한다.
             for (int offset = 4; offset < ICON_SIZE - 4; offset++)
             {
                 graphics.fill(iconX + offset, iconY + offset,
