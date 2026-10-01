@@ -9,6 +9,7 @@ import com.daqem.jobsplus.player.job.exp.ExpCollector;
 import com.daqem.jobsplus.player.job.powerup.JobPowerupManager;
 import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
+import com.daqem.jobsplus.player.job.hyper.HyperSkillState;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobManager;
 import com.mojang.serialization.Codec;
@@ -30,7 +31,18 @@ public class Job
     // 정책: 직업 최대 레벨은 200으로 고정한다. 이 상한을 넘는 레벨업·경험치 누적·코인 지급은 없다.
     public static final int MAX_JOB_LEVEL = 200;
 
-    public static final Codec<Job> CODEC = RecordCodecBuilder.create(instance -> instance.group(Identifier.CODEC.fieldOf("job_instance").forGetter(job -> job.getJobInstance().getLocation()), Codec.INT.fieldOf("level").forGetter(Job::getLevel), Codec.INT.fieldOf("experience").forGetter(Job::getExperience), Codec.DOUBLE.optionalFieldOf("experience_remainder", 0.0D).forGetter(Job::getExperienceRemainder), Codec.list(Powerup.CODEC).fieldOf("powerups").forGetter(job -> job.getPowerupManager().getAllPowerups())).apply(instance, (jobInstanceLocation, level, experience, experienceRemainder, powerups) -> new Job(null, jobInstanceLocation, level, experience, experienceRemainder, new ArrayList<>(powerups))));
+    public static final Codec<Job> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Identifier.CODEC.fieldOf("job_instance").forGetter(job -> job.getJobInstance().getLocation()),
+            Codec.INT.fieldOf("level").forGetter(Job::getLevel),
+            Codec.INT.fieldOf("experience").forGetter(Job::getExperience),
+            Codec.DOUBLE.optionalFieldOf("experience_remainder", 0.0D).forGetter(Job::getExperienceRemainder),
+            Codec.list(Powerup.CODEC).fieldOf("powerups").forGetter(job -> job.getPowerupManager().getAllPowerups()),
+            HyperSkillState.CODEC.optionalFieldOf("hyper_skill", HyperSkillState.EMPTY).forGetter(Job::getHyperSkill)
+    ).apply(instance, (jobInstanceLocation, level, experience, experienceRemainder, powerups, hyperSkill) -> {
+        Job job = new Job(null, jobInstanceLocation, level, experience, experienceRemainder, powerups);
+        job.setHyperSkill(hyperSkill);
+        return job;
+    }));
 
     private final JobInstance jobInstance;
     private final JobPowerupManager powerupManager;
@@ -38,6 +50,7 @@ public class Job
     private int level;
     private int experience;
     private double experienceRemainder;
+    private HyperSkillState hyperSkill = HyperSkillState.EMPTY;
     private final ExpCollector expCollector = new ExpCollector();
 
     public Job(JobsPlayer player, JobInstance jobInstance)
@@ -93,6 +106,16 @@ public class Job
     public JobPowerupManager getPowerupManager()
     {
         return powerupManager;
+    }
+
+    public HyperSkillState getHyperSkill()
+    {
+        return this.hyperSkill;
+    }
+
+    public void setHyperSkill(HyperSkillState hyperSkill)
+    {
+        this.hyperSkill = hyperSkill;
     }
 
     public int getLevel()
@@ -220,6 +243,9 @@ public class Job
         jobTag.putInt(Constants.LEVEL, getLevel());
         jobTag.putInt(Constants.EXPERIENCE, getExperience());
         jobTag.putDouble(Constants.EXPERIENCE_REMAINDER, getExperienceRemainder());
+        jobTag.putInt("hyper_level", this.hyperSkill.level());
+        jobTag.putBoolean("hyper_active", this.hyperSkill.active());
+        jobTag.putInt("hyper_revision", this.hyperSkill.revision());
 
         ListTag powerupsTag = new ListTag();
 
@@ -257,7 +283,12 @@ public class Job
                         }
                     });
                     double experienceRemainder = tag.getDouble(Constants.EXPERIENCE_REMAINDER).orElse(0.0D);
-                    job.set(new Job(player, Identifier.parse(jobLocation), level, exp, experienceRemainder, powerups));
+                    Job loadedJob = new Job(player, Identifier.parse(jobLocation), level, exp, experienceRemainder, powerups);
+                    loadedJob.setHyperSkill(new HyperSkillState(
+                            tag.getIntOr("hyper_level", 0),
+                            tag.getBooleanOr("hyper_active", true),
+                            tag.getIntOr("hyper_revision", 0)));
+                    job.set(loadedJob);
                 });
             });
         });
@@ -300,7 +331,10 @@ public class Job
                 PowerupState state = friendlyByteBuf.readEnum(PowerupState.class);
                 powerups.add(new Powerup(powerupLocation, state));
             }
-            return new Job(player, jobInstanceLocation, level, experience, experienceRemainder, powerups);
+            Job job = new Job(player, jobInstanceLocation, level, experience, experienceRemainder, powerups);
+            job.setHyperSkill(new HyperSkillState(
+                    friendlyByteBuf.readVarInt(), friendlyByteBuf.readBoolean(), friendlyByteBuf.readInt()));
+            return job;
         }
 
         public static void toNetwork(FriendlyByteBuf friendlyByteBuf, Job job)
@@ -315,6 +349,9 @@ public class Job
                 friendlyByteBuf.writeIdentifier(powerup.getPowerupLocation());
                 friendlyByteBuf.writeEnum(powerup.getState());
             }
+            friendlyByteBuf.writeVarInt(job.getHyperSkill().level());
+            friendlyByteBuf.writeBoolean(job.getHyperSkill().active());
+            friendlyByteBuf.writeInt(job.getHyperSkill().revision());
         }
 
         public static List<Job> fromNBT(JobsServerPlayer player, CompoundTag compoundTag)

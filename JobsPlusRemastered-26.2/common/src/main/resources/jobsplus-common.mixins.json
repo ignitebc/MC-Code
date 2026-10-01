@@ -9,6 +9,7 @@
   "mixins": [
     "CropBlockAccessor",
     "MixinServerPlayer",
+    "MixinHyperMining",
     "MixinLivingEntityDropMultiplier",
     "MixinMobSpawnReason"
   ],
