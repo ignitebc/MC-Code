@@ -22,7 +22,15 @@
     "PersonalSpawnMixin",
     "PlayerDeathItemProtectionMixin",
     "ServerPlayerDeathMixin",
-    "StarterKitMixin"
+    "StarterKitMixin",
+    "ToolBlockPlacementMixin",
+    "ToolBlockTrackingMixin",
+    "ToolFallingBlockMixin",
+    "ToolFishingExperienceMixin",
+    "ToolGrindstoneMixin",
+    "ToolMiningExperienceMixin",
+    "ToolRepairRecipeMixin",
+    "ToolSmithingMixin"
   ],
   "client": [
     "MonsterLevelLabelMixin",

@@ -1,5 +1,6 @@
 package com.mcserver.serverutilities.tier;
 
+import com.mcserver.serverutilities.level.ToolLevelRules;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
@@ -41,20 +42,27 @@ public final class EquipmentTierSummary {
      */
     public static List<Component> describe(ItemStack stack, EquipmentTier tier) {
         DataComponentMap defaults = stack.getItem().components();
-        double multiplier = tier.performanceMultiplier();
+        double multiplier = 1.0D;
+        double durabilityPercent = 100.0D;
+        double performancePercent = 100.0D;
+        if (tier != null) {
+            multiplier = tier.performanceMultiplier();
+            durabilityPercent = tier.durabilityPercent();
+            performancePercent = tier.performancePercent();
+        }
         boolean diggingTool = EquipmentTierRules.isDiggingTool(stack);
         List<Component> lines = new ArrayList<>();
 
         Integer baseMaxDamage = defaults.get(DataComponents.MAX_DAMAGE);
         if (baseMaxDamage != null && baseMaxDamage > 0) {
-            lines.add(line("내구도", baseMaxDamage, tier.scaleDurability(baseMaxDamage),
-                    tier.durabilityPercent()));
+            lines.add(line("내구도", baseMaxDamage, stack.getMaxDamage(),
+                    durabilityPercent * ToolLevelRules.durabilityMultiplier(stack)));
         }
 
         if (EquipmentTierRules.isHumanoidArmor(stack)) {
             double baseArmor = baseAmount(defaults, Attributes.ARMOR);
             if (baseArmor > 0.0D) {
-                lines.add(line("방어", baseArmor, baseArmor * multiplier, tier.performancePercent()));
+                lines.add(line("방어", baseArmor, baseArmor * multiplier, performancePercent));
             }
         }
 
@@ -63,14 +71,15 @@ public final class EquipmentTierSummary {
             if (baseAttack > 0.0D) {
                 // 바닐라 툴팁의 공격 피해는 플레이어 기본 공격력을 더한 값이다. 등급도 그 값에 걸린다.
                 double total = baseAttack + EquipmentTierRules.PLAYER_BASE_ATTACK_DAMAGE;
-                lines.add(line("공격 피해", total, total * multiplier, tier.performancePercent()));
+                lines.add(line("공격 피해", total, total * multiplier, performancePercent));
             }
         }
 
         if (diggingTool) {
             double baseSpeed = baseMiningSpeed(defaults);
             if (baseSpeed > 0.0D) {
-                lines.add(line("채굴 속도", baseSpeed, baseSpeed * multiplier, tier.performancePercent()));
+                lines.add(line("채굴 속도", baseSpeed, baseMiningSpeed(stack.getComponents()),
+                        performancePercent * ToolLevelRules.miningSpeedMultiplier(stack)));
             }
         }
 
@@ -82,10 +91,12 @@ public final class EquipmentTierSummary {
      *
      * @param percent 기본값에 곱한 백분율. 실제 값에서 역산하면 반올림 때문에 기준표와 어긋난다.
      */
-    private static Component line(String label, double base, double scaled, int percent) {
+    private static Component line(String label, double base, double scaled, double percent) {
         String text = " " + label + " " + format(base);
-        if (percent != 100) {
-            text += " → " + format(scaled) + " (" + (percent - 100) + "%)";
+        if (percent != 100.0D || base != scaled) {
+            String change = format(percent - 100.0D);
+            if (percent > 100.0D) change = "+" + change;
+            text += " → " + format(scaled) + " (" + change + "%)";
         }
         return Component.literal(text).withStyle(ChatFormatting.GRAY);
     }

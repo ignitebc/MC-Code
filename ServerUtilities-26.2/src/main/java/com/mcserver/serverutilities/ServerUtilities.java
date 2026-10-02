@@ -8,6 +8,7 @@ import com.mcserver.serverutilities.monster.MonsterLevelSync;
 import com.mcserver.serverutilities.config.UtilitiesConfig;
 import com.mcserver.serverutilities.death.DeathChests;
 import com.mcserver.serverutilities.lodestone.LodestoneOwnership;
+import com.mcserver.serverutilities.level.ToolLevelRules;
 import com.mcserver.serverutilities.sleep.SleepRuleManager;
 import com.mcserver.serverutilities.spawn.SpawnScatterRules;
 import com.mcserver.serverutilities.starter.StarterKitRules;
@@ -73,6 +74,7 @@ public final class ServerUtilities implements ModInitializer {
             for (var player : server.getPlayerList().getPlayers()) {
                 CombatRules.tick(player);
                 EquipmentTierRules.tick(player);
+                ToolLevelRules.tick(player);
                 SpawnScatterRules.tick(player);
             }
             BossMinionRules.tick(server);

@@ -1,6 +1,7 @@
 package com.mcserver.serverutilities.tier;
 
 import com.mcserver.serverutilities.ServerUtilities;
+import com.mcserver.serverutilities.level.ToolLevelRules;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -152,7 +153,21 @@ public final class EquipmentTierRules {
         applyDurability(stack, defaults, tier);
         applyAttributes(stack, defaults, tier.performanceMultiplier(), diggingTool);
         if (diggingTool) {
-            applyMiningSpeed(stack, defaults, tier.performanceMultiplier());
+            applyMiningSpeed(stack, defaults,
+                    tier.performanceMultiplier() * ToolLevelRules.miningSpeedMultiplier(stack));
+        }
+    }
+
+    /** LV 변경 시 내구도와 채굴 속도만 다시 계산한다. 공격/방어 수정자는 그대로 둔다. */
+    public static void refreshToolStats(ItemStack stack) {
+        if (!ToolLevelRules.isLevelable(stack)) return;
+        DataComponentMap defaults = stack.getItem().components();
+        EquipmentTier tier = readTier(stack);
+        applyDurability(stack, defaults, tier);
+        if (isDiggingTool(stack)) {
+            double multiplier = ToolLevelRules.miningSpeedMultiplier(stack);
+            if (tier != null) multiplier *= tier.performanceMultiplier();
+            applyMiningSpeed(stack, defaults, multiplier);
         }
     }
 
@@ -160,8 +175,22 @@ public final class EquipmentTierRules {
         Integer baseMaxDamage = defaults.get(DataComponents.MAX_DAMAGE);
         if (baseMaxDamage == null || baseMaxDamage <= 0) return;
 
-        int scaledMaxDamage = tier.scaleDurability(baseMaxDamage);
+        int tierMaxDamage = baseMaxDamage;
+        if (tier != null) tierMaxDamage = tier.scaleDurability(baseMaxDamage);
+        int scaledMaxDamage = tierMaxDamage;
+        if (ToolLevelRules.isLevelable(stack)) {
+            long leveledMaxDamage = Math.round(tierMaxDamage * ToolLevelRules.durabilityMultiplier(stack));
+            scaledMaxDamage = (int) Math.clamp(leveledMaxDamage, 1L, Integer.MAX_VALUE);
+        }
+        int oldMaxDamage = stack.getMaxDamage();
+        int oldDamage = stack.getDamageValue();
         stack.set(DataComponents.MAX_DAMAGE, scaledMaxDamage);
+        if (ToolLevelRules.isLevelable(stack) && oldMaxDamage > 0 && oldMaxDamage != scaledMaxDamage) {
+            // 남은 내구도 비율을 유지한다. 레벨업으로 무료 수리가 발생하지 않도록 올림한다.
+            int scaledDamage = (int) Math.ceil(oldDamage * (double) scaledMaxDamage / oldMaxDamage);
+            stack.setDamageValue(Math.min(scaledMaxDamage, scaledDamage));
+            return;
+        }
         if (stack.getDamageValue() > scaledMaxDamage) {
             stack.setDamageValue(scaledMaxDamage);
         }
