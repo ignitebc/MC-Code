@@ -43,6 +43,8 @@ python Build_File-26.2/collect_fabric_jars.py
 먼저 빌드되고, 이를 참조하는 Jobs+가 나중에 빌드되도록 스크립트의 `MODULES` 목록이 이미 정렬되어 있습니다.
 Jobs+의 펫관리 탭은 Advanced Netherite JAR을 컴파일 의존으로 쓰므로, Advanced Netherite의 펫 관련
 클래스를 바꿨다면 Jobs+도 함께 다시 빌드해야 합니다.
+업적의 설치 블록 판정·도구 EXP 추적은 Server Utilities JAR을 참조합니다.
+Jobs+만 빌드할 때도 먼저 ArcLib와 Server Utilities의 최신 JAR을 준비해야 합니다.
 
 | 순서 | 모듈 | 비고 |
 | --- | --- | --- |
@@ -51,12 +53,12 @@ Jobs+의 펫관리 탭은 Advanced Netherite JAR을 컴파일 의존으로 쓰�
 | 3 | ArcLib-26.2 | 라이브러리 (액션, 조건, 보상 타입 제공) |
 | 4 | ItemRestrictions-26.2 | |
 | 5 | AdvancedNetherite-26.2 | 데이터 생성 태스크 제외 후 빌드 |
-| 6 | JobsPlusRemastered-26.2 | 위 라이브러리와 Advanced Netherite에 의존 |
-| 7 | illagerinvasion-26.2.0-mc26.2-fabric | |
-| 8 | caramelChat-26.2 | |
-| 9 | FallingTree-minecraft-26.2 | 루트 buildJar 병합 산출물 수집 |
-| 10 | TACZ-Refabricated-26.2 | 루트 build 산출물 수집 |
-| 11 | ServerUtilities-26.2 | 서버 공통 규칙, 루트 build 및 회귀 검사 |
+| 6 | ServerUtilities-26.2 | 서버 공통 규칙, 도구 EXP·설치 블록 기록 |
+| 7 | JobsPlusRemastered-26.2 | 위 라이브러리, Advanced Netherite, Server Utilities에 의존 |
+| 8 | illagerinvasion-26.2.0-mc26.2-fabric | |
+| 9 | caramelChat-26.2 | |
+| 10 | FallingTree-minecraft-26.2 | 루트 buildJar 병합 산출물 수집 |
+| 11 | TACZ-Refabricated-26.2 | 루트 build 산출물 수집 |
 
 > [!WARNING]
 > ArcLib에 신규 조건이나 보상을 추가한 뒤 Jobs+만 빌드하면, 데이터팩이 참조하는 타입을 찾지 못해 로드에 실패합니다.
