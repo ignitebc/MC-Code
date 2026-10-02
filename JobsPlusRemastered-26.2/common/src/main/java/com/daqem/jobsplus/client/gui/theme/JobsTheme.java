@@ -112,8 +112,14 @@ public final class JobsTheme {
 
     public static void label(GuiGraphicsExtractor g, Component text, int x, int y,
                              int width, int height, int color) {
+        label(g, text, x, y, width, height, color, LABEL_SCALE);
+    }
+
+    /** 하위 탭처럼 상위 요소보다 작게 보여야 하는 글자는 최대 배율을 따로 받는다. */
+    public static void label(GuiGraphicsExtractor g, Component text, int x, int y,
+                             int width, int height, int color, float maxScale) {
         int textWidth = Minecraft.getInstance().font.width(text);
-        float scale = Math.min(LABEL_SCALE, Math.max(1, width - 6) / (float) Math.max(1, textWidth));
+        float scale = Math.min(maxScale, Math.max(1, width - 6) / (float) Math.max(1, textWidth));
         g.pose().pushMatrix();
         g.pose().translate(x + (width - textWidth * scale) / 2.0f,
                 y + (height - Minecraft.getInstance().font.lineHeight * scale) / 2.0f);

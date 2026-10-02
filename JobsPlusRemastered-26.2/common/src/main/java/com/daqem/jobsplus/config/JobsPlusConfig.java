@@ -20,6 +20,7 @@ public class JobsPlusConfig
     public static final IConfigEntry<Integer> coinsPerLevelUp;
 
     public static final IConfigEntry<String> metricsSeason;
+    public static final IConfigEntry<String> achievementSeason;
 
     public static final IConfigEntry<Boolean> isDebug;
 
@@ -56,6 +57,11 @@ public class JobsPlusConfig
         // 기본값은 현재 운영 시즌이다. 다음 시즌을 열 때 설정 파일이나 이 기본값을 새 시즌 이름으로 바꾼다.
         metricsSeason = config.defineString("season", "season3", 0, 32, "[A-Za-z0-9_-]*")
                 .withComments("메트릭 저장 폴더 이름(영문·숫자·_·-). logs/jobsplus-metrics/v2/<이름>에 기록되며 비우면 unspecified 폴더를 씁니다.");
+        config.pop();
+
+        config.push("achievements");
+        achievementSeason = config.defineString("season", "season3", 1, 32, "[A-Za-z0-9_-]+")
+                .withComments("업적 시즌 ID. 같은 ID는 진행·수령 기록을 유지하고, 새로운 ID는 별도 시즌으로 집계합니다. 이전 시즌 기록은 삭제하지 않습니다.");
         config.pop();
 
         config.push("debug");

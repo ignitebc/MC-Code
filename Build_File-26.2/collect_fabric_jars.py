@@ -18,12 +18,12 @@ MODULES = [
     ("ArcLib-26.2", "fabric", "arc"),
     ("ItemRestrictions-26.2", "fabric", "itemrestrictions"),
     ("AdvancedNetherite-26.2", "Fabric", "advancednetherite"),
+    ("ServerUtilities-26.2", None, "serverutilities"),
     ("JobsPlusRemastered-26.2", "fabric", "jobsplus"),
     ("illagerinvasion-26.2.0-mc26.2-fabric/26.2", "Fabric", "illagerinvasion"),
     ("caramelChat-26.2", "fabric", "caramelchat"),
     ("FallingTree-minecraft-26.2", None, "fallingtree"),
     ("TACZ-Refabricated-26.2", None, "tacz"),
-    ("ServerUtilities-26.2", None, "serverutilities"),
 ]
 
 ROOT_BUILD_TASK_OVERRIDES = {

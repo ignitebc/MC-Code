@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.client.gui.jobs;
 
+import com.daqem.jobsplus.client.gui.jobs.tab.AchievementTab;
 import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
 import com.daqem.jobsplus.client.gui.jobs.tab.UserGuideTab;
 import com.daqem.jobsplus.config.JobsPlusConfig;
@@ -29,6 +30,7 @@ public class JobsScreenState {
     private Job selectedJob;
     private RightTab selectedRightTab;
     private UserGuideTab selectedUserGuideTab = UserGuideTab.BASICS_AND_JOBS;
+    private AchievementTab selectedAchievementTab = AchievementTab.ACHIEVEMENTS;
 
     private @Nullable ShopOffer selectedShopOffer;
     private StockAccount stockAccount;
@@ -144,6 +146,19 @@ public class JobsScreenState {
         if (selectedUserGuideTab != null)
         {
             this.selectedUserGuideTab = selectedUserGuideTab;
+        }
+    }
+
+    public AchievementTab getSelectedAchievementTab()
+    {
+        return this.selectedAchievementTab;
+    }
+
+    public void setSelectedAchievementTab(AchievementTab selectedAchievementTab)
+    {
+        if (selectedAchievementTab != null)
+        {
+            this.selectedAchievementTab = selectedAchievementTab;
         }
     }
 

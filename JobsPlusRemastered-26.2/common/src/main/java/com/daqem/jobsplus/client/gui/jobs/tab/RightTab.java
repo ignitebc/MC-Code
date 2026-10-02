@@ -6,6 +6,7 @@ public enum RightTab implements ITab {
     EXPERIENCE(Component.literal("직업정보")),
     UP_AND_DOWN(Component.literal("주식")),
     SHOP(Component.literal("상점")),
+    ACHIEVEMENT(Component.literal("업적")),
     GUN_GUIDE(Component.literal("총기 도감")),
     PET_CARE(Component.literal("펫도감")),
     RECIPES(Component.literal("게임안내"));

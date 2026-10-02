@@ -1,6 +1,7 @@
 package com.daqem.jobsplus;
 
 import com.daqem.arc.registry.ArcRegistry;
+import com.daqem.jobsplus.achievement.AchievementManager;
 import com.daqem.jobsplus.config.JobsPlusConfig;
 import com.daqem.jobsplus.effect.JobsPlusMobEffects;
 import com.daqem.jobsplus.event.command.EventRegisterCommands;
@@ -48,6 +49,7 @@ public class JobsPlus
 
     private static void registerEvents()
     {
+        AchievementManager.registerEvents();
         EventRegisterCommands.registerEvent();
         EventJobSelectTicketUse.registerEvent(); // 추가
         EventRewardCouponUse.registerEvent();

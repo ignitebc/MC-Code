@@ -2,6 +2,7 @@ package com.daqem.jobsplus.networking;
 
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.networking.ClientboundAlertPacketHandler;
+import com.daqem.jobsplus.client.networking.ClientboundAchievementPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundLevelUpJobPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundOpenJobsScreenPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundOpenPowerupsScreenPacketHandler;
@@ -18,6 +19,8 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public interface JobsPlusNetworking
 {
+        CustomPacketPayload.Type<ServerboundAchievementPacket> SERVERBOUND_ACHIEVEMENTS = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_achievements_v1"));
+        CustomPacketPayload.Type<ClientboundAchievementPacket> CLIENTBOUND_ACHIEVEMENTS = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_achievements_v1"));
         CustomPacketPayload.Type<ServerboundTogglePowerUpPacket> SERVERBOUND_TOGGLE_POWERUP = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_toggle_powerup"));
         CustomPacketPayload.Type<ServerboundStartJobPacket> SERVERBOUND_START_JOB = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_start_job"));
         CustomPacketPayload.Type<ServerboundStartPowerupPacket> SERVERBOUND_START_POWERUP = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_start_powerup"));
@@ -49,8 +52,10 @@ public interface JobsPlusNetworking
         CustomPacketPayload.Type<ServerboundSetSkillNotificationsPacket> SERVERBOUND_SET_SKILL_NOTIFICATIONS = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_set_skill_notifications"));
         CustomPacketPayload.Type<ClientboundSkillNotificationsPacket> CLIENTBOUND_SKILL_NOTIFICATIONS = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_skill_notifications"));
 
+
         static void initClient()
         {
+                NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_ACHIEVEMENTS, ClientboundAchievementPacket.STREAM_CODEC, ClientboundAchievementPacketHandler::handleClientSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_OPEN_JOBS_SCREEN, ClientboundOpenJobsScreenPacket.STREAM_CODEC, ClientboundOpenJobsScreenPacketHandler::handleClientSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_LEVEL_UP_JOB, ClientboundLevelUpJobPacket.STREAM_CODEC, ClientboundLevelUpJobPacketHandler::handleClientSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_UNLOCK_ITEM_RESTRICTION, ClientboundUnlockItemRestrictionPacket.STREAM_CODEC, ClientboundUnlockItemRestrictionPacketHandler::handleClientSide);
@@ -65,6 +70,7 @@ public interface JobsPlusNetworking
 
         static void initCommon()
         {
+                NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_ACHIEVEMENTS, ServerboundAchievementPacket.STREAM_CODEC, ServerboundAchievementPacket::handleServerSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_TOGGLE_POWERUP, ServerboundTogglePowerUpPacket.STREAM_CODEC, ServerboundTogglePowerUpPacket::handleServerSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_START_JOB, ServerboundStartJobPacket.STREAM_CODEC, ServerboundStartJobPacket::handleServerSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_START_POWERUP, ServerboundStartPowerupPacket.STREAM_CODEC, ServerboundStartPowerupPacket::handleServerSide);
@@ -82,6 +88,7 @@ public interface JobsPlusNetworking
 
         static void initServer()
         {
+                NetworkManager.registerS2CPayloadType(CLIENTBOUND_ACHIEVEMENTS, ClientboundAchievementPacket.STREAM_CODEC);
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_OPEN_JOBS_SCREEN, ClientboundOpenJobsScreenPacket.STREAM_CODEC);
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_LEVEL_UP_JOB, ClientboundLevelUpJobPacket.STREAM_CODEC);
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_UNLOCK_ITEM_RESTRICTION, ClientboundUnlockItemRestrictionPacket.STREAM_CODEC);

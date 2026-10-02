@@ -1,23 +1,29 @@
 package com.daqem.jobsplus.player.stock;
 
+import com.daqem.jobsplus.achievement.AchievementStorage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
-public record StockAccount(double balance, List<StockPosition> positions, List<StockTransaction> transactions)
+public record StockAccount(double balance, List<StockPosition> positions, List<StockTransaction> transactions,
+                           Map<String, StockAchievementTrade> achievementTrades)
 {
     public static final StockAccount EMPTY = new StockAccount(0, List.of(), List.of());
     public static final Codec<StockAccount> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.DOUBLE.optionalFieldOf("balance", 0D).forGetter(StockAccount::balance),
             StockPosition.CODEC.listOf().optionalFieldOf("positions", List.of()).forGetter(StockAccount::positions),
-            StockTransaction.CODEC.listOf().optionalFieldOf("transactions", List.of()).forGetter(StockAccount::transactions)
+            StockTransaction.CODEC.listOf().optionalFieldOf("transactions", List.of()).forGetter(StockAccount::transactions),
+            Codec.unboundedMap(Codec.STRING, StockAchievementTrade.CODEC).optionalFieldOf("achievement_trades", Map.of()).forGetter(StockAccount::achievementTrades)
     ).apply(instance, StockAccount::new));
 
     public StockAccount
     {
+        achievementTrades = Map.copyOf(achievementTrades);
         balance = StockDecimal.truncate(balance);
         positions = positions.stream()
                 .map(position -> new StockPosition(
@@ -42,6 +48,12 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
                 .toList();
     }
 
+    /** 이전 저장 데이터와 클라이언트 계좌 패킷은 업적 원장 없이도 읽는다. */
+    public StockAccount(double balance, List<StockPosition> positions, List<StockTransaction> transactions)
+    {
+        this(balance, positions, transactions, Map.of());
+    }
+
     public StockPosition getPosition(String stockId)
     {
         return this.positions.stream()
@@ -52,18 +64,18 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
 
     public StockAccount deposit(double amount)
     {
-        return new StockAccount(this.balance + amount, this.positions, addTransaction("DEPOSIT", "", amount));
+        return new StockAccount(this.balance + amount, this.positions, addTransaction("DEPOSIT", "", amount), this.achievementTrades);
     }
 
     public StockAccount withdraw(double amount, double taxAmount)
     {
         return new StockAccount(this.balance - amount - taxAmount, this.positions,
-                addTransaction("WITHDRAW", "", amount));
+                addTransaction("WITHDRAW", "", amount), this.achievementTrades);
     }
 
     public StockAccount reserveBuy(double amount)
     {
-        return new StockAccount(this.balance - amount, this.positions, this.transactions);
+        return new StockAccount(this.balance - amount, this.positions, this.transactions, this.achievementTrades);
     }
 
     public StockAccount fillReservedBuy(String stockId, double amount, double currentPrice,
@@ -84,13 +96,14 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
         return new StockAccount(
                 this.balance,
                 updatedPositions,
-                addTransaction("BUY", stockId, amount, 0, false, filledAt)
+                addTransaction("BUY", stockId, amount, 0, false, filledAt),
+                trackAchievementBuy(stockId, amount, filledAt)
         );
     }
 
     public StockAccount cancelReservedBuy(double amount)
     {
-        return new StockAccount(this.balance + amount, this.positions, this.transactions);
+        return new StockAccount(this.balance + amount, this.positions, this.transactions, this.achievementTrades);
     }
 
     public StockAccount sell(String stockId, double amount, double currentPrice, double feeRate)
@@ -131,7 +144,7 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
                     oldPosition.getAverageEntryPrice(), oldPosition.side(), oldPosition.leverage()));
         }
         return new StockAccount(this.balance + saleAmount - feeAmount, List.copyOf(updatedPositions),
-                addTransaction("SELL", stockId, amount, returnRate, true));
+                addTransaction("SELL", stockId, amount, returnRate, true), trackAchievementSell(stockId, amount));
     }
 
     public StockAccount liquidate(String stockId)
@@ -159,8 +172,59 @@ public record StockAccount(double balance, List<StockPosition> positions, List<S
                         -100,
                         true,
                         liquidatedAt
-                )
+                ),
+                trackAchievementLiquidation(stockId)
         );
+    }
+
+    private Map<String, StockAchievementTrade> trackAchievementBuy(String stockId, double amount, long filledAt)
+    {
+        if (!AchievementStorage.isLoaded() || filledAt < AchievementStorage.seasonStartedAt())
+        {
+            return this.achievementTrades;
+        }
+        String key = AchievementStorage.season() + "/" + stockId;
+        Map<String, StockAchievementTrade> updated = new HashMap<>(this.achievementTrades);
+        StockAchievementTrade trade = updated.get(key);
+        if (trade == null)
+        {
+            double previous = 0;
+            StockPosition position = getPosition(stockId);
+            if (position != null)
+            {
+                previous = position.investedAmount();
+            }
+            trade = new StockAchievementTrade(previous, 0, 0, false);
+        }
+        updated.put(key, trade.buy(amount));
+        return Map.copyOf(updated);
+    }
+
+    private Map<String, StockAchievementTrade> trackAchievementSell(String stockId, double amount)
+    {
+        Map<String, StockAchievementTrade> updated = new HashMap<>(this.achievementTrades);
+        // 이전 시즌에 산 미매도분도 실제 매도에 맞춰 정리한다. 현 시즌 판정은 Manager에서 구분한다.
+        for (Map.Entry<String, StockAchievementTrade> entry : this.achievementTrades.entrySet())
+        {
+            if (entry.getKey().endsWith("/" + stockId))
+            {
+                updated.put(entry.getKey(), entry.getValue().sell(amount));
+            }
+        }
+        return Map.copyOf(updated);
+    }
+
+    private Map<String, StockAchievementTrade> trackAchievementLiquidation(String stockId)
+    {
+        Map<String, StockAchievementTrade> updated = new HashMap<>(this.achievementTrades);
+        for (Map.Entry<String, StockAchievementTrade> entry : this.achievementTrades.entrySet())
+        {
+            if (entry.getKey().endsWith("/" + stockId))
+            {
+                updated.put(entry.getKey(), entry.getValue().liquidate());
+            }
+        }
+        return Map.copyOf(updated);
     }
 
     private List<StockTransaction> addTransaction(String type, String stockId, double amount)

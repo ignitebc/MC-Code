@@ -1,6 +1,7 @@
 package com.daqem.jobsplus.networking.c2s;
 
 import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.achievement.AchievementManager;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import com.daqem.jobsplus.networking.s2c.ClientboundAlertPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundOpenJobsScreenPacket;
@@ -169,6 +170,23 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
         ItemStack outStack = new ItemStack(outputItem, packet.outputAmount);
 
         PlayerItemDelivery.giveOrDrop(player, outStack);
+
+        if (packet.inputItemId.toString().equals("advancednetherite:bitcoin") && packet.inputAmount == 500
+                && packet.outputItemId.toString().equals("minecraft:elytra")) {
+            AchievementManager.add(player, "shop_elytra", packet.outputAmount);
+        }
+        if (packet.outputItemId.toString().equals("advancednetherite:bitcoin")) {
+            String crop = switch (packet.inputItemId.toString()) {
+                case "minecraft:wheat" -> "wheat";
+                case "minecraft:carrot" -> "carrot";
+                case "minecraft:potato" -> "potato";
+                case "minecraft:beetroot" -> "beetroot";
+                default -> "";
+            };
+            if (!crop.isEmpty()) {
+                AchievementManager.add(player, "sold:" + crop, packet.inputAmount);
+            }
+        }
 
         // 추가 동기화(안정성 강화)
         inv.setChanged();

@@ -74,6 +74,7 @@ public class ClientboundOpenJobsScreenPacketHandler {
         newState.setStockPanelMode(oldState.getStockPanelMode());
         newState.setSelectedStockPositionSide(oldState.getSelectedStockPositionSide());
         newState.setSelectedStockLeverage(oldState.getSelectedStockLeverage());
+        newState.setSelectedAchievementTab(oldState.getSelectedAchievementTab());
         return newState;
     }
 

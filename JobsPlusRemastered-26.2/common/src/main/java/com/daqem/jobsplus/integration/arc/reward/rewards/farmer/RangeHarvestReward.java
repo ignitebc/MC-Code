@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.integration.arc.reward.rewards.farmer;
 
+import com.daqem.jobsplus.achievement.AchievementManager;
 import com.daqem.arc.api.action.data.ActionData;
 import com.daqem.arc.api.action.data.type.ActionDataType;
 import com.daqem.arc.api.action.result.ActionResult;
@@ -87,7 +88,11 @@ public class RangeHarvestReward extends AbstractReward
                         // 파괴 후 표준 파괴 완료 처리를 호출해 주변 작물도 중앙과 동일하게
                         // 풍년(BREAK_BLOCK)과 경험치·비트코인·되심기(HARVEST_CROP)를 칸마다 개별 판정한다.
                         // 범위 수확 자체의 재발동은 HARVESTING_RANGE 가드가 차단한다.
-                        serverLevel.destroyBlock(cropPos, true, serverPlayer, 512);
+                        if (!serverLevel.destroyBlock(cropPos, true, serverPlayer, 512))
+                        {
+                            continue;
+                        }
+                        AchievementManager.recordHarvest(serverPlayer, cropState);
                         BlockEvents.onBlockBreakComplete(serverLevel, cropPos, cropState, arcServerPlayer);
                         harvestedCount++;
                     }

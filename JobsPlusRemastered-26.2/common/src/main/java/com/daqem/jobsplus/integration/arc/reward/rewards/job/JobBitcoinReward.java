@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.integration.arc.reward.rewards.job;
 
+import com.daqem.jobsplus.achievement.AchievementManager;
 import com.daqem.arc.api.action.data.ActionData;
 import com.daqem.arc.api.action.result.ActionResult;
 import com.daqem.arc.api.player.ArcPlayer;
@@ -113,6 +114,7 @@ public class JobBitcoinReward extends AbstractReward
                 && actionData.getSourceActionHolder() instanceof JobInstance jobInstance)
         {
             JobsPlusMetrics.recordBitcoin(serverPlayer, jobInstance, rewardAmount);
+            AchievementManager.add(serverPlayer, "job_btc", rewardAmount);
 
             // 플레이어 이름을 골드색으로 표시
             Component playerName = serverPlayer.getName().copy()

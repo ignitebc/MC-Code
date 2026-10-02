@@ -28,6 +28,7 @@
     "arc": ">=${arc_version}",
     "itemrestrictions": ">=${item_restrictions_version}",
     "uilib": ">=${ui_library_version}",
-    "advancednetherite": "*"
+    "advancednetherite": "*",
+    "serverutilities": "*"
   }
 }

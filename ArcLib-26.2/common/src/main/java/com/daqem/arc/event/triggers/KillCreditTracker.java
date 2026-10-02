@@ -51,7 +51,8 @@ public class KillCreditTracker {
         if (!(victim.level() instanceof ServerLevel level)) {
             return null;
         }
-        PlayerHit lastHit = LAST_PLAYER_HITS.remove(victim);
+        // 실제 사망 완료 후 업적도 같은 공로를 확인한다. 조회에서 소모하지 않고 개체 GC 시 정리한다.
+        PlayerHit lastHit = LAST_PLAYER_HITS.get(victim);
         Entity attacker = source.getEntity();
         if (attacker instanceof ArcServerPlayer player) {
             return player;

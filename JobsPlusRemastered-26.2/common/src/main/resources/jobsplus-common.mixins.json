@@ -11,7 +11,21 @@
     "MixinServerPlayer",
     "MixinHyperMining",
     "MixinLivingEntityDropMultiplier",
-    "MixinMobSpawnReason"
+    "MixinMobSpawnReason",
+    "achievement.MixinAchievementPlayer",
+    "achievement.MixinAchievementBlockBreak",
+    "achievement.MixinAchievementBerryHarvest",
+    "achievement.MixinAchievementTool",
+    "achievement.MixinAchievementGun",
+    "achievement.MixinAchievementEnhancement",
+    "achievement.MixinAchievementKill",
+    "achievement.MixinAchievementDragon",
+    "achievement.MixinAchievementRaid",
+    "achievement.MixinProductionMenu",
+    "achievement.MixinAchievementFurnace",
+    "achievement.MixinAchievementFurnaceResult",
+    "achievement.MixinAchievementHopper",
+    "achievement.MixinAchievementBrewingStand"
   ],
   "injectors": {
     "defaultRequire": 1

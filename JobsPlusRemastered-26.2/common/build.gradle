@@ -20,6 +20,8 @@ dependencies {
     implementation files(rootProject.file("../UILib-26.2/fabric/build/libs/uilib-2.1.4-26.2-fabric.jar"))
     // 펫관리 탭이 펫 목록·패킷을 직접 쓴다. 수집 스크립트가 Advanced Netherite를 먼저 빌드한다.
     implementation files(rootProject.file("../AdvancedNetherite-26.2/Fabric/build/libs/advancednetherite-fabric-2.4.2-26.2.jar"))
+    // 설치 블록 원장과 도구의 실제 EXP 변경을 재사용한다.
+    implementation files(rootProject.file("../ServerUtilities-26.2/build/libs/ServerUtilities-26.2-1.0.1.jar"))
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${project.jUnitVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${project.jUnitVersion}"

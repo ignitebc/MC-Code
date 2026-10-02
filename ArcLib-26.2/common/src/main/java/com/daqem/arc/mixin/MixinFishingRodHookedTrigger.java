@@ -2,6 +2,7 @@ package com.daqem.arc.mixin;
 
 import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.event.triggers.PlayerEvents;
+import com.daqem.arc.event.events.FishingCatchEvent;
 import com.daqem.arc.player.FishingAutomationGuard;
 import net.minecraft.advancements.triggers.FishingRodHookedTrigger;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,6 +25,9 @@ public class MixinFishingRodHookedTrigger {
             // 바닐라 발전 과제는 그대로 두고 Arc 액션만 건너뛴다.
             if (!FishingAutomationGuard.shouldReward(serverPlayer, fishingHook)) {
                 return;
+            }
+            if (!collection.isEmpty()) {
+                FishingCatchEvent.CAUGHT.invoker().onCatch(serverPlayer, collection);
             }
             for (ItemStack stack : collection) {
                 PlayerEvents.onFishedUpItem(arcServerPlayer, stack);
