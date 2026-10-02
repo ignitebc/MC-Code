@@ -27,6 +27,8 @@ import com.tacz.guns.resource.pojo.data.gun.*;
 import com.tacz.guns.sound.SoundManager;
 import com.tacz.guns.util.AttachmentDataUtils;
 import com.tacz.guns.util.CycleTaskHelper;
+import com.tacz.guns.util.GunLevelManager;
+import com.tacz.guns.util.GunShotContext;
 import com.tacz.guns.util.ItemNbtUtils;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.component.DataComponents;
@@ -190,12 +192,19 @@ public class ModernKineticGunScriptAPI {
                 // 生成子弹
                 Level world = shooter.level();
                 Identifier ammoId = gunData.getAmmoId();
+                boolean experienceAllowed = consumeAmmo;
+                if (gunData.getReloadData().isInfinite() || abstractGunItem.useDummyAmmo(itemStack)) {
+                    experienceAllowed = false;
+                }
+                // 점사에서는 매 탄약마다 새 정보를 만들고, 한 발의 산탄은 같은 정보를 공유한다.
+                GunShotContext shotContext = GunLevelManager.createShotContext(itemStack, shooter, experienceAllowed);
                 for (int i = 0; i < bulletAmount; i++) {
                     boolean isTracer = bulletData.hasTracerAmmo() && gunOperator.nextBulletIsTracer(bulletData.getTracerCountInterval());
                     EntityKineticBullet bullet = new EntityKineticBullet(world, shooter, itemStack, ammoId, gunId,
                             gunDisplayId, isTracer, gunData, bulletData);
                     bullet.applyShotgunDamageSpread(bulletAmount);
                     bullet.setShotDamageMultiplier(shotDamageMultiplier);
+                    bullet.setShotContext(shotContext);
                     abstractGunItem.doBulletSpread(dataHolder, itemStack, shooter, bullet, i, processedSpeed,
                             inaccuracy, pitch, yaw);
                     world.addFreshEntity(bullet);

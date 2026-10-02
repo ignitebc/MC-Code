@@ -11,6 +11,7 @@ import com.tacz.guns.client.resource.GunDisplayInstance;
 import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.util.GunIdAliases;
+import com.tacz.guns.util.GunLevelManager;
 import com.tacz.guns.util.ItemNbtUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
@@ -157,14 +158,14 @@ public interface GunItemDataAccessor extends IGun {
         if (nbt.contains(GUN_EXP_TAG)) {
             return getLevel(nbt.getIntOr(GUN_EXP_TAG, 0));
         }
-        return 0;
+        return getLevel(0);
     }
 
     @Override
     default int getExp(ItemStack gun) {
         CompoundTag nbt = ItemNbtUtils.getTag(gun);
         if (nbt.contains(GUN_EXP_TAG)) {
-            return nbt.getIntOr(GUN_EXP_TAG, 0);
+            return GunLevelManager.clampExp(nbt.getIntOr(GUN_EXP_TAG, 0));
         }
         return 0;
     }
@@ -184,11 +185,10 @@ public interface GunItemDataAccessor extends IGun {
     default int getExpCurrentLevel(ItemStack gun) {
         int exp = getExp(gun);
         int level = getLevel(exp);
-        if (level <= 0) {
-            return exp;
-        } else {
-            return exp - getExp(level - 1);
+        if (level >= getMaxLevel()) {
+            return 0;
         }
+        return exp - getExp(level);
     }
 
     @Override

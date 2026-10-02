@@ -35,6 +35,8 @@ import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.resource.pojo.data.gun.Ignite;
 import com.tacz.guns.util.EntityUtil;
 import com.tacz.guns.util.ExplodeUtil;
+import com.tacz.guns.util.GunLevelManager;
+import com.tacz.guns.util.GunShotContext;
 import com.tacz.guns.util.TacHitResult;
 import com.tacz.guns.util.block.BlockRayTrace;
 import net.minecraft.core.BlockPos;
@@ -53,6 +55,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragonPart;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
@@ -148,6 +151,8 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
     private float armorIgnore;
     private float headShot;
     private float shotDamageMultiplier = 1f;
+    private float gunLevelDamageMultiplier = 1f;
+    private @Nullable GunShotContext shotContext;
 
     public EntityKineticBullet(EntityType<? extends Projectile> type, Level worldIn) {
         super(type, worldIn);
@@ -174,6 +179,7 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         this.setOwner(throwerIn);
         // gunId 提前赋值，以让 modifyProperty 可以在构造函数中运行
         this.gunId = gunId;
+        this.gunLevelDamageMultiplier = (float) GunLevelManager.getDamageMultiplier(gunItem);
         AttachmentCacheProperty cacheProperty = Objects.requireNonNull(IGunOperator.fromLivingEntity(throwerIn).getCacheProperty());
         float armorIgnore = modifyProperty(GunProperties.ARMOR_IGNORE, Float.class, cacheProperty.getCache(GunProperties.ARMOR_IGNORE));
         float headshot = modifyProperty(GunProperties.HEADSHOT_MULTIPLIER, Float.class, cacheProperty.getCache(GunProperties.HEADSHOT_MULTIPLIER));
@@ -234,6 +240,12 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
     @ApiStatus.Internal
     public void setShotDamageMultiplier(float multiplier) {
         this.shotDamageMultiplier = Math.max(multiplier, 0f);
+    }
+
+    @ApiStatus.Internal
+    public void setShotContext(GunShotContext shotContext) {
+        this.shotContext = shotContext;
+        this.gunLevelDamageMultiplier = shotContext.getDamageMultiplier();
     }
 
     @Override
@@ -385,11 +397,10 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
             Entity core
     ) {
         public static MaybeMultipartEntity of(Entity hitPart) {
-            // TODO
-            var core = /*(hitPart instanceof PartEntity<?> part)
-                    ? part.getParent()
-                    :*/ hitPart;
-            return new MaybeMultipartEntity(hitPart, core);
+            if (hitPart instanceof EnderDragonPart part) {
+                return new MaybeMultipartEntity(hitPart, part.parentMob);
+            }
+            return new MaybeMultipartEntity(hitPart, hitPart);
         }
     }
 
@@ -417,8 +428,6 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         }
         // 刷新由Pre事件修改后的参数
         entity = preEvent.getHurtEntity();
-        // 受击目标
-        var parts = MaybeMultipartEntity.of(entity);
         attacker = preEvent.getAttacker();
         var newGunId = preEvent.getGunId();
         damage = preEvent.getBaseAmount();
@@ -428,6 +437,8 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         if (entity == null) {
             return;
         }
+        // 受击目标
+        var parts = MaybeMultipartEntity.of(entity);
         // 点燃
         if (this.igniteEntity && AmmoConfig.IGNITE_ENTITY.get()) {
             entity.igniteForSeconds(this.igniteEntityTime);
@@ -443,6 +454,8 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         }
         // 对 LivingEntity 进行击退强度的自定义
         if (parts.core() instanceof LivingEntity livingCore) {
+            float healthBefore = livingCore.getHealth();
+            float absorptionBefore = livingCore.getAbsorptionAmount();
             // 取消击退效果，设定自己的击退强度
             KnockBackModifier modifier = KnockBackModifier.fromLivingEntity(livingCore);
             modifier.setKnockBackStrength(this.knockback);
@@ -450,6 +463,8 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
             tacAttackEntity(parts, damage, sources);
             // 恢复原位
             modifier.resetKnockBackStrength();
+            // 폭발 전에 직접 타격으로 감소한 체력만 확인한다.
+            awardShotExperience(livingCore, healthBefore, absorptionBefore);
         } else {
             // 创建伤害
             tacAttackEntity(parts, damage, sources);
@@ -476,6 +491,22 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
                     NetworkHandler.sendToDimension(new ServerMessageGunHurt(getId(), livingCore.getId(), attackerId, newGunId, gunDisplayId, damage, headshot, headShotMultiplier), livingCore);
                 }
             }
+        }
+    }
+
+    private void awardShotExperience(LivingEntity target, float healthBefore, float absorptionBefore) {
+        if (this.shotContext == null || healthBefore <= 0) {
+            return;
+        }
+        boolean tookDamage = false;
+        if (target.getHealth() < healthBefore) {
+            tookDamage = true;
+        }
+        if (target.getAbsorptionAmount() < absorptionBefore) {
+            tookDamage = true;
+        }
+        if (tookDamage) {
+            this.shotContext.awardExperience(target);
         }
     }
 
@@ -535,7 +566,8 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         }
         // 让脚本修改枪械伤害
         float modifiedDamage = modifyProperty(GunProperties.DAMAGE, Float.class, base);
-        return Math.max(modifiedDamage * this.shotDamageMultiplier, 0F);
+        float finalDamage = modifiedDamage * this.shotDamageMultiplier * this.gunLevelDamageMultiplier;
+        return Math.max(finalDamage, 0F);
     }
 
     /**
@@ -623,6 +655,7 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         buffer.writeBoolean(this.isTracerAmmo);
         buffer.writeIdentifier(this.gunId);
         buffer.writeIdentifier(this.gunDisplayId);
+        buffer.writeFloat(this.gunLevelDamageMultiplier);
     }
 
     @Override
@@ -648,6 +681,7 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         this.isTracerAmmo = additionalData.readBoolean();
         this.gunId = additionalData.readIdentifier();
         this.gunDisplayId = additionalData.readIdentifier();
+        this.gunLevelDamageMultiplier = additionalData.readFloat();
     }
 
     public Identifier getAmmoId() {

@@ -2,6 +2,7 @@ package com.tacz.guns.client.gui.toast;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.Toast;
@@ -14,20 +15,35 @@ import javax.annotation.Nullable;
 @Environment(EnvType.CLIENT)
 public class GunLevelUpToast implements Toast {
     private final Component title;
-    private final Component subTitle;
+    private final @Nullable Component subTitle;
     private final ItemStack icon;
     private long visibleTime = -1;
 
     public GunLevelUpToast(ItemStack icon, Component titleComponent, @Nullable Component subtitle) {
-        this.icon = icon;
+        this.icon = icon.copy();
         this.title = titleComponent;
         this.subTitle = subtitle;
     }
 
     @Override
     public Visibility getWantedVisibility() {
-        if (this.visibleTime < 0) return Visibility.SHOW;
-        return (System.currentTimeMillis() - this.visibleTime) >= 5000L ? Visibility.HIDE : Visibility.SHOW;
+        if (this.visibleTime < 0) {
+            return Visibility.SHOW;
+        }
+        if (System.currentTimeMillis() - this.visibleTime >= 5000L) {
+            return Visibility.HIDE;
+        }
+        return Visibility.SHOW;
+    }
+
+    @Override
+    public int width() {
+        Font font = Minecraft.getInstance().font;
+        int textWidth = font.width(this.title);
+        if (this.subTitle != null) {
+            textWidth = Math.max(textWidth, font.width(this.subTitle));
+        }
+        return Math.max(160, textWidth + 38);
     }
 
     @Override
@@ -44,7 +60,11 @@ public class GunLevelUpToast implements Toast {
         if (!icon.isEmpty()) {
             gui.item(icon, 8, 8);
         }
-        gui.text(font, title, 30, subTitle == null ? 12 : 7, 0xFFFFCC55, false);
+        int titleY = 12;
+        if (subTitle != null) {
+            titleY = 7;
+        }
+        gui.text(font, title, 30, titleY, 0xFFFFCC55, false);
         if (subTitle != null) {
             gui.text(font, subTitle, 30, 19, 0xFFFFFFFF, false);
         }

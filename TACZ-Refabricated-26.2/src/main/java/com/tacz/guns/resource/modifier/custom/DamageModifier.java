@@ -19,6 +19,7 @@ import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
 import com.tacz.guns.resource.pojo.data.gun.ExtraDamage.DistanceDamagePair;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.resource.pojo.data.gun.GunFireModeAdjustData;
+import com.tacz.guns.util.GunLevelManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
@@ -109,6 +110,9 @@ public class DamageModifier implements IAttachmentModifier<Modifier, LinkedList<
         }
         finalBase *= SyncConfig.DAMAGE_BASE_MULTIPLIER.get();
         float modifiedValue = damagePairModifier.get(0).getDamage();
+        float levelMultiplier = (float) GunLevelManager.getDamageMultiplier(gunItem);
+        finalBase *= levelMultiplier;
+        modifiedValue *= levelMultiplier;
         float modifier = modifiedValue - finalBase;
 
         double percent = Math.min(finalBase / 50.0, 1);

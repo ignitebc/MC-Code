@@ -1,17 +1,23 @@
 package com.tacz.guns.network.message;
 
 import com.tacz.guns.GunMod;
+import com.tacz.guns.client.gui.GunRefitScreen;
+import com.tacz.guns.client.gui.toast.GunLevelUpToast;
+import com.tacz.guns.util.GunLevelManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.Locale;
 
 public class ServerMessageLevelUp implements CustomPacketPayload {
     public static final Identifier PACKET_ID = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "s2c_levelup");
@@ -30,7 +36,7 @@ public class ServerMessageLevelUp implements CustomPacketPayload {
         this.level = level;
     }
 
-        public void write(RegistryFriendlyByteBuf buf) {
+    public void write(RegistryFriendlyByteBuf buf) {
         ItemStack.STREAM_CODEC.encode(buf, gun);
         buf.writeInt(level);
     }
@@ -42,7 +48,7 @@ public class ServerMessageLevelUp implements CustomPacketPayload {
 
     @Environment(EnvType.CLIENT)
     public void handle(LocalPlayer player, PacketSender responseSender) {
-        onLevelUp(this);
+        Minecraft.getInstance().execute(() -> onLevelUp(this));
     }
 
     @Environment(EnvType.CLIENT)
@@ -50,24 +56,16 @@ public class ServerMessageLevelUp implements CustomPacketPayload {
         int level = message.getLevel();
         ItemStack gun = message.getGun();
         Player player = Minecraft.getInstance().player;
-        if (player == null) {
+        if (player == null || gun.isEmpty() || level <= GunLevelManager.MIN_LEVEL || level > GunLevelManager.MAX_LEVEL) {
             return;
         }
-        // TODO 在完成了枪械升级逻辑后，解封下面的代码
-                /*
-                if (GunLevelManager.DAMAGE_UP_LEVELS.contains(level)) {
-                    Minecraft.getInstance().getToasts().addToast(new GunLevelUpToast(gun,
-                            Component.translatable("toast.tacz.level_up"),
-                            Component.translatable("toast.tacz.sub.damage_up")));
-                } else if (level >= GunLevelManager.MAX_LEVEL) {
-                    Minecraft.getInstance().getToasts().addToast(new GunLevelUpToast(gun,
-                            Component.translatable("toast.tacz.level_up"),
-                            Component.translatable("toast.tacz.sub.final_level")));
-                } else {
-                    Minecraft.getInstance().getToasts().addToast(new GunLevelUpToast(gun,
-                            Component.translatable("toast.tacz.level_up"),
-                            Component.translatable("toast.tacz.sub.level_up")));
-                }*/
+        Component title = Component.translatable("toast.tacz.gun_level_up", level);
+        String bonusPercent = String.format(Locale.ROOT, "%.1f", GunLevelManager.getDamageBonusPercent(level));
+        Component subTitle = Component.translatable("tooltip.tacz.gun.level_damage_bonus", bonusPercent);
+        Minecraft.getInstance().gui.toastManager().addToast(new GunLevelUpToast(gun, title, subTitle));
+        if (Minecraft.getInstance().gui.screen() instanceof GunRefitScreen screen) {
+            screen.init();
+        }
     }
 
     public ItemStack getGun() {

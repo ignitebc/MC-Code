@@ -7,7 +7,6 @@ import com.tacz.guns.api.item.builder.AmmoItemBuilder;
 import com.tacz.guns.client.input.RefitKey;
 import com.tacz.guns.client.resource.GunDisplayInstance;
 import com.tacz.guns.client.resource.pojo.display.gun.AmmoCountStyle;
-import com.tacz.guns.client.resource.pojo.display.gun.DamageStyle;
 import com.tacz.guns.config.sync.SyncConfig;
 import com.tacz.guns.inventory.tooltip.GunTooltip;
 import com.tacz.guns.item.GunTooltipPart;
@@ -18,6 +17,7 @@ import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.util.AllowAttachmentTagMatcher;
 import com.tacz.guns.util.AttachmentDataUtils;
+import com.tacz.guns.util.GunLevelManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -57,6 +57,8 @@ public class ClientGunTooltip implements ClientTooltipComponent {
     private MutableComponent weight;
     private MutableComponent tips;
     private MutableComponent levelInfo;
+    private MutableComponent levelDamageBonus;
+    private @Nullable MutableComponent pelletDamage;
 
     private int maxWidth;
 
@@ -81,7 +83,10 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             height += 24;
         }
         if (shouldShow(GunTooltipPart.BASE_INFO)) {
-            height += 34;
+            height += 44;
+            if (this.pelletDamage != null) {
+                height += 10;
+            }
         }
         if (shouldShow(GunTooltipPart.EXTRA_DAMAGE_INFO)) {
             height += 34;
@@ -150,17 +155,21 @@ public class ClientGunTooltip implements ClientTooltipComponent {
 
 
         if (shouldShow(GunTooltipPart.BASE_INFO)) {
-            int expToNextLevel = iGun.getExpToNextLevel(gun);
             int expCurrentLevel = iGun.getExpCurrentLevel(gun);
             int level = iGun.getLevel(gun);
             if (level >= iGun.getMaxLevel()) {
-                String levelText = String.format("%d (MAX)", level);
-                this.levelInfo = Component.translatable("tooltip.tacz.gun.level").append(Component.literal(levelText).withStyle(style -> style.withColor(0xAA00AA)));
+                this.levelInfo = Component.translatable("tooltip.tacz.gun.level_max", level)
+                        .withStyle(style -> style.withColor(0xAA00AA));
             } else {
-                String levelText = String.format("%d (%.1f%%)", level, expCurrentLevel / (expToNextLevel + expCurrentLevel) * 100f);
-                this.levelInfo = Component.translatable("tooltip.tacz.gun.level").append(Component.literal(levelText).withStyle(style -> style.withColor(0xFFFF55)));
+                this.levelInfo = Component.translatable("tooltip.tacz.gun.level_progress", level,
+                        expCurrentLevel, GunLevelManager.EXP_PER_LEVEL)
+                        .withStyle(style -> style.withColor(0xFFFF55));
             }
             this.maxWidth = Math.max(font.width(this.levelInfo), this.maxWidth);
+            String bonusPercent = String.format(Locale.ROOT, "%.1f", GunLevelManager.getDamageBonusPercent(level));
+            this.levelDamageBonus = Component.translatable("tooltip.tacz.gun.level_damage_bonus", bonusPercent)
+                    .withStyle(style -> style.withColor(0x55FF55));
+            this.maxWidth = Math.max(font.width(this.levelDamageBonus), this.maxWidth);
 
             String tabKey = "tacz.type." + gunIndex.getType() + ".name";
             this.gunType = Component.translatable("tooltip.tacz.gun.type").append(Component.translatable(tabKey).withStyle(style -> style.withColor(0x55FFFF)));
@@ -168,13 +177,20 @@ public class ClientGunTooltip implements ClientTooltipComponent {
 
             double damage = AttachmentDataUtils.getDamageWithAttachment(gun, gunData);
             boolean hasSlugInstalled = AllowAttachmentTagMatcher.matchTag(SLUGS, iGun.getAttachmentId(gun, AttachmentType.EXTENDED_MAG));
-            int bulletAmount = hasSlugInstalled ? 1 : gunData.getBulletData().getBulletAmount();
-            MutableComponent value;
-            if (display != null && display.getDamageStyle() == DamageStyle.PER_PROJECTILE && bulletAmount > 1) {
-                value = Component.literal(DAMAGE_FORMAT.format(damage / bulletAmount) + "x" + bulletAmount).withStyle(style -> style.withColor(0x55FFFF));
-            } else {
-                value = Component.literal(DAMAGE_FORMAT.format(damage)).withStyle(style -> style.withColor(0x55FFFF));
+            int bulletAmount = Math.max(bulletData.getBulletAmount(), 1);
+            if (hasSlugInstalled) {
+                bulletAmount = 1;
             }
+            String damageKey = "tooltip.tacz.gun.damage";
+            if (bulletAmount > 1) {
+                damageKey = "tooltip.tacz.gun.damage_total";
+                this.pelletDamage = Component.translatable("tooltip.tacz.gun.pellet_damage",
+                        DAMAGE_FORMAT.format(damage / bulletAmount), bulletAmount)
+                        .withStyle(style -> style.withColor(0x55FFFF));
+                this.maxWidth = Math.max(font.width(this.pelletDamage), this.maxWidth);
+            }
+            MutableComponent value = Component.literal(DAMAGE_FORMAT.format(damage))
+                    .withStyle(style -> style.withColor(0x55FFFF));
             // 총기에 폭발 수치가 없어도 고폭탄 같은 부품이 폭발을 켤 수 있으므로, 폭발 여부만으로 판단한다
             boolean explodeEnabled = AttachmentDataUtils.isExplodeEnabled(gun, gunData)
                     || (bulletData.getExplosionData() != null && bulletData.getExplosionData().isExplode());
@@ -182,7 +198,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
                 double explosionDamage = AttachmentDataUtils.getExplosionDamageWithAttachment(gun, gunData);
                 value.append(" + ").append(DAMAGE_FORMAT.format(explosionDamage)).append(Component.translatable("tooltip.tacz.gun.explosion"));
             }
-            this.damage = Component.translatable("tooltip.tacz.gun.damage").append(value);
+            this.damage = Component.translatable(damageKey).append(value);
             this.maxWidth = Math.max(font.width(this.damage), this.maxWidth);
         }
 
@@ -252,6 +268,9 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             graphics.text(font, this.levelInfo, pX, yOffset, 0xFF777777);
             yOffset += 10;
 
+            graphics.text(font, this.levelDamageBonus, pX, yOffset, 0xFF777777);
+            yOffset += 10;
+
             // 枪械类型
             if (this.gunType != null) {
                 graphics.text(font, this.gunType, pX, yOffset, 0xFF777777);
@@ -261,6 +280,10 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             // 伤害
             graphics.text(font, this.damage, pX, yOffset, 0xFF777777);
             yOffset += 10;
+            if (this.pelletDamage != null) {
+                graphics.text(font, this.pelletDamage, pX, yOffset, 0xFF777777);
+                yOffset += 10;
+            }
         }
 
 

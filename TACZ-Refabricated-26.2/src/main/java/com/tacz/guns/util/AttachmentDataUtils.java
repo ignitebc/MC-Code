@@ -220,7 +220,8 @@ public final class AttachmentDataUtils {
         finalBase *= SyncConfig.DAMAGE_BASE_MULTIPLIER.get();
 
         List<Modifier> modifiers = getModifiers(gunItem, gunData, DamageModifier.ID);
-        return AttachmentPropertyManager.eval(modifiers, finalBase);
+        double damage = AttachmentPropertyManager.eval(modifiers, finalBase);
+        return damage * GunLevelManager.getDamageMultiplier(gunItem);
     }
 
     /**

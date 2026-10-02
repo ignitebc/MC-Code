@@ -20,6 +20,7 @@ import com.tacz.guns.resource.pojo.data.attachment.EffectData;
 import com.tacz.guns.resource.pojo.data.attachment.MeleeData;
 import com.tacz.guns.resource.pojo.data.gun.*;
 import com.tacz.guns.util.AllowAttachmentTagMatcher;
+import com.tacz.guns.util.GunLevelManager;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -586,16 +587,16 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
 
     @Override
     public int getLevel(int exp) {
-        return 0;
+        return GunLevelManager.getLevel(exp);
     }
 
     @Override
     public int getExp(int level) {
-        return 0;
+        return GunLevelManager.getExp(level);
     }
 
     @Override
     public int getMaxLevel() {
-        return 0;
+        return GunLevelManager.MAX_LEVEL;
     }
 }
