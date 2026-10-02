@@ -11,6 +11,7 @@ import com.daqem.jobsplus.event.item.EventRewardCouponUse;
 import com.daqem.jobsplus.event.player.EventJobHealthSync;
 import com.daqem.jobsplus.event.player.EventRewardCouponEffectSync;
 import com.daqem.jobsplus.event.player.EventSkillNotificationSync;
+import com.daqem.jobsplus.event.player.EventTitleSync;
 import com.daqem.jobsplus.event.stock.StockMarketTicker;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobManager;
 import com.daqem.jobsplus.integration.arc.holder.holders.powerup.PowerupManager;
@@ -56,6 +57,7 @@ public class JobsPlus
         EventRewardCouponEffectSync.registerEvent();
         EventJobHealthSync.registerEvent(); // 직업 기록이 없는 첫 접속자도 직업 선택 전 체력을 받도록 접속 시 맞춤
         EventSkillNotificationSync.registerEvent(); // 스킬 화면 알림 버튼이 저장된 설정을 표시하도록 접속 시 전달
+        EventTitleSync.registerEvent(); // 장착 칭호 배지와 칭호 탭 보유자 목록을 접속 시 맞춤
         CropReplantManager.registerEvent();
         StockMarketTicker.registerEvent(); // 주식 시청자·미결제 포지션·예약 주문이 있으면 매분 시세 갱신
         JobsPlusMetrics.registerEvents(); // EXP/BTC/접속시간 분석용 경량 메트릭

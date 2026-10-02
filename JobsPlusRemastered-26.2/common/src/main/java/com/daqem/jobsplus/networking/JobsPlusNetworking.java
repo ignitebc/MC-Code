@@ -9,6 +9,7 @@ import com.daqem.jobsplus.client.networking.ClientboundOpenPowerupsScreenPacketH
 import com.daqem.jobsplus.client.networking.ClientboundSkillNotificationsPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundSyncActionHoldersPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundStockSnapshotPacketHandler;
+import com.daqem.jobsplus.client.networking.ClientboundTitlesPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundUnlockItemRestrictionPacketHandler;
 import com.daqem.jobsplus.networking.c2s.*;
 import com.daqem.jobsplus.networking.s2c.*;
@@ -52,6 +53,9 @@ public interface JobsPlusNetworking
         CustomPacketPayload.Type<ServerboundSetSkillNotificationsPacket> SERVERBOUND_SET_SKILL_NOTIFICATIONS = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_set_skill_notifications"));
         CustomPacketPayload.Type<ClientboundSkillNotificationsPacket> CLIENTBOUND_SKILL_NOTIFICATIONS = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_skill_notifications"));
 
+        // 칭호 탭의 보유자 목록과 장착 칭호를 주고받는다.
+        CustomPacketPayload.Type<ServerboundEquipTitlePacket> SERVERBOUND_EQUIP_TITLE = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_equip_title"));
+        CustomPacketPayload.Type<ClientboundTitlesPacket> CLIENTBOUND_TITLES = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_titles"));
 
         static void initClient()
         {
@@ -66,6 +70,7 @@ public interface JobsPlusNetworking
                 // 신규 등록
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_SYNC_ACTION_HOLDERS, ClientboundSyncActionHoldersPacket.STREAM_CODEC, ClientboundSyncActionHoldersPacketHandler::handleClientSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_SKILL_NOTIFICATIONS, ClientboundSkillNotificationsPacket.STREAM_CODEC, ClientboundSkillNotificationsPacketHandler::handleClientSide);
+                NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_TITLES, ClientboundTitlesPacket.STREAM_CODEC, ClientboundTitlesPacketHandler::handleClientSide);
         }
 
         static void initCommon()
@@ -84,6 +89,7 @@ public interface JobsPlusNetworking
                 // 251217 jjh, 상점(아이템 판매) - C2S 리시버 등록
                 NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_SELL_ITEM, ServerboundSellItemPacket.STREAM_CODEC, ServerboundSellItemPacket::handleServerSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_SET_SKILL_NOTIFICATIONS, ServerboundSetSkillNotificationsPacket.STREAM_CODEC, ServerboundSetSkillNotificationsPacket::handleServerSide);
+                NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_EQUIP_TITLE, ServerboundEquipTitlePacket.STREAM_CODEC, ServerboundEquipTitlePacket::handleServerSide);
         }
 
         static void initServer()
@@ -99,6 +105,7 @@ public interface JobsPlusNetworking
                 // 신규 타입 등록
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_SYNC_ACTION_HOLDERS, ClientboundSyncActionHoldersPacket.STREAM_CODEC);
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_SKILL_NOTIFICATIONS, ClientboundSkillNotificationsPacket.STREAM_CODEC);
+                NetworkManager.registerS2CPayloadType(CLIENTBOUND_TITLES, ClientboundTitlesPacket.STREAM_CODEC);
         }
 
         static void init()

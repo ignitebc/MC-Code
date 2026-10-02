@@ -43,7 +43,13 @@ public class AchievementComponent extends EmptyComponent
     {
         this.renderedTab = this.state.getSelectedAchievementTab();
         this.clearComponents();
-        if (this.renderedTab == AchievementTab.ACHIEVEMENTS)
+        if (this.renderedTab == AchievementTab.TITLES)
+        {
+            TitleListComponent titleList = new TitleListComponent(getWidth(), getContentHeight());
+            titleList.setY(CONTENT_Y);
+            this.addComponent(titleList);
+        }
+        else if (this.renderedTab == AchievementTab.ACHIEVEMENTS)
         {
             AchievementListComponent achievementList = new AchievementListComponent(getWidth(), getContentHeight());
             achievementList.setY(CONTENT_Y);

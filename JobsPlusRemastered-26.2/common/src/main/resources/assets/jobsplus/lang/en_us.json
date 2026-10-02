@@ -47,6 +47,7 @@
   "jobsplus.hyper.inventory": "보유: 강화 원석 %s개 · 비트코인 %s개 · 코인 %s개",
   "jobsplus.hyper.failure_rule": "실패 시 LV 유지 · 파괴 없음 · 재료와 직업코인 소모",
   "jobsplus.hyper.footer": "직업 슬롯 선택 · 스크롤로 상세 확인 · ESC 돌아가기",
+  "jobsplus.title.acquired": "[칭호] %s님이 %s 칭호를 획득했습니다! (%s)",
   "jobsplus.gui.jobs.job_selection": "직업",
   "jobsplus.gui.jobs.powerups": "스킬",
   "jobsplus.gui.jobs.new_powerups": "신규 스킬 %d개 해방",

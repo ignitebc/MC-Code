@@ -16,6 +16,7 @@ import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
 import com.daqem.jobsplus.player.stock.StockAccount;
 import com.daqem.jobsplus.player.stock.StockPositionLedger;
+import com.daqem.jobsplus.player.title.TitleManager;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.ChatFormatting;
@@ -25,6 +26,8 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
@@ -289,6 +292,12 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
             this.jobsplus$jobs.forEach(job -> job.setPlayer(this));
             JobHealthSync.sync(this);
         }
+    }
+
+    /** 처치 공로와 처치 통계가 모두 반영된 뒤 칭호 조건을 확인한다. */
+    @Inject(at = @At("TAIL"), method = "awardKillScore")
+    private void jobsplus$checkTitleKill(Entity killed, DamageSource source, CallbackInfo ci) {
+        TitleManager.onKill(jobsplus$getServerPlayer(), killed);
     }
 
     @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")

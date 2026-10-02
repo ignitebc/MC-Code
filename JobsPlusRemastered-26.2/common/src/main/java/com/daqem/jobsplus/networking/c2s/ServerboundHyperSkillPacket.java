@@ -9,6 +9,7 @@ import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.job.Job;
 import com.daqem.jobsplus.player.job.hyper.HyperSkillRules;
 import com.daqem.jobsplus.player.job.hyper.HyperSkillState;
+import com.daqem.jobsplus.player.title.TitleManager;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -126,6 +127,7 @@ public record ServerboundHyperSkillPacket(Identifier jobLocation, Action action,
         MetricsEvent.of("HYPER_OPEN").player(player).job(job.getJobInstance().getLocation())
                 .before(0).after(1).coins(coinsBefore, jobsPlayer.jobsplus$getCoins())
                 .jobLevel(job.getLevel()).detail("gems", HyperSkillRules.OPEN_GEM_COST).record();
+        TitleManager.onHyperSkillOpened(player);
         finish(player, jobsPlayer, job,
                 JobsPlus.translatable("hyper.opened", HyperSkillRules.getName(job.getJobInstance().getLocation())));
     }
