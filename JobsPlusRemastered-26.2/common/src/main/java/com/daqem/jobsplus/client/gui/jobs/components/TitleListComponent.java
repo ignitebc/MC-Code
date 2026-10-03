@@ -17,18 +17,18 @@ import java.util.Optional;
 /** 칭호 탭. 칭호마다 배지·획득 조건·보유자를 보여 주고, 내 칭호는 장착하거나 해제할 수 있다. */
 public class TitleListComponent extends EmptyComponent
 {
-    private static final int ROW_HEIGHT = 30;
+    private static final int ROW_HEIGHT = 68;
     private static final int ROW_GAP = 3;
     /** 스크롤 막대가 들어갈 오른쪽 여백 */
     private static final int SCROLL_BAR_SPACE = 10;
     private static final int PADDING = 6;
-    /** 배지 그림(높이 36px)을 절반으로 그린다. 4배 밀도 그림이라 GUI 배율 2에서 원본 픽셀과 1:1이 된다. */
-    private static final int BADGE_HEIGHT = 18;
-    /** 가장 긴 배지 폭에 맞춰 모든 줄의 글자 시작점을 같게 둔다. */
-    private static final int BADGE_COLUMN_WIDTH = 80;
+    /** 목록에서는 고해상도 배지의 날개와 문장을 읽을 수 있도록 표시한다. */
+    private static final int BADGE_HEIGHT = 32;
+    /** 배지 아래에 조건·보유자를 배치해 좁은 패널에서도 그림을 크게 유지한다. */
+    private static final int BADGE_COLUMN_WIDTH = 144;
     private static final int BUTTON_WIDTH = 40;
-    private static final int CONDITION_Y = 6;
-    private static final int HOLDER_Y = 17;
+    private static final int CONDITION_Y = 42;
+    private static final int HOLDER_Y = 55;
 
     private final ActionScrollWidget scroll;
     private int renderedRevision = -1;
@@ -93,15 +93,13 @@ public class TitleListComponent extends EmptyComponent
             this.holderLine = createHolderLine(entry, hasHolder, mine && equipped);
             this.holderColor = hasHolder ? JobsTheme.CYAN : JobsTheme.MUTED;
 
-            int textRight = width - PADDING;
+            this.textRight = width - PADDING;
             if (mine)
             {
                 int buttonX = width - PADDING - BUTTON_WIDTH;
-                int buttonY = (ROW_HEIGHT - JobsTheme.BUTTON_HEIGHT) / 2;
+                int buttonY = (BADGE_HEIGHT + 8 - JobsTheme.BUTTON_HEIGHT) / 2;
                 this.addWidget(new EquipButton(buttonX, buttonY, type, equipped));
-                textRight = buttonX - PADDING;
             }
-            this.textRight = textRight;
         }
 
         private static Component createHolderLine(Optional<ClientTitles.Entry> entry, boolean hasHolder,
@@ -128,13 +126,14 @@ public class TitleListComponent extends EmptyComponent
             JobsTheme.texture(graphics, JobsTheme.Skin.INSET, x, y, getWidth(), getHeight());
 
             int textureWidth = this.type.getTextureWidth();
-            int badgeWidth = textureWidth * BADGE_HEIGHT / TitleType.TEXTURE_HEIGHT;
-            int badgeY = y + (getHeight() - BADGE_HEIGHT) / 2;
+            int badgeWidth = Math.max(1, Math.min(BADGE_COLUMN_WIDTH, getWidth() - PADDING * 3 - BUTTON_WIDTH));
+            int badgeHeight = Math.max(1, badgeWidth * TitleType.TEXTURE_HEIGHT / textureWidth);
+            int badgeY = y + 4 + (BADGE_HEIGHT - badgeHeight) / 2;
             graphics.blit(RenderPipelines.GUI_TEXTURED, this.type.getTexture(), x + PADDING, badgeY,
-                    0.0F, 0.0F, badgeWidth, BADGE_HEIGHT,
+                    0.0F, 0.0F, badgeWidth, badgeHeight,
                     textureWidth, TitleType.TEXTURE_HEIGHT, textureWidth, TitleType.TEXTURE_HEIGHT);
 
-            int textX = x + PADDING + BADGE_COLUMN_WIDTH + PADDING;
+            int textX = x + PADDING;
             int textWidth = Math.max(1, x + this.textRight - textX);
             JobsTheme.text(graphics, Component.literal(this.type.getCondition()), textX, y + CONDITION_Y,
                     textWidth, JobsTheme.TEXT);
