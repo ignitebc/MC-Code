@@ -33,7 +33,7 @@ public class SelectedJobComponent extends EmptyComponent {
             this.setY(layout.bodyY() + 20);
         }
         this.startJobButtonWidget = new StartJobButtonWidget(state);
-        this.startJobButtonWidget.setWidth(Math.min(90, getWidth() - 16));
+        this.startJobButtonWidget.setWidth(Math.min(74, getWidth() - 16));
         this.startJobButtonWidget.setX((getWidth() - this.startJobButtonWidget.getWidth()) / 2);
         this.startJobButtonWidget.setY(wide ? getHeight() - 44 : 29);
         if (state.getSelectedJob().getLevel() == 0 && canStartNewJob()) {
@@ -49,7 +49,7 @@ public class SelectedJobComponent extends EmptyComponent {
         int x = getTotalX();
         int y = getTotalY();
         if (wide) {
-            JobsTheme.text(graphics, Component.literal("직업 상세 정보"), x + 8, y + 7, getWidth() - 16, JobsTheme.MUTED);
+            JobsTheme.text(graphics, Component.literal("직업 시작 · 스킬"), x + 8, y + 7, getWidth() - 16, JobsTheme.MUTED);
             int iconX = x + (getWidth() - ICON_SIZE) / 2;
             JobsTheme.texture(graphics, JobsTheme.Skin.SLOT, iconX, y + ICON_Y, ICON_SIZE, ICON_SIZE);
             graphics.pose().pushMatrix();

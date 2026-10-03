@@ -22,16 +22,16 @@ public record JobsLayout(int width, int height) {
     }
 
     public int leftWidth() {
-        return wide() ? (width - 44) * 25 / 100 : 110;
+        return wide() ? (width - 44) * 32 / 100 : 110;
     }
 
     public int detailX() {
         return wide() ? 18 + leftWidth() : 8;
     }
 
-    /** 직업 목록 칸과 같은 너비로 둔다. 남는 폭은 오른쪽 내용 칸이 가져간다. */
+    /** 줄인 직업 시작·스킬 칸의 폭은 직업 목록에 더하고 오른쪽 정보 칸의 폭은 유지한다. */
     public int detailWidth() {
-        return leftWidth();
+        return wide() ? (width - 44) * 25 / 100 * 2 - leftWidth() : leftWidth();
     }
 
     public int contentX() {

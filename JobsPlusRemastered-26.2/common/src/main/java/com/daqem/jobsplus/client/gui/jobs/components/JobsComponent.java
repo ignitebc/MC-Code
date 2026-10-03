@@ -228,7 +228,7 @@ public class JobsComponent extends AbstractComponent
         }
         boolean expandedPage = layout.expandedPage(this.cachedRightTab);
         this.jobSelectionComponent.resizeHeight(expandedPage ? layout.bodyHeight() - 59 : layout.jobsHeight());
-        int actionWidth = Math.min(90, layout.detailWidth() - 16);
+        int actionWidth = Math.min(74, layout.detailWidth() - 16);
         this.powerupsButtonWidget.setX(expandedPage ? 8 + (layout.leftWidth() - actionWidth) / 2
                 : layout.detailX() + (layout.detailWidth() - actionWidth) / 2);
         this.powerupsButtonWidget.setY(expandedPage ? layout.bodyY() + layout.bodyHeight() - 22 : layout.actionY());

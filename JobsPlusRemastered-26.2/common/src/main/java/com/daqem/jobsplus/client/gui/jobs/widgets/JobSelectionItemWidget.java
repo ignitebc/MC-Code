@@ -68,7 +68,12 @@ public class JobSelectionItemWidget extends CustomButtonWidget
         }
 
         int nameWidth = Math.max(1, getWidth() - 31 - statusWidth);
-        JobsTheme.text(guiGraphics, getMessage(), getX() + 25, getY() + 8, nameWidth, jobNameColor);
+        Component name = getMessage();
+        if (this.job.getLevel() > 0)
+        {
+            name = name.copy().append(" LV" + this.job.getLevel());
+        }
+        JobsTheme.text(guiGraphics, name, getX() + 25, getY() + 8, nameWidth, jobNameColor);
         JobsTheme.textRight(guiGraphics, status, getX() + getWidth() - 4, getY() + 8,
                 statusWidth, statusColor);
     }
