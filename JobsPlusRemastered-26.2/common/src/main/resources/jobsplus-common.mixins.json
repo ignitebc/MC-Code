@@ -4,12 +4,22 @@
   "package": "com.daqem.jobsplus.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "client.HyperKeyboardInputMixin",
+    "client.HyperHudMixin",
+    "client.HyperEntityRenderStateMixin",
+    "client.HyperEntityRendererMixin",
     "client.AbstractScrollAreaAccessor",
     "client.TitleChatLayoutMixin",
     "client.TitleChatMessageMixin",
     "client.TitleTabLayoutMixin"
   ],
   "mixins": [
+    "MixinHyperPlayer",
+    "MixinHyperServerPlayer",
+    "MixinHyperCrafting",
+    "MixinHyperLifeSteal",
+    "MixinHyperProjectile",
+    "MixinHyperSplashPotion",
     "CropBlockAccessor",
     "MixinServerPlayer",
     "MixinHyperMining",

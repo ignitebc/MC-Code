@@ -1,13 +1,18 @@
 package com.daqem.jobsplus.player.job.hyper;
 
 import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.player.JobsServerPlayer;
+import com.daqem.jobsplus.player.job.Job;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Set;
+import java.util.List;
+import java.util.Locale;
 
 /** 서버 판정과 화면이 함께 사용하는 해금·강화 규칙. 비용 구간은 목표 LV 기준이다. */
 public final class HyperSkillRules
@@ -17,6 +22,13 @@ public final class HyperSkillRules
     public static final int OPEN_GEM_COST = 10;
     public static final int OPEN_COIN_COST = 300;
     public static final int UPGRADE_COIN_COST = 20;
+    public static final int SHIELD_DURATION_TICKS = 60;
+    public static final int LANDING_PROTECTION_TICKS = 20;
+    public static final int LEECH_COOLDOWN_TICKS = 20;
+    public static final float LEECH_HEALTH = 2.0F;
+    public static final int LEAP_CHARGE_TICKS = 40;
+    public static final int LEAP_MIN_CHARGE_TICKS = 6;
+    public static final int LEAP_COOLDOWN_TICKS = 600;
     public static final Identifier MINER = JobsPlus.getId("miner");
     public static final Identifier DIGGER = JobsPlus.getId("digger");
     public static final Identifier FARMER = JobsPlus.getId("farmer");
@@ -39,11 +51,7 @@ public final class HyperSkillRules
 
     public static boolean supports(Identifier jobLocation)
     {
-        if (MINER.equals(jobLocation))
-        {
-            return true;
-        }
-        return DIGGER.equals(jobLocation);
+        return ICON_JOBS.contains(jobLocation) && !FISHERMAN.equals(jobLocation);
     }
 
     public static boolean hasIcon(Identifier jobLocation)
@@ -91,6 +99,86 @@ public final class HyperSkillRules
     public static int getActivationChance(int level)
     {
         return Math.clamp(level, 0, MAX_LEVEL) * 10;
+    }
+
+    public static int getActiveLevel(ServerPlayer player, Identifier jobLocation)
+    {
+        if (!player.isAlive() || player.isSpectator() || player.isCreative()
+                || !(player instanceof JobsServerPlayer jobsPlayer))
+        {
+            return 0;
+        }
+        Job job = jobsPlayer.jobsplus$getJob(jobLocation);
+        if (job == null || job.getLevel() < REQUIRED_JOB_LEVEL || !job.getHyperSkill().active())
+        {
+            return 0;
+        }
+        return job.getHyperSkill().level();
+    }
+
+    public static int getFarmerChance(int level)
+    {
+        return Math.clamp(level, 0, MAX_LEVEL) * 3;
+    }
+
+    public static int getHunterChance(int level)
+    {
+        return Math.clamp(level, 0, MAX_LEVEL) * 4;
+    }
+
+    public static double getAlchemistChance(int level)
+    {
+        return level <= 0 ? 0.0D : 10.0D + (Math.clamp(level, 1, MAX_LEVEL) - 1) * 40.0D / 9.0D;
+    }
+
+    public static int getLeapDistance(int level)
+    {
+        return Math.clamp(level, 0, MAX_LEVEL) * 8;
+    }
+
+    public static int getShieldCooldownTicks(int level)
+    {
+        return 1200 - (int) Math.round((Math.clamp(level, 1, MAX_LEVEL) - 1) * 600.0D / 9.0D);
+    }
+
+    public static Component getEffectSummary(Identifier jobLocation, int level)
+    {
+        if (FARMER.equals(jobLocation))
+        {
+            return JobsPlus.translatable("hyper.farmer.summary", getFarmerChance(level));
+        }
+        if (HUNTER.equals(jobLocation))
+        {
+            return JobsPlus.translatable("hyper.hunter.summary", getHunterChance(level));
+        }
+        if (ALCHEMIST.equals(jobLocation))
+        {
+            return JobsPlus.translatable("hyper.alchemist.summary", decimal(getAlchemistChance(level)));
+        }
+        if (ADVENTURER.equals(jobLocation))
+        {
+            return JobsPlus.translatable("hyper.adventurer.summary",
+                    decimal(getLeapDistance(level) / 16.0D), getLeapDistance(level));
+        }
+        if (SMITH.equals(jobLocation))
+        {
+            return JobsPlus.translatable("hyper.smith.summary", decimal(getShieldCooldownTicks(level) / 20.0D));
+        }
+        return JobsPlus.translatable("hyper.mining.summary", getActivationChance(level));
+    }
+
+    public static List<Component> getDescriptionLines(Identifier jobLocation)
+    {
+        String key = MINER.equals(jobLocation) || DIGGER.equals(jobLocation) ? "mining" : jobLocation.getPath();
+        return List.of(JobsPlus.translatable("hyper." + key + ".description"),
+                JobsPlus.translatable("hyper." + key + ".rules"),
+                JobsPlus.translatable("hyper." + key + ".details"),
+                JobsPlus.translatable("hyper." + key + ".warning"));
+    }
+
+    private static String decimal(double value)
+    {
+        return String.format(Locale.ROOT, "%.1f", value);
     }
 
     public static int getSuccessChance(int targetLevel)

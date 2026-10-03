@@ -12,6 +12,22 @@ public final class CombatRules {
 
     private CombatRules() { }
 
+    /** 겉날개와 직업 도약이 같은 전투 제한 범위·설정을 사용한다. */
+    public static boolean isFlightRestricted(ServerPlayer player) {
+        var config = ServerUtilities.config();
+        if (!config.combatElytra()) return false;
+        var level = player.level();
+        Raid raid = level.getRaidAt(player.blockPosition());
+        if (raid != null && raid.isActive() && !raid.isStopped()) return true;
+        return !level.getEntitiesOfClass(WitherBoss.class,
+                player.getBoundingBox().inflate(config.combatRange()), WitherBoss::isAlive).isEmpty();
+    }
+
+    public static void punishFlight(ServerPlayer player) {
+        player.level().getServer().getPlayerList().broadcastSystemMessage(KILL_MESSAGE, false);
+        player.kill(player.level());
+    }
+
     public static void tick(ServerPlayer player) {
         var config = ServerUtilities.config();
         if (!player.isAlive() || (!config.combatElytra() && !config.combatGolems())) return;
@@ -28,8 +44,7 @@ public final class CombatRules {
             }
         }
         if (config.combatElytra() && player.isFallFlying()) {
-            level.getServer().getPlayerList().broadcastSystemMessage(KILL_MESSAGE, false);
-            player.kill(level);
+            punishFlight(player);
         }
     }
 }

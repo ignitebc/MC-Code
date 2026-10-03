@@ -8,13 +8,13 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.daqem.arc.player.SkillActivationNotifier;
+import com.daqem.arc.player.EffectAmplifierScope;
 import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +49,8 @@ public class EffectAmplifierAdditionReward extends AbstractReward {
         MobEffectInstance effect = actionData.getData(ActionDataType.MOB_EFFECT_INSTANCE);
         if (effect != null) {
             if (actionData.getPlayer().arc$getPlayer() instanceof ServerPlayer player){
-                MobEffectInstance newEffect = new MobEffectInstance(effect.getEffect(), effect.getDuration(), Mth.floor(effect.getAmplifier() + addition), effect.isAmbient(), effect.isVisible());
+                int amplifier = EffectAmplifierScope.resolve(player, effect, addition);
+                MobEffectInstance newEffect = new MobEffectInstance(effect.getEffect(), effect.getDuration(), amplifier, effect.isAmbient(), effect.isVisible());
                 actionData.setData(ActionDataType.MOB_EFFECT_INSTANCE, newEffect);
                 player.addEffect(newEffect, new ServerPlayer(Objects.requireNonNull(player.level().getServer()), player.level(), new GameProfile(UUID.randomUUID(), "a"), player.clientInformation()));
                 if (activationMessageKey != null) {

@@ -1,6 +1,7 @@
 package com.daqem.jobsplus.networking;
 
 import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.client.hyper.ClientHyperSkills;
 import com.daqem.jobsplus.client.networking.ClientboundAlertPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundAchievementPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundLevelUpJobPacketHandler;
@@ -20,6 +21,9 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public interface JobsPlusNetworking
 {
+        CustomPacketPayload.Type<ServerboundHyperLeapPacket> SERVERBOUND_HYPER_LEAP = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_hyper_leap"));
+        CustomPacketPayload.Type<ClientboundHyperStatusPacket> CLIENTBOUND_HYPER_STATUS = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_hyper_status"));
+        CustomPacketPayload.Type<ClientboundHyperLeapPacket> CLIENTBOUND_HYPER_LEAP = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_hyper_leap"));
         CustomPacketPayload.Type<ServerboundAchievementPacket> SERVERBOUND_ACHIEVEMENTS = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_achievements_v1"));
         CustomPacketPayload.Type<ClientboundAchievementPacket> CLIENTBOUND_ACHIEVEMENTS = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_achievements_v1"));
         CustomPacketPayload.Type<ServerboundTogglePowerUpPacket> SERVERBOUND_TOGGLE_POWERUP = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_toggle_powerup"));
@@ -59,6 +63,8 @@ public interface JobsPlusNetworking
 
         static void initClient()
         {
+                NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_HYPER_STATUS, ClientboundHyperStatusPacket.STREAM_CODEC, ClientHyperSkills::receiveStatus);
+                NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_HYPER_LEAP, ClientboundHyperLeapPacket.STREAM_CODEC, ClientHyperSkills::receiveLeap);
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_ACHIEVEMENTS, ClientboundAchievementPacket.STREAM_CODEC, ClientboundAchievementPacketHandler::handleClientSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_OPEN_JOBS_SCREEN, ClientboundOpenJobsScreenPacket.STREAM_CODEC, ClientboundOpenJobsScreenPacketHandler::handleClientSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_LEVEL_UP_JOB, ClientboundLevelUpJobPacket.STREAM_CODEC, ClientboundLevelUpJobPacketHandler::handleClientSide);
@@ -75,6 +81,7 @@ public interface JobsPlusNetworking
 
         static void initCommon()
         {
+                NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_HYPER_LEAP, ServerboundHyperLeapPacket.STREAM_CODEC, ServerboundHyperLeapPacket::handleServerSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_ACHIEVEMENTS, ServerboundAchievementPacket.STREAM_CODEC, ServerboundAchievementPacket::handleServerSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_TOGGLE_POWERUP, ServerboundTogglePowerUpPacket.STREAM_CODEC, ServerboundTogglePowerUpPacket::handleServerSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.C2S, SERVERBOUND_START_JOB, ServerboundStartJobPacket.STREAM_CODEC, ServerboundStartJobPacket::handleServerSide);
@@ -94,6 +101,8 @@ public interface JobsPlusNetworking
 
         static void initServer()
         {
+                NetworkManager.registerS2CPayloadType(CLIENTBOUND_HYPER_STATUS, ClientboundHyperStatusPacket.STREAM_CODEC);
+                NetworkManager.registerS2CPayloadType(CLIENTBOUND_HYPER_LEAP, ClientboundHyperLeapPacket.STREAM_CODEC);
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_ACHIEVEMENTS, ClientboundAchievementPacket.STREAM_CODEC);
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_OPEN_JOBS_SCREEN, ClientboundOpenJobsScreenPacket.STREAM_CODEC);
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_LEVEL_UP_JOB, ClientboundLevelUpJobPacket.STREAM_CODEC);

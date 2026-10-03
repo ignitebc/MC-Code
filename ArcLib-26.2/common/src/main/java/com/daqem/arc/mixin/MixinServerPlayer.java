@@ -417,7 +417,8 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     @Inject(at = @At("TAIL"), method = "tick()V")
     public void tick(CallbackInfo ci) {
         // 이동 보상 인정 비율은 틱당 한 번만 계산한다. 제자리 왕복이면 0 이 나온다.
-        final double arc$creditFactor = this.arc$movementCreditTracker.creditFactor(arc$getServerPlayer());
+        double movementCredit = this.arc$movementCreditTracker.creditFactor(arc$getServerPlayer());
+        final double arc$creditFactor = arc$allowsMovementRewards() ? movementCredit : 0.0D;
 
         if (this.arc$isSwimming && this.isSwimming()) {
             this.arc$creditedSwimCm = arc$advanceCredited(this.arc$swimmingDistanceInCm,

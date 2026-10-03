@@ -45,6 +45,11 @@ public interface ArcServerPlayer extends ArcPlayer {
     /** 이동 보상 인정 여부를 판정하는 추적기. 제자리 왕복 악용을 막는다. */
     MovementCreditTracker arc$getMovementCreditTracker();
 
+    /** 강제 이동 중에도 원본 누적기는 갱신하되 이동 보상 거리는 더하지 않는다. */
+    default boolean arc$allowsMovementRewards() {
+        return true;
+    }
+
     /** 블록을 우클릭한 누적 횟수. 자동 낚시 판정의 근거로 쓴다. */
     long arc$getBlockInteractionCounter();
 

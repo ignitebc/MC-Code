@@ -129,7 +129,8 @@ public record ServerboundHyperSkillPacket(Identifier jobLocation, Action action,
                 .jobLevel(job.getLevel()).detail("gems", HyperSkillRules.OPEN_GEM_COST).record();
         TitleManager.onHyperSkillOpened(player);
         finish(player, jobsPlayer, job,
-                JobsPlus.translatable("hyper.opened", HyperSkillRules.getName(job.getJobInstance().getLocation())));
+                JobsPlus.translatable("hyper.opened", HyperSkillRules.getName(job.getJobInstance().getLocation()),
+                        HyperSkillRules.getEffectSummary(job.getJobInstance().getLocation(), 1)));
     }
 
     private static void upgrade(ServerPlayer player, JobsServerPlayer jobsPlayer, Job job)
@@ -166,7 +167,7 @@ public record ServerboundHyperSkillPacket(Identifier jobLocation, Action action,
         {
             nextLevel = targetLevel;
             result = JobsPlus.translatable("hyper.upgrade_success", nextLevel,
-                    HyperSkillRules.getActivationChance(nextLevel));
+                    HyperSkillRules.getEffectSummary(job.getJobInstance().getLocation(), nextLevel));
         }
         // 실패해도 revision은 증가시켜 같은 확인 요청으로 재시도되지 않게 한다.
         job.setHyperSkill(state.withLevel(nextLevel));

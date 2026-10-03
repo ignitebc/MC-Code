@@ -66,7 +66,7 @@ public class HyperPowerupsComponent extends EmptyComponent
                 Math.max(1, height - PANEL_PADDING * 2) / (float) RING_HEIGHT));
         this.ringX = (this.leftWidth - Math.round(RING_WIDTH * this.ringScale)) / 2;
         this.ringY = (height - Math.round(RING_HEIGHT * this.ringScale)) / 2;
-        this.detailsScale = Math.min(1.0f, Math.max(1, height - 44) / 138.0f);
+        this.detailsScale = Math.min(1.0f, Math.max(1, height - 44) / 194.0f);
 
         this.content = new EmptyComponent(0, 0, width, height)
         {
@@ -236,7 +236,7 @@ public class HyperPowerupsComponent extends EmptyComponent
             skill = job.getHyperSkill();
         }
         Component status = JobsPlus.translatable("hyper.level_status", skill.level(),
-                HyperSkillRules.getActivationChance(skill.level()));
+                HyperSkillRules.getEffectSummary(jobLocation, skill.level()));
         if (skill.level() == 0)
         {
             status = JobsPlus.translatable("hyper.locked");
@@ -260,16 +260,20 @@ public class HyperPowerupsComponent extends EmptyComponent
                     x + (index + 1) * pipWidth - Math.min(2, pipWidth - 1),
                     y + Math.round(42 * this.detailsScale) + Math.max(1, Math.round(4 * this.detailsScale)), color);
         }
-        line(graphics, JobsPlus.translatable("hyper.description"), 56, JobsTheme.TEXT);
-        line(graphics, JobsPlus.translatable("hyper.mining_rules"), 68, JobsTheme.MUTED);
-        Component next = JobsPlus.translatable("hyper.open_details");
+        List<Component> descriptions = HyperSkillRules.getDescriptionLines(jobLocation);
+        for (int index = 0; index < descriptions.size(); index++)
+        {
+            int color = index == 3 ? JobsTheme.WARNING : JobsTheme.TEXT;
+            line(graphics, descriptions.get(index), 56 + index * 16, color);
+        }
+        Component next = JobsPlus.translatable("hyper.open_details", HyperSkillRules.getEffectSummary(jobLocation, 1));
         Component cost = JobsPlus.translatable("hyper.open_cost",
                 HyperSkillRules.OPEN_GEM_COST, HyperSkillRules.OPEN_COIN_COST);
         if (skill.level() > 0 && skill.level() < HyperSkillRules.MAX_LEVEL)
         {
             int target = skill.level() + 1;
             next = JobsPlus.translatable("hyper.next_details", target,
-                    HyperSkillRules.getActivationChance(target), HyperSkillRules.getSuccessChance(target));
+                    HyperSkillRules.getEffectSummary(jobLocation, target), HyperSkillRules.getSuccessChance(target));
             cost = JobsPlus.translatable("hyper.upgrade_cost", HyperSkillRules.getGemCost(target),
                     HyperSkillRules.getBitcoinCost(target), HyperSkillRules.UPGRADE_COIN_COST);
         }
@@ -278,16 +282,16 @@ public class HyperPowerupsComponent extends EmptyComponent
             next = JobsPlus.translatable("hyper.complete");
             cost = JobsPlus.translatable("hyper.no_more_cost");
         }
-        line(graphics, next, 86, JobsTheme.SUCCESS);
-        line(graphics, cost, 98, JobsTheme.WARNING);
+        line(graphics, next, 128, JobsTheme.SUCCESS);
+        line(graphics, cost, 144, JobsTheme.WARNING);
         line(graphics, JobsPlus.translatable("hyper.inventory", count(HyperSkillRules.GEM),
-                count(HyperSkillRules.BITCOIN), this.state.getCoins()), 112, JobsTheme.MUTED);
+                count(HyperSkillRules.BITCOIN), this.state.getCoins()), 160, JobsTheme.MUTED);
         Component note = JobsPlus.translatable("hyper.failure_rule");
         if (jobLevel < HyperSkillRules.REQUIRED_JOB_LEVEL)
         {
             note = JobsPlus.translatable("hyper.requires_level");
         }
-        line(graphics, note, 126, JobsTheme.MUTED);
+        line(graphics, note, 178, JobsTheme.MUTED);
     }
 
     private void updateButtons(Job job)
