@@ -81,6 +81,12 @@ public final class ShopOffers
         offers.add(new ShopOffer(Identifier.parse("minecraft:pufferfish"), 8, Identifier.parse("minecraft:emerald"), 1));
         offers.add(new ShopOffer(Identifier.parse("minecraft:dirt"), 192, Identifier.parse("minecraft:emerald"), 1));
         offers.add(new ShopOffer(Identifier.parse("minecraft:netherrack"), 320, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:cobblestone"), 256, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:rotten_flesh"), 128, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:bone"), 64, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:granite"), 128, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:diorite"), 128, Identifier.parse("minecraft:emerald"), 1));
+        offers.add(new ShopOffer(Identifier.parse("minecraft:andesite"), 128, Identifier.parse("minecraft:emerald"), 1));
         return offers;
     }
 }
