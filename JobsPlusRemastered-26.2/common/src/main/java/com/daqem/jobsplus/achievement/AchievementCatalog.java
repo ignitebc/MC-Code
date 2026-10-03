@@ -148,7 +148,7 @@ public final class AchievementCatalog
         add(definitions, "D04", "비트코인 고래", 5, 23, "D03", o("job_btc", 800, "직업 지급 BTC"));
         add(definitions, "D05", "내 땅 마련", 1, 1, "", o("claimed_chunks", 1, "동시 소유 청크"));
         add(definitions, "D06", "작은 영지", 2, 4, "D05", o("claimed_chunks", 4, "동시 소유 청크"));
-        add(definitions, "D07", "하늘을 산 사람", 3, 12, "", o("shop_elytra", 1, "500 BTC 겉날개 구매"));
+        add(definitions, "D07", "하늘을 산 사람", 3, 12, "", o("shop_elytra", 1, "상점에서 겉날개 구매"));
         add(definitions, "D08", "시장을 읽는 눈", 2, 4, "", o("stock_round_trips", 3, "유효 매수·매도 종목"));
         add(definitions, "D09", "넓어진 투자 지도", 3, 9, "D08", o("stock_round_trips", 10, "유효 매수·매도 종목"));
         add(definitions, "D10", "농산물 납품 책임자", 2, 5, "", cropObjectives("sold:", 1000));
