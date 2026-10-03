@@ -20,32 +20,5 @@
   "yamlconfig.gui.validation_error.empty_key": "이 항목은 비워 둘 수 없습니다",
 
   "yamlconfig.gui.value.true": "예",
-  "yamlconfig.gui.value.false": "아니오",
-
-  "yamlconfig.test": "테스트 설정",
-  "yamlconfig.test.test-common": "테스트 공통 설정",
-  "yamlconfig.test.test-client": "테스트 클라이언트 설정",
-  "yamlconfig.test.test-server": "테스트 서버 설정",
-
-  "yamlconfig.test1": "테스트1 설정",
-  "yamlconfig.test1.test1-common": "테스트1 공통 설정",
-  "yamlconfig.test1.test1-client": "테스트1 클라이언트 설정",
-
-  "yamlconfig.test2": "테스트2 설정",
-  "yamlconfig.test2.test2-common": "테스트2 공통 설정",
-  "yamlconfig.test2.test2-client": "테스트2 클라이언트 설정",
-  "yamlconfig.test2.test2-server": "테스트2 서버 설정",
-
-  "yamlconfig.test3": "테스트3 설정",
-  "yamlconfig.test3.test3-common": "테스트3 공통 설정",
-  "yamlconfig.test3.test3-client": "테스트3 클라이언트 설정",
-  "yamlconfig.test3.test3-server": "테스트3 서버 설정",
-
-  "yamlconfig.test4": "테스트4 설정",
-  "yamlconfig.test4.test4-common": "테스트4 공통 설정",
-  "yamlconfig.test4.test4-client": "테스트4 클라이언트 설정",
-  "yamlconfig.test4.test4-server": "테스트4 서버 설정",
-
-  "yamlconfig.test5": "테스트5 설정",
-  "yamlconfig.test5.test5-client": "테스트5 클라이언트 설정"
+  "yamlconfig.gui.value.false": "아니오"
 }

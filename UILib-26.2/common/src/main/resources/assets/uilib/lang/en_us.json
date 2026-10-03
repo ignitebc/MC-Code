@@ -1,6 +1,5 @@
 {
   "key.category.uilib.category": "UI 라이브러리",
-  "key.uilib.open_test_menu": "테스트 메뉴 열기",
   "uilib.widget.validation_errors": "입력 오류",
   "uilib.widget.validation_error.min_length": "이 항목은 최소 %s자 이상이어야 합니다",
   "uilib.widget.validation_error.max_length": "이 항목은 최대 %s자까지 입력할 수 있습니다",

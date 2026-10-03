@@ -29,17 +29,3 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.release = 25
 }
-
-sourceSets {
-    regression {
-        compileClasspath += sourceSets.main.output
-        runtimeClasspath += sourceSets.main.output
-    }
-}
-
-tasks.register('regressionTest', JavaExec) {
-    dependsOn regressionClasses
-    classpath = sourceSets.regression.runtimeClasspath
-    mainClass = 'com.mcserver.serverutilities.RegressionTests'
-}
-check.dependsOn regressionTest

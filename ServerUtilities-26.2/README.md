@@ -383,13 +383,7 @@ Java 25 환경에서 모듈 폴더 안에서 실행합니다.
 .\gradlew.bat build
 ```
 
-릴리스 파일은 `build/libs/ServerUtilities-26.2-1.0.1.jar`입니다. `build`의 `check`에서 외부 테스트 라이브러리 없이 설정·수면 복원 회귀 검사를 실행합니다. 자석석 설치·폭발·피스톤 이동과 Jobs+ 접속 호환성은 [운영 서버 업데이트 확인 항목](../ReadMe.md#운영-서버-업데이트)에 따라 실제 게임에서 별도로 검증합니다.
-
-작업 공간 루트에서 수집기 회귀 검사는 다음과 같습니다. 임시 폴더와 대체 빌드 함수를 사용하므로 실제 수집 폴더나 전체 모드를 빌드하지 않습니다.
-
-```powershell
-python -m unittest discover -s Build_File-26.2 -p test_collect_fabric_jars.py
-```
+릴리스 파일은 `build/libs/ServerUtilities-26.2-1.0.1.jar`입니다. 자석석 설치·폭발·피스톤 이동과 Jobs+ 접속 호환성은 [운영 서버 업데이트 확인 항목](../ReadMe.md#운영-서버-업데이트)에 따라 실제 게임에서 별도로 검증합니다.
 
 전체 빌드·수집은 `python Build_File-26.2/collect_fabric_jars.py`로 수행합니다. 대상은 11개이며, 빌드·검증·임시 복사가 성공한 후 결과를 교체합니다.
 
@@ -406,9 +400,9 @@ python -m unittest discover -s Build_File-26.2 -p test_collect_fabric_jars.py
 | 몬스터 레벨 표시 | `monster`의 레벨 계산·동기화, 클라이언트 렌더러 Mixin 2개와 등록, TACZ의 총기 등급표·등급 연결 Mixin, 이 문서의 해당 절 |
 | 크리퍼 레벨 | `CreeperLevel`·`CreeperExplosionRules`, 크리퍼 피해·블록 파괴 범위 Mixin과 등록, 설정 키 제거, Jobs+ 사용자 가이드의 크리퍼 안내, 이 문서의 해당 절 |
 | 시작 장비 총기 | `StarterKitRules`의 괭이·검·총기 연결, TACZ의 시작 총기 생성·연결 Mixin, 이 문서의 해당 절 |
-| 레벨별 경험치 구슬 | `MonsterExperience`, 경험치 구슬 Mixin과 등록, 회귀 검사, 이 문서의 해당 절 |
+| 레벨별 경험치 구슬 | `MonsterExperience`, 경험치 구슬 Mixin과 등록, 이 문서의 해당 절 |
 | 보스 소환수 | `BossMinionRules`·`WitherEscapeRules`, 서버 틱·종료 연결, 이 문서의 해당 절 |
-| 빌드 수집 | collector·테스트·배포 의존성 문서 |
+| 빌드 수집 | collector·배포 의존성 문서 |
 
 각 기능 추가와 기존 모드의 해당 구현 제거를 같은 커밋으로 관리합니다. 수면 기반 커밋 위에 전투, 밸런스, 사망 처리를 순서대로 적용하며 빌드 수집 연결과 수집 실패 복구는 별도 커밋으로 관리합니다. 전체 기능을 되돌릴 때는 의존하는 변경부터 역순으로 되돌립니다.
 

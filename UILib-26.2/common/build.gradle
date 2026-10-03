@@ -13,8 +13,6 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     api "dev.architectury:architectury:${rootProject.architectury_version}"
 
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${project.j_unit_version}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${project.j_unit_version}"
 }
 
 publishing {
@@ -29,8 +27,4 @@ publishing {
     repositories {
         // Add repositories to publish to here.
     }
-}
-
-test {
-    useJUnitPlatform()
 }

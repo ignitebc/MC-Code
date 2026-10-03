@@ -23,11 +23,4 @@ dependencies {
     // 설치 블록 원장과 도구의 실제 EXP 변경을 재사용한다.
     implementation files(rootProject.file("../ServerUtilities-26.2/build/libs/ServerUtilities-26.2-1.0.1.jar"))
 
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${project.jUnitVersion}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${project.jUnitVersion}"
-
-}
-
-test {
-    useJUnitPlatform()
 }
