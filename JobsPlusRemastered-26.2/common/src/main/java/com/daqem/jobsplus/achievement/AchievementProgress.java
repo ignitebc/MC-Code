@@ -12,8 +12,9 @@ import java.util.Set;
 public record AchievementProgress(Map<String, Long> counters, Set<String> completed, Map<String, GearProgress> equipment)
 {
     private static final Codec<Set<String>> STRING_SET = Codec.STRING.listOf().xmap(HashSet::new, java.util.ArrayList::new);
+    private static final Codec<Long> NON_NEGATIVE_LONG = Codec.LONG.validate(Codec.checkRange(0L, Long.MAX_VALUE));
     public static final Codec<AchievementProgress> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.unboundedMap(Codec.STRING, Codec.longRange(0, Long.MAX_VALUE)).fieldOf("counters").forGetter(AchievementProgress::counters),
+            Codec.unboundedMap(Codec.STRING, NON_NEGATIVE_LONG).fieldOf("counters").forGetter(AchievementProgress::counters),
             STRING_SET.fieldOf("completed").forGetter(AchievementProgress::completed),
             Codec.unboundedMap(Codec.STRING, GearProgress.CODEC).fieldOf("equipment").forGetter(AchievementProgress::equipment)
     ).apply(instance, AchievementProgress::new));
@@ -75,7 +76,7 @@ public record AchievementProgress(Map<String, Long> counters, Set<String> comple
         public static final Codec<GearProgress> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf("kind").forGetter(GearProgress::kind),
                 Codec.STRING.fieldOf("type").forGetter(GearProgress::type),
-                Codec.longRange(0, Long.MAX_VALUE).fieldOf("experience").forGetter(GearProgress::contributedExperience),
+                NON_NEGATIVE_LONG.fieldOf("experience").forGetter(GearProgress::contributedExperience),
                 Codec.intRange(0, 100).fieldOf("reached_level").forGetter(GearProgress::reachedLevel)
         ).apply(instance, GearProgress::new));
     }
