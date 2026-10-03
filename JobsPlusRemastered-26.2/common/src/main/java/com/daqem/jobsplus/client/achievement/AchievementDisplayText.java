@@ -82,12 +82,12 @@ public final class AchievementDisplayText
         return switch (definition.id())
         {
             case "A14" -> "각 직업의 장인 업적 중 2개를 달성해야 합니다.\n구매 후 비활성화한 일반 스킬도 인정하며 하이퍼스킬은 제외합니다.";
-            case "B01", "B02", "B03" -> "직접 설치한 블록은 집계하지 않습니다.\n대상 광석:\n"
+            case "B01", "B02", "B03", "B34" -> "직접 설치한 블록은 집계하지 않습니다.\n대상 광석:\n"
                     + names("block", AchievementRules.ORES.stream().sorted().toList());
-            case "B04" -> "자연 생성된 고대 잔해만 집계합니다.\n직접 설치한 블록은 제외합니다.";
-            case "B05", "B06", "B07" -> "직접 설치한 블록은 집계하지 않습니다.\n대상 블록:\n"
+            case "B04", "B33" -> "자연 생성된 고대 잔해만 집계합니다.\n직접 설치한 블록은 제외합니다.";
+            case "B05", "B06", "B07", "B35" -> "직접 설치한 블록은 집계하지 않습니다.\n대상 블록:\n"
                     + names("block", AchievementRules.EXCAVATION.stream().sorted().toList());
-            case "B08", "B09", "B10", "B11" -> "완전히 자란 작물 블록을 수확할 때 1회 집계합니다.\n추가 드롭은 제외합니다.\n대상 작물:\n"
+            case "B08", "B09", "B10", "B11", "B36" -> "완전히 자란 작물 블록을 수확할 때 1회 집계합니다.\n추가 드롭은 제외합니다.\n대상 작물:\n"
                     + names("block", AchievementRules.CROPS.stream().sorted().toList());
             case "B16", "B17", "B18" -> "서버에서 적대 몬스터로 분류된 대상만 집계합니다.\n일반 처치는 기존 처치 공로를 사용하며, 드래곤은 별도 기여 조건을 만족해야 합니다.";
             case "C04" -> "다음 네더 생물 군계를 모두 방문해야 합니다:\n"
