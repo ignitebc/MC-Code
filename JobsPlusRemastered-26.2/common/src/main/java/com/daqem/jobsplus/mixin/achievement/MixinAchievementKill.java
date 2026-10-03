@@ -1,8 +1,10 @@
 package com.daqem.jobsplus.mixin.achievement;
 
+import com.autovw.advancednetherite.common.entity.DialgaPetEntity;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.event.triggers.KillCreditTracker;
 import com.daqem.jobsplus.achievement.AchievementManager;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -33,7 +35,13 @@ public abstract class MixinAchievementKill
         ArcServerPlayer killer = KillCreditTracker.findKiller(victim, source);
         if (killer != null)
         {
-            AchievementManager.recordKill(killer.arc$getServerPlayer(), victim);
+            AchievementManager.recordKill(killer.arc$getServerPlayer(), victim, source);
+            return;
+        }
+        // 펫이 처치하면 플레이어 처치 공로는 없다. 펫 처치 업적만 주인에게 기록한다.
+        if (source.getEntity() instanceof DialgaPetEntity pet && pet.getOwner() instanceof ServerPlayer owner)
+        {
+            AchievementManager.recordPetKill(owner, victim);
         }
     }
 

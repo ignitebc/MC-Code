@@ -13,6 +13,8 @@ import com.daqem.jobsplus.player.job.Job;
 import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
 import com.daqem.jobsplus.player.stock.StockAchievementTrade;
+import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
+import com.mcserver.serverutilities.monster.MonsterLevel;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
@@ -27,6 +29,10 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.item.ItemStack;
@@ -34,6 +40,7 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.Structure;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -48,6 +55,9 @@ import java.util.stream.Stream;
 public final class AchievementManager
 {
     private static final Identifier ADVENTURING_TIME = Identifier.withDefaultNamespace("adventure/adventuring_time");
+    /** TACZ 탄환 피해. TACZ에 의존하지 않도록 태그 ID로만 확인한다. */
+    private static final TagKey<DamageType> GUN_BULLETS =
+            TagKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath("tacz", "bullets"));
     private static final Map<UUID, Integer> LAST_REQUESTS = new HashMap<>();
     private static final Map<UUID, Integer> LAST_CLAIMS = new HashMap<>();
     private static final Map<UUID, Integer> VIEWERS = new HashMap<>();
@@ -185,6 +195,11 @@ public final class AchievementManager
             {
                 add(player, "ancient_debris", 1);
             }
+            String oreType = AchievementRules.oreType(state);
+            if (!oreType.isEmpty())
+            {
+                add(player, "ore:" + oreType, 1);
+            }
         }
         if (natural && AchievementRules.isExcavation(state))
         {
@@ -217,17 +232,99 @@ public final class AchievementManager
             {
                 add(player, "fish:" + id.getPath(), stack.getCount());
             }
+            if (AchievementRules.isFishingTreasure(stack))
+            {
+                add(player, "fish_treasure", 1);
+            }
         }
     }
 
     public static void recordKill(ServerPlayer player, LivingEntity victim)
     {
+        recordKill(player, victim, null);
+    }
+
+    /** @param source 처치한 피해. 드래곤처럼 기여도로 처치를 정하는 경우에는 null이다. */
+    public static void recordKill(ServerPlayer player, LivingEntity victim, @Nullable DamageSource source)
+    {
         String id = BuiltInRegistries.ENTITY_TYPE.getKey(victim.getType()).toString();
         add(player, "kill:" + id, 1);
+        if (!(victim instanceof Enemy))
+        {
+            return;
+        }
+        add(player, "hostile_kills", 1);
+        if (source != null && source.is(GUN_BULLETS))
+        {
+            add(player, "gun_kills", 1);
+        }
+        // Server Utilities가 정한 머리 위 레벨. 장비를 추첨하지 않은 몬스터는 레벨이 없다.
+        if (victim instanceof MonsterEquipmentAccess monster)
+        {
+            int level = monster.serverutilities$monsterLevel();
+            if (level >= 5)
+            {
+                add(player, "monster_kills_level5", 1);
+            }
+            if (level >= MonsterLevel.MAX_SCORE)
+            {
+                add(player, "monster_kills_level7", 1);
+            }
+        }
+    }
+
+    /** 펫이 마지막 공격으로 적대몹을 처치하면 주인의 펫 처치로 센다. 펫 처치는 주인의 직접 처치로 보지 않는다. */
+    public static void recordPetKill(ServerPlayer owner, LivingEntity victim)
+    {
         if (victim instanceof Enemy)
         {
-            add(player, "hostile_kills", 1);
+            add(owner, "pet_kills", 1);
         }
+    }
+
+    /** 대장장이 작업대에서 네더라이트 단계 장비를 꺼냈을 때 */
+    public static void recordForge(ServerPlayer player, ItemStack result)
+    {
+        String tier = AchievementRules.forgeTier(result);
+        if (!tier.isEmpty())
+        {
+            add(player, "forge:" + tier, 1);
+        }
+    }
+
+    /** 랜덤 상자를 열어 보상을 받았을 때 */
+    public static void recordRandomBox(ServerPlayer player, Identifier boxId)
+    {
+        add(player, "random_boxes", 1);
+        if (boxId.getPath().equals("random_box_iv"))
+        {
+            add(player, "random_box:iv", 1);
+        }
+    }
+
+    /**
+     * 주식 매도 결과. 원금 1 BTC 미만은 소액 반복 매매로 쉽게 채울 수 있어 제외한다.
+     *
+     * @param principal 이번에 판 투자 원금
+     * @param proceeds  수수료를 뺀 회수 금액
+     * @param costBasis 이번에 판 몫의 매수 원가
+     */
+    public static void recordStockSale(ServerPlayer player, double principal, double proceeds, double costBasis)
+    {
+        if (principal < 1 || costBasis <= 0 || proceeds <= costBasis)
+        {
+            return;
+        }
+        if (!isEligible(player))
+        {
+            return;
+        }
+        AchievementProgress progress = AchievementStorage.get(player.level().getServer(), player.getUUID());
+        progress.add("stock_profitable_sells", 1);
+        // 수익률은 1% 단위로 내림해 최고 기록만 남긴다.
+        progress.maximum("stock_best_return", (long) Math.floor((proceeds / costBasis - 1) * 100));
+        AchievementStorage.markDirty();
+        evaluate(progress);
     }
 
     public static UUID equipmentId(ItemStack stack)
@@ -354,6 +451,7 @@ public final class AchievementManager
         refreshPets(player, progress);
         refreshExploration(player, progress);
         refreshEconomy(player, progress);
+        refreshEquipment(player, progress);
         if (!previous.equals(progress.counters()))
         {
             AchievementStorage.markDirty();
@@ -370,6 +468,7 @@ public final class AchievementManager
         Collection<PowerupInstance> definitions = PowerupManager.getInstance().getAllPowerups().values();
         List<Job> jobs = Stream.concat(jobsPlayer.jobsplus$getJobs().stream(),
                 jobsPlayer.jobsplus$getInactiveJobs().stream()).toList();
+        long skillsPurchased = 0;
         for (Job job : jobs)
         {
             Identifier jobId = job.getJobInstance().getLocation();
@@ -404,12 +503,17 @@ public final class AchievementManager
             {
                 progress.set("job_master:" + jobId.getPath(), 1);
             }
+            skillsPurchased += purchased;
             if (jobId.getPath().equals("miner") || jobId.getPath().equals("digger"))
             {
                 progress.maximum("hyper_max_level", job.getHyperSkill().level());
+                progress.maximum("hyper_level:" + jobId.getPath(), job.getHyperSkill().level());
             }
         }
+        // 현재 구매 상태의 합계다. 시즌 중 직업을 바꿔도 줄어든 값으로 업적을 되돌리지는 않는다.
+        progress.maximum("skills_purchased", skillsPurchased);
         int masters = 0;
+        int level100 = 0;
         int level50 = 0;
         int level20 = 0;
         for (String job : AchievementCatalog.JOBS)
@@ -417,6 +521,10 @@ public final class AchievementManager
             if (progress.value("job_master:" + job) > 0)
             {
                 masters++;
+            }
+            if (progress.value("job_level:" + job) >= 100)
+            {
+                level100++;
             }
             if (progress.value("job_level:" + job) >= 50)
             {
@@ -428,6 +536,7 @@ public final class AchievementManager
             }
         }
         progress.set("job_master_count", masters);
+        progress.set("jobs_level100", level100);
         progress.set("jobs_level50", level50);
         progress.set("jobs_level20", level20);
     }
@@ -441,6 +550,7 @@ public final class AchievementManager
             if (pet.rarity() == PetRarity.RARE)
             {
                 progress.set("pet_rare", 1);
+                progress.maximum("rare_pet_max_level", pet.level());
             }
             if (pet.rarity() == PetRarity.LEGEND)
             {
@@ -448,9 +558,46 @@ public final class AchievementManager
                 progress.maximum("legend_pet_max_level", pet.level());
             }
         }
-        long types = progress.counters().entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith("pet_type:") && entry.getValue() >= 20).count();
-        progress.set("pet_types_level20", types);
+        progress.set("pet_types_level20", countPetTypes(progress, 20));
+        progress.set("pet_types_level50", countPetTypes(progress, 50));
+        long legendTypes100 = AchievementCatalog.LEGEND_PETS.stream()
+                .filter(type -> progress.value("pet_type:" + type) >= 100).count();
+        progress.set("legend_pets_level100", legendTypes100);
+    }
+
+    private static long countPetTypes(AchievementProgress progress, int level)
+    {
+        return progress.counters().entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith("pet_type:") && entry.getValue() >= level).count();
+    }
+
+    /** 착용 장비와 강화 기록. 착용은 지금 상태만 보므로 한 번 달성하면 벗어도 업적은 유지된다. */
+    private static void refreshEquipment(ServerPlayer player, AchievementProgress progress)
+    {
+        boolean frostArmor = true;
+        for (EquipmentSlot slot : List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET))
+        {
+            Identifier id = BuiltInRegistries.ITEM.getKey(player.getItemBySlot(slot).getItem());
+            String piece = switch (slot)
+            {
+                case HEAD -> "frost_helmet";
+                case CHEST -> "frost_chestplate";
+                case LEGS -> "frost_leggings";
+                default -> "frost_boots";
+            };
+            if (!id.getNamespace().equals("advancednetherite") || !id.getPath().equals(piece))
+            {
+                frostArmor = false;
+            }
+        }
+        if (frostArmor)
+        {
+            progress.set("frost_armor_set", 1);
+        }
+        // 강화 단계는 장비 개체별 최고 성공 단계로 남아 있으므로 실패로 내려가도 다시 세지 않는다.
+        long enhanced7 = progress.counters().entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith("enhancement:") && entry.getValue() >= 7).count();
+        progress.maximum("enhanced7_items", enhanced7);
     }
 
     private static void refreshEconomy(ServerPlayer player, AchievementProgress progress)
@@ -512,23 +659,34 @@ public final class AchievementManager
         {
             progress.set("dimension:end", 1);
         }
-        for (String structureId : List.of("stronghold", "fortress", "bastion_remnant", "end_city"))
+        var structures = player.registryAccess().lookupOrThrow(Registries.STRUCTURE);
+        long visitedStructures = 0;
+        for (Map.Entry<String, List<String>> target : AchievementCatalog.STRUCTURES.entrySet())
         {
-            if (progress.value("structure:" + structureId) != 0)
+            String key = "structure:" + target.getKey();
+            if (progress.value(key) != 0)
             {
+                visitedStructures++;
                 continue;
             }
-            var holder = player.registryAccess().lookupOrThrow(Registries.STRUCTURE)
-                    .get(Identifier.withDefaultNamespace(structureId));
-            if (holder.isPresent())
+            for (String structureId : target.getValue())
             {
+                // Illager Invasion이 없는 서버에서는 그 구조물을 건너뛴다.
+                var holder = structures.get(Identifier.parse(structureId));
+                if (holder.isEmpty())
+                {
+                    continue;
+                }
                 Structure structure = holder.get().value();
                 if (player.level().structureManager().getStructureAt(player.blockPosition(), structure).isValid())
                 {
-                    progress.set("structure:" + structureId, 1);
+                    progress.set(key, 1);
+                    visitedStructures++;
+                    break;
                 }
             }
         }
+        progress.set("structures_visited", visitedStructures);
         AdvancementHolder advancement = player.level().getServer().getAdvancements().get(ADVENTURING_TIME);
         if (advancement != null && player.getAdvancements().getOrStartProgress(advancement).isDone())
         {

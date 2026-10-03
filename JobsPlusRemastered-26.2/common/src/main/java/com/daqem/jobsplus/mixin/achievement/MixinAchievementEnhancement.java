@@ -36,6 +36,11 @@ public abstract class MixinAchievementEnhancement
     {
         ItemStack equipment = input.getItem(0);
         int after = jobsplus$enhancement(equipment);
+        // 강화 버튼은 원석이 준비된 상태에서만 이 메서드를 부르므로 호출 한 번이 원석을 쓴 시도 한 번이다.
+        if (player instanceof ServerPlayer serverPlayer)
+        {
+            AchievementManager.add(serverPlayer, "enhance_attempts", 1);
+        }
         if (player instanceof ServerPlayer serverPlayer && !equipment.isEmpty() && after > jobsplus$previousEnhancement)
         {
             AchievementManager.recordEnhancement(serverPlayer, equipment, after);

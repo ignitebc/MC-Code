@@ -170,6 +170,7 @@ public class ServerboundSellItemPacket implements CustomPacketPayload {
         ItemStack outStack = new ItemStack(outputItem, packet.outputAmount);
 
         PlayerItemDelivery.giveOrDrop(player, outStack);
+        AchievementManager.add(player, "shop_trades", 1);
 
         if (packet.inputItemId.toString().equals("advancednetherite:bitcoin") && packet.inputAmount == 500
                 && packet.outputItemId.toString().equals("minecraft:elytra")) {

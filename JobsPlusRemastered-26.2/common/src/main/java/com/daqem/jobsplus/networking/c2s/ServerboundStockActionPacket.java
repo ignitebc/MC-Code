@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.networking.c2s;
 
+import com.daqem.jobsplus.achievement.AchievementManager;
 import com.daqem.jobsplus.event.stock.StockMarketTicker;
 import com.daqem.jobsplus.stock.StockMarketService;
 import com.daqem.jobsplus.stock.StockMarketSnapshot;
@@ -255,7 +256,15 @@ public class ServerboundStockActionPacket implements CustomPacketPayload
                     NetworkManager.sendToPlayer(player, new ClientboundAlertPacket("판매 가능한 투자 금액이 부족합니다."));
                     return;
                 }
+                StockAccount beforeSale = account;
+                StockPosition soldPosition = beforeSale.getPosition(packet.stockId);
                 account = account.sell(packet.stockId, packet.amount, quote.priceKrw(), SELL_FEE_RATE);
+                // 판매로 늘어난 잔액과 줄어든 매수 원가로 이번 매도의 실현 수익률을 구한다.
+                StockPosition remainingPosition = account.getPosition(packet.stockId);
+                double soldCostBasis = soldPosition.costBasis()
+                        - (remainingPosition == null ? 0 : remainingPosition.costBasis());
+                AchievementManager.recordStockSale(player, packet.amount,
+                        account.balance() - beforeSale.balance(), soldCostBasis);
                 completedMessage = quote.name() + "를 판매했습니다.";
             }
         }

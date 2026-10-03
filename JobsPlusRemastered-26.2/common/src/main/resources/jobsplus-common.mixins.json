@@ -38,7 +38,12 @@
     "achievement.MixinAchievementFurnace",
     "achievement.MixinAchievementFurnaceResult",
     "achievement.MixinAchievementHopper",
-    "achievement.MixinAchievementBrewingStand"
+    "achievement.MixinAchievementBrewingStand",
+    "achievement.MixinAchievementBreeding",
+    "achievement.MixinAchievementTrade",
+    "achievement.MixinAchievementSmithing",
+    "achievement.MixinAchievementRandomBox",
+    "achievement.MixinAchievementGunCraft"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -28,7 +28,7 @@ public final class AchievementListComponent extends EmptyComponent
     private static final int FOOTER_HEIGHT = 23;
     private static final int SECTION_GAP = 4;
     private static final int SUMMARY_COLUMN_MIN_WIDTH = 88;
-    private static final String[] CATEGORY_NAMES = {"직업", "생활", "탐험", "경제", "장비", "펫"};
+    private static final String[] CATEGORY_NAMES = {"직업", "생활", "탐험", "경제", "장비", "펫", "전투"};
 
     private final ActionScrollWidget list;
     private final ActionScrollWidget detail;
@@ -57,7 +57,8 @@ public final class AchievementListComponent extends EmptyComponent
         this.claimButton = new ClaimButton(this.detailX + 3, Math.max(BODY_Y, height - FOOTER_HEIGHT + 3),
                 Math.max(1, detailWidth - 6));
         addWidget(this.claimButton);
-        int categoryWidth = Math.max(1, (width - 5) / 6);
+        // 탭 사이 1픽셀 간격을 빼고 분류 수만큼 나눈다.
+        int categoryWidth = Math.max(1, (width - (CATEGORY_NAMES.length - 1)) / CATEGORY_NAMES.length);
         for (int index = 0; index < CATEGORY_NAMES.length; index++)
         {
             String category = Character.toString((char) ('A' + index));

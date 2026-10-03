@@ -43,7 +43,7 @@ python Build_File-26.2/collect_fabric_jars.py
 먼저 빌드되고, 이를 참조하는 Jobs+가 나중에 빌드되도록 스크립트의 `MODULES` 목록이 이미 정렬되어 있습니다.
 Jobs+의 펫관리 탭은 Advanced Netherite JAR을 컴파일 의존으로 쓰므로, Advanced Netherite의 펫 관련
 클래스를 바꿨다면 Jobs+도 함께 다시 빌드해야 합니다.
-업적의 설치 블록 판정·도구 EXP 추적은 Server Utilities JAR을 참조합니다.
+업적의 설치 블록 판정·도구 EXP 추적·몬스터 레벨 처치 판정은 Server Utilities JAR을 참조합니다.
 Jobs+만 빌드할 때도 먼저 ArcLib와 Server Utilities의 최신 JAR을 준비해야 합니다.
 
 | 순서 | 모듈 | 비고 |

@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.event.item;
 
+import com.daqem.jobsplus.achievement.AchievementManager;
 import com.daqem.jobsplus.event.player.EventRewardCouponEffectSync;
 import com.daqem.jobsplus.metrics.MetricsEvent;
 import com.daqem.jobsplus.player.JobsServerPlayer;
@@ -109,6 +110,7 @@ public final class EventRewardCouponUse
             // 같은 스택을 누르고 있는 동안 중복 사용되지 않도록 먼저 쿨다운을 건다.
             serverPlayer.getCooldowns().addCooldown(stack, 20);
             stack.shrink(1);
+            AchievementManager.add(serverPlayer, "coupons_used", 1);
             if (stack.isEmpty())
             {
                 serverPlayer.setItemInHand(hand, ItemStack.EMPTY);

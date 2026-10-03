@@ -1,5 +1,6 @@
 package com.daqem.jobsplus.networking.s2c;
 
+import com.daqem.jobsplus.achievement.AchievementCatalog;
 import com.daqem.jobsplus.networking.JobsPlusNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -17,6 +18,8 @@ import java.util.Set;
 public record ClientboundAchievementPacket(String season, Map<String, Long> values, Set<String> completed,
                                           Set<String> claimed, List<String> adventureBiomes, List<String> overworldBiomes) implements CustomPacketPayload
 {
+    /** 화면에 보내는 목표 진행도 수의 상한. 업적 200종의 서로 다른 목표 키에 여유를 둔 값이다. */
+    private static final int MAX_VALUES = 512;
     public static final ClientboundAchievementPacket EMPTY = new ClientboundAchievementPacket("", Map.of(), Set.of(), Set.of(), List.of(), List.of());
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundAchievementPacket> STREAM_CODEC = new StreamCodec<>()
     {
@@ -24,7 +27,7 @@ public record ClientboundAchievementPacket(String season, Map<String, Long> valu
         public @NotNull ClientboundAchievementPacket decode(RegistryFriendlyByteBuf buffer)
         {
             String season = buffer.readUtf(32);
-            int count = readCount(buffer, 256);
+            int count = readCount(buffer, MAX_VALUES);
             Map<String, Long> values = new HashMap<>();
             for (int index = 0; index < count; index++)
             {
@@ -95,7 +98,8 @@ public record ClientboundAchievementPacket(String season, Map<String, Long> valu
 
     private static Set<String> readIds(RegistryFriendlyByteBuf buffer)
     {
-        int count = readCount(buffer, 100);
+        // 완료·수령 목록은 업적 수를 넘을 수 없다. 업적을 늘리면 이 제한도 함께 늘어난다.
+        int count = readCount(buffer, AchievementCatalog.all().size());
         Set<String> ids = new HashSet<>();
         for (int index = 0; index < count; index++)
         {
