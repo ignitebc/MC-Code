@@ -11,7 +11,7 @@ public record AchievementDefinition(String id, String name, int difficulty, int 
     {
         parents = List.copyOf(parents);
         objectives = List.copyOf(objectives);
-        if (diamonds < 1 || diamonds > 30 || difficulty < 1 || difficulty > 4 || objectives.isEmpty())
+        if (diamonds < 1 || diamonds > 30 || difficulty < 1 || difficulty > 5 || objectives.isEmpty())
         {
             throw new IllegalArgumentException("Invalid achievement: " + id);
         }
