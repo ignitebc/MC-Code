@@ -18,12 +18,17 @@ public class DestroyGlassBlock {
         BlockState state = event.getState();
         BlockPos pos = event.getHitResult().getBlockPos();
         EntityKineticBullet ammo = event.getAmmo();
-        Block stateBlock = state.getBlock();
-        NoteBlockInstrument instrument = state.instrument();
-        if (AmmoConfig.DESTROY_GLASS.get() && (stateBlock instanceof HalfTransparentBlock ||
-                stateBlock instanceof StainedGlassPaneBlock ||
-                (stateBlock instanceof IronBarsBlock && instrument.equals(NoteBlockInstrument.HAT)))) {
+        if (isBreakableGlass(state)) {
             level.destroyBlock(pos, false, ammo.getOwner());
         }
+    }
+
+    /** 탄에 맞으면 깨지는 유리 계열 블록인지. 몬스터 엄폐물 판정도 같은 기준을 쓴다. */
+    public static boolean isBreakableGlass(BlockState state) {
+        Block stateBlock = state.getBlock();
+        NoteBlockInstrument instrument = state.instrument();
+        return AmmoConfig.DESTROY_GLASS.get() && (stateBlock instanceof HalfTransparentBlock ||
+                stateBlock instanceof StainedGlassPaneBlock ||
+                (stateBlock instanceof IronBarsBlock && instrument.equals(NoteBlockInstrument.HAT)));
     }
 }
