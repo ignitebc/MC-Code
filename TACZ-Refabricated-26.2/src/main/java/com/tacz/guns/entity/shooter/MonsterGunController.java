@@ -116,6 +116,11 @@ public final class MonsterGunController {
         operator.aim(canShoot);
         if (!canShoot) {
             this.chargeProgress = 0;
+            // 쏘지 못하는 동안에도 빈 탄창은 갈아 끼운다. 엄폐물 뒤에 숨었다가 나왔을 때 바로 쏠 수 있다.
+            // 재장전 중이거나 쿨타임·볼트 동작 중이면 reload()가 스스로 거른다.
+            if (loadedAmmo(gun, stack, data) <= 0) {
+                operator.reload();
+            }
             return;
         }
         // 발사하는 틱에만 고개를 돌리면 몸이 따라오기 전에 탄이 먼저 나간다.
@@ -164,6 +169,12 @@ public final class MonsterGunController {
         }
         return Mth.degreesDifferenceAbs(this.mob.getYHeadRot(), targetYaw) <= MAX_AIM_YAW_ERROR
                 && Mth.degreesDifferenceAbs(this.mob.getXRot(), targetPitch) <= MAX_AIM_PITCH_ERROR;
+    }
+
+    /** 탄창과 약실에 들어 있는 탄 수. 오픈볼트 총기는 약실에 탄을 따로 두지 않는다. */
+    public static int loadedAmmo(IGun gun, ItemStack stack, GunData data) {
+        int chamberAmmo = gun.hasBulletInBarrel(stack) && data.getBolt() != Bolt.OPEN_BOLT ? 1 : 0;
+        return gun.getCurrentAmmoCount(stack) + chamberAmmo;
     }
 
     /**
