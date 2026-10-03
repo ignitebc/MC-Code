@@ -25,6 +25,8 @@ public final class AchievementListComponent extends EmptyComponent
     private static final int BODY_Y = CATEGORY_HEIGHT + 4;
     private static final int ROW_HEIGHT = 28;
     private static final int FOOTER_HEIGHT = 23;
+    private static final int SECTION_GAP = 4;
+    private static final int SUMMARY_COLUMN_MIN_WIDTH = 88;
     private static final String[] CATEGORY_NAMES = {"직업", "생활", "탐험", "경제", "장비", "펫"};
 
     private final ActionScrollWidget list;
@@ -117,8 +119,25 @@ public final class AchievementListComponent extends EmptyComponent
         }
         int y = 3;
         y = addText(content, y, width, definition.name(), JobsTheme.CYAN);
-        y = addText(content, y, width, "★".repeat(definition.difficulty()) + " · 다이아몬드 " + definition.diamonds() + "개", JobsTheme.TEXT);
         y = addText(content, y, width, status(definition, snapshot), statusColor(definition, snapshot));
+        y += SECTION_GAP;
+
+        // 폭이 충분할 때만 요약을 나란히 배치해 작은 화면에서도 보상 문구를 읽을 수 있게 한다.
+        boolean twoColumns = width >= SUMMARY_COLUMN_MIN_WIDTH * 2 + SECTION_GAP;
+        int summaryWidth = twoColumns ? (width - SECTION_GAP) / 2 : width;
+        DetailSection difficulty = new DetailSection(0, y, summaryWidth, "난이도");
+        difficulty.addLine("★".repeat(definition.difficulty()), JobsTheme.WARNING);
+        content.addComponent(difficulty);
+
+        int rewardX = twoColumns ? summaryWidth + SECTION_GAP : 0;
+        int rewardY = twoColumns ? y : y + difficulty.getHeight() + SECTION_GAP;
+        int rewardWidth = twoColumns ? width - rewardX : width;
+        DetailSection reward = new DetailSection(rewardX, rewardY, rewardWidth, "보상");
+        reward.addLine("다이아몬드 " + definition.diamonds() + "개", JobsTheme.TEXT);
+        content.addComponent(reward);
+        y = Math.max(y + difficulty.getHeight(), rewardY + reward.getHeight()) + SECTION_GAP;
+
+        DetailSection conditions = new DetailSection(0, y, width, "달성 조건");
         if (!definition.parents().isEmpty())
         {
             String parents = String.join(" · ", definition.parents().stream()
@@ -127,9 +146,8 @@ public final class AchievementListComponent extends EmptyComponent
             {
                 parents = parents + " 중 " + definition.requiredParents() + "개";
             }
-            y = addText(content, y, width, "선행: " + parents, JobsTheme.MUTED);
+            conditions.addLine("선행 업적: " + parents, JobsTheme.MUTED);
         }
-        y += 4;
         for (AchievementDefinition.Objective objective : definition.objectives())
         {
             long current = snapshot.values().getOrDefault(objective.key(), 0L);
@@ -155,28 +173,31 @@ public final class AchievementListComponent extends EmptyComponent
                 quantity = String.format(Locale.ROOT, "%.2f / %.0f km", current / 100000.0D, objective.target() / 100000.0D);
                 label = label.replace("(cm)", "");
             }
-            y = addText(content, y, width, label + ": " + quantity, color);
+            conditions.addLine(label + ": " + quantity, color);
         }
-        y += 5;
-        y = addText(content, y, width, AchievementDisplayText.details(definition), JobsTheme.MUTED);
+        content.addComponent(conditions);
+        y += conditions.getHeight() + SECTION_GAP;
+
+        DetailSection guidance = new DetailSection(0, y, width, "상세 안내");
+        guidance.addLine(AchievementDisplayText.details(definition), JobsTheme.MUTED);
         if (definition.id().equals("C05"))
         {
-            y += 4;
-            y = addText(content, y, width, "현재 서버의 오버월드 방문 대상:", JobsTheme.CYAN);
+            guidance.addLine("현재 서버의 오버월드 방문 대상:", JobsTheme.CYAN);
             for (String biome : snapshot.overworldBiomes())
             {
-                y = addText(content, y, width, "• " + AchievementDisplayText.resourceName("biome", biome, "추가 생물 군계"), JobsTheme.MUTED);
+                guidance.addLine("• " + AchievementDisplayText.resourceName("biome", biome, "추가 생물 군계"), JobsTheme.MUTED);
             }
         }
         if (definition.id().equals("C06"))
         {
-            y += 4;
-            y = addText(content, y, width, "현재 바닐라 발전 과제의 방문 목록:", JobsTheme.CYAN);
+            guidance.addLine("현재 바닐라 발전 과제의 방문 목록:", JobsTheme.CYAN);
             for (String biome : snapshot.adventureBiomes())
             {
-                y = addText(content, y, width, "• " + AchievementDisplayText.resourceName("biome", biome, "추가 생물 군계"), JobsTheme.MUTED);
+                guidance.addLine("• " + AchievementDisplayText.resourceName("biome", biome, "추가 생물 군계"), JobsTheme.MUTED);
             }
         }
+        content.addComponent(guidance);
+        y += guidance.getHeight();
         content.setHeight(y + 4);
         return content;
     }
@@ -281,6 +302,43 @@ public final class AchievementListComponent extends EmptyComponent
                 this.listWidth, Math.max(1, getHeight() - BODY_Y));
         JobsTheme.texture(graphics, JobsTheme.Skin.INSET, getTotalX() + this.detailX, getTotalY() + BODY_Y,
                 Math.max(1, getWidth() - this.detailX), Math.max(1, getHeight() - BODY_Y));
+    }
+
+    private static class DetailSection extends EmptyComponent
+    {
+        private final int dividerY;
+        private int nextLineY;
+
+        DetailSection(int x, int y, int width, String title)
+        {
+            super(x, y, width, 0);
+            this.dividerY = addText(this, 4, width, title, JobsTheme.CYAN) + 1;
+            this.nextLineY = this.dividerY + 4;
+            setHeight(this.nextLineY + 4);
+        }
+
+        void addLine(String text, int color)
+        {
+            if (text.isBlank())
+            {
+                return;
+            }
+            this.nextLineY = addText(this, this.nextLineY, getWidth(), text, color);
+            setHeight(this.nextLineY + 4);
+            this.nextLineY += 2;
+        }
+
+        @Override
+        public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY,
+                                       float partialTick, int parentWidth, int parentHeight)
+        {
+            JobsTheme.texture(graphics, JobsTheme.Skin.INSET, getTotalX(), getTotalY(), getWidth(), getHeight());
+            if (getWidth() > 8)
+            {
+                graphics.fill(getTotalX() + 4, getTotalY() + this.dividerY,
+                        getTotalX() + getWidth() - 4, getTotalY() + this.dividerY + 1, JobsTheme.DIVIDER);
+            }
+        }
     }
 
     private static class TextLine extends EmptyComponent
