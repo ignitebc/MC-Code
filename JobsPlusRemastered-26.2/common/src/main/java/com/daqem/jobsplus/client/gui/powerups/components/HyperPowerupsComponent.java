@@ -46,6 +46,7 @@ public class HyperPowerupsComponent extends EmptyComponent
     private final int ringY;
     private final float ringScale;
     private final float detailsScale;
+    private final float detailsTextScale;
     private final int detailsX;
     private final int detailsY;
     private final int detailsWidth;
@@ -66,7 +67,8 @@ public class HyperPowerupsComponent extends EmptyComponent
                 Math.max(1, height - PANEL_PADDING * 2) / (float) RING_HEIGHT));
         this.ringX = (this.leftWidth - Math.round(RING_WIDTH * this.ringScale)) / 2;
         this.ringY = (height - Math.round(RING_HEIGHT * this.ringScale)) / 2;
-        this.detailsScale = Math.min(1.0f, Math.max(1, height - 44) / 194.0f);
+        this.detailsScale = Math.min(1.0f, Math.max(1, height - 44) / 208.0f);
+        this.detailsTextScale = Math.min(1.0f, Math.max(1, height - 44) / 194.0f);
 
         this.content = new EmptyComponent(0, 0, width, height)
         {
@@ -224,10 +226,10 @@ public class HyperPowerupsComponent extends EmptyComponent
         }
         line(graphics, JobsPlus.translatable("hyper.job_status",
                 HyperSkillSlotWidget.getJobName(this.state, jobLocation), jobLevel), 0, JobsTheme.MUTED);
-        line(graphics, HyperSkillRules.getName(jobLocation), 14, JobsTheme.ERROR);
+        line(graphics, HyperSkillRules.getName(jobLocation), 14, JobsTheme.ERROR, 2.0f);
         if (!HyperSkillRules.supports(jobLocation))
         {
-            line(graphics, JobsPlus.translatable("hyper.planned_details"), 40, JobsTheme.MUTED);
+            line(graphics, JobsPlus.translatable("hyper.planned_details"), 54, JobsTheme.MUTED);
             return;
         }
         HyperSkillState skill = HyperSkillState.EMPTY;
@@ -245,7 +247,7 @@ public class HyperPowerupsComponent extends EmptyComponent
                 status = JobsPlus.translatable("hyper.ready_to_open");
             }
         }
-        line(graphics, status, 28, JobsTheme.TEXT);
+        line(graphics, status, 42, JobsTheme.TEXT);
         int pipWidth = Math.max(1, (this.detailsWidth - PANEL_PADDING * 2) / HyperSkillRules.MAX_LEVEL);
         int x = this.content.getTotalX() + this.detailsX + PANEL_PADDING;
         int y = this.content.getTotalY() + this.detailsY;
@@ -256,15 +258,15 @@ public class HyperPowerupsComponent extends EmptyComponent
             {
                 color = JobsTheme.CYAN;
             }
-            graphics.fill(x + index * pipWidth, y + Math.round(42 * this.detailsScale),
+            graphics.fill(x + index * pipWidth, y + Math.round(56 * this.detailsScale),
                     x + (index + 1) * pipWidth - Math.min(2, pipWidth - 1),
-                    y + Math.round(42 * this.detailsScale) + Math.max(1, Math.round(4 * this.detailsScale)), color);
+                    y + Math.round(56 * this.detailsScale) + Math.max(1, Math.round(4 * this.detailsScale)), color);
         }
         List<Component> descriptions = HyperSkillRules.getDescriptionLines(jobLocation);
         for (int index = 0; index < descriptions.size(); index++)
         {
             int color = index == 3 ? JobsTheme.WARNING : JobsTheme.TEXT;
-            line(graphics, descriptions.get(index), 56 + index * 16, color);
+            line(graphics, descriptions.get(index), 70 + index * 16, color);
         }
         Component next = JobsPlus.translatable("hyper.open_details", HyperSkillRules.getEffectSummary(jobLocation, 1));
         Component cost = JobsPlus.translatable("hyper.open_cost",
@@ -282,16 +284,16 @@ public class HyperPowerupsComponent extends EmptyComponent
             next = JobsPlus.translatable("hyper.complete");
             cost = JobsPlus.translatable("hyper.no_more_cost");
         }
-        line(graphics, next, 128, JobsTheme.SUCCESS);
-        line(graphics, cost, 144, JobsTheme.WARNING);
+        line(graphics, next, 142, JobsTheme.SUCCESS);
+        line(graphics, cost, 158, JobsTheme.WARNING);
         line(graphics, JobsPlus.translatable("hyper.inventory", count(HyperSkillRules.GEM),
-                count(HyperSkillRules.BITCOIN), this.state.getCoins()), 160, JobsTheme.MUTED);
+                count(HyperSkillRules.BITCOIN), this.state.getCoins()), 174, JobsTheme.MUTED);
         Component note = JobsPlus.translatable("hyper.failure_rule");
         if (jobLevel < HyperSkillRules.REQUIRED_JOB_LEVEL)
         {
             note = JobsPlus.translatable("hyper.requires_level");
         }
-        line(graphics, note, 178, JobsTheme.MUTED);
+        line(graphics, note, 192, JobsTheme.MUTED);
     }
 
     private void updateButtons(Job job)
@@ -335,9 +337,14 @@ public class HyperPowerupsComponent extends EmptyComponent
 
     private void line(GuiGraphicsExtractor graphics, Component text, int y, int color)
     {
+        line(graphics, text, y, color, 1.0f);
+    }
+
+    private void line(GuiGraphicsExtractor graphics, Component text, int y, int color, float textScale)
+    {
         var font = Minecraft.getInstance().font;
         int width = Math.max(1, this.detailsWidth - PANEL_PADDING * 2);
-        float scale = Math.min(JobsTheme.LABEL_SCALE * this.detailsScale,
+        float scale = Math.min(JobsTheme.LABEL_SCALE * this.detailsTextScale * textScale,
                 width / (float) Math.max(1, font.width(text)));
         graphics.pose().pushMatrix();
         graphics.pose().translate(this.content.getTotalX() + this.detailsX + PANEL_PADDING,

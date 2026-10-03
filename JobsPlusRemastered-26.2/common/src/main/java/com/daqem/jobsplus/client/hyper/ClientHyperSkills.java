@@ -20,6 +20,10 @@ import java.util.Locale;
 
 public final class ClientHyperSkills
 {
+    private static final float SHIELD_HUD_SCALE = 0.2F;
+    private static final int SHIELD_PANEL_WIDTH = 160;
+    private static final int PANEL_HEIGHT = 27;
+    private static final int HUD_MARGIN = 4;
     private static LocalPlayer trackedPlayer;
     private static int smithLevel;
     private static int leapLevel;
@@ -199,7 +203,11 @@ public final class ClientHyperSkills
                 progress = 1 - shieldCooldown / (double) HyperSkillRules.getShieldCooldownTicks(smithLevel);
                 color = 0xFFB5BFCB;
             }
-            panel(graphics, 10, height - 69, Math.min(160, width / 2 - 16), label, progress, color);
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(HUD_MARGIN, height - HUD_MARGIN - PANEL_HEIGHT * SHIELD_HUD_SCALE);
+            graphics.pose().scale(SHIELD_HUD_SCALE, SHIELD_HUD_SCALE);
+            panel(graphics, 0, 0, SHIELD_PANEL_WIDTH, label, progress, color);
+            graphics.pose().popMatrix();
         }
         boolean showCharge = charging && chargeTicks >= HyperSkillRules.LEAP_MIN_CHARGE_TICKS;
         if (showCharge || waitingTicks > 0)
@@ -216,8 +224,8 @@ public final class ClientHyperSkills
                               double progress, int color)
     {
         if (width < 20) return;
-        graphics.fill(x, y, x + width, y + 27, 0xB0101B25);
-        graphics.fill(x, y, x + 2, y + 27, color);
+        graphics.fill(x, y, x + width, y + PANEL_HEIGHT, 0xB0101B25);
+        graphics.fill(x, y, x + 2, y + PANEL_HEIGHT, color);
         graphics.text(Minecraft.getInstance().font, label, x + 7, y + 5, color, true);
         graphics.fill(x + 7, y + 19, x + width - 7, y + 22, 0xFF2C3C49);
         int filled = (int) Math.round((width - 14) * Math.clamp(progress, 0, 1));
