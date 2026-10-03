@@ -3,11 +3,14 @@ package com.daqem.jobsplus.player.title;
 import com.daqem.jobsplus.JobsPlus;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -29,8 +32,12 @@ public enum TitleType
     public static final int BADGE_LINE_HEIGHT = 20;
     /** ascent 12인 배지의 위쪽 돌출분(12 - 바닐라 기준선 7)을 보정한다. */
     public static final int BADGE_TEXT_OFFSET = 5;
+    /** 채팅 전용 배지는 height 14 / ascent 10으로 표시한다. */
+    public static final int CHAT_BADGE_LINE_HEIGHT = 16;
+    public static final int CHAT_BADGE_TEXT_OFFSET = 3;
 
     private static final FontDescription BADGE_FONT = new FontDescription.Resource(JobsPlus.getId("title_badge"));
+    private static final FontDescription CHAT_BADGE_FONT = new FontDescription.Resource(JobsPlus.getId("title_badge_chat"));
     /** 그림 색을 그대로 내도록 흰색으로 고정한다. 팀 색이나 채팅 색이 덧칠되지 않게 한다. */
     private static final int BADGE_COLOR = 0xFFFFFF;
     /** 채팅 글자 그림자가 배지 뒤에 어두운 사본으로 한 번 더 찍히지 않도록 투명하게 둔다. */
@@ -87,7 +94,20 @@ public enum TitleType
     public static boolean containsBadge(FormattedCharSequence text)
     {
         return !text.accept((index, style, codePoint) ->
-                !BADGE_FONT.equals(style.getFont()) || codePoint < '\uE100' || codePoint > '\uE103');
+                !(BADGE_FONT.equals(style.getFont()) || CHAT_BADGE_FONT.equals(style.getFont()))
+                        || codePoint < '\uE100' || codePoint > '\uE103');
+    }
+
+    /** 줄바꿈 전에 글꼴을 바꿔 채팅의 폭 계산과 클릭 영역에도 축소된 크기를 적용한다. */
+    public static FormattedText forChat(FormattedText text)
+    {
+        List<FormattedText> parts = new ArrayList<>();
+        text.visit((style, content) -> {
+            Style chatStyle = BADGE_FONT.equals(style.getFont()) ? style.withFont(CHAT_BADGE_FONT) : style;
+            parts.add(FormattedText.of(content, chatStyle));
+            return Optional.empty();
+        }, Style.EMPTY);
+        return FormattedText.composite(parts);
     }
 
     public static Optional<TitleType> byId(String id)

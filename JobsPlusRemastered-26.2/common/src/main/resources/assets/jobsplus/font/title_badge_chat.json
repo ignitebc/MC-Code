@@ -1,0 +1,32 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "jobsplus:font/title_badge/nether_star.png",
+      "height": 14,
+      "ascent": 10,
+      "chars": ["\uE100"]
+    },
+    {
+      "type": "bitmap",
+      "file": "jobsplus:font/title_badge/seal_breaker.png",
+      "height": 14,
+      "ascent": 10,
+      "chars": ["\uE101"]
+    },
+    {
+      "type": "bitmap",
+      "file": "jobsplus:font/title_badge/last_strike.png",
+      "height": 14,
+      "ascent": 10,
+      "chars": ["\uE102"]
+    },
+    {
+      "type": "bitmap",
+      "file": "jobsplus:font/title_badge/ten_thousand_souls.png",
+      "height": 14,
+      "ascent": 10,
+      "chars": ["\uE103"]
+    }
+  ]
+}

@@ -37,7 +37,7 @@ public abstract class TitleChatLayoutMixin
     @ModifyConstant(method = "getLineHeight", constant = @Constant(doubleValue = 9.0))
     private double jobsplus$lineHeight(double original)
     {
-        return this.jobsplus$hasTitleBadge() ? TitleType.BADGE_LINE_HEIGHT : original;
+        return this.jobsplus$hasTitleBadge() ? TitleType.CHAT_BADGE_LINE_HEIGHT : original;
     }
 
     // 이 내부 메서드는 화면 그리기와 클릭 가능한 글자 수집 양쪽에서 호출된다.
@@ -45,15 +45,15 @@ public abstract class TitleChatLayoutMixin
             constant = @Constant(intValue = 9))
     private int jobsplus$renderLineHeight(int original)
     {
-        return this.jobsplus$hasTitleBadge() ? TitleType.BADGE_LINE_HEIGHT : original;
+        return this.jobsplus$hasTitleBadge() ? TitleType.CHAT_BADGE_LINE_HEIGHT : original;
     }
 
     @ModifyConstant(method = "extractRenderState(Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;IILnet/minecraft/client/gui/components/ChatComponent$DisplayMode;)V",
             constant = @Constant(doubleValue = 8.0))
     private double jobsplus$textBaseline(double original)
     {
-        // height 18 / ascent 12인 배지의 아래쪽이 채팅 한 줄의 바닥을 넘지 않게 한다.
-        return this.jobsplus$hasTitleBadge() ? original + TitleType.BADGE_TEXT_OFFSET : original;
+        // height 14 / ascent 10인 배지의 아래쪽이 채팅 한 줄의 바닥을 넘지 않게 한다.
+        return this.jobsplus$hasTitleBadge() ? original + TitleType.CHAT_BADGE_TEXT_OFFSET : original;
     }
 
     @ModifyArg(method = "extractRenderState(Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;IILnet/minecraft/client/gui/components/ChatComponent$DisplayMode;)V",
