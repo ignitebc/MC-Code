@@ -17,6 +17,8 @@ import com.tacz.guns.api.util.LuaNbtAccessor;
 import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import com.tacz.guns.config.common.AmmoConfig;
 import com.tacz.guns.entity.EntityKineticBullet;
+import com.tacz.guns.entity.shooter.MonsterGunAmmo;
+import com.tacz.guns.entity.shooter.MonsterGunController;
 import com.tacz.guns.entity.shooter.ShooterDataHolder;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.event.ServerMessageGunFire;
@@ -170,12 +172,20 @@ public class ModernKineticGunScriptAPI {
             GunFireEvent.CALLBACK.invoker().post(gunFireEvent);
             boolean fire = !gunFireEvent.isCanceled();
             if (fire) {
+                boolean monster = MonsterGunController.isMonster(shooter);
+                if (monster && !MonsterGunAmmo.hasAmmo(itemStack)) {
+                    return false;
+                }
                 NetworkHandler.sendToTrackingEntity(new ServerMessageGunFire(shooter.getId(), itemStack), shooter);
                 // 削减弹药
                 if (consumeAmmo) {
                     if (!this.reduceAmmoOnce()) {
                         return false;
                     }
+                }
+                // SUCCESS는 점사 전체의 요청 결과다. 실제 탄약마다 제한해야 점사로 우회할 수 없다.
+                if (monster && !MonsterGunAmmo.consumeShot(itemStack)) {
+                    return false;
                 }
                 //Handle Heat Data
                 if (gunIndex.getGunData().hasHeatData()) {

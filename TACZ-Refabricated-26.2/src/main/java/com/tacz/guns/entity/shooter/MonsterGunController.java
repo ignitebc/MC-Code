@@ -5,6 +5,7 @@ import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ShootResult;
 import com.tacz.guns.api.item.IGun;
+import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import com.tacz.guns.resource.pojo.data.gun.ChargeType;
 import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
@@ -91,10 +92,21 @@ public final class MonsterGunController {
             this.drawnStack = stack;
             this.drawnId = id;
             this.chargeProgress = 0;
-            gun.setBulletInBarrel(stack, true);
+            MonsterGunAmmo.initialize(stack, data.getAmmoAmount());
+            // 약실의 한 발도 첫 탄창에 포함한다. 다시 꺼낼 때 약실에 새 탄약을 만들지 않는다.
+            int chamberAmmo = gun.hasBulletInBarrel(stack) && data.getBolt() != Bolt.OPEN_BOLT ? 1 : 0;
+            int magazineAmmo = Math.max(0, data.getAmmoAmount() - chamberAmmo);
+            if (gun.getCurrentAmmoCount(stack) > magazineAmmo) {
+                gun.setCurrentAmmoCount(stack, magazineAmmo);
+            }
             // 총기를 바꿀 때만 다시 읽는다. 매 틱 계산할 값이 아니다.
             this.effectiveRange = getEffectiveRange(data);
             applyFollowRange(this.effectiveRange);
+        }
+        if (!MonsterGunAmmo.hasAmmo(stack)) {
+            operator.aim(false);
+            this.chargeProgress = 0;
+            return;
         }
         double range = this.effectiveRange;
         LivingEntity target = findTarget(range);
