@@ -27,8 +27,7 @@ public final class HyperSkillRules
     public static final int LEECH_COOLDOWN_TICKS = 20;
     public static final float LEECH_HEALTH = 2.0F;
     public static final int LEAP_CHARGE_TICKS = 40;
-    public static final int LEAP_MIN_CHARGE_TICKS = 6;
-    public static final int LEAP_COOLDOWN_TICKS = 600;
+    public static final int LEAP_MIN_CHARGE_TICKS = 20;
     public static final Identifier MINER = JobsPlus.getId("miner");
     public static final Identifier DIGGER = JobsPlus.getId("digger");
     public static final Identifier FARMER = JobsPlus.getId("farmer");
@@ -136,6 +135,11 @@ public final class HyperSkillRules
         return Math.clamp(level, 0, MAX_LEVEL) * 8;
     }
 
+    public static int getLeapCooldownTicks(int level)
+    {
+        return (30 - (Math.clamp(level, 1, MAX_LEVEL) - 1) * 2) * 20;
+    }
+
     public static int getShieldCooldownTicks(int level)
     {
         return 1200 - (int) Math.round((Math.clamp(level, 1, MAX_LEVEL) - 1) * 600.0D / 9.0D);
@@ -158,7 +162,7 @@ public final class HyperSkillRules
         if (ADVENTURER.equals(jobLocation))
         {
             return JobsPlus.translatable("hyper.adventurer.summary",
-                    decimal(getLeapDistance(level) / 16.0D), getLeapDistance(level));
+                    decimal(getLeapDistance(level) / 16.0D), getLeapDistance(level), getLeapCooldownTicks(level) / 20);
         }
         if (SMITH.equals(jobLocation))
         {

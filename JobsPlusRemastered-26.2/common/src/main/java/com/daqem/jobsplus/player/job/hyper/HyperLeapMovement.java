@@ -8,6 +8,10 @@ import net.minecraft.world.phys.Vec3;
 /** 클라이언트와 서버가 같은 이동식을 사용하고 충돌·중력은 바닐라 이동에 맡긴다. */
 public final class HyperLeapMovement
 {
+    private static final double LEAP_HEIGHT = 30.0D;
+    private static final int ASCENT_TICKS = 25;
+    private static final int MOTION_TICKS = 55;
+
     private HyperLeapMovement() {}
 
     public static void start(Player player, Vec3 direction, double distance)
@@ -18,13 +22,14 @@ public final class HyperLeapMovement
         state.leapOrigin = player.position();
         state.leapDirection = direction;
         state.leapDistance = distance;
-        state.leapMotionTicks = 20 + (int) Math.ceil(distance / 4.0D);
+        state.leapMotionTicks = MOTION_TICKS;
         state.leapElapsedTicks = 0;
         state.leapMotionStopped = false;
         state.leapSpeed = distance / state.leapMotionTicks;
-        // 중력 0.08, 수직 감쇠 0.98인 기본 이동에서 평지에 돌아오는 시간을 맞춘다.
-        double sum = (1.0D - Math.pow(0.98D, state.leapMotionTicks)) / 0.02D;
-        double verticalSpeed = 3.92D * (state.leapMotionTicks - sum) / sum;
+        // 바닐라 중력 0.08·감쇠 0.98에서 25틱째 30블록 정점에 도달한다.
+        // 거리에 관계없이 같은 높이로 띄우고, 평지 착지 직전까지 수평 이동을 끝낸다.
+        double sum = (1.0D - Math.pow(0.98D, ASCENT_TICKS)) / 0.02D;
+        double verticalSpeed = (LEAP_HEIGHT + 3.92D * (ASCENT_TICKS - sum)) / sum;
         player.setDeltaMovement(direction.scale(state.leapSpeed).add(0, verticalSpeed, 0));
         player.setOnGround(false);
         player.resetFallDistance();

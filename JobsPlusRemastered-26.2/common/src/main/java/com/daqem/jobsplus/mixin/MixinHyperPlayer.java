@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Player.class)
 public abstract class MixinHyperPlayer implements HyperPlayerAccess
@@ -52,5 +53,12 @@ public abstract class MixinHyperPlayer implements HyperPlayerAccess
     private Vec3 jobsplus$leapMovement(Vec3 input)
     {
         return HyperLeapMovement.beforeTravel((Player) (Object) this, input);
+    }
+
+    @Inject(method = "tryToStartFallFlying", at = @At("HEAD"), cancellable = true)
+    private void jobsplus$keepLeapUntilLanding(CallbackInfoReturnable<Boolean> cir)
+    {
+        // 클라이언트 재입력과 서버의 활공 시작 패킷 모두 도약 중에는 무시한다.
+        if (jobsplus$hyperState.leapProtected) cir.setReturnValue(false);
     }
 }

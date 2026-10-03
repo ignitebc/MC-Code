@@ -204,7 +204,7 @@ public final class HyperSkillHandler
         Vec3 direction = new Vec3(-Math.sin(yaw), 0, Math.cos(yaw));
         HyperLeapMovement.start(player, direction, distance);
         state.leapStartedAt = now;
-        state.leapReadyAt = now + HyperSkillRules.LEAP_COOLDOWN_TICKS;
+        state.leapReadyAt = now + HyperSkillRules.getLeapCooldownTicks(level);
         state.suppressMovementUntil = now + 2;
         NetworkManager.sendToPlayer(player, new ClientboundHyperLeapPacket(direction.x, direction.z, distance));
         sync(player);

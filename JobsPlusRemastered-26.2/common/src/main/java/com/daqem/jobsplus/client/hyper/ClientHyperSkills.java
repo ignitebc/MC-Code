@@ -141,6 +141,25 @@ public final class ClientHyperSkills
         NetworkManager.sendToServer(new ServerboundHyperLeapPacket(action, sequence));
     }
 
+    public static boolean shouldSuppressJump(LocalPlayer player)
+    {
+        return player == trackedPlayer && (charging || waitingTicks > 0
+                || ((HyperPlayerAccess) player).jobsplus$getHyperState().leapProtected);
+    }
+
+    /** 자동 점프 등이 키보드 처리 뒤에 다시 켠 점프 입력도 실제 이동 전에 제거한다. */
+    public static void suppressJumpInput(LocalPlayer player)
+    {
+        if (!shouldSuppressJump(player)) return;
+        Input original = player.input.keyPresses;
+        if (original.jump())
+        {
+            player.input.keyPresses = new Input(original.forward(), original.backward(), original.left(), original.right(),
+                    false, original.shift(), original.sprint());
+        }
+        player.setJumping(false);
+    }
+
     public static void render(GuiGraphicsExtractor graphics)
     {
         Minecraft minecraft = Minecraft.getInstance();
@@ -182,18 +201,14 @@ public final class ClientHyperSkills
             }
             panel(graphics, 10, height - 69, Math.min(160, width / 2 - 16), label, progress, color);
         }
-        if (charging || waitingTicks > 0)
+        boolean showCharge = charging && chargeTicks >= HyperSkillRules.LEAP_MIN_CHARGE_TICKS;
+        if (showCharge || waitingTicks > 0)
         {
             double charge = chargeTicks / (double) HyperSkillRules.LEAP_CHARGE_TICKS;
             String chunks = String.format(Locale.ROOT, "%.1f", HyperSkillRules.getLeapDistance(leapLevel) * charge / 16.0D);
             Component label = waitingTicks > 0 ? JobsPlus.translatable("hyper.hud.leap_waiting")
                     : JobsPlus.translatable("hyper.hud.leap_charge", chunks);
             panel(graphics, width / 2 - 90, height - 111, 180, label, charge, 0xFF71DFFF);
-        }
-        else if (leapLevel > 0 && leapCooldown > 0)
-        {
-            Component label = JobsPlus.translatable("hyper.hud.leap_cooldown", seconds(leapCooldown));
-            graphics.text(minecraft.font, label, width / 2 - minecraft.font.width(label) / 2, height - 91, 0xFFC3D7E0, true);
         }
     }
 

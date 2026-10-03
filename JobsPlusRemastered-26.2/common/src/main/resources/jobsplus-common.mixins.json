@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "client.HyperKeyboardInputMixin",
+    "client.HyperLocalPlayerMixin",
     "client.HyperHudMixin",
     "client.HyperEntityRenderStateMixin",
     "client.HyperEntityRendererMixin",
