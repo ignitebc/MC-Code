@@ -1,10 +1,15 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
+import com.daqem.jobsplus.achievement.AchievementCatalog;
+import com.daqem.jobsplus.client.achievement.ClientAchievements;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.jobs.tab.AchievementTab;
 import com.daqem.jobsplus.client.gui.jobs.widgets.AchievementTabWidget;
+import com.daqem.jobsplus.client.gui.theme.JobsTheme;
+import com.daqem.jobsplus.networking.s2c.ClientboundAchievementPacket;
 import com.daqem.uilib.gui.component.EmptyComponent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.network.chat.Component;
 
 /** 업적 탭. 위쪽 하위 탭으로 업적 목록과 칭호 화면을 전환한다. */
 public class AchievementComponent extends EmptyComponent
@@ -12,9 +17,11 @@ public class AchievementComponent extends EmptyComponent
     private static final int TAB_GAP = 1;
     private static final int MAX_TAB_WIDTH = 50;
     private static final int CONTENT_Y = AchievementTabWidget.HEIGHT + 4;
+    private static final int SUMMARY_WIDTH = 155;
 
     private final JobsScreenState state;
     private AchievementTab renderedTab;
+    private int tabsWidth;
 
     public AchievementComponent(JobsScreenState state, int width, int height)
     {
@@ -28,14 +35,15 @@ public class AchievementComponent extends EmptyComponent
     private void addTabWidgets()
     {
         AchievementTab[] tabs = AchievementTab.values();
-        int evenWidth = (getWidth() - TAB_GAP * (tabs.length - 1)) / tabs.length;
-        int tabWidth = Math.min(MAX_TAB_WIDTH, evenWidth);
+        int evenWidth = (getWidth() - SUMMARY_WIDTH - 6 - TAB_GAP * (tabs.length - 1)) / tabs.length;
+        int tabWidth = Math.max(1, Math.min(MAX_TAB_WIDTH, evenWidth));
         int tabX = 0;
         for (AchievementTab tab : tabs)
         {
             this.addWidget(new AchievementTabWidget(this.state, tab, tabX, tabWidth));
             tabX += tabWidth + TAB_GAP;
         }
+        this.tabsWidth = tabX - TAB_GAP;
     }
 
     /** 고른 하위 탭의 내용만 붙인다. 하위 탭 단추는 위젯이라 내용을 지워도 남는다. */
@@ -71,5 +79,16 @@ public class AchievementComponent extends EmptyComponent
             this.showSelectedTab();
             this.updateParentPosition(getParentX(), getParentY(), parentWidth, parentHeight);
         }
+        ClientAchievements.poll();
+        ClientboundAchievementPacket snapshot = ClientAchievements.getSnapshot();
+        String summary = "진행 정보를 불러오는 중입니다.";
+        if (!snapshot.season().isEmpty())
+        {
+            int total = AchievementCatalog.all().size();
+            summary = "달성 " + snapshot.completed().size() + "/" + total
+                    + " · 수령 " + snapshot.claimed().size() + "/" + total;
+        }
+        JobsTheme.textRight(guiGraphics, Component.literal(summary), getTotalX() + getWidth() - 3,
+                getTotalY() + 4, Math.max(1, getWidth() - this.tabsWidth - 9), JobsTheme.MUTED);
     }
 }

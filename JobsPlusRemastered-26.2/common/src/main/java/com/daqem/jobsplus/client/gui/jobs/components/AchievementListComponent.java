@@ -3,6 +3,7 @@ package com.daqem.jobsplus.client.gui.jobs.components;
 import com.daqem.jobsplus.achievement.AchievementCatalog;
 import com.daqem.jobsplus.achievement.AchievementDefinition;
 import com.daqem.jobsplus.client.achievement.ClientAchievements;
+import com.daqem.jobsplus.client.achievement.AchievementDisplayText;
 import com.daqem.jobsplus.client.gui.jobs.widgets.ActionScrollWidget;
 import com.daqem.jobsplus.client.gui.theme.JobsTheme;
 import com.daqem.jobsplus.networking.s2c.ClientboundAchievementPacket;
@@ -20,9 +21,8 @@ import java.util.Objects;
 /** 분류별 목록, 복합 목표의 개별 진행도, 판정 대상 목록과 완료 버튼을 보여 준다. */
 public final class AchievementListComponent extends EmptyComponent
 {
-    private static final int HEADER_HEIGHT = 16;
     private static final int CATEGORY_HEIGHT = 16;
-    private static final int BODY_Y = HEADER_HEIGHT + CATEGORY_HEIGHT + 4;
+    private static final int BODY_Y = CATEGORY_HEIGHT + 4;
     private static final int ROW_HEIGHT = 28;
     private static final int FOOTER_HEIGHT = 23;
     private static final String[] CATEGORY_NAMES = {"직업", "생활", "탐험", "경제", "장비", "펫"};
@@ -57,7 +57,7 @@ public final class AchievementListComponent extends EmptyComponent
         for (int index = 0; index < CATEGORY_NAMES.length; index++)
         {
             String category = Character.toString((char) ('A' + index));
-            addWidget(new CategoryButton(index * (categoryWidth + 1), HEADER_HEIGHT, categoryWidth,
+            addWidget(new CategoryButton(index * (categoryWidth + 1), 0, categoryWidth,
                     category, Component.literal(CATEGORY_NAMES[index])));
         }
         refresh();
@@ -116,12 +116,13 @@ public final class AchievementListComponent extends EmptyComponent
             return content;
         }
         int y = 3;
-        y = addText(content, y, width, definition.id() + " " + definition.name(), JobsTheme.CYAN);
+        y = addText(content, y, width, definition.name(), JobsTheme.CYAN);
         y = addText(content, y, width, "★".repeat(definition.difficulty()) + " · 다이아몬드 " + definition.diamonds() + "개", JobsTheme.TEXT);
         y = addText(content, y, width, status(definition, snapshot), statusColor(definition, snapshot));
         if (!definition.parents().isEmpty())
         {
-            String parents = String.join(" · ", definition.parents());
+            String parents = String.join(" · ", definition.parents().stream()
+                    .map(AchievementDisplayText::achievementName).toList());
             if (definition.requiredParents() < definition.parents().size())
             {
                 parents = parents + " 중 " + definition.requiredParents() + "개";
@@ -140,8 +141,13 @@ public final class AchievementListComponent extends EmptyComponent
             String label = objective.label();
             if (objective.key().startsWith("kill:"))
             {
-                String entityId = objective.key().substring("kill:".length()).replace(':', '.');
-                label = Component.translatable("entity." + entityId).getString();
+                String entityId = objective.key().substring("kill:".length());
+                String fallback = label.replace(" 처치", "");
+                if (fallback.equals(entityId.substring(entityId.indexOf(':') + 1)))
+                {
+                    fallback = "적대 몬스터";
+                }
+                label = AchievementDisplayText.resourceName("entity", entityId, fallback) + " 처치";
             }
             String quantity = current + " / " + objective.target();
             if (objective.key().equals("walk_cm") || objective.key().equals("elytra_cm"))
@@ -152,14 +158,14 @@ public final class AchievementListComponent extends EmptyComponent
             y = addText(content, y, width, label + ": " + quantity, color);
         }
         y += 5;
-        y = addText(content, y, width, definition.details(), JobsTheme.MUTED);
+        y = addText(content, y, width, AchievementDisplayText.details(definition), JobsTheme.MUTED);
         if (definition.id().equals("C05"))
         {
             y += 4;
             y = addText(content, y, width, "현재 서버의 오버월드 방문 대상:", JobsTheme.CYAN);
             for (String biome : snapshot.overworldBiomes())
             {
-                y = addText(content, y, width, biome, JobsTheme.MUTED);
+                y = addText(content, y, width, "• " + AchievementDisplayText.resourceName("biome", biome, "추가 생물 군계"), JobsTheme.MUTED);
             }
         }
         if (definition.id().equals("C06"))
@@ -168,7 +174,7 @@ public final class AchievementListComponent extends EmptyComponent
             y = addText(content, y, width, "현재 바닐라 발전 과제의 방문 목록:", JobsTheme.CYAN);
             for (String biome : snapshot.adventureBiomes())
             {
-                y = addText(content, y, width, biome, JobsTheme.MUTED);
+                y = addText(content, y, width, "• " + AchievementDisplayText.resourceName("biome", biome, "추가 생물 군계"), JobsTheme.MUTED);
             }
         }
         content.setHeight(y + 4);
@@ -185,7 +191,7 @@ public final class AchievementListComponent extends EmptyComponent
         return y;
     }
 
-    /** 한글·긴 리소스 ID도 잘리지 않도록 실제 글꼴 폭으로 줄을 나눈다. */
+    /** 한글 설명과 대상 목록이 잘리지 않도록 실제 글꼴 폭으로 줄을 나눈다. */
     private static List<String> wrap(String text, int width)
     {
         List<String> lines = new ArrayList<>();
@@ -275,13 +281,6 @@ public final class AchievementListComponent extends EmptyComponent
                 this.listWidth, Math.max(1, getHeight() - BODY_Y));
         JobsTheme.texture(graphics, JobsTheme.Skin.INSET, getTotalX() + this.detailX, getTotalY() + BODY_Y,
                 Math.max(1, getWidth() - this.detailX), Math.max(1, getHeight() - BODY_Y));
-        String header = "진행 정보를 불러오는 중입니다.";
-        if (!snapshot.season().isEmpty())
-        {
-            header = "시즌 " + snapshot.season() + " · 달성 " + snapshot.completed().size() + "/100 · 수령 " + snapshot.claimed().size() + "/100";
-        }
-        JobsTheme.text(graphics, Component.literal(header), getTotalX() + 3, getTotalY() + 3,
-                Math.max(1, getWidth() - 6), JobsTheme.MUTED);
     }
 
     private static class TextLine extends EmptyComponent
@@ -340,7 +339,7 @@ public final class AchievementListComponent extends EmptyComponent
             ClientboundAchievementPacket snapshot = ClientAchievements.getSnapshot();
             JobsTheme.button(graphics, getX(), getY(), getWidth(), getHeight(), true, isHoveredOrFocused(),
                     definition.id().equals(ClientAchievements.selectedId), false);
-            JobsTheme.text(graphics, Component.literal(definition.id() + " " + definition.name()),
+            JobsTheme.text(graphics, Component.literal(definition.name()),
                     getX() + 4, getY() + 4, Math.max(1, getWidth() - 8), JobsTheme.TEXT);
             JobsTheme.text(graphics, Component.literal(status(definition, snapshot)),
                     getX() + 4, getY() + 15, Math.max(1, getWidth() - 8), statusColor(definition, snapshot));
