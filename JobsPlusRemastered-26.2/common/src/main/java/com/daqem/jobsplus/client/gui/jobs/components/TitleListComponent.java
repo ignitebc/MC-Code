@@ -19,6 +19,8 @@ public class TitleListComponent extends EmptyComponent
 {
     private static final int ROW_HEIGHT = 68;
     private static final int ROW_GAP = 3;
+    private static final int COLUMN_COUNT = 2;
+    private static final int COLUMN_GAP = 6;
     /** 스크롤 막대가 들어갈 오른쪽 여백 */
     private static final int SCROLL_BAR_SPACE = 10;
     private static final int PADDING = 6;
@@ -47,15 +49,20 @@ public class TitleListComponent extends EmptyComponent
         double scrollAmount = this.scroll.scrollAmount();
         this.scroll.clearComponents();
 
-        int contentWidth = getWidth() - SCROLL_BAR_SPACE;
+        int contentWidth = Math.max(COLUMN_COUNT + COLUMN_GAP, getWidth() - SCROLL_BAR_SPACE);
+        int columnWidth = (contentWidth - COLUMN_GAP) / COLUMN_COUNT;
         EmptyComponent content = new EmptyComponent(0, 0, contentWidth, 0);
-        int rowY = 0;
-        for (TitleType type : TitleType.values())
+        TitleType[] types = TitleType.values();
+        for (int index = 0; index < types.length; index++)
         {
-            content.addComponent(new TitleRow(rowY, contentWidth, type));
-            rowY += ROW_HEIGHT + ROW_GAP;
+            int column = index % COLUMN_COUNT;
+            int row = index / COLUMN_COUNT;
+            int columnX = column * (columnWidth + COLUMN_GAP);
+            int width = column == COLUMN_COUNT - 1 ? contentWidth - columnX : columnWidth;
+            content.addComponent(new TitleRow(columnX, row * (ROW_HEIGHT + ROW_GAP), width, types[index]));
         }
-        content.setHeight(rowY);
+        int rowCount = (types.length + COLUMN_COUNT - 1) / COLUMN_COUNT;
+        content.setHeight(Math.max(0, rowCount * (ROW_HEIGHT + ROW_GAP) - ROW_GAP));
 
         this.scroll.addComponent(content);
         this.scroll.setScrollAmount(scrollAmount);
@@ -80,9 +87,9 @@ public class TitleListComponent extends EmptyComponent
         private final int holderColor;
         private final int textRight;
 
-        TitleRow(int y, int width, TitleType type)
+        TitleRow(int x, int y, int width, TitleType type)
         {
-            super(0, y, width, ROW_HEIGHT);
+            super(x, y, width, ROW_HEIGHT);
             this.type = type;
 
             Optional<ClientTitles.Entry> entry = ClientTitles.find(type);
