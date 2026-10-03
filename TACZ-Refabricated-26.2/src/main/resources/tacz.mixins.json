@@ -4,12 +4,16 @@
   "package": "com.tacz.guns.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "common.AbstractSkeletonCoverMixin",
     "common.LivingEntityMixin",
+    "common.MobCoverMixin",
     "common.MonsterEquipmentGunMixin",
     "common.ServerGamePacketListenerImplMixin",
     "common.ServerPlayerMixin",
     "common.ServerPlayNetHandlerMixin",
-    "common.StarterKitGunMixin"
+    "common.StarterKitGunMixin",
+    "common.TargetGoalCoverMixin",
+    "common.ZombieCoverMixin"
   ],
   "client": [
     "client.AbstractButtonMixin",
