@@ -59,16 +59,18 @@ public class GunGuideComponent extends EmptyComponent {
         }
         listScroll = new ActionScrollWidget(listWidth, Math.max(1, height - 21));
         listScroll.setY(21);
-        detailScroll = new ActionScrollWidget(width - detailX, height);
+        detailScroll = new ActionScrollWidget(width - detailX, Math.max(1, height - 21));
         detailScroll.setX(detailX);
+        detailScroll.setY(21);
         addWidget(listScroll);
         addWidget(detailScroll);
-        searchScroll = new ActionScrollWidget(width - detailX, Math.min(height, 170));
+        searchScroll = new ActionScrollWidget(width - detailX, Math.max(1, Math.min(height - 21, 170)));
         searchScroll.setX(detailX);
+        searchScroll.setY(21);
         searchScroll.visible = false;
         addWidget(searchScroll);
         int searchWidth = Math.min(155, width - detailX);
-        searchInput = new JobsEditBox(Minecraft.getInstance().font, width - searchWidth, -17,
+        searchInput = new JobsEditBox(Minecraft.getInstance().font, width - searchWidth, 0,
                 searchWidth, 14, Component.literal("총기 도감 검색")) {
             @Override
             public void setFocused(boolean focused) {
@@ -253,6 +255,8 @@ public class GunGuideComponent extends EmptyComponent {
         }
         detailScroll.visible = !searchOpen;
         searchScroll.visible = searchOpen;
+        JobsTheme.texture(graphics, JobsTheme.Skin.INSET, getTotalX() - 3, getTotalY() - 1,
+                listWidth + 6, getHeight() + 2);
         JobsTheme.texture(graphics, JobsTheme.Skin.INSET, getTotalX() + detailX - 3, getTotalY(),
                 getWidth() - detailX + 3, getHeight());
         if (!catalog.message().isEmpty()) {
