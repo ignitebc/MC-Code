@@ -26,8 +26,7 @@ public final class HyperSkillRules
     public static final int LANDING_PROTECTION_TICKS = 20;
     public static final int LEECH_COOLDOWN_TICKS = 20;
     public static final float LEECH_HEALTH = 2.0F;
-    public static final int LEAP_CHARGE_TICKS = 40;
-    public static final int LEAP_MIN_CHARGE_TICKS = 20;
+    public static final int LEAP_CHARGE_TICKS = 20;
     public static final Identifier MINER = JobsPlus.getId("miner");
     public static final Identifier DIGGER = JobsPlus.getId("digger");
     public static final Identifier FARMER = JobsPlus.getId("farmer");

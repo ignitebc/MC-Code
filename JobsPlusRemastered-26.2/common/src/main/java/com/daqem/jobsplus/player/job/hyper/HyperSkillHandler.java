@@ -62,9 +62,18 @@ public final class HyperSkillHandler
             // 재접속·차원 전환 뒤에는 추진을 다시 주지 않고 착지 보호만 복원한다.
             state.leapMotionTicks = 0;
         }
-        if (state.chargeStartedAt >= 0 && !canCharge(player))
+        if (state.chargeStartedAt >= 0)
         {
-            state.chargeStartedAt = -1;
+            // START는 같은 틱의 바닐라 웅크리기 입력보다 먼저 도착할 수 있다.
+            if (!canCharge(player) || (now > state.chargeStartedAt && !player.isShiftKeyDown()))
+            {
+                state.chargeStartedAt = -1;
+            }
+            else if (now - state.chargeStartedAt >= HyperSkillRules.LEAP_CHARGE_TICKS)
+            {
+                state.chargeStartedAt = -1;
+                launchLeap(player, state, now);
+            }
         }
         if (state.leapProtected)
         {
@@ -186,20 +195,20 @@ public final class HyperSkillHandler
             return;
         }
         if (packet.sequence() != state.chargeSequence || state.chargeStartedAt < 0) return;
-        long charged = now - state.chargeStartedAt;
+        // 키를 놓으면 취소한다. 완충 발동 시점은 서버 틱에서 결정한다.
         state.chargeStartedAt = -1;
-        if (packet.action() == ServerboundHyperLeapPacket.Action.CANCEL
-                || charged < HyperSkillRules.LEAP_MIN_CHARGE_TICKS || !canCharge(player)
-                || state.leapReadyAt > now || state.leapProtected) return;
+    }
+
+    private static void launchLeap(ServerPlayer player, HyperPlayerState state, long now)
+    {
+        if (state.leapReadyAt > now || state.leapProtected) return;
         if (CombatRules.isFlightRestricted(player))
         {
             CombatRules.punishFlight(player);
             return;
         }
         int level = HyperSkillRules.getActiveLevel(player, HyperSkillRules.ADVENTURER);
-        double fraction = Math.min(charged, HyperSkillRules.LEAP_CHARGE_TICKS)
-                / (double) HyperSkillRules.LEAP_CHARGE_TICKS;
-        double distance = HyperSkillRules.getLeapDistance(level) * fraction;
+        double distance = HyperSkillRules.getLeapDistance(level);
         double yaw = Math.toRadians(player.getYRot());
         Vec3 direction = new Vec3(-Math.sin(yaw), 0, Math.cos(yaw));
         HyperLeapMovement.start(player, direction, distance);

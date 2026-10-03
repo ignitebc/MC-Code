@@ -30,11 +30,10 @@ public final class ClientHyperSkills
     private static int shieldTicks;
     private static int shieldCooldown;
     private static int leapCooldown;
-    private static boolean wasJumpDown;
+    private static boolean wasLeapDown;
     private static boolean charging;
     private static int chargeTicks;
     private static int sequence;
-    private static int waitingTicks;
 
     private ClientHyperSkills() {}
 
@@ -47,10 +46,9 @@ public final class ClientHyperSkills
         shieldTicks = 0;
         shieldCooldown = 0;
         leapCooldown = 0;
-        wasJumpDown = false;
+        wasLeapDown = false;
         charging = false;
         chargeTicks = 0;
-        waitingTicks = 0;
     }
 
     public static void receiveStatus(ClientboundHyperStatusPacket packet, NetworkManager.PacketContext context)
@@ -82,12 +80,11 @@ public final class ClientHyperSkills
             track(player);
             if (player == null || !player.isAlive()) return;
             charging = false;
-            waitingTicks = 0;
             HyperLeapMovement.start(player, new Vec3(packet.directionX(), 0, packet.directionZ()), packet.distance());
         });
     }
 
-    /** 원래 입력을 읽은 뒤 점프만 보류한다. 짧게 누르면 키를 놓는 틱에 일반 점프한다. */
+    /** 웅크리기와 점프를 함께 누를 때만 충전하며, 일반 점프 입력은 그대로 둔다. */
     public static void updateInput(ClientInput input)
     {
         Minecraft minecraft = Minecraft.getInstance();
@@ -97,47 +94,34 @@ public final class ClientHyperSkills
         if (shieldTicks > 0) shieldTicks--;
         if (shieldCooldown > 0) shieldCooldown--;
         if (leapCooldown > 0) leapCooldown--;
-        if (waitingTicks > 0) waitingTicks--;
         boolean down = input.keyPresses.jump();
+        boolean leapDown = down && input.keyPresses.shift();
         var state = ((HyperPlayerAccess) player).jobsplus$getHyperState();
         boolean eligible = leapLevel > 0 && player.isAlive() && !player.isSpectator() && !player.isCreative()
                 && minecraft.gui.screen() == null && player.onGround() && !player.isInWater()
-                && !player.isInLava() && !player.isPassenger() && !player.isFallFlying();
-        if (charging && (!eligible || state.leapProtected))
+                && !player.isInLava() && !player.isPassenger() && !player.isFallFlying() && !player.isSleeping();
+        if (charging && (!leapDown || !eligible || leapCooldown > 0 || state.leapProtected))
         {
             send(ServerboundHyperLeapPacket.Action.CANCEL);
             charging = false;
             chargeTicks = 0;
         }
-        if (eligible && leapCooldown == 0 && waitingTicks == 0 && !state.leapProtected && down && !wasJumpDown)
+        if (eligible && leapCooldown == 0 && !state.leapProtected && leapDown && !wasLeapDown)
         {
             sequence++;
             charging = true;
             chargeTicks = 0;
             send(ServerboundHyperLeapPacket.Action.START);
         }
-        boolean jump = down;
-        if (charging)
+        else if (charging)
         {
-            if (down)
-            {
-                chargeTicks = Math.min(chargeTicks + 1, HyperSkillRules.LEAP_CHARGE_TICKS);
-                jump = false;
-            }
-            else
-            {
-                boolean normalJump = chargeTicks < HyperSkillRules.LEAP_MIN_CHARGE_TICKS;
-                send(normalJump ? ServerboundHyperLeapPacket.Action.CANCEL : ServerboundHyperLeapPacket.Action.RELEASE);
-                charging = false;
-                jump = normalJump;
-                if (!normalJump) waitingTicks = 20;
-            }
+            chargeTicks = Math.min(chargeTicks + 1, HyperSkillRules.LEAP_CHARGE_TICKS);
         }
-        if (state.leapProtected || waitingTicks > 0) jump = false;
+        boolean jump = down && !charging && !state.leapProtected;
         Input original = input.keyPresses;
         input.keyPresses = new Input(original.forward(), original.backward(), original.left(), original.right(),
                 jump, original.shift(), original.sprint());
-        wasJumpDown = down;
+        wasLeapDown = leapDown;
     }
 
     private static void send(ServerboundHyperLeapPacket.Action action)
@@ -147,7 +131,7 @@ public final class ClientHyperSkills
 
     public static boolean shouldSuppressJump(LocalPlayer player)
     {
-        return player == trackedPlayer && (charging || waitingTicks > 0
+        return player == trackedPlayer && (charging
                 || ((HyperPlayerAccess) player).jobsplus$getHyperState().leapProtected);
     }
 
@@ -209,12 +193,11 @@ public final class ClientHyperSkills
             panel(graphics, 0, 0, SHIELD_PANEL_WIDTH, label, progress, color);
             graphics.pose().popMatrix();
         }
-        boolean showCharge = charging && chargeTicks >= HyperSkillRules.LEAP_MIN_CHARGE_TICKS;
-        if (showCharge || waitingTicks > 0)
+        if (charging)
         {
             double charge = chargeTicks / (double) HyperSkillRules.LEAP_CHARGE_TICKS;
-            String chunks = String.format(Locale.ROOT, "%.1f", HyperSkillRules.getLeapDistance(leapLevel) * charge / 16.0D);
-            Component label = waitingTicks > 0 ? JobsPlus.translatable("hyper.hud.leap_waiting")
+            String chunks = String.format(Locale.ROOT, "%.1f", HyperSkillRules.getLeapDistance(leapLevel) / 16.0D);
+            Component label = chargeTicks >= HyperSkillRules.LEAP_CHARGE_TICKS ? JobsPlus.translatable("hyper.hud.leap_waiting")
                     : JobsPlus.translatable("hyper.hud.leap_charge", chunks);
             panel(graphics, width / 2 - 90, height - 111, 180, label, charge, 0xFF71DFFF);
         }
