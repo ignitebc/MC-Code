@@ -126,10 +126,13 @@ public class JobsComponent extends AbstractComponent
         {
             JobsTheme.panel(guiGraphics, x + layout.pageX(this.cachedRightTab), y + layout.bodyY(),
                     layout.pageWidth(this.cachedRightTab), layout.bodyHeight());
-            JobsTheme.texture(guiGraphics, JobsTheme.Skin.HEADER, x + 9, y + layout.bodyY() + 1,
-                    layout.pageWidth(this.cachedRightTab) - 2, 18);
-            JobsTheme.text(guiGraphics, this.cachedRightTab.getName(), x + 16, y + layout.bodyY() + 7,
-                    layout.pageWidth(this.cachedRightTab) - 16, JobsTheme.CYAN);
+            if (layout.pageHeaderHeight(this.cachedRightTab) > 0)
+            {
+                JobsTheme.texture(guiGraphics, JobsTheme.Skin.HEADER, x + 9, y + layout.bodyY() + 1,
+                        layout.pageWidth(this.cachedRightTab) - 2, layout.pageHeaderHeight(this.cachedRightTab));
+                JobsTheme.text(guiGraphics, this.cachedRightTab.getName(), x + 16, y + layout.bodyY() + 7,
+                        layout.pageWidth(this.cachedRightTab) - 16, JobsTheme.CYAN);
+            }
         }
         else
         {

@@ -87,6 +87,13 @@ public record JobsLayout(int width, int height) {
         return width - pageX(tab) - 8;
     }
 
+    public int pageHeaderHeight(RightTab tab) {
+        return switch (tab) {
+            case ACHIEVEMENT, GUN_GUIDE, PET_CARE, RECIPES -> 0;
+            default -> 18;
+        };
+    }
+
     public int stockTradingWidth() {
         return wide() ? (width - 26) * 43 / 100 : 156;
     }

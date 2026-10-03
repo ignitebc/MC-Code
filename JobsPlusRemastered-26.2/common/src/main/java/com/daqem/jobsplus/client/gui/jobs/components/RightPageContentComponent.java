@@ -13,7 +13,7 @@ public class RightPageContentComponent extends EmptyComponent
     private final JobsScreenState state;
     private int contentWidth;
     private final JobsLayout layout;
-    private final int contentHeight;
+    private int contentHeight;
     private RightTab cachedTab;
     private Job cachedJob;
 
@@ -32,9 +32,11 @@ public class RightPageContentComponent extends EmptyComponent
     private void addTabComponent()
     {
         this.contentWidth = layout.pageWidth(this.cachedTab) - 14;
+        this.contentHeight = Math.max(1, layout.bodyHeight() - layout.pageHeaderHeight(this.cachedTab) - 8);
         this.setWidth(contentWidth);
+        this.setHeight(contentHeight);
         this.setX(layout.pageX(this.cachedTab) + 7);
-        this.setY(layout.bodyY() + 20);
+        this.setY(layout.bodyY() + layout.pageHeaderHeight(this.cachedTab) + 2);
         switch (this.cachedTab) {
         case EXPERIENCE -> this.addComponent(new ExperienceComponent(state, contentWidth, contentHeight));
         case RECIPES -> this.addComponent(new RecipesComponent(state, contentWidth, contentHeight));
