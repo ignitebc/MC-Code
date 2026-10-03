@@ -132,7 +132,7 @@ public final class ToolLevelRules {
         player.getInventory().setChanged();
     }
 
-    /** 직접 채굴한 블록의 원래 상태로 판정한다. 범위 채굴과 추가 수확은 호출하지 않는다. */
+    /** 직접·범위 채굴 모두 파괴 전 상태와 설치 기록으로 판정한다. 실제 제거에 성공한 블록만 EXP를 지급한다. */
     public static boolean canGainMiningExperience(ServerPlayer player, ItemStack stack,
                                                   ServerLevel level, BlockPos pos, BlockState state) {
         if (player.isCreative() || player.isSpectator()) return false;
