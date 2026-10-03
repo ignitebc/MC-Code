@@ -211,7 +211,7 @@ public class HyperPowerupsComponent extends EmptyComponent
                 this.detailsWidth, this.content.getHeight());
         JobsTheme.label(graphics, JobsPlus.translatable("hyper.select_skill"),
                 this.content.getTotalX() + this.ringX + Math.round(72 * this.ringScale),
-                this.content.getTotalY() + this.ringY + Math.round(88 * this.ringScale),
+                this.content.getTotalY() + this.ringY + Math.round((RING_HEIGHT - 12) * this.ringScale / 2),
                 Math.max(1, Math.round(88 * this.ringScale)), Math.max(1, Math.round(12 * this.ringScale)),
                 JobsTheme.MUTED, JobsTheme.LABEL_SCALE * this.ringScale);
         Job job = this.state.getSelectedHyperJob();
@@ -224,7 +224,7 @@ public class HyperPowerupsComponent extends EmptyComponent
         }
         line(graphics, JobsPlus.translatable("hyper.job_status",
                 HyperSkillSlotWidget.getJobName(this.state, jobLocation), jobLevel), 0, JobsTheme.MUTED);
-        line(graphics, HyperSkillRules.getName(jobLocation), 14, JobsTheme.CYAN);
+        line(graphics, HyperSkillRules.getName(jobLocation), 14, JobsTheme.ERROR);
         if (!HyperSkillRules.supports(jobLocation))
         {
             line(graphics, JobsPlus.translatable("hyper.planned_details"), 40, JobsTheme.MUTED);
