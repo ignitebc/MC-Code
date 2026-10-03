@@ -1,6 +1,8 @@
 package com.mcserver.serverutilities;
 
 import com.mcserver.serverutilities.combat.CombatRules;
+import com.mcserver.serverutilities.boss.BossHealthRules;
+import com.mcserver.serverutilities.boss.WardenBossBars;
 import com.mcserver.serverutilities.monster.BossMinionRules;
 import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
 import com.mcserver.serverutilities.monster.MonsterEquipmentRules;
@@ -52,6 +54,8 @@ public final class ServerUtilities implements ModInitializer {
             return true;
         });
         MonsterLevelSync.register();
+        BossHealthRules.register();
+        WardenBossBars.register();
         rejectLegacyModule("jobsplus", "com/daqem/jobsplus/event/player/EventDeleteRandomItemOnDeath.class");
         rejectLegacyModule("advancednetherite", "com/autovw/advancednetherite/mixin/HungerExhaustionMixin.class");
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {

@@ -10,7 +10,9 @@
     "CreeperExplosionDamageMixin",
     "CreeperExplosionRangeMixin",
     "DeathChestProtectionMixin",
+    "DragonFireballVolleyMixin",
     "EquipmentTierTooltipMixin",
+    "HealthAttributeLimitMixin",
     "HungerExhaustionMixin",
     "LodestonePlacementMixin",
     "LodestonePistonMixin",
@@ -30,7 +32,8 @@
     "ToolGrindstoneMixin",
     "ToolMiningExperienceMixin",
     "ToolRepairRecipeMixin",
-    "ToolSmithingMixin"
+    "ToolSmithingMixin",
+    "WitherSpawnHealthMixin"
   ],
   "client": [
     "MonsterLevelLabelMixin",
