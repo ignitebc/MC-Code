@@ -1,6 +1,7 @@
 package com.daqem.jobsplus.client;
 
 import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.client.compat.IrisTtfCompat;
 import com.daqem.jobsplus.client.event.EventKeyPressed;
 import com.daqem.jobsplus.client.gunguide.TaczSmithTableLink;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -17,6 +18,7 @@ public class JobsPlusClient
     {
         registerEvents();
         TaczSmithTableLink.register();
+        IrisTtfCompat.register();
     }
 
     private static void registerEvents()
