@@ -3,7 +3,6 @@ package com.daqem.jobsplus.client.gui.powerups.components;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreen;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreenState;
-import com.daqem.jobsplus.client.gui.jobs.widgets.AbstractScrollWidget;
 import com.daqem.jobsplus.client.gui.powerups.PowerupsScreenState;
 import com.daqem.jobsplus.client.gui.powerups.widgets.HyperSkillSlotWidget;
 import com.daqem.jobsplus.client.gui.theme.JobsTheme;
@@ -27,8 +26,8 @@ public class HyperPowerupsComponent extends EmptyComponent
 {
     private static final int RING_WIDTH = 232;
     private static final int RING_HEIGHT = 220;
-    private static final int DETAILS_HEIGHT = 188;
-    private static final int CONTENT_GAP = 12;
+    private static final int COLUMN_GAP = 8;
+    private static final int PANEL_PADDING = 6;
     // 목록의 레벨 정렬과 관계없이 슬롯 위치를 고정한다.
     private static final List<SlotPosition> SLOT_POSITIONS = List.of(
             new SlotPosition(HyperSkillRules.MINER, 44, 0),
@@ -42,6 +41,11 @@ public class HyperPowerupsComponent extends EmptyComponent
 
     private final PowerupsScreenState state;
     private final EmptyComponent content;
+    private final int leftWidth;
+    private final int ringX;
+    private final int ringY;
+    private final float ringScale;
+    private final float detailsScale;
     private final int detailsX;
     private final int detailsY;
     private final int detailsWidth;
@@ -52,25 +56,19 @@ public class HyperPowerupsComponent extends EmptyComponent
     {
         super(x, y, width, height);
         this.state = state;
-        int contentWidth = Math.max(1, width - 12);
-        int contentHeight = RING_HEIGHT;
-        int ringX = 0;
-        if (contentWidth >= RING_WIDTH + CONTENT_GAP + 240)
-        {
-            this.detailsX = RING_WIDTH + CONTENT_GAP;
-            this.detailsY = 8;
-            this.detailsWidth = contentWidth - this.detailsX;
-        }
-        else
-        {
-            ringX = Math.max(0, (contentWidth - RING_WIDTH) / 2);
-            this.detailsX = 0;
-            this.detailsY = RING_HEIGHT + CONTENT_GAP;
-            this.detailsWidth = contentWidth;
-            contentHeight = this.detailsY + DETAILS_HEIGHT;
-        }
+        this.leftWidth = Math.max(1, (width - COLUMN_GAP) * 45 / 100);
+        this.detailsX = this.leftWidth + COLUMN_GAP;
+        this.detailsY = 8;
+        this.detailsWidth = Math.max(1, width - this.detailsX);
+        // 전체 8개 슬롯을 현재 높이 안에 넣어 작은 GUI에서도 상세 칸을 아래로 밀지 않는다.
+        this.ringScale = Math.min(1.0f, Math.min(
+                Math.max(1, this.leftWidth - PANEL_PADDING * 2) / (float) RING_WIDTH,
+                Math.max(1, height - PANEL_PADDING * 2) / (float) RING_HEIGHT));
+        this.ringX = (this.leftWidth - Math.round(RING_WIDTH * this.ringScale)) / 2;
+        this.ringY = (height - Math.round(RING_HEIGHT * this.ringScale)) / 2;
+        this.detailsScale = Math.min(1.0f, Math.max(1, height - 44) / 138.0f);
 
-        this.content = new EmptyComponent(0, 0, contentWidth, contentHeight)
+        this.content = new EmptyComponent(0, 0, width, height)
         {
             @Override
             public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY,
@@ -82,21 +80,20 @@ public class HyperPowerupsComponent extends EmptyComponent
         for (SlotPosition position : SLOT_POSITIONS)
         {
             this.content.addWidget(new HyperSkillSlotWidget(
-                    state, position.jobLocation(), ringX + position.x(), position.y()));
+                    state, position.jobLocation(), this.ringX + Math.round(position.x() * this.ringScale),
+                    this.ringY + Math.round(position.y() * this.ringScale), this.ringScale));
         }
 
-        int buttonWidth = Math.max(1, (this.detailsWidth - 6) / 2);
-        int buttonY = this.detailsY + 166;
-        this.actionButton = new HyperButton(this.detailsX, buttonY, buttonWidth,
+        int buttonWidth = Math.max(1, (this.detailsWidth - PANEL_PADDING * 2 - 6) / 2);
+        int buttonY = Math.max(0, height - JobsTheme.BUTTON_HEIGHT - PANEL_PADDING);
+        this.actionButton = new HyperButton(this.detailsX + PANEL_PADDING, buttonY, buttonWidth,
                 JobsPlus.translatable("hyper.open_button"), true, button -> openConfirmation());
-        this.toggleButton = new HyperButton(this.detailsX + buttonWidth + 6, buttonY, buttonWidth,
+        this.toggleButton = new HyperButton(this.detailsX + PANEL_PADDING + buttonWidth + 6, buttonY, buttonWidth,
                 JobsPlus.translatable("hyper.toggle_off"), false, button -> toggle());
         this.content.addWidget(this.actionButton);
         this.content.addWidget(this.toggleButton);
 
-        AbstractScrollWidget scrollWidget = new AbstractScrollWidget(width, Math.max(1, height), 20) {};
-        scrollWidget.addComponent(this.content);
-        this.addWidget(scrollWidget);
+        this.addComponent(this.content);
     }
 
     private int count(Identifier itemLocation)
@@ -208,20 +205,15 @@ public class HyperPowerupsComponent extends EmptyComponent
 
     private void renderDetails(GuiGraphicsExtractor graphics)
     {
-        int ringX = 0;
-        if (this.detailsY > RING_HEIGHT)
-        {
-            ringX = Math.max(0, (this.content.getWidth() - RING_WIDTH) / 2);
-        }
+        JobsTheme.panel(graphics, this.content.getTotalX(), this.content.getTotalY(),
+                this.leftWidth, this.content.getHeight());
+        JobsTheme.panel(graphics, this.content.getTotalX() + this.detailsX, this.content.getTotalY(),
+                this.detailsWidth, this.content.getHeight());
         JobsTheme.label(graphics, JobsPlus.translatable("hyper.select_skill"),
-                this.content.getTotalX() + ringX + 72, this.content.getTotalY() + 88,
-                88, 12, JobsTheme.MUTED);
-        if (this.detailsY > RING_HEIGHT)
-        {
-            JobsTheme.label(graphics, JobsPlus.translatable("hyper.scroll_details"),
-                    this.content.getTotalX() + ringX + 72, this.content.getTotalY() + 104,
-                    88, 12, JobsTheme.CYAN);
-        }
+                this.content.getTotalX() + this.ringX + Math.round(72 * this.ringScale),
+                this.content.getTotalY() + this.ringY + Math.round(88 * this.ringScale),
+                Math.max(1, Math.round(88 * this.ringScale)), Math.max(1, Math.round(12 * this.ringScale)),
+                JobsTheme.MUTED, JobsTheme.LABEL_SCALE * this.ringScale);
         Job job = this.state.getSelectedHyperJob();
         Identifier jobLocation = this.state.getSelectedHyperJobLocation();
         updateButtons(job);
@@ -254,8 +246,8 @@ public class HyperPowerupsComponent extends EmptyComponent
             }
         }
         line(graphics, status, 28, JobsTheme.TEXT);
-        int pipWidth = Math.max(3, this.detailsWidth / HyperSkillRules.MAX_LEVEL);
-        int x = this.content.getTotalX() + this.detailsX;
+        int pipWidth = Math.max(1, (this.detailsWidth - PANEL_PADDING * 2) / HyperSkillRules.MAX_LEVEL);
+        int x = this.content.getTotalX() + this.detailsX + PANEL_PADDING;
         int y = this.content.getTotalY() + this.detailsY;
         for (int index = 0; index < HyperSkillRules.MAX_LEVEL; index++)
         {
@@ -264,8 +256,9 @@ public class HyperPowerupsComponent extends EmptyComponent
             {
                 color = JobsTheme.CYAN;
             }
-            graphics.fill(x + index * pipWidth, y + 42,
-                    x + (index + 1) * pipWidth - 2, y + 46, color);
+            graphics.fill(x + index * pipWidth, y + Math.round(42 * this.detailsScale),
+                    x + (index + 1) * pipWidth - Math.min(2, pipWidth - 1),
+                    y + Math.round(42 * this.detailsScale) + Math.max(1, Math.round(4 * this.detailsScale)), color);
         }
         line(graphics, JobsPlus.translatable("hyper.description"), 56, JobsTheme.TEXT);
         line(graphics, JobsPlus.translatable("hyper.mining_rules"), 68, JobsTheme.MUTED);
@@ -338,8 +331,16 @@ public class HyperPowerupsComponent extends EmptyComponent
 
     private void line(GuiGraphicsExtractor graphics, Component text, int y, int color)
     {
-        JobsTheme.text(graphics, text, this.content.getTotalX() + this.detailsX,
-                this.content.getTotalY() + this.detailsY + y, this.detailsWidth, color);
+        var font = Minecraft.getInstance().font;
+        int width = Math.max(1, this.detailsWidth - PANEL_PADDING * 2);
+        float scale = Math.min(JobsTheme.LABEL_SCALE * this.detailsScale,
+                width / (float) Math.max(1, font.width(text)));
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(this.content.getTotalX() + this.detailsX + PANEL_PADDING,
+                this.content.getTotalY() + this.detailsY + Math.round(y * this.detailsScale));
+        graphics.pose().scale(scale, scale);
+        graphics.text(font, text, 0, 0, color, false);
+        graphics.pose().popMatrix();
     }
 
     private record SlotPosition(Identifier jobLocation, int x, int y) {}
@@ -350,7 +351,7 @@ public class HyperPowerupsComponent extends EmptyComponent
 
         private HyperButton(int x, int y, int width, Component message, boolean primary, OnPress onPress)
         {
-            super(x, y, width, 18, message, null, onPress);
+            super(x, y, width, JobsTheme.BUTTON_HEIGHT, message, null, onPress);
             this.primary = primary;
         }
 

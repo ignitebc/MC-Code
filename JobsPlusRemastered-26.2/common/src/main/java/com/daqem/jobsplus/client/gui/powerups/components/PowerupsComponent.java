@@ -245,8 +245,11 @@ public class PowerupsComponent extends JobsSpriteComponent
                 getTotalX() + 12, getTotalY() + 11, getWidth() - 48, JobsTheme.CYAN);
         graphics.fill(getTotalX() + 8, getTotalY() + 27, getTotalX() + getWidth() - 8,
                 getTotalY() + 28, JobsTheme.DIVIDER);
-        JobsTheme.cutBox(graphics, getTotalX() + 8, getTotalY() + CONTENT_Y,
-                getWidth() - 16, getContentHeight(), JobsTheme.INSET, JobsTheme.BORDER);
+        if (this.cachedTab == PowerupTab.NORMAL)
+        {
+            JobsTheme.cutBox(graphics, getTotalX() + 8, getTotalY() + CONTENT_Y,
+                    getWidth() - 16, getContentHeight(), JobsTheme.INSET, JobsTheme.BORDER);
+        }
         Component footer = Component.literal("드래그 이동  ·  스킬 선택  ·  ESC 돌아가기");
         if (this.cachedTab == PowerupTab.HYPER)
         {

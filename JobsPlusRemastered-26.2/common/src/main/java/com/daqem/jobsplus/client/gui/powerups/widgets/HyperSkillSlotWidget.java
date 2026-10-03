@@ -20,13 +20,16 @@ public class HyperSkillSlotWidget extends CustomButtonWidget
 
     private final PowerupsScreenState state;
     private final Identifier jobLocation;
+    private final float scale;
 
-    public HyperSkillSlotWidget(PowerupsScreenState state, Identifier jobLocation, int x, int y)
+    public HyperSkillSlotWidget(PowerupsScreenState state, Identifier jobLocation, int x, int y, float scale)
     {
-        super(x, y, SLOT_WIDTH, SLOT_HEIGHT, getJobName(state, jobLocation), null,
+        super(x, y, Math.max(1, Math.round(SLOT_WIDTH * scale)), Math.max(1, Math.round(SLOT_HEIGHT * scale)),
+                getJobName(state, jobLocation), null,
                 button -> state.setSelectedHyperJobLocation(jobLocation));
         this.state = state;
         this.jobLocation = jobLocation;
+        this.scale = scale;
     }
 
     public static Component getJobName(PowerupsScreenState state, Identifier jobLocation)
@@ -70,27 +73,28 @@ public class HyperSkillSlotWidget extends CustomButtonWidget
             JobsTheme.inputFrame(graphics, getX(), getY(), getWidth(), getHeight(), JobsTheme.TEXT);
         }
 
-        int iconX = getX() + (getWidth() - ICON_SIZE) / 2;
-        int iconY = getY() + 3;
+        int iconSize = Math.max(1, Math.round(ICON_SIZE * this.scale));
+        int iconX = getX() + (getWidth() - iconSize) / 2;
+        int iconY = getY() + Math.round(3 * this.scale);
         if (hasIcon)
         {
             Identifier icon = JobsPlus.getId("textures/gui/hyper/" + this.jobLocation.getPath() + ".png");
             graphics.blit(RenderPipelines.GUI_TEXTURED, icon, iconX, iconY,
-                    0.0F, 0.0F, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
+                    0.0F, 0.0F, iconSize, iconSize, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
             if (!available)
             {
-                graphics.fill(iconX, iconY, iconX + ICON_SIZE, iconY + ICON_SIZE, 0x99081D25);
+                graphics.fill(iconX, iconY, iconX + iconSize, iconY + iconSize, 0x99081D25);
             }
         }
         else
         {
             // 이미지가 없는 예정 슬롯은 같은 X 모양을 공유한다.
-            for (int offset = 4; offset < ICON_SIZE - 4; offset++)
+            for (int offset = Math.round(4 * this.scale); offset < iconSize - Math.round(4 * this.scale); offset++)
             {
                 graphics.fill(iconX + offset, iconY + offset,
                         iconX + offset + 2, iconY + offset + 2, JobsTheme.DISABLED);
-                graphics.fill(iconX + ICON_SIZE - offset - 2, iconY + offset,
-                        iconX + ICON_SIZE - offset, iconY + offset + 2, JobsTheme.DISABLED);
+                graphics.fill(iconX + iconSize - offset - 2, iconY + offset,
+                        iconX + iconSize - offset, iconY + offset + 2, JobsTheme.DISABLED);
             }
         }
 
@@ -117,7 +121,11 @@ public class HyperSkillSlotWidget extends CustomButtonWidget
         }
         Component jobName = getJobName(this.state, this.jobLocation);
         setMessage(jobName.copy().append(Component.literal(" · ")).append(status));
-        JobsTheme.label(graphics, jobName, getX() + 2, getY() + 32, getWidth() - 4, 9, JobsTheme.TEXT);
-        JobsTheme.label(graphics, status, getX() + 2, getY() + 42, getWidth() - 4, 8, statusColor);
+        JobsTheme.label(graphics, jobName, getX() + 2, getY() + Math.round(32 * this.scale),
+                Math.max(1, getWidth() - 4), Math.max(1, Math.round(9 * this.scale)), JobsTheme.TEXT,
+                JobsTheme.LABEL_SCALE * this.scale);
+        JobsTheme.label(graphics, status, getX() + 2, getY() + Math.round(42 * this.scale),
+                Math.max(1, getWidth() - 4), Math.max(1, Math.round(8 * this.scale)), statusColor,
+                JobsTheme.LABEL_SCALE * this.scale);
     }
 }
