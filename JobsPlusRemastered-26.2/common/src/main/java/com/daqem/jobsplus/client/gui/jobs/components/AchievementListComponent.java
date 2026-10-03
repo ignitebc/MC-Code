@@ -14,6 +14,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -35,6 +36,7 @@ public final class AchievementListComponent extends EmptyComponent
     private final int listWidth;
     private final int detailX;
     private String renderedCategory;
+    private List<String> renderedOrder = List.of();
     private String renderedId;
     private ClientboundAchievementPacket renderedSnapshot;
 
@@ -69,28 +71,32 @@ public final class AchievementListComponent extends EmptyComponent
     private void refresh()
     {
         ClientboundAchievementPacket snapshot = ClientAchievements.getSnapshot();
-        if (!Objects.equals(this.renderedCategory, ClientAchievements.category))
+        boolean categoryChanged = !Objects.equals(this.renderedCategory, ClientAchievements.category);
+        List<AchievementDefinition> rows = sortedRows(ClientAchievements.category, snapshot);
+        List<String> order = rows.stream().map(AchievementDefinition::id).toList();
+        // 진행 상황은 1초마다 새로 받으므로, 순서가 실제로 바뀐 때만 목록을 다시 만든다.
+        if (categoryChanged || !order.equals(this.renderedOrder))
         {
-            if (!ClientAchievements.selectedId.startsWith(ClientAchievements.category))
+            // 분류를 바꾸면 맨 위 업적을 고른다. 보상 수령 대기 업적이 있으면 그 업적이 선택된다.
+            if (categoryChanged && !ClientAchievements.selectedId.startsWith(ClientAchievements.category))
             {
-                ClientAchievements.selectedId = ClientAchievements.category + "01";
+                ClientAchievements.selectedId = order.isEmpty() ? ClientAchievements.category + "01" : order.getFirst();
             }
+            double previousScroll = categoryChanged ? 0 : this.list.scrollAmount();
             this.list.clearComponents();
             int rowWidth = Math.max(1, this.listWidth - 10);
             EmptyComponent content = new EmptyComponent(0, 0, rowWidth, 0);
             int y = 0;
-            for (AchievementDefinition definition : AchievementCatalog.all())
+            for (AchievementDefinition definition : rows)
             {
-                if (definition.id().startsWith(ClientAchievements.category))
-                {
-                    content.addWidget(new AchievementRow(y, rowWidth, definition));
-                    y += ROW_HEIGHT;
-                }
+                content.addWidget(new AchievementRow(y, rowWidth, definition));
+                y += ROW_HEIGHT;
             }
             content.setHeight(y);
             this.list.addComponent(content);
-            this.list.setScrollAmount(0);
+            this.list.setScrollAmount(previousScroll);
             this.renderedCategory = ClientAchievements.category;
+            this.renderedOrder = order;
         }
         if (!Objects.equals(this.renderedId, ClientAchievements.selectedId) || this.renderedSnapshot != snapshot)
         {
@@ -238,6 +244,39 @@ public final class AchievementListComponent extends EmptyComponent
             lines.add(line.toString());
         }
         return lines;
+    }
+
+    /**
+     * 분류의 업적을 보상 수령 대기, 진행 중·잠김, 보상 수령 완료 순서로 돌려준다.
+     * 같은 상태끼리는 카탈로그 순서를 지킨다.
+     */
+    private static List<AchievementDefinition> sortedRows(String category, ClientboundAchievementPacket snapshot)
+    {
+        List<AchievementDefinition> rows = new ArrayList<>();
+        for (AchievementDefinition definition : AchievementCatalog.all())
+        {
+            if (definition.id().startsWith(category))
+            {
+                rows.add(definition);
+            }
+        }
+        // List.sort는 안정 정렬이므로 같은 순위 안의 카탈로그 순서가 유지된다.
+        rows.sort(Comparator.comparingInt(definition -> listRank(definition, snapshot)));
+        return rows;
+    }
+
+    /** 상태 문구와 같은 기준이다. 보상을 받으면 달성도 끝난 것이므로 수령 여부를 먼저 본다. */
+    private static int listRank(AchievementDefinition definition, ClientboundAchievementPacket snapshot)
+    {
+        if (snapshot.claimed().contains(definition.id()))
+        {
+            return 2;
+        }
+        if (snapshot.completed().contains(definition.id()))
+        {
+            return 0;
+        }
+        return 1;
     }
 
     private static boolean unlocked(AchievementDefinition definition, ClientboundAchievementPacket snapshot)
