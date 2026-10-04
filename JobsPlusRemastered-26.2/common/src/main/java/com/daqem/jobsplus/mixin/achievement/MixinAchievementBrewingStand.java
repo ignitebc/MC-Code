@@ -28,12 +28,17 @@ import java.util.UUID;
 @Mixin(BrewingStandBlockEntity.class)
 public abstract class MixinAchievementBrewingStand implements ProductionContainer
 {
-    @Unique private ProductionTracker jobsplus$production = new ProductionTracker();
+    @Unique private ProductionTracker jobsplus$production;
     @Unique private static final ThreadLocal<Deque<ProductionSnapshots.Brew>> jobsplus$brews = ThreadLocal.withInitial(ArrayDeque::new);
 
     @Override
     public ProductionTracker jobsplus$getProductionTracker()
     {
+        // 생성자 필드 초기화에 의존하지 않고 첫 사용 시 추적기를 보장한다.
+        if (jobsplus$production == null)
+        {
+            jobsplus$production = new ProductionTracker();
+        }
         return jobsplus$production;
     }
 
@@ -114,7 +119,7 @@ public abstract class MixinAchievementBrewingStand implements ProductionContaine
     @Inject(method = "saveAdditional", at = @At("TAIL"))
     private void jobsplus$saveProduction(ValueOutput output, CallbackInfo ci)
     {
-        output.store("JobsPlusProduction", ProductionTracker.CODEC, jobsplus$production);
+        output.store("JobsPlusProduction", ProductionTracker.CODEC, jobsplus$getProductionTracker());
     }
 
 }
