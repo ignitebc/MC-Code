@@ -8,8 +8,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -96,6 +98,16 @@ public abstract class MonsterEquipmentMixin implements MonsterEquipmentAccess {
         if (!serverutilities$equipmentRolled) return MonsterLevel.NONE;
         return MonsterEquipmentRules.calculateLevel((Mob) (Object) this,
                 serverutilities$randomArmor, serverutilities$randomWeapon);
+    }
+
+    /** 추첨으로 지급한 칸은 주운 아이템으로 바꾸지 않는다. 줍기를 막지 않는 피글린이 대상이다. */
+    @Inject(method = "equipItemIfPossible", at = @At("HEAD"), cancellable = true)
+    private void serverutilities$keepRandomEquipment(ServerLevel level, ItemStack stack,
+            CallbackInfoReturnable<ItemStack> cir) {
+        EquipmentSlot slot = ((Mob) (Object) this).getEquipmentSlotForItem(stack);
+        boolean randomSlot = MonsterEquipmentRules.isRandomEquipmentSlot(slot,
+                serverutilities$randomArmor, serverutilities$randomWeapon);
+        if (randomSlot) cir.setReturnValue(ItemStack.EMPTY);
     }
 
     @Inject(method = "dropCustomDeathLoot", at = @At("HEAD"))
