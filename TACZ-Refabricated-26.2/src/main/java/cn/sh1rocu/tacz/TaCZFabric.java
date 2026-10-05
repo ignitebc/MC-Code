@@ -29,6 +29,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.item.v1.EnchantmentEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
@@ -106,6 +107,8 @@ public class TaCZFabric implements ModInitializer {
         AmmoHitBlockEvent.CALLBACK.register(DestroyGlassBlock::onAmmoHitBlock);
 
         LivingHurtEvent.CALLBACK.register(LOW, EntityDamageEvent::onLivingHurt);
+
+        EnchantmentEvents.MODIFY_WITH_LOOKUP.register(BulletProjectileProtection::onModifyEnchantment);
 
         PlayerTickEvent.END.register(HitboxHelperEvent::onPlayerTick);
         PlayerEvent.LOGGED_OUT.register(HitboxHelperEvent::onPlayerLoggedOut);
