@@ -27,6 +27,20 @@
       "height": 14,
       "ascent": 10,
       "chars": ["\uE103"]
+    },
+    {
+      "type": "bitmap",
+      "file": "jobsplus:font/title_badge/sky_ruler.png",
+      "height": 14,
+      "ascent": 10,
+      "chars": ["\uE104"]
+    },
+    {
+      "type": "bitmap",
+      "file": "jobsplus:font/title_badge/eternal_peak.png",
+      "height": 14,
+      "ascent": 10,
+      "chars": ["\uE105"]
     }
   ]
 }

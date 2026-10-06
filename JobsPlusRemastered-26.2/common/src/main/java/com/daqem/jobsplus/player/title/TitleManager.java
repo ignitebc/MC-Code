@@ -4,19 +4,26 @@ import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.networking.s2c.ClientboundTitlesPacket;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +35,19 @@ import java.util.UUID;
 public final class TitleManager
 {
     public static final int SOUL_KILL_GOAL = 10_000;
+
+    /**
+     * 영원한정점에 필요한 서리빛 방어구 4부위.
+     * 강화 기능이 있는 Illager Invasion과 장비를 만드는 Advanced Netherite에 의존하지 않도록 ID로 찾는다.
+     */
+    private static final Map<EquipmentSlot, Identifier> FROST_ARMOR = Map.of(
+            EquipmentSlot.HEAD, Identifier.parse("advancednetherite:frost_helmet"),
+            EquipmentSlot.CHEST, Identifier.parse("advancednetherite:frost_chestplate"),
+            EquipmentSlot.LEGS, Identifier.parse("advancednetherite:frost_leggings"),
+            EquipmentSlot.FEET, Identifier.parse("advancednetherite:frost_boots"));
+    /** Illager Invasion의 EnhancementHelper가 강화 단계를 기록하는 커스텀 데이터 키. 같은 이름을 써야 한다. */
+    private static final String ENHANCEMENT_LEVEL_KEY = "EnhancementLevel";
+    private static final int MAX_ENHANCEMENT_LEVEL = 10;
 
     /** 적대 몹 판정에 쓰는 엔티티 종류. 레지스트리가 굳은 뒤 처음 쓸 때 한 번만 모은다. */
     private static List<EntityType<?>> monsterTypes;
@@ -63,6 +83,66 @@ public final class TitleManager
     public static void onHyperSkillOpened(ServerPlayer player)
     {
         award(player, TitleType.SEAL_BREAKER);
+    }
+
+    /**
+     * 장비로 얻는 칭호를 1초마다 확인한다. 아직 주인이 없는 칭호만 살펴본다.
+     *
+     * <p>크리에이티브와 관전자는 아이템을 마음대로 꺼낼 수 있으므로 제외한다. 운영자가 명령어로 준 아이템은
+     * 정상 획득과 구분할 수 없으므로 잘못 지급되면 {@code /job title revoke}로 회수한다.
+     */
+    public static void onEquipmentCheck(ServerPlayer player)
+    {
+        if (player.isCreative() || player.isSpectator())
+        {
+            return;
+        }
+
+        TitleLedger ledger = TitleLedger.get(player.level().getServer());
+        boolean skyRulerOpen = ledger.getHolder(TitleType.SKY_RULER).isEmpty();
+        if (skyRulerOpen && hasElytra(player))
+        {
+            award(player, TitleType.SKY_RULER);
+        }
+        boolean eternalPeakOpen = ledger.getHolder(TitleType.ETERNAL_PEAK).isEmpty();
+        if (eternalPeakOpen && wearsMaxEnhancedFrostArmor(player))
+        {
+            award(player, TitleType.ETERNAL_PEAK);
+        }
+    }
+
+    /**
+     * 겉날개는 엔드 배 액자와 상점 구매로 얻는다. 경로마다 따로 연결하지 않고
+     * 인벤토리나 가슴 칸에 들어왔는지로 판정해 두 경로를 함께 처리한다.
+     */
+    private static boolean hasElytra(ServerPlayer player)
+    {
+        if (player.getItemBySlot(EquipmentSlot.CHEST).is(Items.ELYTRA))
+        {
+            return true;
+        }
+        return player.getInventory().contains(stack -> stack.is(Items.ELYTRA));
+    }
+
+    /** 서리빛 방어구 4부위를 모두 +10강으로 동시에 입고 있는지 */
+    private static boolean wearsMaxEnhancedFrostArmor(ServerPlayer player)
+    {
+        for (Map.Entry<EquipmentSlot, Identifier> armor : FROST_ARMOR.entrySet())
+        {
+            ItemStack worn = player.getItemBySlot(armor.getKey());
+            boolean frostArmor = BuiltInRegistries.ITEM.getKey(worn.getItem()).equals(armor.getValue());
+            if (!frostArmor || getEnhancementLevel(worn) < MAX_ENHANCEMENT_LEVEL)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static int getEnhancementLevel(ItemStack stack)
+    {
+        CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        return customData.copyTag().getIntOr(ENHANCEMENT_LEVEL_KEY, 0);
     }
 
     /** 닉네임 변경을 반영하고 팀 소속과 칭호 탭 정보를 맞춘다. */

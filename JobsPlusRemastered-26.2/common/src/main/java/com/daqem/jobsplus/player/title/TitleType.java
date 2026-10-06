@@ -24,7 +24,9 @@ public enum TitleType
     NETHER_STAR("nether_star", "네더의별", "서버에서 처음으로 위더 처치", '', 1152),
     SEAL_BREAKER("seal_breaker", "봉인해제", "서버에서 처음으로 하이퍼 스킬 개방", '', 1152),
     LAST_STRIKE("last_strike", "마지막일격", "서버에서 처음으로 엔더 드래곤 처치 (마지막 일격)", '', 1152),
-    TEN_THOUSAND_SOULS("ten_thousand_souls", "만개의영혼", "서버에서 처음으로 적대 몹 1만 마리 처치", '', 1152);
+    TEN_THOUSAND_SOULS("ten_thousand_souls", "만개의영혼", "서버에서 처음으로 적대 몹 1만 마리 처치", '', 1152),
+    SKY_RULER("sky_ruler", "하늘의지배자", "서버에서 처음으로 겉날개 획득", '\uE104', 1152),
+    ETERNAL_PEAK("eternal_peak", "영원한정점", "서버에서 처음으로 서리빛 방어구 4부위 +10강 착용", '\uE105', 1152);
 
     /** 목록은 원본 픽셀, 이름·채팅은 같은 그림을 종횡비 그대로 축소한 bitmap 글리프를 쓴다. */
     public static final int TEXTURE_HEIGHT = 256;
@@ -95,7 +97,20 @@ public enum TitleType
     {
         return !text.accept((index, style, codePoint) ->
                 !(BADGE_FONT.equals(style.getFont()) || CHAT_BADGE_FONT.equals(style.getFont()))
-                        || codePoint < '\uE100' || codePoint > '\uE103');
+                        || !isBadgeGlyph(codePoint));
+    }
+
+    /** 칭호를 추가할 때 글자 범위를 따로 고치지 않도록 등록된 칭호의 글자와 직접 비교한다. */
+    private static boolean isBadgeGlyph(int codePoint)
+    {
+        for (TitleType type : values())
+        {
+            if (type.glyph == codePoint)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** 줄바꿈 전에 글꼴을 바꿔 채팅의 폭 계산과 클릭 영역에도 축소된 크기를 적용한다. */
