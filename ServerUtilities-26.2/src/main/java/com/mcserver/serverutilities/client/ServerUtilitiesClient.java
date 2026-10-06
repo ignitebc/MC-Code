@@ -3,6 +3,7 @@ package com.mcserver.serverutilities.client;
 import com.mcserver.serverutilities.death.DeathChestBlockEntity;
 import com.mcserver.serverutilities.death.DeathChests;
 import com.mcserver.serverutilities.monster.MonsterLevelPayload;
+import com.mcserver.serverutilities.tier.EquipmentTierSummary;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
@@ -16,6 +17,8 @@ public final class ServerUtilitiesClient implements ClientModInitializer {
         registerChestRenderer();
         // 몬스터 머리 위 레벨은 서버가 알려 준 값을 몬스터에 기록해 두고 렌더러 Mixin이 그린다.
         ClientPlayNetworking.registerGlobalReceiver(MonsterLevelPayload.TYPE, MonsterLevelLabel::receive);
+        // 장비 등급 툴팁은 서버에 글꼴이 없어 공백 한 칸으로 잇고, 클라이언트에서만 글꼴 폭으로 수치 칸을 맞춘다.
+        EquipmentTierSummary.setRowLayout(TooltipColumnLayout::align);
     }
 
     @SuppressWarnings("deprecation")
