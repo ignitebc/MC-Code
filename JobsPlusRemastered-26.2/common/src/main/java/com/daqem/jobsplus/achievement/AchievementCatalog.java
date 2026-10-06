@@ -64,7 +64,7 @@ public final class AchievementCatalog
         add(definitions, "A02", "노련한 전문가", 2, 4, "A01", o("job_max_level", 75, "최고 직업 레벨"));
         add(definitions, "A03", "달인", 2, 5, "A02", o("job_max_level", 100, "최고 직업 레벨"));
         add(definitions, "A04", "거장", 4, 17, "A03", o("job_max_level", 150, "최고 직업 레벨"));
-        add(definitions, "A05", "경지의 끝", 5, 30, "A04", o("job_max_level", 200, "최고 직업 레벨"));
+        add(definitions, "A05", "경지의 끝", 5, 30, "A04", o("job_max_level", 500, "최고 직업 레벨"));
         String[] masters = {"광맥의 장인", "대지의 장인", "풍요의 장인", "물결의 장인",
                 "추적의 장인", "불꽃의 장인", "비약의 장인", "길 위의 장인"};
         List<String> masterIds = new ArrayList<>();

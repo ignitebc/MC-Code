@@ -28,8 +28,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Job
 {
 
-    // 정책: 직업 최대 레벨은 200으로 고정한다. 이 상한을 넘는 레벨업·경험치 누적·코인 지급은 없다.
-    public static final int MAX_JOB_LEVEL = 200;
+    // 정책: 직업 최대 레벨은 500으로 고정한다. 이 상한을 넘는 레벨업·경험치 누적·코인 지급은 없다.
+    public static final int MAX_JOB_LEVEL = 500;
 
     public static final Codec<Job> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Identifier.CODEC.fieldOf("job_instance").forGetter(job -> job.getJobInstance().getLocation()),
