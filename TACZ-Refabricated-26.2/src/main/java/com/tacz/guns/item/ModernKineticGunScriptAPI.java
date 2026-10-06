@@ -58,6 +58,17 @@ public class ModernKineticGunScriptAPI {
      * 스크립트 상태를 모아 두는 총기 커스텀 데이터 하위 태그 이름
      */
     private static final String SCRIPT_STATE_TAG = "ScriptState";
+    /**
+     * 소음기 없는 총성을 주변 플레이어에게 보내는 거리 배율. 설정 거리(기본 64)의 2배인 128블록까지 들린다.
+     * <p>
+     * 소음기 보정은 설정 거리에서 블록 수를 빼는 방식이라 설정값 자체를 올리면 소음기 효과가 약해진다.
+     * 그래서 설정은 그대로 두고 소음기가 없는 사격에만 배율을 곱한다.
+     */
+    private static final int UNSUPPRESSED_SHOT_DISTANCE_MULTIPLIER = 2;
+    /** 소음기 없는 총성의 기본 음량. 마인크래프트가 1을 넘는 음량을 잘라 내므로 최대값이다. */
+    private static final float UNSUPPRESSED_SHOT_VOLUME = 1.0f;
+    /** 소음기 총성의 기본 음량. 소음기 효과를 유지하도록 기존 값을 그대로 쓴다. */
+    private static final float SUPPRESSED_SHOT_VOLUME = 0.8f;
 
     private LivingEntity shooter;
 
@@ -144,6 +155,9 @@ public class ModernKineticGunScriptAPI {
         Pair<Integer, Boolean> silence = cacheProperty.getCache(SilenceModifier.ID);
         final int soundDistance = modifyProperty(GunProperties.RuntimeOnly.SOUND_DISTANCE, Integer.class, silence.left());
         final boolean useSilenceSound = silence.right();
+        // 멀리 있는 몹·플레이어의 총성도 위치를 짐작할 수 있도록 소음기 없는 사격만 거리와 음량을 키운다.
+        final int shotSoundDistance = useSilenceSound ? soundDistance : soundDistance * UNSUPPRESSED_SHOT_DISTANCE_MULTIPLIER;
+        final float shotSoundVolume = useSilenceSound ? SUPPRESSED_SHOT_VOLUME : UNSUPPRESSED_SHOT_VOLUME;
 
         // 子弹飞行速度
         float speed = modifyProperty(GunProperties.AMMO_SPEED, Float.class, cacheProperty.getCache(GunProperties.AMMO_SPEED));
@@ -222,7 +236,7 @@ public class ModernKineticGunScriptAPI {
                 // 播放枪声
                 if (soundDistance > 0) {
                     String soundId = useSilenceSound ? SoundManager.SILENCE_3P_SOUND : SoundManager.SHOOT_3P_SOUND;
-                    SoundManager.sendSoundToNearby(shooter, soundDistance, gunId, gunDisplayId, soundId, 0.8f, 0.9f + shooter.getRandom().nextFloat() * 0.125f);
+                    SoundManager.sendSoundToNearby(shooter, shotSoundDistance, gunId, gunDisplayId, soundId, shotSoundVolume, 0.9f + shooter.getRandom().nextFloat() * 0.125f);
                 }
             }
             return true;
