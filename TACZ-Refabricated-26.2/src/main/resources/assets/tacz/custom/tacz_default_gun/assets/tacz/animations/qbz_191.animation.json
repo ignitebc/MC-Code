@@ -3696,7 +3696,7 @@
 					"effect": "tacz:qbz_191/qbz191_magin_fast"
 				},
 				"1.5833": {
-					"effect": "tacz:qbz_191/qbz_95_reload_empty_fast_rotate"
+					"effect": "tacz:qbz_95/qbz_95_reload_empty_fast_rotate"
 				},
 				"1.8333": {
 					"effect": "tacz:qbz_191/qbz191_rackhit"
@@ -4311,7 +4311,7 @@
 					"effect": "tacz:qbz_191/qbz191_magin_fast"
 				},
 				"1.6833": {
-					"effect": "tacz:qbz_191/qbz_95_reload_empty_fast_rotate"
+					"effect": "tacz:qbz_95/qbz_95_reload_empty_fast_rotate"
 				},
 				"1.95": {
 					"effect": "tacz:qbz_191/qbz191_rackhit"
@@ -4946,7 +4946,7 @@
 					"effect": "tacz:qbz_191/qbz191_magin_fast"
 				},
 				"1.75": {
-					"effect": "tacz:qbz_191/qbz_95_reload_empty_fast_rotate"
+					"effect": "tacz:qbz_95/qbz_95_reload_empty_fast_rotate"
 				},
 				"2.0167": {
 					"effect": "tacz:qbz_191/qbz191_rackhit"
@@ -5620,7 +5620,7 @@
 					"effect": "tacz:qbz_191/qbz191_xmagin"
 				},
 				"2.2167": {
-					"effect": "tacz:qbz_191/qbz_95_reload_empty_fast_rotate"
+					"effect": "tacz:qbz_95/qbz_95_reload_empty_fast_rotate"
 				},
 				"2.5": {
 					"effect": "tacz:qbz_191/qbz191_rackhit"

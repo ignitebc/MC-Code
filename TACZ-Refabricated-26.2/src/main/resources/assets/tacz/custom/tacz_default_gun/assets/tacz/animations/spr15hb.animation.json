@@ -1593,7 +1593,7 @@
 					"effect": "tacz:spr15hb/spr15hb_reload_xmag_magin"
 				},
 				"1.3333": {
-					"effect": "spr15hb_reload_empty_maghit"
+					"effect": "tacz:spr15hb/spr15hb_reload_empty_maghit"
 				},
 				"1.4583": {
 					"effect": "tacz:spr15hb/spr15hb_reload_end"
@@ -2018,7 +2018,7 @@
 					"effect": "tacz:spr15hb/spr15hb_reload_xmaglrg_rattle"
 				},
 				"1.6": {
-					"effect": "spr15hb_reload_empty_maghit"
+					"effect": "tacz:spr15hb/spr15hb_reload_empty_maghit"
 				},
 				"1.6667": {
 					"effect": "tacz:spr15hb/spr15hb_reload_xmag_magin"

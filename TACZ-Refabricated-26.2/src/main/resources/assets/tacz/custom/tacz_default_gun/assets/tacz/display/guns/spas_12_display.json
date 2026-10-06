@@ -44,9 +44,9 @@
     "bolt": "tacz:spas_12/spas12_bolt",
     "fire_select": "",
     "shoot": "tacz:spas_12/spas12_shoot",
-    "shoot_3p": "tacz:m870/m870_shoot_3p",
+    "shoot_3p": "tacz:spas_12/spas12_shoot_3p",
     "silence": "tacz:spas_12/spas12_silence",
-    "silence_3p": "spas_12/spas12_silence_3p",
+    "silence_3p": "tacz:spas_12/spas12_silence_3p",
     "put_away": "tacz:m870/m870_put_away",
     "melee_push": "tacz:melee_stock/melee_stock_02",
     "melee_stock": "tacz:melee_stock/melee_stock_03"

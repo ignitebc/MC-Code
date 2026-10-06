@@ -7567,7 +7567,7 @@
 					"effect": "tacz:fn_evolys/evolys_move_3"
 				},
 				"5.5385": {
-					"effect": "m249_reload_empty_load_belt"
+					"effect": "tacz:m249/m249_reload_empty_load_belt"
 				},
 				"5.5538": {
 					"effect": "tacz:fn_evolys/evolys_move_2"
@@ -9070,7 +9070,7 @@
 					"effect": "tacz:fn_evolys/evolys_move_3"
 				},
 				"5.5385": {
-					"effect": "m249_reload_empty_load_belt"
+					"effect": "tacz:m249/m249_reload_empty_load_belt"
 				},
 				"5.5538": {
 					"effect": "tacz:fn_evolys/evolys_move_2"

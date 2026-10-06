@@ -3809,7 +3809,7 @@
 					"effect": "tacz:timeless50/timeless50_reload_empty_rotate"
 				},
 				"0.6167": {
-					"effect": "iw8_phys_mag_drop_smg_poly_concrete_01"
+					"effect": "tacz:mag_drop_sound/mag_drop_pi_metal_dirt"
 				},
 				"0.95": {
 					"effect": "tacz:timeless50/timeless50_reload_empty_maghit"
@@ -4329,7 +4329,7 @@
 					"effect": "tacz:mag_drop_sound/mag_drop_pi_metal_dirt"
 				},
 				"0.7833": {
-					"effect": "iw8_phys_mag_drop_smg_poly_concrete_01"
+					"effect": "tacz:mag_drop_sound/mag_drop_pi_metal_dirt"
 				},
 				"1.05": {
 					"effect": "tacz:timeless50/timeless50_reload_empty_maghit"

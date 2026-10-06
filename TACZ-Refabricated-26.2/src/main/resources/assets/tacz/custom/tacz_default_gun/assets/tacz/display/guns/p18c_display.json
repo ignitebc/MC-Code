@@ -30,6 +30,7 @@
   },
   "sounds": {
     "draw": "tacz:p18c/p18c_draw",
+    "put_away": "tacz:p320/p320_put_away",
     "shoot": "tacz:p18c/p18c_shoot",
     "shoot_3p": "tacz:p18c/p18c_shoot_3p",
     "silence": "tacz:p18c/p18c_silence",

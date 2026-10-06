@@ -1357,7 +1357,7 @@
 					"effect": "tacz:m1014/m1014_reset"
 				},
 				"0.3": {
-					"effect": "tacz:m1014/cloth_move_3"
+					"effect": "tacz:spas_12/cloth_move_3"
 				},
 				"1.0": {
 					"effect": "tacz:m1014/m1014_bulletinbore"

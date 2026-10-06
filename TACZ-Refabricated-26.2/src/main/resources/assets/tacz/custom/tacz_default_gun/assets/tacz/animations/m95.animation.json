@@ -2015,7 +2015,7 @@
 					"effect": "tacz:m95/m95_reload_empty_magout"
 				},
 				"1.7333": {
-					"effect": "tacz:m95/mag_drup_large_drum_dirt"
+					"effect": "tacz:mag_drop_sound/mag_drup_large_drum_dirt"
 				},
 				"1.9": {
 					"effect": "tacz:m95/m95_reload_empty_lift"

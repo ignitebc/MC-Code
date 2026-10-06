@@ -45,7 +45,9 @@
     "draw": "tacz:lonetrail/breach_draw",
     "put_away": "tacz:lonetrail/breach_put_away",
     "shoot": "tacz:lonetrail/breach_shoot",
-    "shoot_3p": "tacz:lonetrail/breach_shoot_3p"
+    "shoot_3p": "tacz:lonetrail/breach_shoot_3p",
+    "silence": "tacz:lonetrail/breach_silence",
+    "silence_3p": "tacz:lonetrail/breach_silence_3p"
   },
  "offhand_show": {
     "pos": [4, 13, -2],

@@ -32,7 +32,7 @@
     "draw": "tacz:rhino357/rhino_draw",
     "put_away": "tacz:rhino357/rhino_put_away",
     "shoot": "tacz:rhino357/rhino_shoot",
-    "shoot_3p": "tacz:deagle/deagle_shoot_3p",
+    "shoot_3p": "tacz:rhino357/rhino_shoot_3p",
     "silence": "tacz:deagle/deagle_silence",
     "silence_3p": "tacz:deagle/deagle_silence_3p"
   },
