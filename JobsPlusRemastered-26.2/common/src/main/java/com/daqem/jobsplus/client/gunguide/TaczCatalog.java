@@ -80,6 +80,9 @@ public final class TaczCatalog {
                 if (common.isEmpty()) {
                     continue;
                 }
+                if (kind == Kind.ATTACHMENT && isHiddenAttachment(common.get())) {
+                    continue;
+                }
                 String key = key(kind, id);
                 ItemStack icon = build(kind, id);
                 if (icon.isEmpty()) {
@@ -118,9 +121,6 @@ public final class TaczCatalog {
                         }
                         description.add("조준 배율: " + String.join(" / ", magnifications));
                     }
-                    if (Boolean.TRUE.equals(call(call(common.get(), "getPojo"), "isHidden"))) {
-                        description.add("숨김 부품 · 일반 목록에서 획득 불가");
-                    }
                 }
                 entries.put(key, new Entry(key, kind, id, icon,
                         Component.translatable((String) call(client, "getName")), category, description,
@@ -155,7 +155,12 @@ public final class TaczCatalog {
             Map<?, ?> builtIns = (Map<?, ?>) call(data, "getBuiltInAttachments");
             if (builtIns != null) {
                 for (Object id : builtIns.values()) {
-                    gun.links().add(new Link("기본 내장", key(Kind.ATTACHMENT, (Identifier) id)));
+                    String builtInKey = key(Kind.ATTACHMENT, (Identifier) id);
+                    // AUG·P90 일체형 조준경처럼 숨김 부품은 도감에서 빠지므로 "정보 없음" 줄이 남지 않게 연결하지 않는다.
+                    if (!entries.containsKey(builtInKey)) {
+                        continue;
+                    }
+                    gun.links().add(new Link("기본 내장", builtInKey));
                 }
             }
             Entry ammo = entries.get(key(Kind.AMMO, (Identifier) call(data, "getAmmoId")));
@@ -203,6 +208,11 @@ public final class TaczCatalog {
 
     private static Object call(Object target, String method) throws ReflectiveOperationException {
         return target.getClass().getMethod(method).invoke(target);
+    }
+
+    /** 숨김 부품은 제작식도 일반 획득 경로도 없으므로 도감에 싣지 않는다. 총기 기본 내장 부품도 여기에 든다. */
+    private static boolean isHiddenAttachment(Object commonIndex) throws ReflectiveOperationException {
+        return Boolean.TRUE.equals(call(call(commonIndex, "getPojo"), "isHidden"));
     }
 
     private static String key(Kind kind, Identifier id) {
