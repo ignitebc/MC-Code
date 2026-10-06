@@ -8,7 +8,9 @@
   "tacz:oem_stock_tactical",
   "tacz:oem_stock_heavy",
   "#tacz:grip_vertical",
+  "tacz:grip_cqr",
   "#tacz:ammo_mod_no_he",
   "#tacz:pistol_laser",
+  "tacz:laser_peq15",
   "#tacz:scope_lowsight"
 ]

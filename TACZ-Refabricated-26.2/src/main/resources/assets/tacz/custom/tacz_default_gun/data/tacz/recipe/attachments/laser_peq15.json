@@ -1,0 +1,29 @@
+{
+  "materials": [
+    {
+      "item": "#c:ingots/iron",
+      "count": 8
+    },
+    {
+      "item": "#c:glass_blocks",
+      "count": 4
+    },
+    {
+      "item": "#c:dusts/redstone",
+      "count": 18
+    },
+    {
+      "item": "#c:ingots/gold",
+      "count": 2
+    },
+    {
+      "item": "#c:gems/amethyst",
+      "count": 2
+    }
+  ],
+  "result": {
+    "type": "attachment",
+    "id": "tacz:laser_peq15"
+  },
+  "type": "tacz:gun_smith_table_crafting"
+}

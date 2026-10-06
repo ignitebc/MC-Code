@@ -3,6 +3,5 @@
   "tooltip": "tacz.attachment.grip_cqr.desc",
   "display": "tacz:grip_cqr_display",
   "data": "tacz:grip_cqr_data",
-  "type": "grip",
-  "hidden": true
+  "type": "grip"
 }
