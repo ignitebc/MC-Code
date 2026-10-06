@@ -40,10 +40,6 @@
   "sounds": {
     "shoot": "tacz:fn_fal/fn_fal_shoot",
     "shoot_3p": "tacz:fn_fal/fn_fal_shoot_3p",
-    "reload_empty": "tacz:fn_fal/reload_empty",
-    "reload_tactical": "tacz:fn_fal/reload_tactical",
-    "inspect": "",
-    "inspect_empty": "",
     "draw": "tacz:fn_fal/draw",
     "put_away": "tacz:fn_fal/put_away",
     "silence": "tacz:fn_fal/fn_fal_silence",

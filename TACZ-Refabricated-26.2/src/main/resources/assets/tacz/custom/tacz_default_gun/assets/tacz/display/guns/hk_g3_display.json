@@ -34,10 +34,6 @@
   "sounds": {
     "shoot": "tacz:hk_g3/hk_g3_shoot",
     "shoot_3p": "tacz:hk_g3/hk_g3_shoot_3p",
-    "reload_empty": "tacz:hk_g3/hk_g3_reload_empty",
-    "reload_tactical": "tacz:hk_g3/hk_g3_reload_tactical",
-    "inspect": "tacz:hk_g3/hk_g3_inspect",
-    "inspect_empty": "tacz:hk_g3/hk_g3_inspect_empty",
     "draw": "tacz:hk_g3/hk_g3_draw",
     "put_away": "tacz:hk_g3/hk_g3_put_away",
     "silence": "tacz:hk_g3/hk_g3_silence",

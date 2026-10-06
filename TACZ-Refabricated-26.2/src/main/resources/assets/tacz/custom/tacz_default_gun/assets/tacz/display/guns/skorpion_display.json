@@ -60,10 +60,6 @@
   "sounds": {
     "shoot": "tacz:mp5k/mp5k_shoot",
     "shoot_3p": "tacz:mp5k/mp5k_shoot_3p",
-    "reload_empty": "tacz:mp5k/mp5k_reload_empty",
-    "reload_tactical": "tacz:mp5k/mp5k_reload_tactical",
-    "inspect": "tacz:mp5k/mp5k_inspect",
-    "inspect_empty": "tacz:mp5k/mp5k_inspect_empty",
     "draw": "tacz:mp5k/mp5k_draw",
     "put_away": "tacz:mp5k/mp5k_put_away",
     "silence": "tacz:mp5k/mp5k_silence",

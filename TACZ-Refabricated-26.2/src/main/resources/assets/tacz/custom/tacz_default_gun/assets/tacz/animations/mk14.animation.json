@@ -519,23 +519,6 @@
 						"2.4333": [0, 0, 0]
 					}
 				}
-			},
-			"sound_effects": {
-				"0.2": {
-					"effect": "p18_dm_mike14_reload_magout"
-				},
-				"1.2667": {
-					"effect": "p18_dm_mike14_reload_maghit"
-				},
-				"1.5": {
-					"effect": "p18_dm_mike14_reload_magin"
-				},
-				"1.5333": {
-					"effect": "p18_dm_mike14_reload_movemnt"
-				},
-				"1.8667": {
-					"effect": "p18_dm_mike14_reload_end"
-				}
 			}
 		},
 		"reload_empty": {
@@ -940,26 +923,6 @@
 							"lerp_mode": "catmullrom"
 						}
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "p18_dm_mike14_reload_empty_raise"
-				},
-				"0.5333": {
-					"effect": "p18_dm_mike14_reload_empty_quick_magout"
-				},
-				"0.9667": {
-					"effect": "p18_dm_mike14_reload_empty_maghit"
-				},
-				"1.2667": {
-					"effect": "p18_dm_mike14_reload_empty_magin"
-				},
-				"1.7333": {
-					"effect": "p18_dm_mike14_reload_empty_quick_charge"
-				},
-				"2.0": {
-					"effect": "p18_dm_mike14_reload_empty_end"
 				}
 			}
 		},

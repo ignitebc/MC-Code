@@ -384,11 +384,6 @@
 				"bullet_chain_2": {
 					"scale": 0
 				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "bruenmk9_raise"
-				}
 			}
 		},
 		"put_away": {
@@ -5683,11 +5678,6 @@
 				},
 				"bullet_chain_2": {
 					"scale": 0
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "bruenmk9_fire_plr_03"
 				}
 			}
 		}

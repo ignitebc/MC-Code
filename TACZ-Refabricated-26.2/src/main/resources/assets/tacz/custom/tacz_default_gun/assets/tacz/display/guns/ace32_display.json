@@ -68,10 +68,6 @@
   "sounds": {
     "shoot": "tacz:m416/m416_shoot",
     "shoot_3p": "tacz:m416/m416_shoot_3p",
-    "reload_empty": "tacz:ak47/ak47_reload_empty",
-    "reload_tactical": "tacz:ak47/ak47_reload_tactical",
-    "inspect": "tacz:ak47/ak47_inspect",
-    "inspect_empty": "tacz:ak47/ak47_inspect_empty",
     "draw": "tacz:ak47/ak47_draw",
     "put_away": "tacz:ak47/ak47_put_away",
     "silence": "tacz:m416/m416_silence",

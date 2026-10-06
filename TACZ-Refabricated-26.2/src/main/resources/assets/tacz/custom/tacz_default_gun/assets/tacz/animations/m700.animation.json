@@ -1416,14 +1416,6 @@
 						}
 					}
 				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "spr208_inspect_xmags_up"
-				},
-				"0.45": {
-					"effect": "spr208_raise"
-				}
 			}
 		},
 		"put_away": {

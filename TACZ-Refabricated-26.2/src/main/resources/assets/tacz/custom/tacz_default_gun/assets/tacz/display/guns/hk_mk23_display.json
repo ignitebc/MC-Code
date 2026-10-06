@@ -30,12 +30,11 @@
   },
   "sounds": {
     "draw": "tacz:mk23/mk23_draw",
-    "put_away":"tacz:mk23/mk23_put_away",
+    "put_away": "tacz:mk23/mk23_put_away",
     "shoot": "tacz:mk23/mk23_shoot",
     "shoot_3p": "tacz:mk23/mk23_shoot_3p",
     "silence": "tacz:mk23/mk23_silence",
-    "silence_3p": "tacz:mk23/mk23_silence_3p",
-    "fire_select": ""
+    "silence_3p": "tacz:mk23/mk23_silence_3p"
   },
   "offhand_show": {
     "pos": [4, 13, -1],

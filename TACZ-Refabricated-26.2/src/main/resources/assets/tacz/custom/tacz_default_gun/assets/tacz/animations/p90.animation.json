@@ -119,14 +119,6 @@
 						"0.75": [0, 0, 0]
 					}
 				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "p07_sm_papa90_retracted_out"
-				},
-				"0.2917": {
-					"effect": "p07_sm_papa90_inspect_tilt"
-				}
 			}
 		},
 		"put_away": {

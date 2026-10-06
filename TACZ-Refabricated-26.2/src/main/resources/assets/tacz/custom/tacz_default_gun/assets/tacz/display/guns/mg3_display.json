@@ -62,10 +62,6 @@
   "sounds": {
     "shoot": "tacz:rpk/rpk_shoot",
     "shoot_3p": "tacz:rpk/rpk_shoot_3p",
-    "reload_empty": "tacz:m249/m249_reload_empty",
-    "reload_tactical": "tacz:m249/m249_reload_tactical",
-    "inspect": "tacz:m249/m249_inspect",
-    "inspect_empty": "tacz:m249/m249_inspect_empty",
     "draw": "tacz:m249/m249_draw",
     "put_away": "tacz:m249/m249_put_away",
     "silence": "tacz:rpk/rpk_silence",

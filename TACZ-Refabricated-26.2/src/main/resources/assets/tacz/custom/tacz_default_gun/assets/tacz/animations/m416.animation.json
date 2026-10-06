@@ -9233,11 +9233,6 @@
 						}
 					}
 				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "m4a1_raise_v2"
-				}
 			}
 		},
 		"put_away": {
@@ -9337,11 +9332,6 @@
 							"lerp_mode": "catmullrom"
 						}
 					}
-				}
-			},
-			"sound_effects": {
-				"0.1": {
-					"effect": "p01_ar_mike4_drop"
 				}
 			}
 		}

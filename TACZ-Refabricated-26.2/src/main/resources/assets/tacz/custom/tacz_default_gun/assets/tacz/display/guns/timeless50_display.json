@@ -29,12 +29,8 @@
     "scale": 0.65
   },
   "sounds": {
-    "reload_empty": "tacz:timeless50/timeless50_reload_empty",
-    "reload_tactical": "tacz:timeless50/timeless50_reload_tactical",
-    "inspect": "tacz:timeless50/timeless50_inspect",
-    "inspect_empty": "tacz:timeless50/timeless50_inspect_empty",
     "draw": "tacz:timeless50/timeless50_draw",
-    "put_away":"tacz:timeless50/timeless50_put_away",
+    "put_away": "tacz:timeless50/timeless50_put_away",
     "shoot": "tacz:timeless50/timeless50_shoot",
     "shoot_3p": "tacz:timeless50/timeless50_shoot_3p",
     "silence": "tacz:timeless50/timeless50_silence",

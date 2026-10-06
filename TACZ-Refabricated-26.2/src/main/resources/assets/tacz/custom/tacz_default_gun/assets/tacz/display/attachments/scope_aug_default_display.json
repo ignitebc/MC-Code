@@ -2,10 +2,6 @@
   "slot": "tacz:attachment/slot/scope_aug_default",
   "model": "tacz:attachment/scope_aug_default_geo",
   "texture": "tacz:attachment/uv/scope_aug_default",
-  "lod": {
-    "model": "tacz:attachment/lod/scope_aug_default",
-    "texture": "tacz:attachment/lod/scope_aug_default"
-  },
   "zoom": [
     4.25
   ],

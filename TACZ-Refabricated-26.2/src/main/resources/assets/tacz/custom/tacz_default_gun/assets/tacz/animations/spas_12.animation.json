@@ -1770,14 +1770,6 @@
 						"0.4": [0, 0, 0]
 					}
 				}
-			},
-			"sound_effects": {
-				"0.0667": {
-					"effect": "p38_sh_spapa12_pump_back_04"
-				},
-				"0.3": {
-					"effect": "p38_sh_spapa12_pump_forward_04"
-				}
 			}
 		},
 		"inspect": {

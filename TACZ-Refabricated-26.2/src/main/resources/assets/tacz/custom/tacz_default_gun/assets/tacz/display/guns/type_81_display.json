@@ -86,10 +86,6 @@
   "sounds": {
     "shoot": "tacz:type_81/type_81_shoot",
     "shoot_3p": "tacz:type_81/type_81_shoot_3p",
-    "reload_empty": "tacz:type_81/type_81_reload_empty",
-    "reload_tactical": "tacz:type_81/type_81_reload_tactical",
-    "inspect": "tacz:type_81/type_81_inspect",
-    "inspect_empty": "tacz:type_81/type_81_inspect_empty",
     "draw": "tacz:type_81/type_81_draw",
     "put_away": "tacz:type_81/type_81_put_away",
     "silence": "tacz:type_81/type_81_silence",

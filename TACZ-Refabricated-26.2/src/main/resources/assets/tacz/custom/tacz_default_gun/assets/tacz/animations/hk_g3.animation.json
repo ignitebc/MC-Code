@@ -334,11 +334,6 @@
 						"0.65": [0, 0, 0]
 					}
 				}
-			},
-			"sound_effects": {
-				"0.1": {
-					"effect": "vm_p02_ar_kilo53_raise"
-				}
 			}
 		},
 		"put_away": {
@@ -403,11 +398,6 @@
 						"0.45": [0.14, 0, 0.04],
 						"0.5": [0, 0, 0]
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "vm_p02_ar_golf3_ubgl_drop_mvt"
 				}
 			}
 		},

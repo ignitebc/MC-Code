@@ -42,7 +42,6 @@
   "sounds": {
     "draw": "tacz:m870/m870_draw",
     "bolt": "tacz:spas_12/spas12_bolt",
-    "fire_select": "",
     "shoot": "tacz:spas_12/spas12_shoot",
     "shoot_3p": "tacz:spas_12/spas12_shoot_3p",
     "silence": "tacz:spas_12/spas12_silence",

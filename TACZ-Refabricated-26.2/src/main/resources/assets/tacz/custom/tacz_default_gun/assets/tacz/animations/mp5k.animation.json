@@ -447,11 +447,6 @@
 						"0.5667": [0, 0, 0]
 					}
 				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "p02_sm_mpapa5_raise"
-				}
 			}
 		},
 		"put_away": {
@@ -501,11 +496,6 @@
 						"0.2333": [0.24, 0, 0.07],
 						"0.2667": [0, 0, 0]
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "wfoly_sm_mpapa5_drop"
 				}
 			}
 		},
@@ -7175,11 +7165,6 @@
 						"0.1": [0.2, 0.02, 0.35],
 						"0.3": [0, 0, 0]
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "weap_mpapa5_fire_first_plr_01"
 				}
 			}
 		}

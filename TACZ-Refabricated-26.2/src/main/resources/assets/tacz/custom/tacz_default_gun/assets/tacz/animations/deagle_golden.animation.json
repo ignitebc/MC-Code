@@ -120,14 +120,6 @@
 						"0.2333": [0, 0, 0]
 					}
 				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "weap_decho_fire_first_plr_03"
-				},
-				"0.0333": {
-					"effect": "weap_deagle_fire_npc_mech_02"
-				}
 			}
 		},
 		"static_bolt_caught": {
@@ -249,14 +241,6 @@
 						}
 					}
 				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "sks_tactical_draw"
-				},
-				"0.3": {
-					"effect": "p25_pi_decho_raise_grab"
-				}
 			}
 		},
 		"put_away": {
@@ -319,11 +303,6 @@
 						"0.2667": [0, 0, -0.13],
 						"0.3": [0, 0, 0]
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "sks_tactical_draw"
 				}
 			}
 		},

@@ -97,11 +97,6 @@
 						"0.5667": [0, 0, 0]
 					}
 				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "p14_sh_charlie725_drop_rattle"
-				}
 			}
 		},
 		"put_away": {
@@ -530,26 +525,6 @@
 						"1.7333": [-0.01, 0, 0.06],
 						"1.7667": [0, 0, 0]
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "p14_sh_charlie725_reload_breechopen"
-				},
-				"0.5667": {
-					"effect": "p14_sh_charlie725_reload_rattle"
-				},
-				"0.7333": {
-					"effect": "blt_case_bounce_shotgun_dirt_close_lrg_03"
-				},
-				"0.9333": {
-					"effect": "p14_sh_charlie725_reload_shellin"
-				},
-				"1.3333": {
-					"effect": "p14_sh_charlie725_reload_breechclose"
-				},
-				"1.4333": {
-					"effect": "p14_sh_charlie725_reload_rattle2"
 				}
 			}
 		},
@@ -1132,29 +1107,6 @@
 						"2.4333": [0, 0, 0.01],
 						"2.4667": [0, 0, 0]
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "p14_sh_charlie725_reload_breechopen"
-				},
-				"0.7333": {
-					"effect": "p14_sh_charlie725_reload_empty_rattle"
-				},
-				"0.8667": {
-					"effect": "blt_case_bounce_shotgun_dirt_close_lrg_03"
-				},
-				"1.2333": {
-					"effect": "p14_sh_charlie725_reload_empty_shellin1"
-				},
-				"1.5333": {
-					"effect": "p14_sh_charlie725_reload_empty_shellin2"
-				},
-				"1.9333": {
-					"effect": "p14_sh_charlie725_reload_empty_fast_end"
-				},
-				"2.0": {
-					"effect": "p14_sh_charlie725_reload_empty_breechclose"
 				}
 			}
 		},
@@ -2018,32 +1970,6 @@
 						"7.9333": [0, 0, 0]
 					}
 				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "p14_sh_charlie725_inspect_raise"
-				},
-				"1.1667": {
-					"effect": "p14_sh_charlie725_inspect_rattle"
-				},
-				"1.9": {
-					"effect": "p14_sh_charlie725_inspect_grab"
-				},
-				"4.5": {
-					"effect": "p14_sh_charlie725_inspect_rattle2"
-				},
-				"5.4333": {
-					"effect": "p14_sh_charlie725_inspect_rotate"
-				},
-				"6.0667": {
-					"effect": "p14_sh_charlie725_inspect_breechopen"
-				},
-				"6.9333": {
-					"effect": "p14_sh_charlie725_inspect_breechclose"
-				},
-				"7.3333": {
-					"effect": "p14_sh_charlie725_inspect_end"
-				}
 			}
 		},
 		"inspect_empty": {
@@ -2906,32 +2832,6 @@
 						"7.9333": [0, 0, 0]
 					}
 				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "p14_sh_charlie725_inspect_raise"
-				},
-				"1.1667": {
-					"effect": "p14_sh_charlie725_inspect_rattle"
-				},
-				"1.9": {
-					"effect": "p14_sh_charlie725_inspect_grab"
-				},
-				"4.5": {
-					"effect": "p14_sh_charlie725_inspect_rattle2"
-				},
-				"5.4333": {
-					"effect": "p14_sh_charlie725_inspect_rotate"
-				},
-				"6.0667": {
-					"effect": "p14_sh_charlie725_inspect_breechopen"
-				},
-				"6.9333": {
-					"effect": "p14_sh_charlie725_inspect_breechclose"
-				},
-				"7.3333": {
-					"effect": "p14_sh_charlie725_inspect_end"
-				}
 			}
 		},
 		"shoot": {
@@ -3043,14 +2943,6 @@
 						"0.7": [0, 0, 0.02],
 						"0.7333": [0, 0, 0]
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "weap_charlie725_fire_first_plr_02"
-				},
-				"0.0333": {
-					"effect": "weap_charlie725_fire_first_plr_04"
 				}
 			}
 		}

@@ -358,11 +358,6 @@
 						}
 					}
 				}
-			},
-			"sound_effects": {
-				"0.3": {
-					"effect": "ump45_raise_quick"
-				}
 			}
 		},
 		"put_away": {
@@ -504,11 +499,6 @@
 						"0.2333": [0, 0, 0.525],
 						"0.4667": [0, 0, 0]
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "ump45_drop"
 				}
 			}
 		},
@@ -1266,20 +1256,6 @@
 						"2.5": [-0.01, 0.001, 0.018],
 						"2.5333": [0, 0, 0]
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "ump45_reload_raise"
-				},
-				"0.5": {
-					"effect": "ump45_reload_magout"
-				},
-				"1.3667": {
-					"effect": "ump45_reload_magin"
-				},
-				"1.6": {
-					"effect": "ump45_reload_end"
 				}
 			}
 		},
@@ -2228,26 +2204,6 @@
 						"3.0333": [-0.161, 0.081, -0.237],
 						"3.1333": [0, 0, 0]
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "ump45_reload_empty_raise"
-				},
-				"0.4667": {
-					"effect": "ump45_reload_fast_magout"
-				},
-				"1.3": {
-					"effect": "ump45_reload_empty_magin"
-				},
-				"2.1": {
-					"effect": "ump45_reload_empty_fast_charge"
-				},
-				"2.2333": {
-					"effect": "ump45_reload_empty_bolt_release"
-				},
-				"2.5333": {
-					"effect": "ump45_reload_empty_end"
 				}
 			}
 		},
@@ -3577,32 +3533,6 @@
 						"4.5": [0, 0, 0]
 					}
 				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "ump45_reload_fast_xmaglrg_raise"
-				},
-				"0.6667": {
-					"effect": "ump45_reload_fast_magout"
-				},
-				"1.7333": {
-					"effect": "ump45_reload_empty_maghit"
-				},
-				"2.1333": {
-					"effect": "ump45_reload_magin"
-				},
-				"2.7667": {
-					"effect": "ump45_drop_quick"
-				},
-				"3.0": {
-					"effect": "ump45_reload_empty_fast_charge"
-				},
-				"3.5333": {
-					"effect": "ump45_reload_empty_bolt_release"
-				},
-				"3.8667": {
-					"effect": "ump45_reload_fast_end"
-				}
 			}
 		},
 		"inspect_empty": {
@@ -4903,26 +4833,6 @@
 						"4.5": [0, 0, 0]
 					},
 					"scale": 1
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "ump45_reload_fast_xmaglrg_raise"
-				},
-				"0.6667": {
-					"effect": "ump45_reload_fast_magout"
-				},
-				"1.7667": {
-					"effect": "ump45_reload_empty_maghit"
-				},
-				"2.1667": {
-					"effect": "ump45_reload_magin"
-				},
-				"2.7667": {
-					"effect": "ump45_drop_quick"
-				},
-				"3.8667": {
-					"effect": "ump45_reload_fast_end"
 				}
 			}
 		},

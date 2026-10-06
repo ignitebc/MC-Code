@@ -176,14 +176,6 @@
 						}
 					}
 				}
-			},
-			"sound_effects": {
-				"0.05": {
-					"effect": "ar_akilo_drop"
-				},
-				"0.4": {
-					"effect": "ar_akilo_raise_shoulder"
-				}
 			}
 		},
 		"put_away": {

@@ -94,14 +94,6 @@
 					}
 				}
 			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "weap_rpapa7_fire_plr_mech_01"
-				},
-				"0.0333": {
-					"effect": "weap_rpapa7_fire_plr_mech_01"
-				}
-			},
 			"particle_effects": {}
 		},
 		"reload_empty": {
@@ -898,26 +890,6 @@
 						"3.5": [0, 0, 0]
 					}
 				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "p30_la_rpapa7_reload_hip_raise"
-				},
-				"1.0667": {
-					"effect": "p30_la_rpapa7_reload_hip_magin"
-				},
-				"1.5333": {
-					"effect": "p30_la_rpapa7_reload_hip_magin2"
-				},
-				"1.8": {
-					"effect": "p30_la_rpapa7_reload_hip_magin3"
-				},
-				"2.0333": {
-					"effect": "p30_la_rpapa7_reload_hip_end"
-				},
-				"2.4667": {
-					"effect": "p30_la_rpapa7_reload_hip_safetyclick"
-				}
 			}
 		},
 		"put_away": {
@@ -1009,11 +981,6 @@
 						"0.7": [0.01, -0.04, 0.07],
 						"0.7333": [0, 0, 0]
 					}
-				}
-			},
-			"sound_effects": {
-				"0.1667": {
-					"effect": "p30_la_rpapa7_drop_hip_rattle"
 				}
 			}
 		},
@@ -1215,11 +1182,6 @@
 						"1.3333": [0, 0, 0]
 					}
 				}
-			},
-			"sound_effects": {
-				"0.3333": {
-					"effect": "rpg7_reload_lower"
-				}
 			}
 		},
 		"static_bolt_caught": {
@@ -1237,11 +1199,6 @@
 				},
 				"camera": {
 					"rotation": [0, 0, 0]
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "rpg7_reload_lower"
 				}
 			}
 		},
@@ -1268,11 +1225,6 @@
 				},
 				"camera": {
 					"rotation": [0, 0, 0]
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "rpg7_reload_lower"
 				}
 			}
 		},
@@ -1847,17 +1799,6 @@
 						"5.7333": [0, 0, 0]
 					}
 				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "p30_la_rpapa7_inspect_hip_raise"
-				},
-				"1.7667": {
-					"effect": "p30_la_rpapa7_inspect_hip_rotate"
-				},
-				"4.4": {
-					"effect": "p30_la_rpapa7_inspect_hip_end"
-				}
 			}
 		},
 		"inspect": {
@@ -2430,17 +2371,6 @@
 						"5.7": [0, 0, 0.07],
 						"5.7333": [0, 0, 0]
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "p30_la_rpapa7_inspect_hip_raise"
-				},
-				"1.7667": {
-					"effect": "p30_la_rpapa7_inspect_hip_rotate"
-				},
-				"4.4": {
-					"effect": "p30_la_rpapa7_inspect_hip_end"
 				}
 			}
 		}

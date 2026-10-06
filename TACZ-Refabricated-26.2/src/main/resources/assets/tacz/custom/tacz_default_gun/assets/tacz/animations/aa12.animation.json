@@ -173,11 +173,6 @@
 						}
 					}
 				}
-			},
-			"sound_effects": {
-				"0.1": {
-					"effect": "aa12_raise"
-				}
 			}
 		},
 		"put_away": {
@@ -273,11 +268,6 @@
 							"lerp_mode": "catmullrom"
 						}
 					}
-				}
-			},
-			"sound_effects": {
-				"0.15": {
-					"effect": "aa12_drop"
 				}
 			}
 		},
@@ -769,26 +759,6 @@
 							"lerp_mode": "catmullrom"
 						}
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "wfoly_sh_jak12_reload_raise"
-				},
-				"0.65": {
-					"effect": "aa12_reload_fast_magout"
-				},
-				"1.35": {
-					"effect": "aa12_inspect_mvmnt"
-				},
-				"1.85": {
-					"effect": "aa12_reload_maghits"
-				},
-				"2.2": {
-					"effect": "aa12_reload_end"
-				},
-				"2.25": {
-					"effect": "aa12_reload_magin"
 				}
 			}
 		},
@@ -1440,32 +1410,6 @@
 						"1.1": [0, 0, 0],
 						"1.15": [1, 1, 1]
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "aa12_reload_raise"
-				},
-				"0.75": {
-					"effect": "aa12_reload_empty_magout"
-				},
-				"1.35": {
-					"effect": "iw8_phys_mag_drop_br_poly_dirt_03"
-				},
-				"1.6": {
-					"effect": "aa12_reload_drum_mvmnt"
-				},
-				"1.9": {
-					"effect": "aa12_reload_empty_magin"
-				},
-				"2.5": {
-					"effect": "wfoly_sh_jak12_reload_empty_boltpull"
-				},
-				"2.9": {
-					"effect": "aa12_reload_empty_fast_drum_boltforward"
-				},
-				"3.15": {
-					"effect": "aa12_reload_empty_end"
 				}
 			}
 		},
@@ -2126,26 +2070,6 @@
 							"lerp_mode": "catmullrom"
 						}
 					}
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "wfoly_sh_jak12_raise"
-				},
-				"0.55": {
-					"effect": "aa12_inspect_magout"
-				},
-				"1.15": {
-					"effect": "aa12_inspect_mvmnt"
-				},
-				"1.85": {
-					"effect": "aa12_inspect_magin"
-				},
-				"2.45": {
-					"effect": "aa12_reload_mvmnt"
-				},
-				"4.1": {
-					"effect": "aa12_inspect_end"
 				}
 			}
 		},
@@ -2965,38 +2889,6 @@
 				},
 				"bullet": {
 					"scale": 0
-				}
-			},
-			"sound_effects": {
-				"0.0": {
-					"effect": "wfoly_sh_jak12_raise"
-				},
-				"0.55": {
-					"effect": "aa12_inspect_magout"
-				},
-				"1.15": {
-					"effect": "aa12_inspect_mvmnt"
-				},
-				"1.85": {
-					"effect": "aa12_inspect_magin"
-				},
-				"2.45": {
-					"effect": "aa12_reload_mvmnt"
-				},
-				"3.25": {
-					"effect": "aa12_reload_empty_boltpull"
-				},
-				"3.75": {
-					"effect": "aa12_reload_empty_fast_drum_boltforward"
-				},
-				"4.7": {
-					"effect": "weap_mike4_deadtrigger_plr_ads_05"
-				},
-				"4.75": {
-					"effect": "aa12_inspect_end"
-				},
-				"4.8": {
-					"effect": "weap_mike4_fire_dryfire_plr_ads_01"
 				}
 			}
 		},
