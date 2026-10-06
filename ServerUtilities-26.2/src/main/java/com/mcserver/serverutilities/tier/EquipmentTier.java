@@ -3,22 +3,26 @@ package com.mcserver.serverutilities.tier;
 /**
  * 장비에 무작위로 붙는 등급. S+가 가장 좋고 F가 가장 나쁘다.
  *
- * <p>S는 아이템의 기본 수치를 그대로 쓰고, S+는 내구도와 그 밖의 수치를 3%씩 높인다. S에서 등급이
- * 내려갈수록 내구도는 7%씩, 그 밖의 수치는 4%씩 낮아진다. 여덟 등급이 같은 확률로 붙는다.
+ * <p>장비 하나에 내구도, 성능, 체력 등급이 따로 붙고 셋 다 이 표를 쓴다. 성능은 채굴 속도, 공격력,
+ * 방어도 중 그 장비가 쓰는 항목이다.
+ *
+ * <p>S는 아이템의 기본 수치를 그대로 쓰고, S+는 내구도와 성능을 3%씩 높인다. S에서 등급이
+ * 내려갈수록 내구도는 7%씩, 성능은 4%씩 낮아진다. 체력은 S+의 하트 2칸에서 반 칸씩 줄어 F는
+ * 하트 2칸을 깎으며 0칸은 없다. 여덟 등급이 같은 확률로 붙는다.
  *
  * <p>배율을 실수가 아니라 백분율 정수로 들고 있는다. 내구도는 정수 연산으로 반올림해야
  * 0.79 같은 값의 이진 오차 때문에 기준표와 1씩 어긋나는 일이 생기지 않는다.
  */
 public enum EquipmentTier {
     // 0은 등급이 없는 장비로 읽고 1~7은 기존 등급이 쓰므로 나중에 추가한 S+는 8번이다.
-    S_PLUS(8, "S+", 103, 103),
-    S(1, "S", 100, 100),
-    A(2, "A", 93, 96),
-    B(3, "B", 86, 92),
-    C(4, "C", 79, 88),
-    D(5, "D", 72, 84),
-    E(6, "E", 65, 80),
-    F(7, "F", 58, 76);
+    S_PLUS(8, "S+", 103, 103, 4),
+    S(1, "S", 100, 100, 3),
+    A(2, "A", 93, 96, 2),
+    B(3, "B", 86, 92, 1),
+    C(4, "C", 79, 88, -1),
+    D(5, "D", 72, 84, -2),
+    E(6, "E", 65, 80, -3),
+    F(7, "F", 58, 76, -4);
 
     private static final int PERCENT = 100;
 
@@ -27,12 +31,14 @@ public enum EquipmentTier {
     private final String label;
     private final int durabilityPercent;
     private final int performancePercent;
+    private final int healthPoints;
 
-    EquipmentTier(int level, String label, int durabilityPercent, int performancePercent) {
+    EquipmentTier(int level, String label, int durabilityPercent, int performancePercent, int healthPoints) {
         this.level = level;
         this.label = label;
         this.durabilityPercent = durabilityPercent;
         this.performancePercent = performancePercent;
+        this.healthPoints = healthPoints;
     }
 
     public int level() {
@@ -52,6 +58,11 @@ public enum EquipmentTier {
     /** 채굴 속도, 공격력, 방어도에 곱하는 백분율. S는 100이다. */
     public int performancePercent() {
         return this.performancePercent;
+    }
+
+    /** 최대 체력에 더하는 값. 체력 단위라 2가 하트 1칸이다. */
+    public int healthPoints() {
+        return this.healthPoints;
     }
 
     /**

@@ -2,18 +2,23 @@ package com.mcserver.serverutilities.tier;
 
 import com.mcserver.serverutilities.ServerUtilities;
 import com.mcserver.serverutilities.level.ToolLevelRules;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -34,24 +39,34 @@ import java.util.Set;
  * <p>수치는 언제나 아이템의 기본값에서 다시 계산한다. 그래서 같은 아이템에 여러 번 적용해도
  * 값이 누적되지 않는다. 강화로 붙은 수정자는 등급 배율의 대상이 아니며 그대로 남는다.
  *
- * <p>부위별로 바꾸는 항목이 다르다. 굴착 도구는 채굴 속도만, 근접 무기는 공격력만,
- * 사람이 입는 방어구는 방어도만 바꾼다. 내구도는 모든 대상에 적용한다.
+ * <p>장비 하나에 내구도, 성능, 체력 등급을 따로 붙인다. 내구도는 모든 대상에 적용한다. 성능은
+ * 굴착 도구의 채굴 속도, 무기의 공격력, 사람이 입는 방어구의 방어도에 적용한다. 체력은 굴착 도구,
+ * 낚싯대, 무기, 사람이 입는 방어구에만 붙는다. 방어구는 입은 부위에서, 나머지는 주로 쓰는 손에
+ * 들었을 때만 최대 체력이 바뀐다.
  */
 public final class EquipmentTierRules {
-    /** 등급을 커스텀 데이터에 기록할 때 쓰는 키 */
-    private static final String TIER_KEY = "EquipmentTier";
+    /** 각 등급을 커스텀 데이터에 기록할 때 쓰는 키 */
+    private static final String DURABILITY_TIER_KEY = "EquipmentDurabilityTier";
+    private static final String PERFORMANCE_TIER_KEY = "EquipmentPerformanceTier";
+    private static final String HEALTH_TIER_KEY = "EquipmentHealthTier";
+    /** 등급을 하나만 붙이던 때의 키. 내구도와 성능 등급으로 옮긴 뒤 지운다. */
+    private static final String LEGACY_TIER_KEY = "EquipmentTier";
     /** 등급을 적용할 당시의 아이템. 업그레이드로 재질이 바뀐 것을 알아내는 데 쓴다. */
     private static final String TIER_ITEM_KEY = "EquipmentTierItem";
 
     /** 플레이어의 기본 공격력. 기준표의 공격력은 이 값을 포함하므로 배율도 함께 적용한다. */
     static final double PLAYER_BASE_ATTACK_DAMAGE = 1.0D;
+    /** 던진 삼지창의 바닐라 고정 피해. 등급 배율은 이 값에만 걸고 찌르기 인챈트 추가분은 그대로 둔다. */
+    static final float TRIDENT_THROWN_DAMAGE = 8.0F;
 
     /** 인벤토리 전체를 훑는 주기. 매 틱 확인할 필요가 없다. */
     private static final int SCAN_INTERVAL_TICKS = 20;
 
+    private static final String MODIFIER_NAMESPACE = "serverutilities";
     private static final Identifier ATTACK_DAMAGE_MODIFIER_ID = modifierId("tier_attack_damage");
     // 부위마다 식별자가 달라야 한다. 같으면 장비를 입을 때마다 서로 덮어써 마지막 한 부위만 남는다.
     private static final String ARMOR_MODIFIER_PREFIX = "tier_armor.";
+    private static final String HEALTH_MODIFIER_PREFIX = "tier_health.";
     /** 네 부위가 같이 쓰던 예전 방어도 수정자. 다시 적용할 때 지운다. */
     private static final Identifier LEGACY_ARMOR_MODIFIER_ID = modifierId("tier_armor");
 
@@ -82,32 +97,45 @@ public final class EquipmentTierRules {
      *
      * <p>대장장이 작업대로 상위 재질이 되면 등급 기록은 그대로 따라오지만 내구도와 속성은
      * 이전 재질에서 계산한 값이 남는다. 그래서 기록해 둔 아이템과 달라졌으면 같은 등급으로
-     * 다시 계산한다. 등급 자체는 바뀌지 않으므로 1티어 다이아몬드를 올리면 계속 1티어로 남는다.
+     * 다시 계산한다. 등급 자체는 바뀌지 않으므로 S 다이아몬드를 올리면 계속 S로 남는다.
      */
     public static void ensureTier(ItemStack stack, RandomSource random) {
         if (!isTierable(stack)) return;
 
-        EquipmentTier tier = readTier(stack);
-        if (tier == null) {
-            EquipmentTier[] tiers = EquipmentTier.values();
-            setTier(stack, tiers[random.nextInt(tiers.length)]);
+        EquipmentTierSet tiers = readTiers(stack);
+        if (tiers == null) {
+            setTiers(stack, completeTiers(stack, random));
             return;
         }
 
-        boolean upgraded = !itemId(stack).equals(readTierItemId(stack));
-        if (upgraded || hasLegacyArmorModifier(stack)) {
-            setTier(stack, tier);
+        if (!itemId(stack).equals(readTierItemId(stack))) {
+            setTiers(stack, tiers);
         }
     }
 
-    /** 네 부위가 같이 쓰던 예전 방어도 수정자가 남아 있는지. 있으면 부위별 식별자로 다시 적용한다. */
-    private static boolean hasLegacyArmorModifier(ItemStack stack) {
-        ItemAttributeModifiers modifiers =
-                stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-        for (ItemAttributeModifiers.Entry entry : modifiers.modifiers()) {
-            if (LEGACY_ARMOR_MODIFIER_ID.equals(entry.modifier().id())) return true;
-        }
-        return false;
+    /**
+     * 비어 있는 등급만 채운다.
+     *
+     * <p>예전 단일 등급이 붙은 장비는 그 등급을 내구도와 성능에 그대로 쓰고 체력 등급만 새로 뽑는다.
+     * 등급이 하나도 없는 장비는 세 등급을 각각 따로 뽑는다.
+     */
+    private static EquipmentTierSet completeTiers(ItemStack stack, RandomSource random) {
+        CompoundTag tag = customTag(stack);
+        EquipmentTier legacyTier = EquipmentTier.byLevel(tag.getIntOr(LEGACY_TIER_KEY, 0));
+        EquipmentTier durability = readOrChoose(tag, DURABILITY_TIER_KEY, legacyTier, random);
+        EquipmentTier performance = readOrChoose(tag, PERFORMANCE_TIER_KEY, legacyTier, random);
+        EquipmentTier health = readOrChoose(tag, HEALTH_TIER_KEY, null, random);
+        return new EquipmentTierSet(durability, performance, health);
+    }
+
+    private static EquipmentTier readOrChoose(CompoundTag tag, String key, EquipmentTier fallback,
+                                              RandomSource random) {
+        EquipmentTier recorded = EquipmentTier.byLevel(tag.getIntOr(key, 0));
+        if (recorded != null) return recorded;
+        if (fallback != null) return fallback;
+
+        EquipmentTier[] tiers = EquipmentTier.values();
+        return tiers[random.nextInt(tiers.length)];
     }
 
     private static String itemId(ItemStack stack) {
@@ -115,30 +143,58 @@ public final class EquipmentTierRules {
     }
 
     private static String readTierItemId(ItemStack stack) {
-        CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-        return customData.copyTag().getStringOr(TIER_ITEM_KEY, "");
+        return customTag(stack).getStringOr(TIER_ITEM_KEY, "");
+    }
+
+    private static CompoundTag customTag(ItemStack stack) {
+        return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
     }
 
     /**
-     * 아이템에 기록된 등급.
+     * 아이템에 기록된 등급 묶음.
      *
-     * @return 기록된 등급. 없거나 범위를 벗어나면 null
+     * @return 세 등급이 모두 기록돼 있으면 그 묶음. 하나라도 없거나 범위를 벗어나면 null
      */
-    public static EquipmentTier readTier(ItemStack stack) {
+    public static EquipmentTierSet readTiers(ItemStack stack) {
         if (stack.isEmpty()) return null;
 
-        CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-        return EquipmentTier.byLevel(customData.copyTag().getIntOr(TIER_KEY, 0));
+        CompoundTag tag = customTag(stack);
+        EquipmentTier durability = EquipmentTier.byLevel(tag.getIntOr(DURABILITY_TIER_KEY, 0));
+        EquipmentTier performance = EquipmentTier.byLevel(tag.getIntOr(PERFORMANCE_TIER_KEY, 0));
+        EquipmentTier health = EquipmentTier.byLevel(tag.getIntOr(HEALTH_TIER_KEY, 0));
+        if (durability == null || performance == null || health == null) return null;
+        return new EquipmentTierSet(durability, performance, health);
+    }
+
+    /**
+     * 수치 계산과 화면 표시에 쓰는 등급 묶음.
+     *
+     * <p>상자에 있던 예전 장비는 플레이어 인벤토리에 들어오기 전까지 단일 등급만 갖고 있다.
+     * 그동안에도 수치와 툴팁이 예전과 같도록 그 등급을 내구도와 성능에 쓰고 체력은 비워 둔다.
+     *
+     * @return 기록된 등급 묶음. 등급이 전혀 없으면 null
+     */
+    public static EquipmentTierSet readKnownTiers(ItemStack stack) {
+        EquipmentTierSet tiers = readTiers(stack);
+        if (tiers != null) return tiers;
+        if (stack.isEmpty()) return null;
+
+        EquipmentTier legacyTier = EquipmentTier.byLevel(customTag(stack).getIntOr(LEGACY_TIER_KEY, 0));
+        if (legacyTier == null) return null;
+        return new EquipmentTierSet(legacyTier, legacyTier, null);
     }
 
     /** 등급과 적용 대상 아이템을 기록하고 해당 배율을 수치에 반영한다. */
-    public static void setTier(ItemStack stack, EquipmentTier tier) {
+    public static void setTiers(ItemStack stack, EquipmentTierSet tiers) {
         String appliedTo = itemId(stack);
         CustomData.update(DataComponents.CUSTOM_DATA, stack, (CompoundTag tag) -> {
-            tag.putInt(TIER_KEY, tier.level());
+            tag.putInt(DURABILITY_TIER_KEY, tiers.durability().level());
+            tag.putInt(PERFORMANCE_TIER_KEY, tiers.performance().level());
+            tag.putInt(HEALTH_TIER_KEY, tiers.health().level());
             tag.putString(TIER_ITEM_KEY, appliedTo);
+            tag.remove(LEGACY_TIER_KEY);
         });
-        applyTier(stack, tier);
+        applyTiers(stack, tiers);
     }
 
     /** 등급을 붙일 수 있는 아이템인지. 내구도가 있는 장비만 대상으로 한다. */
@@ -173,27 +229,53 @@ public final class EquipmentTierRules {
         return null;
     }
 
-    private static void applyTier(ItemStack stack, EquipmentTier tier) {
-        DataComponentMap defaults = stack.getItem().components();
-        boolean diggingTool = isDiggingTool(stack);
+    /** 검, 삼지창, 철퇴, 창처럼 기본 공격력이 있는 무기. 도끼는 굴착 도구로 본다. */
+    static boolean isMeleeWeapon(ItemStack stack) {
+        if (isDiggingTool(stack)) return false;
+        return baseAmount(stack.getItem().components(), Attributes.ATTACK_DAMAGE) > 0.0D;
+    }
 
-        applyDurability(stack, defaults, tier);
-        applyAttributes(stack, defaults, tier.performanceMultiplier(), diggingTool);
-        if (diggingTool) {
+    /** 활과 쇠뇌. 공격력 속성이 없어 화살 피해에 직접 등급을 반영한다. */
+    static boolean isRangedWeapon(ItemStack stack) {
+        return stack.getItem() instanceof BowItem || stack.getItem() instanceof CrossbowItem;
+    }
+
+    /** 체력 등급이 최대 체력을 바꾸는 장비. 가위, 방패, 겉날개, 늑대 갑옷은 내구도만 바뀐다. */
+    static boolean hasHealthTier(ItemStack stack) {
+        if (isDiggingTool(stack)) return true;
+        if (ToolLevelRules.isFishingRod(stack)) return true;
+        if (isHumanoidArmor(stack)) return true;
+        if (isRangedWeapon(stack)) return true;
+        return isMeleeWeapon(stack);
+    }
+
+    private static void applyTiers(ItemStack stack, EquipmentTierSet tiers) {
+        DataComponentMap defaults = stack.getItem().components();
+
+        applyDurability(stack, defaults, tiers.durability());
+        applyAttributes(stack, defaults, tiers);
+        if (isDiggingTool(stack)) {
             applyMiningSpeed(stack, defaults,
-                    tier.performanceMultiplier() * ToolLevelRules.miningSpeedMultiplier(stack));
+                    tiers.performance().performanceMultiplier() * ToolLevelRules.miningSpeedMultiplier(stack));
         }
     }
 
-    /** LV 변경 시 내구도와 채굴 속도만 다시 계산한다. 공격/방어 수정자는 그대로 둔다. */
+    /** LV 변경 시 내구도와 채굴 속도만 다시 계산한다. 공격/방어/체력 수정자는 그대로 둔다. */
     public static void refreshToolStats(ItemStack stack) {
         if (!ToolLevelRules.isLevelable(stack)) return;
         DataComponentMap defaults = stack.getItem().components();
-        EquipmentTier tier = readTier(stack);
-        applyDurability(stack, defaults, tier);
+        EquipmentTierSet tiers = readKnownTiers(stack);
+        EquipmentTier durabilityTier = null;
+        EquipmentTier performanceTier = null;
+        if (tiers != null) {
+            durabilityTier = tiers.durability();
+            performanceTier = tiers.performance();
+        }
+
+        applyDurability(stack, defaults, durabilityTier);
         if (isDiggingTool(stack)) {
             double multiplier = ToolLevelRules.miningSpeedMultiplier(stack);
-            if (tier != null) multiplier *= tier.performanceMultiplier();
+            if (performanceTier != null) multiplier *= performanceTier.performanceMultiplier();
             applyMiningSpeed(stack, defaults, multiplier);
         }
     }
@@ -224,17 +306,17 @@ public final class EquipmentTierRules {
     }
 
     /**
-     * 공격력과 방어도에 배율을 적용한다.
+     * 공격력, 방어도, 최대 체력 수정자를 붙인다.
      *
      * <p>기본 수정자를 고쳐 쓰는 대신 차이만큼의 수정자를 따로 붙인다. 그래야 강화나 다른 모드가
      * 붙인 수정자를 건드리지 않는다. 차이는 언제나 아이템 기본값에서 구하므로 값이 누적되지 않는다.
      *
      * <p>굴착 도구의 공격력은 바꾸지 않는다. 도끼도 굴착 도구로 보므로 공격력이 그대로 남는다.
      */
-    private static void applyAttributes(ItemStack stack, DataComponentMap defaults, double multiplier,
-                                        boolean diggingTool) {
-        boolean scaleAttackDamage = !diggingTool;
+    private static void applyAttributes(ItemStack stack, DataComponentMap defaults, EquipmentTierSet tiers) {
+        boolean scaleAttackDamage = !isDiggingTool(stack);
         EquipmentSlotGroup armorSlot = humanoidArmorSlot(stack);
+        double multiplier = tiers.performance().performanceMultiplier();
 
         ItemAttributeModifiers baseModifiers =
                 defaults.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
@@ -276,6 +358,17 @@ public final class EquipmentTierRules {
                     entry.slot());
         }
 
+        if (hasHealthTier(stack)) {
+            // 방어구는 입은 부위에서만, 도구와 무기는 주로 쓰는 손에 들었을 때만 체력이 바뀐다.
+            EquipmentSlotGroup healthSlot = EquipmentSlotGroup.MAINHAND;
+            if (armorSlot != null) healthSlot = armorSlot;
+            Identifier healthModifierId = modifierId(HEALTH_MODIFIER_PREFIX + healthSlot.getSerializedName());
+            builder.add(Attributes.MAX_HEALTH,
+                    new AttributeModifier(healthModifierId, tiers.health().healthPoints(),
+                            AttributeModifier.Operation.ADD_VALUE),
+                    healthSlot);
+        }
+
         stack.set(DataComponents.ATTRIBUTE_MODIFIERS, builder.build());
     }
 
@@ -298,14 +391,66 @@ public final class EquipmentTierRules {
                 baseTool.damagePerBlock(), baseTool.canDestroyBlocksInCreative()));
     }
 
+    /**
+     * 화살 피해에 쏜 활이나 쇠뇌의 성능 등급을 반영한다.
+     *
+     * <p>바닐라는 속도와 기본 피해를 곱한 값을 정수로 올린다. 기본 피해에 배율을 곱하면 올림 때문에
+     * 등급 차이가 사라지므로, 올림이 끝난 피해에 기본 화살 피해분의 차이만 더한다. 힘 인챈트와 치명타
+     * 추가 피해는 근접 무기의 날카로움처럼 등급과 무관하게 그대로 둔다.
+     *
+     * @param weapon     화살을 쏜 무기. 디스펜서처럼 무기가 없으면 null
+     * @param speed      맞힌 순간의 화살 속도
+     * @param baseDamage 화살의 기본 피해
+     * @param damage     바닐라가 계산한 최종 피해
+     */
+    public static float scaleArrowDamage(ItemStack weapon, double speed, double baseDamage, float damage) {
+        if (weapon == null || !isRangedWeapon(weapon)) return damage;
+        EquipmentTierSet tiers = readKnownTiers(weapon);
+        if (tiers == null) return damage;
+
+        double baseArrowDamage = Mth.ceil(speed * baseDamage);
+        double difference = baseArrowDamage * (tiers.performance().performanceMultiplier() - 1.0D);
+        return (float) Math.max(0.0D, damage + difference);
+    }
+
+    /**
+     * 던진 삼지창의 고정 피해에 그 삼지창의 성능 등급을 반영한다.
+     *
+     * @param trident    던진 삼지창. 없으면 null
+     * @param baseDamage 바닐라 고정 피해
+     */
+    public static float scaleThrownTridentDamage(ItemStack trident, float baseDamage) {
+        if (trident == null) return baseDamage;
+        EquipmentTierSet tiers = readKnownTiers(trident);
+        if (tiers == null) return baseDamage;
+
+        return (float) (baseDamage * tiers.performance().performanceMultiplier());
+    }
+
+    /** 아이템 기본 수정자 중 해당 속성에 더해지는 값의 합 */
+    static double baseAmount(DataComponentMap defaults, Holder<Attribute> attribute) {
+        ItemAttributeModifiers modifiers =
+                defaults.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+
+        double total = 0.0D;
+        for (ItemAttributeModifiers.Entry entry : modifiers.modifiers()) {
+            if (entry.modifier().operation() != AttributeModifier.Operation.ADD_VALUE) continue;
+            if (!attribute.equals(entry.attribute())) continue;
+            total += entry.modifier().amount();
+        }
+        return total;
+    }
+
     private static boolean isTierModifier(Identifier modifierId) {
+        if (!MODIFIER_NAMESPACE.equals(modifierId.getNamespace())) return false;
         if (ATTACK_DAMAGE_MODIFIER_ID.equals(modifierId)) return true;
         if (LEGACY_ARMOR_MODIFIER_ID.equals(modifierId)) return true;
-        boolean ownNamespace = "serverutilities".equals(modifierId.getNamespace());
-        return ownNamespace && modifierId.getPath().startsWith(ARMOR_MODIFIER_PREFIX);
+
+        String path = modifierId.getPath();
+        return path.startsWith(ARMOR_MODIFIER_PREFIX) || path.startsWith(HEALTH_MODIFIER_PREFIX);
     }
 
     private static Identifier modifierId(String path) {
-        return Identifier.fromNamespaceAndPath("serverutilities", path);
+        return Identifier.fromNamespaceAndPath(MODIFIER_NAMESPACE, path);
     }
 }

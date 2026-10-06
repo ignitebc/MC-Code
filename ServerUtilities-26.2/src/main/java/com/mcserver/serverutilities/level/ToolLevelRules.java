@@ -1,7 +1,7 @@
 package com.mcserver.serverutilities.level;
 
-import com.mcserver.serverutilities.tier.EquipmentTier;
 import com.mcserver.serverutilities.tier.EquipmentTierRules;
+import com.mcserver.serverutilities.tier.EquipmentTierSet;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -175,9 +175,10 @@ public final class ToolLevelRules {
         if (primary.getItem() == result.getItem() && primary.has(DataComponents.ATTRIBUTE_MODIFIERS)) {
             result.set(DataComponents.ATTRIBUTE_MODIFIERS, primary.get(DataComponents.ATTRIBUTE_MODIFIERS));
         }
-        EquipmentTier tier = EquipmentTierRules.readTier(primary);
-        if (tier != null) {
-            EquipmentTierRules.setTier(result, tier);
+        // 예전 단일 등급만 있는 주 재료는 위에서 합친 커스텀 데이터로 결과에 넘어가고 다음 검사 때 나뉜다.
+        EquipmentTierSet tiers = EquipmentTierRules.readTiers(primary);
+        if (tiers != null) {
+            EquipmentTierRules.setTiers(result, tiers);
         }
         ensureLevel(result);
     }
