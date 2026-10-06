@@ -17,6 +17,7 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityAttachment;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -41,10 +42,13 @@ public final class MonsterLevelLabel {
     private static final int TEXT_EMISSION = 2;
     private static final int TEXT_WHITE = 0xFFFFFFFF;
     private static final int NO_OUTLINE = 0;
-    /** LV1~LV7 색. 총기·부착물 이름의 F~S 등급 색과 같은 순서다. */
-    private static final ChatFormatting[] LEVEL_COLORS = {
-            ChatFormatting.GREEN, ChatFormatting.AQUA, ChatFormatting.BLUE, ChatFormatting.DARK_PURPLE,
-            ChatFormatting.YELLOW, ChatFormatting.RED, ChatFormatting.GOLD
+    /**
+     * 위험 단계 1~7의 글자 색. 가장 강한 7단계가 빨강이다.
+     * 장비 몬스터는 레벨 구간으로, 크리퍼는 레벨 그대로 단계를 정한다({@link MonsterLevel#stage}).
+     */
+    private static final ChatFormatting[] STAGE_COLORS = {
+            ChatFormatting.WHITE, ChatFormatting.GREEN, ChatFormatting.AQUA, ChatFormatting.BLUE,
+            ChatFormatting.LIGHT_PURPLE, ChatFormatting.GOLD, ChatFormatting.RED
     };
 
     private MonsterLevelLabel() { }
@@ -62,14 +66,17 @@ public final class MonsterLevelLabel {
     public static void extract(Entity entity, EntityRenderState state, float partialTick) {
         MonsterLevelRenderState labelState = (MonsterLevelRenderState) state;
         int level = visibleLevel(entity, state);
+        // 그리기 단계에는 엔티티가 없으므로 크리퍼 여부가 필요한 단계를 여기서 정해 둔다.
+        int stage = MonsterLevel.stage(level, entity instanceof Creeper);
         Vec3 attachment = null;
-        if (level != MonsterLevel.NONE) {
+        if (stage != MonsterLevel.NONE) {
             attachment = entity.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, entity.getYRot(partialTick));
         }
         if (attachment == null) {
             level = MonsterLevel.NONE;
+            stage = MonsterLevel.NONE;
         }
-        labelState.serverutilities$setLabel(level, attachment);
+        labelState.serverutilities$setLabel(level, stage, attachment);
     }
 
     /** 렌더 상태에 담긴 레벨을 그린다. 엔티티 위치로 옮겨진 좌표계에서 불린다. */
@@ -77,11 +84,12 @@ public final class MonsterLevelLabel {
                               CameraRenderState camera) {
         MonsterLevelRenderState labelState = (MonsterLevelRenderState) state;
         int level = labelState.serverutilities$labelLevel();
+        int stage = labelState.serverutilities$labelStage();
         Vec3 attachment = labelState.serverutilities$labelAttachment();
-        if (level == MonsterLevel.NONE || attachment == null) return;
+        if (stage == MonsterLevel.NONE || attachment == null) return;
 
         Minecraft minecraft = Minecraft.getInstance();
-        Component text = text(level);
+        Component text = text(level, stage);
         float x = -minecraft.font.width(text) / 2.0F;
         float backgroundOpacity = minecraft.options.getBackgroundOpacity(DEFAULT_BACKGROUND_OPACITY);
         int backgroundColor = ARGB.color(backgroundOpacity, BACKGROUND_BLACK);
@@ -120,8 +128,8 @@ public final class MonsterLevelLabel {
         return lines;
     }
 
-    private static Component text(int level) {
-        ChatFormatting color = LEVEL_COLORS[level - MonsterLevel.MIN_SCORE];
+    private static Component text(int level, int stage) {
+        ChatFormatting color = STAGE_COLORS[stage - MonsterLevel.MIN_STAGE];
         return Component.literal("LV" + level).withStyle(color);
     }
 }

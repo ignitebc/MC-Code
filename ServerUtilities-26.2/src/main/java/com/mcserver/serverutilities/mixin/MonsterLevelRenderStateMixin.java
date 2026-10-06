@@ -9,17 +9,22 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(EntityRenderState.class)
 abstract class MonsterLevelRenderStateMixin implements MonsterLevelRenderState {
     @Unique private int serverutilities$labelLevel;
+    @Unique private int serverutilities$labelStage;
     @Unique private Vec3 serverutilities$labelAttachment;
 
     @Override
     public int serverutilities$labelLevel() { return serverutilities$labelLevel; }
 
     @Override
+    public int serverutilities$labelStage() { return serverutilities$labelStage; }
+
+    @Override
     public Vec3 serverutilities$labelAttachment() { return serverutilities$labelAttachment; }
 
     @Override
-    public void serverutilities$setLabel(int level, Vec3 attachment) {
+    public void serverutilities$setLabel(int level, int stage, Vec3 attachment) {
         serverutilities$labelLevel = level;
+        serverutilities$labelStage = stage;
         serverutilities$labelAttachment = attachment;
     }
 }

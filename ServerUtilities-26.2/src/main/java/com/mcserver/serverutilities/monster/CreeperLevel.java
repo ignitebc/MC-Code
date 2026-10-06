@@ -27,12 +27,17 @@ public final class CreeperLevel {
         if (roll < 0 || roll >= LEVEL_COUNT) {
             throw new IllegalArgumentException("크리퍼 레벨 난수 범위를 벗어났습니다: " + roll);
         }
-        return roll + MonsterLevel.MIN_SCORE;
+        return roll + MonsterLevel.MIN_LEVEL;
     }
 
-    /** 레벨의 폭발 배율. 레벨이 없거나 범위를 벗어나면 바닐라 배율 */
+    /**
+     * 레벨의 폭발 배율. 레벨이 없거나 범위를 벗어나면 바닐라 배율
+     *
+     * <p>장비 몬스터의 레벨은 LV18까지 올라가므로 표시 가능 범위가 아니라 크리퍼 레벨 범위로 검사한다.
+     */
     public static float explosionMultiplier(int level) {
-        if (!MonsterLevel.isVisible(level)) return VANILLA_MULTIPLIER;
-        return EXPLOSION_PERCENT[level - MonsterLevel.MIN_SCORE] / PERCENT;
+        boolean creeperLevel = level >= MonsterLevel.MIN_LEVEL && level <= LEVEL_COUNT;
+        if (!creeperLevel) return VANILLA_MULTIPLIER;
+        return EXPLOSION_PERCENT[level - MonsterLevel.MIN_LEVEL] / PERCENT;
     }
 }

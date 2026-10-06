@@ -309,8 +309,9 @@ public final class AchievementCatalog
         add(definitions, "G10", "시련의 정복자", 3, 9, "G09", o("kill:minecraft:breeze", 150, "브리즈 처치"));
         add(definitions, "G11", "공허의 사냥꾼", 3, 8, "", o("kill:minecraft:enderman", 300, "엔더맨 처치"));
         add(definitions, "G12", "검은 해골의 천적", 3, 9, "", o("kill:minecraft:wither_skeleton", 200, "위더 스켈레톤 처치"));
-        add(definitions, "G13", "강적 사냥", 3, 8, "B16", o("monster_kills_level5", 200, "LV5 이상 몬스터 처치"));
-        add(definitions, "G14", "정점의 포식자", 4, 17, "G13", o("monster_kills_level7", 100, "LV7 몬스터 처치"));
+        // 기록 이름은 이어 쓰는 처치 수를 위해 예전 기준 그대로다. 실제 기준은 위험 6단계 이상과 7단계다.
+        add(definitions, "G13", "강적 사냥", 3, 8, "B16", o("monster_kills_level5", 200, "LV12+ 몬스터 처치 (크리퍼 LV6+)"));
+        add(definitions, "G14", "정점의 포식자", 4, 17, "G13", o("monster_kills_level7", 100, "LV15+ 몬스터 처치 (크리퍼 LV7)"));
     }
 
     private static Map<String, List<String>> createStructures()

@@ -34,6 +34,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -58,6 +59,8 @@ public final class AchievementManager
     /** TACZ 탄환 피해. TACZ에 의존하지 않도록 태그 ID로만 확인한다. */
     private static final TagKey<DamageType> GUN_BULLETS =
             TagKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath("tacz", "bullets"));
+    /** 강적 처치 업적(G13)이 세는 최소 위험 단계. 장비 몬스터 LV12 이상, 크리퍼 LV6 이상이다. */
+    private static final int STRONG_MONSTER_STAGE = 6;
     private static final Map<UUID, Integer> LAST_REQUESTS = new HashMap<>();
     private static final Map<UUID, Integer> LAST_CLAIMS = new HashMap<>();
     private static final Map<UUID, Integer> VIEWERS = new HashMap<>();
@@ -258,15 +261,18 @@ public final class AchievementManager
         {
             add(player, "gun_kills", 1);
         }
-        // Server Utilities가 정한 머리 위 레벨. 장비를 추첨하지 않은 몬스터는 레벨이 없다.
+        // Server Utilities가 정한 머리 위 레벨의 위험 단계. 장비를 추첨하지 않은 몬스터는 레벨이 없다.
+        // 장비 몬스터는 레벨 구간, 크리퍼는 레벨 그대로 단계가 되므로 크리퍼도 같은 기준으로 집계된다.
+        // 이미 쌓인 처치 수를 이어 쓰도록 기록 이름은 예전 기준(LV5 이상, LV7)의 이름을 그대로 둔다.
         if (victim instanceof MonsterEquipmentAccess monster)
         {
-            int level = monster.serverutilities$monsterLevel();
-            if (level >= 5)
+            boolean creeper = victim instanceof Creeper;
+            int stage = MonsterLevel.stage(monster.serverutilities$monsterLevel(), creeper);
+            if (stage >= STRONG_MONSTER_STAGE)
             {
                 add(player, "monster_kills_level5", 1);
             }
-            if (level >= MonsterLevel.MAX_SCORE)
+            if (stage >= MonsterLevel.MAX_STAGE)
             {
                 add(player, "monster_kills_level7", 1);
             }

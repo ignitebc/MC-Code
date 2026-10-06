@@ -48,7 +48,7 @@ public abstract class MonsterEquipmentGunMixin {
         if (!stack.isEmpty()) cir.setReturnValue(stack);
     }
 
-    /** 몬스터 레벨 계산에서 총기는 근접 무기 고정 점수 대신 총기 등급 점수를 쓴다. */
+    /** 몬스터 레벨 계산에서 근접 무기는 0점으로 빠지고, 총기는 총기 등급 점수(F=1 ~ S=7)를 더한다. */
     @Inject(method = "weaponScore", at = @At("HEAD"), cancellable = true, remap = false)
     private static void tacz$scoreGun(ItemStack weapon, CallbackInfoReturnable<Integer> cir) {
         IGun iGun = IGun.getIGunOrNull(weapon);

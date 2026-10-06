@@ -1,5 +1,7 @@
 package com.mcserver.serverutilities.monster;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
@@ -14,34 +16,51 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class MonsterEquipmentRules {
     /** 방어구와 무기 각각의 지급 확률(%). 두 추첨은 서로 영향을 주지 않는다. */
     private static final int EQUIPMENT_CHANCE_PERCENT = 30;
     /** 네더에서 생성된 성체 피글린·피글린 야수가 총기를 드는 확률(%). 방어구 추첨과 서로 영향을 주지 않는다. */
     private static final int NETHER_GUN_CHANCE_PERCENT = 20;
+    /**
+     * 방어구 세트 추첨의 전체 몫(만분율). 세트마다 같은 몫을 나누고, 나누어떨어지지 않아 남는 몫은
+     * 가장 낮은 세트에 준다. 11세트면 각 909(9.09%)이고 가죽만 910(9.10%)이다.
+     */
+    private static final int ARMOR_ROLL_TOTAL = 10_000;
 
     private static final EquipmentSlot[] ARMOR_SLOTS = {
             EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
     };
+    /** 부위별 아이템 ID 뒷부분. 순서는 {@link #ARMOR_SLOTS}와 같다. */
+    private static final List<String> ARMOR_PIECE_SUFFIXES = List.of("_helmet", "_chestplate", "_leggings", "_boots");
+    private static final int CHEST_PIECE_INDEX = 1;
+    private static final String MINECRAFT = "minecraft";
+    private static final String ADVANCED_NETHERITE = "advancednetherite";
     /**
-     * 지급할 방어구 세트와 레벨 계산용 등급 점수(F=1 ~ S=7).
+     * 지급할 방어구 세트와 레벨 계산용 등급 점수(F=1 ~ S+=11). 점수가 낮은 세트부터 둔다.
      * <p>
-     * 4부위 방어도 합이 낮은 순서로 매긴다. 가죽 7, 구리 10, 금 11, 사슬 12, 철 15, 다이아몬드 20,
-     * 네더라이트 20이며, 방어도 합이 같은 다이아몬드와 네더라이트는 부위당 방어 강도(2, 3)로 나눈다.
-     * 몬스터 방어구에는 장비 티어를 붙이지 않으므로 원래 수치 그대로다. 세트는 모두 같은 확률로 뽑는다.
+     * 4부위 방어도 합이 낮은 순서로 매긴다. 가죽 7(F), 구리 10(E), 금 11(D), 사슬 12(C), 철 15(C+),
+     * 다이아몬드 20(B), 네더라이트 20(B+), 잿빛 24(A), 태양빛 28(A+), 영혼빛 32(S), 서리빛 36(S+)이다.
+     * 방어도 합이 같은 다이아몬드와 네더라이트는 부위당 방어 강도(2, 3)로 나눈다.
+     * 몬스터 방어구에는 장비 티어를 붙이지 않으므로 원래 수치 그대로다.
+     * <p>
+     * Advanced Netherite 방어구는 컴파일 의존 없이 아이템 ID로 찾는다. 모드가 없으면 해당 세트는 추첨에서 빠진다.
      */
     private static final List<ArmorSet> ARMOR_SETS = List.of(
-            new ArmorSet(1, Items.LEATHER_HELMET, Items.LEATHER_CHESTPLATE, Items.LEATHER_LEGGINGS, Items.LEATHER_BOOTS),
-            new ArmorSet(2, Items.COPPER_HELMET, Items.COPPER_CHESTPLATE, Items.COPPER_LEGGINGS, Items.COPPER_BOOTS),
-            new ArmorSet(3, Items.GOLDEN_HELMET, Items.GOLDEN_CHESTPLATE, Items.GOLDEN_LEGGINGS, Items.GOLDEN_BOOTS),
-            new ArmorSet(4, Items.CHAINMAIL_HELMET, Items.CHAINMAIL_CHESTPLATE, Items.CHAINMAIL_LEGGINGS,
-                    Items.CHAINMAIL_BOOTS),
-            new ArmorSet(5, Items.IRON_HELMET, Items.IRON_CHESTPLATE, Items.IRON_LEGGINGS, Items.IRON_BOOTS),
-            new ArmorSet(6, Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_LEGGINGS, Items.DIAMOND_BOOTS),
-            new ArmorSet(7, Items.NETHERITE_HELMET, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_LEGGINGS,
-                    Items.NETHERITE_BOOTS));
+            armorSet(1, MINECRAFT, "leather"),
+            armorSet(2, MINECRAFT, "copper"),
+            armorSet(3, MINECRAFT, "golden"),
+            armorSet(4, MINECRAFT, "chainmail"),
+            armorSet(5, MINECRAFT, "iron"),
+            armorSet(6, MINECRAFT, "diamond"),
+            armorSet(7, MINECRAFT, "netherite"),
+            armorSet(8, ADVANCED_NETHERITE, "ash"),
+            armorSet(9, ADVANCED_NETHERITE, "sunlight"),
+            armorSet(10, ADVANCED_NETHERITE, "soul"),
+            armorSet(11, ADVANCED_NETHERITE, "frost"));
     private static final List<Item> MELEE_WEAPONS = List.of(
             Items.COPPER_SWORD, Items.IRON_SWORD, Items.GOLDEN_SWORD, Items.DIAMOND_SWORD, Items.NETHERITE_SWORD,
             Items.COPPER_AXE, Items.IRON_AXE, Items.GOLDEN_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE,
@@ -80,8 +99,7 @@ public final class MonsterEquipmentRules {
         boolean weaponEquipped = !weapon.isEmpty();
 
         if (armorEquipped) {
-            ArmorSet armor = ARMOR_SETS.get(mob.getRandom().nextInt(ARMOR_SETS.size()));
-            List<Item> pieces = armor.pieces();
+            List<Item> pieces = rollArmorPieces(mob);
             for (int i = 0; i < ARMOR_SLOTS.length; i++) {
                 mob.setItemSlot(ARMOR_SLOTS[i], new ItemStack(pieces.get(i)));
             }
@@ -110,15 +128,20 @@ public final class MonsterEquipmentRules {
     /**
      * 추첨으로 지급한 장비로 정한 머리 위 레벨. 추첨 대상이 아닌 몬스터는 레벨을 표시하지 않는다.
      * <p>
-     * 원래 무기를 쓰는 몬스터(피글린 계열, 네더의 스켈레톤 계열)는 방어구 등급을 그대로 레벨로 사용한다.
-     * 피글린이 총기를 받았으면 방어구와 총기의 평균이 방어구 등급보다 높을 때만 그 값을 쓴다. 같은 방어구를
-     * 입은 피글린보다 총을 든 피글린의 레벨이 낮아지지 않게 하기 위해서다.
-     * 그 외 몬스터가 원래 가진 장비(스켈레톤의 활, 드라운드의 삼지창 등)는 등급이 없으므로 지급받지 못한 것과
-     * 같게 본다. 추첨이 끝난 뒤에는 장비가 바뀌지 않으므로 한 번만 계산한다.
+     * 추첨이 끝난 뒤에는 장비가 바뀌지 않으므로 생성할 때 한 번 계산한다.
      */
     public static int calculateLevel(Mob mob, boolean armorEquipped, boolean weaponEquipped) {
         if (!rollsArmor(mob)) return MonsterLevel.NONE;
+        return equipmentLevel(mob, armorEquipped, weaponEquipped);
+    }
 
+    /**
+     * 지급한 방어구 점수와 총기 점수를 더한 레벨. 합이 0이면 LV1이다.
+     * <p>
+     * 근접 무기와 원래 가진 장비(스켈레톤의 활, 드라운드의 삼지창, 피글린의 금 검·석궁 등)는 0점이다.
+     * 현재 차원을 보지 않으므로 저장된 개체를 다시 계산할 때도 쓴다.
+     */
+    public static int equipmentLevel(Mob mob, boolean armorEquipped, boolean weaponEquipped) {
         int armorScore = MonsterLevel.MISSING_SCORE;
         if (armorEquipped) {
             armorScore = armorScore(mob.getItemBySlot(EquipmentSlot.CHEST));
@@ -127,11 +150,7 @@ public final class MonsterEquipmentRules {
         if (weaponEquipped) {
             weaponScore = weaponScore(mob.getItemBySlot(EquipmentSlot.MAINHAND));
         }
-        int averageLevel = MonsterLevel.of(armorScore, weaponScore);
-        if (!keepsNativeWeapon(mob)) return averageLevel;
-
-        if (!weaponEquipped) return armorScore;
-        return Math.max(armorScore, averageLevel);
+        return MonsterLevel.of(armorScore, weaponScore);
     }
 
     /** 방어구와 무기를 모두 추첨하는 몬스터인지. 오버월드의 좀비·스켈레톤 계열이 대상이다. */
@@ -185,6 +204,30 @@ public final class MonsterEquipmentRules {
     }
 
     /**
+     * 지급할 방어구 4부위. 등록된 세트끼리 만분율 몫을 똑같이 나누고, 남는 몫은 가장 낮은 세트에 준다.
+     */
+    private static List<Item> rollArmorPieces(Mob mob) {
+        List<List<Item>> availableSets = availableArmorSets();
+        int setShare = ARMOR_ROLL_TOTAL / availableSets.size();
+        int lowestSetShare = ARMOR_ROLL_TOTAL - setShare * (availableSets.size() - 1);
+
+        int roll = mob.getRandom().nextInt(ARMOR_ROLL_TOTAL);
+        if (roll < lowestSetShare) return availableSets.getFirst();
+
+        int setIndex = 1 + (roll - lowestSetShare) / setShare;
+        return availableSets.get(setIndex);
+    }
+
+    /** 네 부위가 모두 등록된 세트의 아이템. 점수가 낮은 순서이며 바닐라 세트가 있으므로 비지 않는다. */
+    private static List<List<Item>> availableArmorSets() {
+        List<List<Item>> availableSets = new ArrayList<>(ARMOR_SETS.size());
+        for (ArmorSet set : ARMOR_SETS) {
+            set.resolvePieces().ifPresent(availableSets::add);
+        }
+        return availableSets;
+    }
+
+    /**
      * 지급할 무기. 지급하지 않으면 빈 아이템이다.
      * <p>
      * 오버월드 좀비·스켈레톤 계열은 근접 무기와 총기 중에서, 네더 피글린 계열은 총기 중에서만 고른다.
@@ -213,15 +256,16 @@ public final class MonsterEquipmentRules {
 
     /** 지급한 방어구 세트의 등급 점수. 흉갑으로 세트를 찾는다. */
     private static int armorScore(ItemStack chest) {
+        Identifier chestId = BuiltInRegistries.ITEM.getKey(chest.getItem());
         for (ArmorSet set : ARMOR_SETS) {
-            if (chest.is(set.chest())) return set.score();
+            if (set.chestId().equals(chestId)) return set.score();
         }
         return MonsterLevel.MISSING_SCORE;
     }
 
-    // 여기서 다루는 무기는 근접 무기 후보뿐이다. TACZ의 선택적 Mixin이 총기일 때 총기 등급 점수로 바꾼다.
+    // 근접 무기는 레벨 계산에서 제외한다. TACZ의 선택적 Mixin이 총기일 때 총기 등급 점수(F=1 ~ S=7)로 바꾼다.
     private static int weaponScore(ItemStack weapon) {
-        return MonsterLevel.MELEE_WEAPON_SCORE;
+        return MonsterLevel.MISSING_SCORE;
     }
 
     public static void preventEquipmentDrops(Mob mob, boolean armorEquipped, boolean weaponEquipped) {
@@ -252,10 +296,29 @@ public final class MonsterEquipmentRules {
         return false;
     }
 
-    /** 방어구 한 벌. 부위 순서는 {@link #ARMOR_SLOTS}와 같다. */
-    private record ArmorSet(int score, Item head, Item chest, Item legs, Item feet) {
-        List<Item> pieces() {
-            return List.of(this.head, this.chest, this.legs, this.feet);
+    private static ArmorSet armorSet(int score, String namespace, String material) {
+        List<Identifier> pieceIds = new ArrayList<>(ARMOR_PIECE_SUFFIXES.size());
+        for (String suffix : ARMOR_PIECE_SUFFIXES) {
+            pieceIds.add(Identifier.fromNamespaceAndPath(namespace, material + suffix));
+        }
+        return new ArmorSet(score, List.copyOf(pieceIds));
+    }
+
+    /** 방어구 한 벌. 다른 모드의 방어구도 담도록 아이템 ID로 둔다. 부위 순서는 {@link #ARMOR_SLOTS}와 같다. */
+    private record ArmorSet(int score, List<Identifier> pieceIds) {
+        Identifier chestId() {
+            return this.pieceIds.get(CHEST_PIECE_INDEX);
+        }
+
+        /** 네 부위가 모두 등록되어 있으면 아이템 목록을, 하나라도 없으면 빈 값을 돌려준다. */
+        Optional<List<Item>> resolvePieces() {
+            List<Item> pieces = new ArrayList<>(this.pieceIds.size());
+            for (Identifier pieceId : this.pieceIds) {
+                Optional<Item> piece = BuiltInRegistries.ITEM.getOptional(pieceId);
+                if (piece.isEmpty()) return Optional.empty();
+                pieces.add(piece.get());
+            }
+            return Optional.of(pieces);
         }
     }
 }

@@ -11,6 +11,7 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.storage.ValueInput;
@@ -90,14 +91,27 @@ public abstract class MonsterEquipmentMixin implements MonsterEquipmentAccess {
         serverutilities$monsterLevel = serverutilities$loadLevel(input);
     }
 
-    /** 저장된 레벨. 레벨 기능 이전에 추첨을 마친 개체는 지급 기록과 현재 장비로 다시 계산한다. */
+    /**
+     * 불러온 개체의 레벨.
+     * <p>
+     * 크리퍼 레벨은 추첨값이라 장비로 다시 만들 수 없으므로 저장값을 쓴다. 장비 몬스터는 계산 기준이 바뀌어도
+     * 새 기준을 따르도록 저장값 대신 지급 기록과 현재 장비로 다시 계산한다. 생성 때 레벨 대상이었는지는 저장된
+     * 레벨로 판단하므로 차원을 옮긴 개체도 레벨을 유지한다. 레벨 기능 이전에 저장된 개체는 현재 차원으로 판단한다.
+     */
     @Unique
     private int serverutilities$loadLevel(ValueInput input) {
+        Mob mob = (Mob) (Object) this;
         int savedLevel = input.getIntOr("ServerUtilitiesMonsterLevel", SERVERUTILITIES_LEVEL_NOT_SAVED);
-        if (savedLevel != SERVERUTILITIES_LEVEL_NOT_SAVED) return savedLevel;
+        if (mob instanceof Creeper) {
+            if (savedLevel == SERVERUTILITIES_LEVEL_NOT_SAVED) return MonsterLevel.NONE;
+            return savedLevel;
+        }
         if (!serverutilities$equipmentRolled) return MonsterLevel.NONE;
-        return MonsterEquipmentRules.calculateLevel((Mob) (Object) this,
-                serverutilities$randomArmor, serverutilities$randomWeapon);
+        if (savedLevel == SERVERUTILITIES_LEVEL_NOT_SAVED) {
+            return MonsterEquipmentRules.calculateLevel(mob, serverutilities$randomArmor, serverutilities$randomWeapon);
+        }
+        if (savedLevel == MonsterLevel.NONE) return MonsterLevel.NONE;
+        return MonsterEquipmentRules.equipmentLevel(mob, serverutilities$randomArmor, serverutilities$randomWeapon);
     }
 
     /** 추첨으로 지급한 칸은 주운 아이템으로 바꾸지 않는다. 줍기를 막지 않는 피글린이 대상이다. */

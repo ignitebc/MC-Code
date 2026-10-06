@@ -2,10 +2,12 @@ package com.mcserver.serverutilities.mixin;
 
 import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
 import com.mcserver.serverutilities.monster.MonsterExperience;
+import com.mcserver.serverutilities.monster.MonsterLevel;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -55,12 +57,14 @@ public abstract class MonsterExperienceMixin {
         return hurtByPlayerRecently ? 1 : lastHurtByPlayerMemoryTime;
     }
 
-    /** 떨어뜨리는 구슬에 몬스터 레벨 배율을 곱한다. 레벨이 없는 몹은 바닐라 그대로다. */
+    /** 떨어뜨리는 구슬에 몬스터 위험 단계 배율을 곱한다. 레벨이 없는 몹은 바닐라 그대로다. */
     @ModifyArg(method = "dropExperience", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V"),
             index = 2)
     private int serverutilities$scaleByMonsterLevel(int amount) {
         if (!((Object) this instanceof MonsterEquipmentAccess monster)) return amount;
-        return MonsterExperience.scale(amount, monster.serverutilities$monsterLevel());
+        boolean creeper = (Object) this instanceof Creeper;
+        int stage = MonsterLevel.stage(monster.serverutilities$monsterLevel(), creeper);
+        return MonsterExperience.scale(amount, stage);
     }
 }
