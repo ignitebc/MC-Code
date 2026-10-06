@@ -10,6 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -49,7 +50,10 @@ public final class EquipmentTierRules {
     private static final int SCAN_INTERVAL_TICKS = 20;
 
     private static final Identifier ATTACK_DAMAGE_MODIFIER_ID = modifierId("tier_attack_damage");
-    private static final Identifier ARMOR_MODIFIER_ID = modifierId("tier_armor");
+    // 부위마다 식별자가 달라야 한다. 같으면 장비를 입을 때마다 서로 덮어써 마지막 한 부위만 남는다.
+    private static final String ARMOR_MODIFIER_PREFIX = "tier_armor.";
+    /** 네 부위가 같이 쓰던 예전 방어도 수정자. 다시 적용할 때 지운다. */
+    private static final Identifier LEGACY_ARMOR_MODIFIER_ID = modifierId("tier_armor");
 
     private EquipmentTierRules() { }
 
@@ -90,9 +94,20 @@ public final class EquipmentTierRules {
             return;
         }
 
-        if (!itemId(stack).equals(readTierItemId(stack))) {
+        boolean upgraded = !itemId(stack).equals(readTierItemId(stack));
+        if (upgraded || hasLegacyArmorModifier(stack)) {
             setTier(stack, tier);
         }
+    }
+
+    /** 네 부위가 같이 쓰던 예전 방어도 수정자가 남아 있는지. 있으면 부위별 식별자로 다시 적용한다. */
+    private static boolean hasLegacyArmorModifier(ItemStack stack) {
+        ItemAttributeModifiers modifiers =
+                stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+        for (ItemAttributeModifiers.Entry entry : modifiers.modifiers()) {
+            if (LEGACY_ARMOR_MODIFIER_ID.equals(entry.modifier().id())) return true;
+        }
+        return false;
     }
 
     private static String itemId(ItemStack stack) {
@@ -142,8 +157,20 @@ public final class EquipmentTierRules {
 
     /** 사람이 입는 방어구 4부위. 늑대 갑옷 같은 몸통 방어구는 여기에 들지 않는다. */
     static boolean isHumanoidArmor(ItemStack stack) {
-        return stack.is(ItemTags.HEAD_ARMOR) || stack.is(ItemTags.CHEST_ARMOR)
-                || stack.is(ItemTags.LEG_ARMOR) || stack.is(ItemTags.FOOT_ARMOR);
+        return humanoidArmorSlot(stack) != null;
+    }
+
+    /**
+     * 사람이 입는 방어구가 들어가는 부위.
+     *
+     * @return 방어구 부위. 사람이 입는 방어구가 아니면 null
+     */
+    private static EquipmentSlotGroup humanoidArmorSlot(ItemStack stack) {
+        if (stack.is(ItemTags.HEAD_ARMOR)) return EquipmentSlotGroup.HEAD;
+        if (stack.is(ItemTags.CHEST_ARMOR)) return EquipmentSlotGroup.CHEST;
+        if (stack.is(ItemTags.LEG_ARMOR)) return EquipmentSlotGroup.LEGS;
+        if (stack.is(ItemTags.FOOT_ARMOR)) return EquipmentSlotGroup.FEET;
+        return null;
     }
 
     private static void applyTier(ItemStack stack, EquipmentTier tier) {
@@ -207,7 +234,7 @@ public final class EquipmentTierRules {
     private static void applyAttributes(ItemStack stack, DataComponentMap defaults, double multiplier,
                                         boolean diggingTool) {
         boolean scaleAttackDamage = !diggingTool;
-        boolean scaleArmor = isHumanoidArmor(stack);
+        EquipmentSlotGroup armorSlot = humanoidArmorSlot(stack);
 
         ItemAttributeModifiers baseModifiers =
                 defaults.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
@@ -236,8 +263,8 @@ public final class EquipmentTierRules {
             if (scaleAttackDamage && Attributes.ATTACK_DAMAGE.equals(entry.attribute())) {
                 modifierId = ATTACK_DAMAGE_MODIFIER_ID;
                 baseAmount += PLAYER_BASE_ATTACK_DAMAGE;
-            } else if (scaleArmor && Attributes.ARMOR.equals(entry.attribute())) {
-                modifierId = ARMOR_MODIFIER_ID;
+            } else if (armorSlot != null && Attributes.ARMOR.equals(entry.attribute())) {
+                modifierId = modifierId(ARMOR_MODIFIER_PREFIX + armorSlot.getSerializedName());
             }
             if (modifierId == null) continue;
 
@@ -272,7 +299,10 @@ public final class EquipmentTierRules {
     }
 
     private static boolean isTierModifier(Identifier modifierId) {
-        return ATTACK_DAMAGE_MODIFIER_ID.equals(modifierId) || ARMOR_MODIFIER_ID.equals(modifierId);
+        if (ATTACK_DAMAGE_MODIFIER_ID.equals(modifierId)) return true;
+        if (LEGACY_ARMOR_MODIFIER_ID.equals(modifierId)) return true;
+        boolean ownNamespace = "serverutilities".equals(modifierId.getNamespace());
+        return ownNamespace && modifierId.getPath().startsWith(ARMOR_MODIFIER_PREFIX);
     }
 
     private static Identifier modifierId(String path) {
