@@ -5,8 +5,10 @@ import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ShootResult;
 import com.tacz.guns.api.item.IGun;
+import com.tacz.guns.config.common.AmmoConfig;
 import com.tacz.guns.entity.ai.FriendlyFireLanes;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
+import com.tacz.guns.resource.pojo.data.gun.BulletData;
 import com.tacz.guns.resource.pojo.data.gun.ChargeType;
 import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
@@ -145,9 +147,10 @@ public final class MonsterGunController {
         if (operator.getSynShootCoolDown() > 0 || operator.getSynDrawCoolDown() > 0 || operator.getSynIsBolting()) return;
         double dx = target.getX() - this.mob.getX();
         double dz = target.getZ() - this.mob.getZ();
-        double dy = target.getY(0.5) - this.mob.getEyeY();
+        double horizontalDistance = Math.sqrt(dx * dx + dz * dz);
+        double dy = target.getY(0.5) - this.mob.getEyeY() + gravityDrop(data, horizontalDistance);
         float yaw = (float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0f;
-        float pitch = (float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz)));
+        float pitch = (float) -Math.toDegrees(Math.atan2(dy, horizontalDistance));
         if (!isAimedAt(yaw, pitch)) return;
         // 사선에 다른 몬스터가 있으면 쏘지 않는다. 오발은 피해를 주지 않지만 탄이 아군에 막혀 플레이어에게 닿지 못한다.
         if (FriendlyFireLanes.isAllyInLane(this.mob, target)) return;
@@ -172,6 +175,38 @@ public final class MonsterGunController {
         }
         return Mth.degreesDifferenceAbs(this.mob.getYHeadRot(), targetYaw) <= MAX_AIM_YAW_ERROR
                 && Mth.degreesDifferenceAbs(this.mob.getXRot(), targetPitch) <= MAX_AIM_PITCH_ERROR;
+    }
+
+    /**
+     * 탄이 대상까지 날아가는 동안 중력으로 떨어지는 높이(칸). 그만큼 위를 겨눈다.
+     * <p>
+     * 탄은 매 틱 속도만큼 날아간 뒤 저항만큼 느려지고 중력만큼 아래로 빨라진다({@code EntityKineticBullet#tick}).
+     * 저항이 큰 유탄(M320 0.05)은 저항을 빼고 계산하면 떨어지는 높이를 절반 가까이 적게 잡으므로 같은 식으로 계산한다.
+     * 빠른 일반 탄은 거의 0이고, 느리고 무거운 로켓·유탄에서 차이가 난다.
+     */
+    private static double gravityDrop(GunData data, double horizontalDistance) {
+        BulletData bulletData = data.getBulletData();
+        double gravity = bulletData.getGravity();
+        double blocksPerTick = bulletData.getSpeed() / 20.0 * AmmoConfig.GLOBAL_BULLET_SPEED_MODIFIER.get();
+        if (gravity <= 0 || blocksPerTick <= 0) {
+            return 0;
+        }
+        double friction = Mth.clamp(bulletData.getFriction(), 0.0, 0.99);
+        if (friction <= 0) {
+            double flightTicks = horizontalDistance / blocksPerTick;
+            return 0.5 * gravity * flightTicks * flightTicks;
+        }
+        // 저항이 있으면 n틱 동안 나아가는 거리는 속도 × (1 - 남는 비율^n) / 저항이다.
+        double travelledShare = horizontalDistance * friction / blocksPerTick;
+        if (travelledShare >= 1) {
+            // 저항 때문에 그 거리까지 날아가지 못한다. 위로 겨눠도 닿지 않으므로 보정하지 않는다.
+            return 0;
+        }
+        double keepRatio = 1 - friction;
+        double flightTicks = Math.log(1 - travelledShare) / Math.log(keepRatio);
+        double drop = gravity / friction * (flightTicks - (1 - Math.pow(keepRatio, flightTicks)) / friction);
+        // 1틱도 안 걸리는 짧은 거리에서는 연속식이 아주 작은 음수가 될 수 있다.
+        return Math.max(0, drop);
     }
 
     /** 탄창과 약실에 들어 있는 탄 수. 오픈볼트 총기는 약실에 탄을 따로 두지 않는다. */
