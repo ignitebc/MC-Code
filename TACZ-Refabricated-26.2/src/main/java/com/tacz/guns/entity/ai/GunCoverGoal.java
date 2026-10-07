@@ -17,28 +17,37 @@ import java.util.EnumSet;
 /**
  * 원거리 무기를 든 플레이어를 상대할 때 총을 든 몬스터가 엄폐물 뒤에서 싸우게 한다.
  * <p>
- * 사격은 {@link MonsterGunController}가 맡고 이 Goal은 이동과 시선만 정한다. 엄폐물이 있으면 숨어서 장전하고
- * 옆으로 잠깐 나와 쏜 뒤 다시 숨는다. 엄폐물이 없으면 돌진하지 않고 사거리 안에서 멈춰 쏜다.
+ * 사격은 {@link MonsterGunController}가 맡고 이 Goal은 이동과 시선만 정한다. 엄폐물이 있으면 약 2초 숨어서 장전하고
+ * 옆으로 살짝 몸을 내밀어 쏜 뒤 다시 숨는다. 한 번 숨은 뒤로는 숨은 자리가 드러나도 달아나지 않고 그 자리에서 맞서 쏜다.
+ * 엄폐물이 없거나 맞서 쏘는 동안에는 돌진하지 않고 사거리 안에서 좌우로 옆걸음질하며 쏜다.
  * 플레이어가 원거리 무기를 내려놓거나 가까이 붙거나 탄약이 떨어지면 기존 근접 추격으로 돌아간다.
  */
 public class GunCoverGoal extends Goal {
     /** 대상이 이 거리 안으로 붙으면 엄폐를 풀고 근접 공격으로 돌아간다. */
     private static final double MELEE_SWITCH_DISTANCE = 4.0;
-    /** 엄폐물이 없을 때 사거리의 이 비율 안에서 대상이 보이면 다가가지 않고 멈춰 쏜다. */
+    /** 엄폐 없이 싸울 때 사거리의 이 비율 안에서 대상이 보이면 다가가지 않고 그 자리에서 쏜다. */
     private static final double HOLD_RANGE_RATIO = 0.8;
-    /** 한 번 나왔을 때 대상을 보며 쏘는 시간(틱). 신중한 성향이라 짧게 둔다. */
+    /** 한 번 몸을 내밀었을 때 대상을 보며 쏘는 시간(틱). */
     private static final int PEEK_FIRE_TICKS = 30;
     /** 숨어 있는 동안 탄창이 이 비율보다 적게 남았으면 미리 재장전한다. */
     private static final float TACTICAL_RELOAD_RATIO = 0.5f;
-    /** 엄폐물 없이 다가갈 때 경로를 다시 계산하는 간격(틱). */
+    /** 엄폐 없이 다가갈 때 경로를 다시 계산하는 간격(틱). */
     private static final int REPATH_INTERVAL = 10;
     private static final double MOVE_SPEED = 1.0;
+    /** 엄폐 없이 쏠 때 옆걸음 속도. 바닐라 스켈레톤 활 공격과 같은 값이다. */
+    private static final float STRAFE_SPEED = 0.5f;
+    /** 옆걸음 방향을 바꾸는 간격(틱). 이 범위에서 무작위로 정해 움직임을 읽기 어렵게 한다. */
+    private static final int MIN_STRAFE_TICKS = 20;
+    private static final int MAX_STRAFE_TICKS = 40;
 
     private final PathfinderMob mob;
     private final CoverTactics tactics;
     private final RangedThreat threat = new RangedThreat();
     private int peekFireTicks;
     private int repathCooldown;
+    private boolean strafing;
+    private boolean strafeRight;
+    private int strafeTicks;
 
     public GunCoverGoal(PathfinderMob mob) {
         this.mob = mob;
@@ -62,12 +71,14 @@ public class GunCoverGoal extends Goal {
         this.tactics.reset();
         this.peekFireTicks = 0;
         this.repathCooldown = 0;
+        this.strafeTicks = 0;
     }
 
     @Override
     public void stop() {
         this.mob.setAggressive(false);
         this.mob.getNavigation().stop();
+        stopStrafing();
         this.tactics.reset();
     }
 
@@ -90,6 +101,7 @@ public class GunCoverGoal extends Goal {
         boolean reloading = IGunOperator.fromLivingEntity(this.mob).getDataHolder().reloadStateType.isReloading();
 
         if (this.tactics.hasSpot() || this.tactics.trySearch(target, range)) {
+            stopStrafing();
             CoverTactics.Phase phase = this.tactics.phase();
             if (phase != CoverTactics.Phase.PEEK) {
                 this.peekFireTicks = 0;
@@ -107,22 +119,53 @@ public class GunCoverGoal extends Goal {
                 return;
             }
         }
-        holdRange(target, range);
+        fightInOpen(target, range);
     }
 
-    /** 엄폐물이 없을 때. 사거리 안에서 대상이 보이면 멈춰 쏘고, 아니면 다가간다. */
-    private void holdRange(LivingEntity target, double range) {
+    /**
+     * 엄폐 없이 싸운다. 엄폐물이 없거나, 숨은 자리가 드러나 그 자리에서 맞서 쏘는 중일 때다.
+     * 사거리 안에서 대상이 보이면 다가가지 않고 좌우로 옆걸음질하며 쏘고, 보이지 않으면 다가간다.
+     */
+    private void fightInOpen(LivingEntity target, double range) {
         this.mob.getLookControl().setLookAt(target, 30.0f, 30.0f);
         double holdDistance = range * HOLD_RANGE_RATIO;
-        if (this.mob.getSensing().hasLineOfSight(target) && this.mob.distanceToSqr(target) <= holdDistance * holdDistance) {
+        boolean inHoldRange = this.mob.distanceToSqr(target) <= holdDistance * holdDistance;
+        if (inHoldRange && this.mob.getSensing().hasLineOfSight(target)) {
             this.mob.getNavigation().stop();
             this.repathCooldown = 0;
+            strafe(target);
             return;
         }
+        stopStrafing();
         if (--this.repathCooldown <= 0) {
             this.repathCooldown = REPATH_INTERVAL;
             this.mob.getNavigation().moveTo(target, MOVE_SPEED);
         }
+    }
+
+    /** 좌우로 옆걸음질한다. 옆걸음은 몸이 향한 방향 기준이므로 몸을 대상 쪽으로 돌려 둔다. */
+    private void strafe(LivingEntity target) {
+        if (--this.strafeTicks <= 0) {
+            this.strafeTicks = MIN_STRAFE_TICKS + this.mob.getRandom().nextInt(MAX_STRAFE_TICKS - MIN_STRAFE_TICKS + 1);
+            this.strafeRight = !this.strafeRight;
+        }
+        this.mob.lookAt(target, 30.0f, 30.0f);
+        float sideways = STRAFE_SPEED;
+        if (!this.strafeRight) {
+            sideways = -STRAFE_SPEED;
+        }
+        this.mob.getMoveControl().strafe(0.0f, sideways);
+        this.strafing = true;
+    }
+
+    /** 옆걸음을 멈춘다. 이동 제어는 옆걸음 입력을 스스로 지우지 않아 그대로 두면 옆으로 계속 미끄러진다. */
+    private void stopStrafing() {
+        if (!this.strafing) {
+            return;
+        }
+        this.strafing = false;
+        this.mob.setXxa(0.0f);
+        this.mob.getMoveControl().setWait();
     }
 
     private boolean isEligible() {

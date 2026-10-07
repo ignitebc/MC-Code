@@ -12,9 +12,10 @@ import net.minecraft.world.item.Items;
 import java.util.EnumSet;
 
 /**
- * 활을 든 몬스터가 원거리 무기를 든 플레이어를 상대할 때, 엄폐물 뒤에서 활시위를 당겼다가 옆으로 나와 쏘고 다시 숨게 한다.
+ * 활을 든 몬스터가 원거리 무기를 든 플레이어를 상대할 때, 엄폐물 뒤에서 활시위를 당겼다가 옆으로 살짝 몸을 내밀어 쏘고 다시 숨게 한다.
  * <p>
- * 바닐라 활 공격 Goal을 감싸서 엄폐할 상황이 아니면 바닐라 동작을 그대로 쓴다. 엄폐 Goal을 따로 두면
+ * 바닐라 활 공격 Goal을 감싸서 엄폐할 상황이 아니면 바닐라 동작을 그대로 쓴다. 한 번 숨은 뒤 숨은 자리가 드러나면
+ * 달아나지 않고 바닐라 활 공격으로 맞서 쏜다. 당겨 둔 활시위가 있으면 보이는 즉시 쏜다. 엄폐 Goal을 따로 두면
  * 이동 권한을 뺏긴 바닐라 활 공격이 멈추면서 당기던 활시위를 놓고, 시야가 없을 때는 대상에게 걸어 나오므로
  * 한 Goal 안에서 처리한다.
  */
@@ -71,9 +72,13 @@ public class CoverBowAttackGoal<T extends Monster & RangedAttackMob> extends Goa
     public void tick() {
         LivingEntity target = this.mob.getTarget();
         if (target != null && shouldCover(target)) {
-            if ((this.tactics.hasSpot() || this.tactics.trySearch(target, BOW_RANGE))
-                    && this.tactics.tick(target, isFullyDrawn(), coverShot(target))) {
-                return;
+            boolean hasSpot = this.tactics.hasSpot() || this.tactics.trySearch(target, BOW_RANGE);
+            if (hasSpot) {
+                // 바닐라 활 공격이 남긴 옆걸음 입력을 지운다. 이동 제어는 이 입력을 스스로 지우지 않아 옆으로 미끄러진다.
+                this.mob.setXxa(0.0f);
+                if (this.tactics.tick(target, isFullyDrawn(), coverShot(target))) {
+                    return;
+                }
             }
         } else if (this.tactics.hasSpot()) {
             // 엄폐할 상황이 끝났다. 엄폐 칸을 잃은 경우와 달리 다음 탐색을 미루지 않는다.

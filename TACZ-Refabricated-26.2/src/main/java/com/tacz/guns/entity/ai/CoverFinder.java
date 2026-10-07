@@ -7,13 +7,16 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -42,8 +45,8 @@ public final class CoverFinder {
     private static final int PATH_CHECKS = 3;
     /** 대상에게 이보다 가까운 칸은 엄폐물로 쓰지 않는다. */
     private static final double MIN_THREAT_DISTANCE = 5.0;
-    /** 노출 칸은 엄폐 칸에서 좌우로 이만큼까지 찾는다. */
-    private static final int MAX_PEEK_OFFSET = 2;
+    /** 사격할 때 엄폐 칸 한가운데에서 옆으로 몸을 내미는 거리(칸). 덜 내미는 쪽부터 살핀다. */
+    private static final double[] PEEK_OFFSETS = {0.5, 0.75, 1.0};
     /** 서버 전체에서 한 틱에 허용하는 탐색 횟수. 몬스터 여럿이 한꺼번에 탐색해도 부하가 몰리지 않게 한다. */
     private static final int MAX_SEARCHES_PER_TICK = 4;
 
@@ -67,25 +70,26 @@ public final class CoverFinder {
     }
 
     /**
-     * 대상의 탄을 막아 주고, 옆으로 나오면 대상을 쏠 수 있으며, 실제로 걸어갈 수 있는 엄폐 칸을 찾는다.
+     * 대상의 탄을 막아 주고, 옆으로 살짝 내밀면 대상을 쏠 수 있으며, 실제로 걸어갈 수 있는 엄폐 칸을 찾는다.
      *
-     * @param range 노출 칸에서 대상까지 허용하는 최대 거리. 무기의 사거리다.
+     * @param range 내민 위치에서 대상까지 허용하는 최대 거리. 무기의 사거리다.
      * @return 찾지 못하면 null
      */
     @Nullable
     public static CoverSpot find(PathfinderMob mob, LivingEntity threat, double range) {
-        Level level = mob.level();
         Vec3 threatEye = threat.getEyePosition();
         RandomSource random = mob.getRandom();
         BlockPos origin = mob.blockPosition();
         double rangeSqr = range * range;
+        LongSet taken = takenCells(mob, origin);
         LongSet visited = new LongOpenHashSet();
         List<Candidate> candidates = new ArrayList<>();
         for (int i = 0; i < SAMPLE_COUNT; i++) {
             int dx = random.nextInt(SEARCH_RADIUS * 2 + 1) - SEARCH_RADIUS;
             int dz = random.nextInt(SEARCH_RADIUS * 2 + 1) - SEARCH_RADIUS;
             BlockPos cover = findStandable(mob, origin.offset(dx, 0, dz), VERTICAL_RANGE);
-            if (cover == null || !visited.add(cover.asLong()) || !mob.isWithinHome(cover)) {
+            if (cover == null || !visited.add(cover.asLong()) || taken.contains(cover.asLong())
+                    || !mob.isWithinHome(cover)) {
                 continue;
             }
             double threatDistance = Vec3.atBottomCenterOf(cover).distanceTo(threat.position());
@@ -95,7 +99,7 @@ public final class CoverFinder {
             if (!isProtected(mob, cover, threatEye)) {
                 continue;
             }
-            BlockPos peek = findPeek(mob, cover, threatEye, rangeSqr);
+            Vec3 peek = findPeek(mob, cover, threatEye, rangeSqr);
             if (peek == null) {
                 continue;
             }
@@ -114,6 +118,26 @@ public final class CoverFinder {
             }
         }
         return null;
+    }
+
+    /**
+     * 다른 몬스터가 서 있거나 숨으려고 잡아 둔 칸.
+     * <p>
+     * 여럿이 한 칸으로 몰리면 겹쳐 선 몬스터가 칸 밖으로 밀려나 드러난다. 다른 몬스터도 자기 주변 탐색 반경
+     * 안에서 칸을 잡으므로, 그 칸까지 놓치지 않도록 탐색 반경의 두 배 안의 몬스터를 살핀다.
+     */
+    private static LongSet takenCells(PathfinderMob mob, BlockPos origin) {
+        int horizontal = SEARCH_RADIUS * 2 + 1;
+        int vertical = VERTICAL_RANGE * 2 + 1;
+        AABB area = new AABB(origin).inflate(horizontal, vertical, horizontal);
+        LongSet taken = new LongOpenHashSet();
+        for (Mob other : mob.level().getEntitiesOfClass(Mob.class, area, other -> other != mob && other.isAlive())) {
+            taken.add(other.blockPosition().asLong());
+            if (other instanceof CoverCombatant combatant && combatant.tacz$getCoverPos() != null) {
+                taken.add(combatant.tacz$getCoverPos().asLong());
+            }
+        }
+        return taken;
     }
 
     /**
@@ -153,22 +177,33 @@ public final class CoverFinder {
     }
 
     /**
-     * 엄폐 칸 좌우에서 대상이 보이는 칸을 찾는다. 가까운 칸부터 살핀다.
+     * 엄폐 칸 한가운데에서 좌우로 0.5~1칸만 몸을 내밀어 대상이 보이는 위치를 찾는다. 덜 내미는 위치부터 살핀다.
      * <p>
-     * 바닐라 시야 판정과 같은 블록 충돌 기준으로 본다. 몬스터 총기와 활은 이 시야가 트여야 쏜다.
+     * 옆 칸이 설 수 있는 칸일 때만 내민다. 1칸을 다 내밀면 옆 칸에 올라서고, 덜 내밀어도 몸 일부가 옆 칸 위에 걸치기 때문이다.
+     * 시야는 바닐라 시야 판정과 같은 블록 충돌 기준으로 본다. 몬스터 총기와 활은 이 시야가 트여야 쏜다.
+     *
+     * @return 내민 발 위치. 찾지 못하면 null
      */
     @Nullable
-    private static BlockPos findPeek(PathfinderMob mob, BlockPos cover, Vec3 threatEye, double rangeSqr) {
+    public static Vec3 findPeek(PathfinderMob mob, BlockPos cover, Vec3 threatEye, double rangeSqr) {
         Level level = mob.level();
-        Vec3 toThreat = new Vec3(threatEye.x - (cover.getX() + 0.5), 0, threatEye.z - (cover.getZ() + 0.5));
+        Vec3 center = Vec3.atBottomCenterOf(cover);
+        Vec3 toThreat = new Vec3(threatEye.x - center.x, 0, threatEye.z - center.z);
         Direction side = Direction.getApproximateNearest(-toThreat.z, 0, toThreat.x);
-        for (int offset = 1; offset <= MAX_PEEK_OFFSET; offset++) {
-            for (Direction direction : new Direction[]{side, side.getOpposite()}) {
-                BlockPos peek = findStandable(mob, cover.relative(direction, offset), 1);
-                if (peek == null) {
+        List<Direction> openSides = new ArrayList<>(2);
+        for (Direction direction : new Direction[]{side, side.getOpposite()}) {
+            if (isStandable(mob, cover.relative(direction))) {
+                openSides.add(direction);
+            }
+        }
+        EntityDimensions dimensions = mob.getDimensions(mob.getPose());
+        for (double offset : PEEK_OFFSETS) {
+            for (Direction direction : openSides) {
+                Vec3 peek = center.add(direction.getStepX() * offset, 0, direction.getStepZ() * offset);
+                if (!level.noCollision(mob, dimensions.makeBoundingBox(peek))) {
                     continue;
                 }
-                Vec3 eye = Vec3.atBottomCenterOf(peek).add(0, mob.getEyeHeight(), 0);
+                Vec3 eye = peek.add(0, mob.getEyeHeight(), 0);
                 if (eye.distanceToSqr(threatEye) > rangeSqr) {
                     continue;
                 }
@@ -207,6 +242,6 @@ public final class CoverFinder {
         return level.getBlockState(head).getCollisionShape(level, head).isEmpty();
     }
 
-    private record Candidate(BlockPos cover, BlockPos peek, double score) {
+    private record Candidate(BlockPos cover, Vec3 peek, double score) {
     }
 }
