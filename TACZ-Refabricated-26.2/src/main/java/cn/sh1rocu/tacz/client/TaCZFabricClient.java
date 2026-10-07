@@ -128,6 +128,8 @@ public class TaCZFabricClient implements ClientModInitializer {
         ItemTooltipCallback.EVENT.register((stack, tooltipContext, flag, lines) -> TooltipEvent.onTooltip(stack, flag, lines));
 
         InputEvent.MouseButton.Post.EVENT.register(AimKey::onAimPress);
+        InputEvent.MouseButton.Post.EVENT.register(ShootKey::onShootMousePress);
+        InputEvent.Key.EVENT.register(ShootKey::onShootKeyPress);
         ClientTickEvents.END_CLIENT_TICK.register(AimKey::cancelAim);
         ClientTickEvents.START_CLIENT_TICK.register(AimKey::onAimHoldingPreInput);
         ClientTickEvents.END_CLIENT_TICK.register(AimKey::onAimHoldingPreInput);
