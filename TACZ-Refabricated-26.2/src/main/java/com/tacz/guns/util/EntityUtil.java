@@ -5,6 +5,7 @@ import com.tacz.guns.entity.EntityKineticBullet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -33,6 +34,9 @@ public class EntityUtil {
             if (!entity.equals(owner)) {
                 // 射击无视自己的载具和该载具上的其他乘客
                 if (owner != null && entity.isPassengerOfSameVehicle(owner)) {
+                    continue;
+                }
+                if (isShootersPet(entity, owner)) {
                     continue;
                 }
                 EntityKineticBullet.EntityResult result = getHitResult(bulletEntity, entity, startVec, endVec);
@@ -64,6 +68,9 @@ public class EntityUtil {
                 if (owner != null && entity.equals(owner.getVehicle())) {
                     continue;
                 }
+                if (isShootersPet(entity, owner)) {
+                    continue;
+                }
                 EntityKineticBullet.EntityResult result = getHitResult(bulletEntity, entity, startVec, endVec);
                 if (result == null) {
                     continue;
@@ -74,6 +81,15 @@ public class EntityUtil {
             }
         }
         return hitEntities;
+    }
+
+    /**
+     * 쏜 사람이 기르는 펫인지. 이 탄은 펫을 그대로 통과한다.
+     * <p>
+     * 펫은 주인의 탄에 피해를 받지 않지만, 통과시키지 않으면 탄이 펫에서 멈춰 펫이 붙어 싸우는 몹을 맞힐 수 없다.
+     */
+    private static boolean isShootersPet(Entity entity, @Nullable Entity shooter) {
+        return shooter != null && entity instanceof OwnableEntity pet && pet.getOwner() == shooter;
     }
 
     @Nullable
