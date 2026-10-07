@@ -6,6 +6,7 @@ import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ShootResult;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.config.common.AmmoConfig;
+import com.tacz.guns.entity.ai.CoverCombatant;
 import com.tacz.guns.entity.ai.FriendlyFireLanes;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import com.tacz.guns.resource.pojo.data.gun.BulletData;
@@ -15,6 +16,7 @@ import com.tacz.guns.resource.pojo.data.gun.GunData;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
@@ -60,6 +62,8 @@ public final class MonsterGunController {
             Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "monster_gun_follow_range");
 
     private final Mob mob;
+    /** 반응 시간, 조준 오차, 점사 간격. 몬스터가 기계처럼 정확하게 쏘지 않게 한다. */
+    private final MonsterAimModel aimModel = new MonsterAimModel();
     private ItemStack drawnStack = ItemStack.EMPTY;
     private Identifier drawnId;
     private float chargeProgress;
@@ -129,6 +133,8 @@ public final class MonsterGunController {
         // 발사하는 틱에만 고개를 돌리면 몸이 따라오기 전에 탄이 먼저 나간다.
         // 쏠 수 있는 동안에는 재장전·쿨타임 중에도 계속 대상을 겨누게 한다.
         this.mob.getLookControl().setLookAt(target, AIM_TURN_SPEED, AIM_TURN_SPEED);
+        long gameTime = this.mob.level().getGameTime();
+        this.aimModel.observe(target, gameTime, this.mob.getRandom());
         // 몬스터는 탄약 아이템 없이 장전하지만, 장전 시간은 플레이어와 똑같이 기다린다.
         if (operator.getDataHolder().reloadStateType.isReloading()) {
             this.chargeProgress = 0;
@@ -152,12 +158,22 @@ public final class MonsterGunController {
         float yaw = (float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0f;
         float pitch = (float) -Math.toDegrees(Math.atan2(dy, horizontalDistance));
         if (!isAimedAt(yaw, pitch)) return;
+        // 발견 직후 반응 중이거나, 점사 사이에 멈췄거나, 단발 총을 다시 당길 때가 안 됐으면 기다린다.
+        if (!this.aimModel.canFire(gameTime)) return;
         // 사선에 다른 몬스터가 있으면 쏘지 않는다. 오발은 피해를 주지 않지만 탄이 아군에 막혀 플레이어에게 닿지 못한다.
         if (FriendlyFireLanes.isAllyInLane(this.mob, target)) return;
-        ShootResult result = operator.shoot(() -> pitch, () -> yaw,
+        boolean suppressed = this.mob instanceof CoverCombatant combatant && combatant.tacz$isSuppressed(gameTime);
+        double errorDegrees = this.aimModel.errorDegrees(this.mob, gameTime, suppressed);
+        RandomSource random = this.mob.getRandom();
+        float shotYaw = yaw + (float) (random.nextGaussian() * errorDegrees);
+        float shotPitch = Mth.clamp(pitch + (float) (random.nextGaussian() * errorDegrees), -90.0f, 90.0f);
+        ShootResult result = operator.shoot(() -> shotPitch, () -> shotYaw,
                 System.currentTimeMillis() - operator.getDataHolder().baseTimestamp, this.chargeProgress);
         if (result == ShootResult.NEED_BOLT) operator.bolt();
         if (result == ShootResult.NO_AMMO) operator.reload();
+        if (result == ShootResult.SUCCESS) {
+            this.aimModel.onShot(gun.getFireMode(stack), gameTime, random);
+        }
         if (result == ShootResult.SUCCESS && charge != null) {
             this.chargeProgress = charge.getChargeType() == ChargeType.DELAY ? 0
                     : Math.max(0, this.chargeProgress - charge.getDecreaseOnFire());
