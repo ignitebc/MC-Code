@@ -3,6 +3,7 @@ package com.daqem.jobsplus.integration.arc.condition.type;
 import com.daqem.arc.api.condition.ICondition;
 import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.jobsplus.JobsPlus;
+import com.daqem.jobsplus.integration.arc.condition.conditions.RandomChanceCondition;
 import com.daqem.jobsplus.integration.arc.condition.conditions.job.HasJobCondition;
 import com.daqem.jobsplus.integration.arc.condition.conditions.job.JobExperiencePercentageCondition;
 import com.daqem.jobsplus.integration.arc.condition.conditions.job.JobLevelCondition;
@@ -18,6 +19,8 @@ public interface JobsPlusConditionType<T extends ICondition> extends ConditionTy
     ConditionType<HasJobCondition> HAS_JOB = ConditionType.register(JobsPlus.getId("has_job"), new HasJobCondition.Serializer());
 
     ConditionType<HasPowerupActivatedCondition> HAS_POWERUP_ACTIVATED = ConditionType.register(JobsPlus.getId("has_powerup_activated"), new HasPowerupActivatedCondition.Serializer());
+
+    ConditionType<RandomChanceCondition> RANDOM_CHANCE = ConditionType.register(JobsPlus.getId("random_chance"), new RandomChanceCondition.Serializer());
 
     static void init()
     {

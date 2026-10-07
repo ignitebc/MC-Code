@@ -23,6 +23,10 @@
     {
       "type": "arc:entity_type",
       "entity_type": "minecraft:arrow"
+    },
+    {
+      "type": "jobsplus:random_chance",
+      "chance": 50
     }
   ]
 }

@@ -47,6 +47,10 @@
     {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:hunter/fire_arrows_x"
+    },
+    {
+      "type": "jobsplus:random_chance",
+      "chance": 20
     }
   ]
 }
