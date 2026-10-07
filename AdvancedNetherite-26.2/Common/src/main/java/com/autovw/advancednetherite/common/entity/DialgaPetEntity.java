@@ -33,14 +33,27 @@ public class DialgaPetEntity extends TamableAnimal
 {
     /** 주인과 이 거리(10칸)보다 멀어지면 곁으로 순간이동한다. */
     private static final double TELEPORT_DISTANCE_SQR = 10.0 * 10.0;
-    /** 추격 대상이 주인에게서 이 거리(20칸)보다 멀어지면 추격을 포기하고 주인에게 돌아간다. */
-    private static final double PURSUIT_RESET_DISTANCE_SQR = 20.0 * 20.0;
+    /**
+     * 추격 대상이 주인에게서 이 거리(56칸)보다 멀어지면 추격을 포기하고 주인에게 돌아간다.
+     * 사냥 범위(3청크, 48칸)보다 넉넉하게 두어, 범위 경계의 몹을 잡았다 놓았다 반복하지 않게 한다.
+     */
+    private static final double PURSUIT_RESET_DISTANCE = HuntNearbyMonstersGoal.HUNT_RADIUS + 8.0;
+    private static final double PURSUIT_RESET_DISTANCE_SQR = PURSUIT_RESET_DISTANCE * PURSUIT_RESET_DISTANCE;
+    /** 추격 대상을 이 시간(10초) 동안 한 대도 못 때리면 닿지 못하는 곳에 있는 것으로 보고 놓는다. */
+    private static final int PURSUIT_STALL_TICKS = 200;
+    /** 그렇게 놓은 대상은 이 시간(10초) 동안 사냥감으로 다시 고르지 않는다. */
+    private static final int IGNORE_TARGET_TICKS = 200;
 
     /**
-     * 주인을 때린 대상. 대상이 죽거나 사라질 때까지 추격을 유지하기 위해 별도로 기억한다.
+     * 추격 중인 대상. 대상이 죽거나 사라질 때까지 추격을 유지하기 위해 별도로 기억한다.
      * 리스폰한 플레이어는 새 엔티티라서 이전 참조가 죽은 상태로 남으므로 자동으로 초기화된다.
      */
     private LivingEntity pursuitTarget;
+    /** 추격 대상을 마지막으로 때린 틱. 추격을 시작한 틱부터 잰다. */
+    private int lastPursuitHitTick;
+    /** 닿지 못해 놓은 대상과, 그 대상을 다시 고르지 않는 마지막 틱 */
+    private int ignoredTargetId = -1;
+    private int ignoreTargetUntilTick;
 
     private static final String TAG_RECORD_ID = "PetRecordId";
     /** 주인 조회가 잠깐 비어도(사망→리스폰 전환 등) 이 시간(5초) 안에 돌아오면 소멸하지 않는다. */
@@ -89,10 +102,12 @@ public class DialgaPetEntity extends TamableAnimal
 
     public static AttributeSupplier.Builder createAttributes()
     {
+        // 추적 범위는 길찾기 거리와 대상 유지 거리를 함께 정한다.
+        // 추격을 놓는 거리(주인에게서 56칸)에 주인 둘레 자리까지 더해도 닿도록 64칸으로 둔다.
         return TamableAnimal.createAnimalAttributes()
                 .add(Attributes.MAX_HEALTH, 100.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.35)
-                .add(Attributes.FOLLOW_RANGE, 48.0)
+                .add(Attributes.FOLLOW_RANGE, 64.0)
                 .add(Attributes.ATTACK_DAMAGE, 1.0);
     }
 
@@ -106,6 +121,7 @@ public class DialgaPetEntity extends TamableAnimal
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
 
         this.targetSelector.addGoal(1, new RecentOwnerHurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new HuntNearbyMonstersGoal(this));
     }
 
     @Override
@@ -278,9 +294,9 @@ public class DialgaPetEntity extends TamableAnimal
     }
 
     /**
-     * 주인을 때린 대상을 죽을 때까지 놓지 않는다.
+     * 공격 대상을 죽을 때까지 놓지 않는다.
      * 일반 타겟 AI는 거리가 벌어지면 추격을 포기하므로, 대상이 살아 있는 동안 타겟을 다시 지정한다.
-     * 단, 대상이 주인에게서 20칸보다 멀어지면 추격을 포기하고 주인 곁으로 돌아간다.
+     * 단, 대상이 주인에게서 56칸보다 멀어지거나 10초 동안 한 대도 못 때리면 추격을 포기하고 주인 곁으로 돌아간다.
      */
     private void updatePursuit(LivingEntity owner)
     {
@@ -288,6 +304,7 @@ public class DialgaPetEntity extends TamableAnimal
         if (currentTarget != null && currentTarget != this.pursuitTarget)
         {
             this.pursuitTarget = currentTarget;
+            this.lastPursuitHitTick = this.tickCount;
         }
 
         if (this.pursuitTarget == null)
@@ -302,7 +319,14 @@ public class DialgaPetEntity extends TamableAnimal
                 || (this.pursuitTarget instanceof ServerPlayer targetPlayer && targetPlayer.hasDisconnected());
         boolean targetTooFarFromOwner = !targetGone
                 && this.pursuitTarget.distanceToSqr(owner) > PURSUIT_RESET_DISTANCE_SQR;
-        if (targetGone || targetTooFarFromOwner)
+        boolean stalled = !targetGone && this.tickCount - this.lastPursuitHitTick > PURSUIT_STALL_TICKS;
+        if (stalled)
+        {
+            // 높은 곳이나 물 건너처럼 닿지 못하는 대상 앞에 계속 서 있지 않게 한다.
+            this.ignoredTargetId = this.pursuitTarget.getId();
+            this.ignoreTargetUntilTick = this.tickCount + IGNORE_TARGET_TICKS;
+        }
+        if (targetGone || targetTooFarFromOwner || stalled)
         {
             this.pursuitTarget = null;
             this.setTarget(null);
@@ -313,6 +337,12 @@ public class DialgaPetEntity extends TamableAnimal
         {
             this.setTarget(this.pursuitTarget);
         }
+    }
+
+    /** 닿지 못해 방금 놓은 대상인지. 이 시간 동안은 사냥감으로 다시 고르지 않는다. */
+    public boolean isIgnoringTarget(Entity entity)
+    {
+        return entity.getId() == this.ignoredTargetId && this.tickCount < this.ignoreTargetUntilTick;
     }
 
     /**
@@ -468,6 +498,10 @@ public class DialgaPetEntity extends TamableAnimal
         if (hit)
         {
             delayRegeneration();
+        }
+        if (hit && target == this.pursuitTarget)
+        {
+            this.lastPursuitHitTick = this.tickCount;
         }
         if (hit && target instanceof Mob)
         {
