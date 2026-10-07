@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -45,6 +46,7 @@ public class GunCoverGoal extends Goal {
     private final PathfinderMob mob;
     private final CoverTactics tactics;
     private final RangedThreat threat = new RangedThreat();
+    private final ThreatSearch threatSearch = new ThreatSearch();
     private int peekFireTicks;
     private int repathCooldown;
     private boolean strafing;
@@ -76,6 +78,7 @@ public class GunCoverGoal extends Goal {
         this.peekFireTicks = 0;
         this.repathCooldown = 0;
         this.strafeTicks = 0;
+        this.threatSearch.reset();
     }
 
     @Override
@@ -98,6 +101,8 @@ public class GunCoverGoal extends Goal {
         if (target == null || data == null) {
             return;
         }
+        // 대상이 보이면 위치를 기억하고, 대상에게 맞았으면 움츠러들거나 자리를 옮긴다.
+        this.tactics.observe(target);
         ItemStack stack = this.mob.getMainHandItem();
         IGun gun = (IGun) stack.getItem();
         double range = MonsterGunController.getEffectiveRange(data);
@@ -128,16 +133,24 @@ public class GunCoverGoal extends Goal {
 
     /**
      * 엄폐 없이 싸운다. 엄폐물이 없거나, 숨은 자리가 드러나 그 자리에서 맞서 쏘는 중일 때다.
-     * 사거리 안에서 대상이 보이면 다가가지 않고 좌우로 옆걸음질하며 쏘고, 보이지 않으면 다가간다.
+     * 사거리 안에서 대상이 보이면 다가가지 않고 좌우로 옆걸음질하며 쏘고, 사거리 밖이면 다가간다.
+     * 보이지 않으면 대상의 지금 위치를 쫓지 않고 마지막으로 본 곳으로 가서 살핀다.
      */
     private void fightInOpen(LivingEntity target, double range) {
+        if (!this.mob.getSensing().hasLineOfSight(target)) {
+            stopStrafing();
+            this.threatSearch.tick(this.mob, lastKnownPosition(target), MOVE_SPEED);
+            return;
+        }
+        this.threatSearch.reset();
         this.mob.getLookControl().setLookAt(target, 30.0f, 30.0f);
         double holdDistance = range * HOLD_RANGE_RATIO;
         boolean inHoldRange = this.mob.distanceToSqr(target) <= holdDistance * holdDistance;
-        if (inHoldRange && this.mob.getSensing().hasLineOfSight(target)) {
+        if (inHoldRange) {
             this.mob.getNavigation().stop();
             this.repathCooldown = 0;
             strafe(target);
+            ((CoverCombatant) this.mob).tacz$markFiring(this.mob.level().getGameTime());
             return;
         }
         stopStrafing();
@@ -145,6 +158,15 @@ public class GunCoverGoal extends Goal {
             this.repathCooldown = REPATH_INTERVAL;
             this.mob.getNavigation().moveTo(target, MOVE_SPEED);
         }
+    }
+
+    /** 대상을 마지막으로 본(짐작한) 위치. 기억이 없으면 지금 위치를 쓴다. */
+    private Vec3 lastKnownPosition(LivingEntity target) {
+        Vec3 known = ((CoverCombatant) this.mob).tacz$lastKnownThreatPos(target);
+        if (known == null) {
+            return target.position();
+        }
+        return known;
     }
 
     /**

@@ -8,6 +8,7 @@ import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
@@ -32,6 +33,7 @@ public class CoverBowAttackGoal<T extends Monster & RangedAttackMob> extends Goa
     private final RangedBowAttackGoal<T> vanillaGoal;
     private final CoverTactics tactics;
     private final RangedThreat threat = new RangedThreat();
+    private final ThreatSearch threatSearch = new ThreatSearch();
 
     /** @param vanillaGoal 엄폐하지 않을 때 쓰는 바닐라 활 공격. 난이도별 공격 간격 설정을 그대로 따른다. */
     public CoverBowAttackGoal(T mob, RangedBowAttackGoal<T> vanillaGoal) {
@@ -55,6 +57,7 @@ public class CoverBowAttackGoal<T extends Monster & RangedAttackMob> extends Goa
     public void start() {
         this.vanillaGoal.start();
         this.tactics.reset();
+        this.threatSearch.reset();
     }
 
     @Override
@@ -71,6 +74,10 @@ public class CoverBowAttackGoal<T extends Monster & RangedAttackMob> extends Goa
     @Override
     public void tick() {
         LivingEntity target = this.mob.getTarget();
+        if (target != null) {
+            // 대상이 보이면 위치를 기억하고, 대상에게 맞았으면 움츠러들거나 자리를 옮긴다.
+            this.tactics.observe(target);
+        }
         if (target != null && shouldCover(target)) {
             boolean hasSpot = this.tactics.hasSpot() || this.tactics.trySearch(target, BOW_RANGE);
             if (hasSpot) {
@@ -84,8 +91,34 @@ public class CoverBowAttackGoal<T extends Monster & RangedAttackMob> extends Goa
             // 엄폐할 상황이 끝났다. 엄폐 칸을 잃은 경우와 달리 다음 탐색을 미루지 않는다.
             this.tactics.reset();
         }
+        if (target != null && searchLastKnown(target)) {
+            return;
+        }
+        this.threatSearch.reset();
+        if (target != null && this.mob.getSensing().hasLineOfSight(target)) {
+            ((CoverCombatant) this.mob).tacz$markFiring(this.mob.level().getGameTime());
+        }
         // 엄폐 칸이 없으면 바닐라 활 공격이 이어받는다. 당겨 둔 활시위도 그대로 이어서 쓴다.
         this.vanillaGoal.tick();
+    }
+
+    /**
+     * 대상이 보이지 않으면 바닐라처럼 대상의 지금 위치로 걸어가지 않고, 마지막으로 본 곳으로 가서 살핀다.
+     * 당겨 둔 활시위는 그대로 두어 다시 보이는 순간 쏠 수 있게 한다.
+     *
+     * @return 이번 틱의 이동을 맡았으면 true
+     */
+    private boolean searchLastKnown(LivingEntity target) {
+        if (this.mob.getSensing().hasLineOfSight(target)) {
+            return false;
+        }
+        Vec3 known = ((CoverCombatant) this.mob).tacz$lastKnownThreatPos(target);
+        if (known == null) {
+            return false;
+        }
+        this.mob.setXxa(0.0f);
+        this.threatSearch.tick(this.mob, known, MOVE_SPEED);
+        return true;
     }
 
     /**
