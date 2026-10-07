@@ -20,7 +20,7 @@ import java.util.Locale;
 
 public final class ClientHyperSkills
 {
-    private static final float SHIELD_HUD_SCALE = 0.2F;
+    private static final float SHIELD_HUD_SCALE = 0.3F;
     private static final int SHIELD_PANEL_WIDTH = 160;
     private static final int PANEL_HEIGHT = 27;
     private static final int HUD_MARGIN = 4;
