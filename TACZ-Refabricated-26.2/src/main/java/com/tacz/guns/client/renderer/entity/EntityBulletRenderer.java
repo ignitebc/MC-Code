@@ -23,6 +23,7 @@ import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -90,9 +91,10 @@ public class EntityBulletRenderer extends EntityRenderer<EntityKineticBullet, En
             }
 
             // 曳光弹发光
+            // 예광탄은 스스로 빛나는 탄이라 주변 밝기와 관계없이 최대 밝기로 그린다. 주변 밝기를 쓰면 밤에 어둡게 묻힌다.
             if (bullet.isTracerAmmo()) {
                 float[] actualTracerColor = Objects.requireNonNullElse(tracerColor, ammoIndex.getTracerColor());
-                renderTracerAmmo(bullet, actualTracerColor, partialTicks, poseStack, collector, state.lightCoords);
+                renderTracerAmmo(bullet, actualTracerColor, partialTicks, poseStack, collector, LightCoordsUtil.FULL_BRIGHT);
             }
         });
     }
@@ -163,8 +165,8 @@ public class EntityBulletRenderer extends EntityRenderer<EntityKineticBullet, En
                 // 距离两格外才渲染，只在前 5 tick 判定
                 double bulletDistance = bulletPosition.distanceTo(shooter.getEyePosition());
                 if (bullet.tickCount >= 5 || bulletDistance > 2) {
-                    // 由于 energySwirl 不可用，使用 entityTranslucent 替代
-                    RenderType type = RenderTypes.entityTranslucent(InternalAssetLoader.DEFAULT_BULLET_TEXTURE);
+                    // 일반 반투명 방식은 빛 계산을 받아 밤에 어두워진다. 자체 발광 방식으로 그려 밤에도 밝게 보이게 한다.
+                    RenderType type = RenderTypes.entityTranslucentEmissive(InternalAssetLoader.DEFAULT_BULLET_TEXTURE);
                     model.submit(poseStack, ItemDisplayContext.NONE, collector, type, packedLight, OverlayTexture.NO_OVERLAY,
                             tracerColor[0], tracerColor[1], tracerColor[2], 1);
                 }

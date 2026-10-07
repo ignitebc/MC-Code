@@ -157,6 +157,7 @@ public class LivingEntityShoot {
         if (iGun instanceof AbstractGunItem logicGun) {
             logicGun.shoot(data, currentGunItem, pitch, yaw, shooter);
         }
+        MuzzleFlashBroadcaster.broadcast(shooter);
         return ShootResult.SUCCESS;
     }
 

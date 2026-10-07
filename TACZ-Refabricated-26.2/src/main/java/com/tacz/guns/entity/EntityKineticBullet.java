@@ -88,7 +88,8 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
             .<EntityKineticBullet>of(EntityKineticBullet::new, MobCategory.MISC)
             .noSummon().noSave().fireImmune()
             .sized(0.0625F, 0.0625F)
-            .clientTrackingRange(5).updateInterval(5)
+            // 밤에 먼 곳의 예광탄도 보이도록 8청크(128칸)까지 전송한다. RPG-7 로켓이 날아가는 최대 거리(7청크)도 들어온다.
+            .clientTrackingRange(8).updateInterval(5)
             .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath("tacz", "kinetic_bullet")));
     public static final TagKey<EntityType<?>> USE_MAGIC_DAMAGE_ON = TagKey.create(Registries.ENTITY_TYPE, Identifier.parse("tacz:use_magic_damage_on"));
     public static final TagKey<EntityType<?>> USE_VOID_DAMAGE_ON = TagKey.create(Registries.ENTITY_TYPE, Identifier.parse("tacz:use_void_damage_on"));
