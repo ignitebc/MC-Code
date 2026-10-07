@@ -18,6 +18,7 @@ import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import com.tacz.guns.config.common.AmmoConfig;
 import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.entity.shooter.MonsterGunAmmo;
+import com.tacz.guns.entity.ai.GunfireAlert;
 import com.tacz.guns.entity.shooter.MonsterGunController;
 import com.tacz.guns.entity.shooter.ShooterDataHolder;
 import com.tacz.guns.network.NetworkHandler;
@@ -39,6 +40,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.luaj.vm2.LuaError;
@@ -237,6 +239,10 @@ public class ModernKineticGunScriptAPI {
                 if (soundDistance > 0) {
                     String soundId = useSilenceSound ? SoundManager.SILENCE_3P_SOUND : SoundManager.SHOOT_3P_SOUND;
                     SoundManager.sendSoundToNearby(shooter, shotSoundDistance, gunId, gunDisplayId, soundId, shotSoundVolume, 0.9f + shooter.getRandom().nextFloat() * 0.125f);
+                    // 플레이어의 총성을 들은 주변 몬스터가 쏜 쪽을 살피러 간다. 소음기를 달면 바로 옆에서만 듣는다.
+                    if (shooter instanceof Player playerShooter) {
+                        GunfireAlert.onGunshot(playerShooter, useSilenceSound);
+                    }
                 }
             }
             return true;

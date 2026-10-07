@@ -18,6 +18,7 @@ import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.client.particle.AmmoParticleSpawner;
 import com.tacz.guns.config.common.AmmoConfig;
 import com.tacz.guns.config.sync.SyncConfig;
+import com.tacz.guns.entity.ai.BulletSuppression;
 import com.tacz.guns.entity.shooter.ShooterDataHolder;
 import com.tacz.guns.init.ModDamageTypes;
 import com.tacz.guns.network.NetworkHandler;
@@ -329,6 +330,8 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
                 // 子弹击中方块时，设置击中方块的位置为子弹的结束位置
                 endVec = resultB.getLocation();
             }
+            // 플레이어의 탄이 몬스터 가까이를 스치면 제압한다. 블록에 막힌 탄은 막힌 지점까지만 본다.
+            BulletSuppression.onBulletPath(this, startVec, endVec);
 
             List<EntityResult> hitEntities = null;
             // 子弹的击中检测，穿透为 1 或者爆炸类弹药限制为一个实体穿透判定
