@@ -8,8 +8,6 @@ import com.daqem.jobsplus.networking.s2c.ClientboundHyperLeapPacket;
 import com.daqem.jobsplus.networking.s2c.ClientboundHyperStatusPacket;
 import com.mcserver.serverutilities.combat.CombatRules;
 import dev.architectury.networking.NetworkManager;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -23,8 +21,6 @@ import net.minecraft.world.phys.Vec3;
 
 public final class HyperSkillHandler
 {
-    private static final Identifier TACZ_BULLET = Identifier.fromNamespaceAndPath("tacz", "kinetic_bullet");
-
     private HyperSkillHandler() {}
 
     public static HyperPlayerState state(ServerPlayer player)
@@ -144,13 +140,8 @@ public final class HyperSkillHandler
     {
         if (!(source.getEntity() instanceof ServerPlayer player) || target.getHealth() >= healthBefore
                 || target instanceof TamableAnimal || target.getType().getCategory() != MobCategory.MONSTER
-                || source.is(DamageTypeTags.IS_FIRE) || source.is(DamageTypeTags.IS_EXPLOSION)
-                || source.is(DamageTypes.THORNS)) return;
-        Entity direct = source.getDirectEntity();
-        // TACZ 총알은 바닐라 is_projectile 태그가 없고 일부 몹에는 마법 피해를 사용한다.
-        boolean playerProjectile = direct instanceof Projectile && (source.is(DamageTypeTags.IS_PROJECTILE)
-                || TACZ_BULLET.equals(BuiltInRegistries.ENTITY_TYPE.getKey(direct.getType())));
-        if (direct != player && !playerProjectile) return;
+                || source.is(DamageTypeTags.IS_FIRE)) return;
+        if (!isOwnAttack(player, source)) return;
         int level = HyperSkillRules.getActiveLevel(player, HyperSkillRules.HUNTER);
         if (level == 0 || player.getHealth() >= player.getMaxHealth()) return;
         HyperPlayerState state = state(player);
@@ -162,6 +153,21 @@ public final class HyperSkillHandler
         state.leechReadyAt = now + HyperSkillRules.LEECH_COOLDOWN_TICKS;
         player.heal(HyperSkillRules.LEECH_HEALTH);
         SkillActivationNotifier.notifySkillActivated(player, JobsPlus.translatable("hyper.hunter.activated"));
+    }
+
+    /**
+     * 플레이어 본인의 공격인지. 근접 공격과, 본인이 쏘거나 던진 모든 투사체(화살·삼지창·총탄·로켓 등)를 포함한다.
+     * <p>
+     * 피해 종류 태그로 고르지 않고 직접 맞힌 엔티티로 고른다. TACZ 총탄은 바닐라 투사체 태그가 없고, 몹에 따라
+     * 총탄 피해·마법 피해·근접 피해로 바뀌며, 로켓·유탄은 폭발 피해로 들어오기 때문이다.
+     * 가시 마법부여 반사 피해는 직접 맞힌 엔티티가 플레이어라 근접처럼 보이므로 따로 뺀다.
+     */
+    private static boolean isOwnAttack(ServerPlayer player, DamageSource source)
+    {
+        Entity direct = source.getDirectEntity();
+        boolean melee = direct == player && !source.is(DamageTypes.THORNS);
+        boolean ownProjectile = direct instanceof Projectile projectile && projectile.getOwner() == player;
+        return melee || ownProjectile;
     }
 
     private static boolean canCharge(ServerPlayer player)

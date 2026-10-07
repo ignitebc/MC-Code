@@ -71,7 +71,7 @@
   "jobsplus.hyper.hunter.summary": "흡혈 확률 %s%%",
   "jobsplus.hyper.hunter.description": "몬스터에게 직접 피해를 주면 확률적으로 하트 1칸 회복",
   "jobsplus.hyper.hunter.rules": "LV1 4%% → LV10 40%% · 발동 후 1초 간격",
-  "jobsplus.hyper.hunter.details": "근접·활·총기 적용 · 산탄·관통 등 같은 틱은 1회 판정",
+  "jobsplus.hyper.hunter.details": "근접·원거리·모든 총기(폭발 포함) 적용 · 같은 틱은 1회 판정",
   "jobsplus.hyper.hunter.warning": "펫 공격·지속 피해·플레이어·가축·펫 대상 제외",
   "jobsplus.hyper.hunter.activated": "흡혈왕의 송곳니! 체력 2 HP를 회복했습니다.",
   "jobsplus.hyper.alchemist.summary": "물약 강화 확률 %s%%",
