@@ -291,7 +291,10 @@ public class LocalPlayerShoot {
                 data.clientLastShootTimestamp = data.clientShootTimestamp;
                 data.clientShootTimestamp = System.currentTimeMillis();
                 // 发送开火的数据包，通知服务器
-                ClientPlayNetworking.send(new ClientMessagePlayerShoot(data.clientShootTimestamp - data.clientBaseTimestamp, chargeProgress));
+                // 쏜 순간의 조준을 함께 보낸다. 서버의 회전은 마지막 이동 패킷 값이라 틱 사이에 쏜 탄이 조준점에서 벗어난다.
+                long shootTimestamp = data.clientShootTimestamp - data.clientBaseTimestamp;
+                ClientPlayNetworking.send(new ClientMessagePlayerShoot(shootTimestamp, chargeProgress,
+                        player.getXRot(), player.getYRot()));
             }
 
             // todo 需要检查
