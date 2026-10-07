@@ -81,15 +81,17 @@ public final class CoverFinder {
         RandomSource random = mob.getRandom();
         BlockPos origin = mob.blockPosition();
         double rangeSqr = range * range;
-        LongSet taken = takenCells(mob, origin);
+        NearbyAllies allies = scanAllies(mob, origin);
         LongSet visited = new LongOpenHashSet();
         List<Candidate> candidates = new ArrayList<>();
         for (int i = 0; i < SAMPLE_COUNT; i++) {
             int dx = random.nextInt(SEARCH_RADIUS * 2 + 1) - SEARCH_RADIUS;
             int dz = random.nextInt(SEARCH_RADIUS * 2 + 1) - SEARCH_RADIUS;
             BlockPos cover = findStandable(mob, origin.offset(dx, 0, dz), VERTICAL_RANGE);
-            if (cover == null || !visited.add(cover.asLong()) || taken.contains(cover.asLong())
-                    || !mob.isWithinHome(cover)) {
+            if (cover == null || !visited.add(cover.asLong()) || !mob.isWithinHome(cover)) {
+                continue;
+            }
+            if (allies.takenCells().contains(cover.asLong()) || allies.isInLane(mob, cover)) {
                 continue;
             }
             double threatDistance = Vec3.atBottomCenterOf(cover).distanceTo(threat.position());
@@ -121,23 +123,46 @@ public final class CoverFinder {
     }
 
     /**
-     * 다른 몬스터가 서 있거나 숨으려고 잡아 둔 칸.
+     * 주변 몬스터가 서 있거나 숨으려고 잡아 둔 칸과, 총을 든 몬스터의 사선을 한 번에 모은다.
      * <p>
      * 여럿이 한 칸으로 몰리면 겹쳐 선 몬스터가 칸 밖으로 밀려나 드러난다. 다른 몬스터도 자기 주변 탐색 반경
      * 안에서 칸을 잡으므로, 그 칸까지 놓치지 않도록 탐색 반경의 두 배 안의 몬스터를 살핀다.
+     * 다른 몬스터의 사선 위에 숨으면 그 몬스터가 쏘지 못하거나 탄이 막히므로 그런 칸도 피한다.
      */
-    private static LongSet takenCells(PathfinderMob mob, BlockPos origin) {
+    private static NearbyAllies scanAllies(PathfinderMob mob, BlockPos origin) {
         int horizontal = SEARCH_RADIUS * 2 + 1;
         int vertical = VERTICAL_RANGE * 2 + 1;
         AABB area = new AABB(origin).inflate(horizontal, vertical, horizontal);
         LongSet taken = new LongOpenHashSet();
+        List<FriendlyFireLanes.Lane> lanes = new ArrayList<>();
         for (Mob other : mob.level().getEntitiesOfClass(Mob.class, area, other -> other != mob && other.isAlive())) {
             taken.add(other.blockPosition().asLong());
             if (other instanceof CoverCombatant combatant && combatant.tacz$getCoverPos() != null) {
                 taken.add(combatant.tacz$getCoverPos().asLong());
             }
+            FriendlyFireLanes.Lane lane = FriendlyFireLanes.laneOf(other);
+            if (lane != null) {
+                lanes.add(lane);
+            }
         }
-        return taken;
+        return new NearbyAllies(taken, lanes);
+    }
+
+    /** 주변 몬스터가 차지한 칸과 총을 든 몬스터의 사선 */
+    private record NearbyAllies(LongSet takenCells, List<FriendlyFireLanes.Lane> lanes) {
+        /** 몬스터가 이 칸에 섰을 때 다른 몬스터의 사선에 걸리는지 */
+        boolean isInLane(PathfinderMob mob, BlockPos cover) {
+            if (this.lanes.isEmpty()) {
+                return false;
+            }
+            AABB body = mob.getDimensions(mob.getPose()).makeBoundingBox(Vec3.atBottomCenterOf(cover));
+            for (FriendlyFireLanes.Lane lane : this.lanes) {
+                if (lane.crosses(body)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     /**

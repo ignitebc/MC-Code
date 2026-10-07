@@ -5,9 +5,12 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "common.AbstractSkeletonCoverMixin",
+    "common.LivingEntityFriendlyFireMixin",
     "common.LivingEntityMixin",
+    "common.MobArmedTruceMixin",
     "common.MobCoverMixin",
     "common.MonsterEquipmentGunMixin",
+    "common.PiglinSensorTruceMixin",
     "common.ServerGamePacketListenerImplMixin",
     "common.ServerPlayerMixin",
     "common.ServerPlayNetHandlerMixin",

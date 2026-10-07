@@ -103,6 +103,10 @@ public class CoverBowAttackGoal<T extends Monster & RangedAttackMob> extends Goa
                 || !this.mob.getSensing().hasLineOfSight(target)) {
             return false;
         }
+        // 사선에 다른 몬스터가 있으면 당긴 채로 기다린다. 화살이 아군에 막혀 버려지지 않게 한다.
+        if (FriendlyFireLanes.isAllyInLane(this.mob, target)) {
+            return false;
+        }
         int drawTicks = this.mob.getTicksUsingItem();
         this.mob.stopUsingItem();
         this.mob.performRangedAttack(target, BowItem.getPowerForTime(drawTicks));

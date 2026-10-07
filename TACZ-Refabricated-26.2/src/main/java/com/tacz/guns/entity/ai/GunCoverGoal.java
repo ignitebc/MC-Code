@@ -39,6 +39,8 @@ public class GunCoverGoal extends Goal {
     /** 옆걸음 방향을 바꾸는 간격(틱). 이 범위에서 무작위로 정해 움직임을 읽기 어렵게 한다. */
     private static final int MIN_STRAFE_TICKS = 20;
     private static final int MAX_STRAFE_TICKS = 40;
+    /** 사선이 겹쳤는지 다시 확인하는 간격(틱). 주변 몬스터의 사선을 훑는 비용이 있어 매 틱 보지 않는다. */
+    private static final int LANE_CHECK_INTERVAL = 5;
 
     private final PathfinderMob mob;
     private final CoverTactics tactics;
@@ -46,8 +48,10 @@ public class GunCoverGoal extends Goal {
     private int peekFireTicks;
     private int repathCooldown;
     private boolean strafing;
-    private boolean strafeRight;
+    /** 옆걸음 값의 부호(+1 또는 -1) */
+    private int strafeSign = 1;
     private int strafeTicks;
+    private int laneCheckCooldown;
 
     public GunCoverGoal(PathfinderMob mob) {
         this.mob = mob;
@@ -143,18 +147,26 @@ public class GunCoverGoal extends Goal {
         }
     }
 
-    /** 좌우로 옆걸음질한다. 옆걸음은 몸이 향한 방향 기준이므로 몸을 대상 쪽으로 돌려 둔다. */
+    /**
+     * 좌우로 옆걸음질한다. 옆걸음은 몸이 향한 방향 기준이므로 몸을 대상 쪽으로 돌려 둔다.
+     * 다른 몬스터와 사선이 겹치면 겹치지 않는 쪽으로 방향을 바꾼다.
+     */
     private void strafe(LivingEntity target) {
         if (--this.strafeTicks <= 0) {
             this.strafeTicks = MIN_STRAFE_TICKS + this.mob.getRandom().nextInt(MAX_STRAFE_TICKS - MIN_STRAFE_TICKS + 1);
-            this.strafeRight = !this.strafeRight;
+            this.strafeSign = -this.strafeSign;
+        }
+        if (--this.laneCheckCooldown <= 0) {
+            this.laneCheckCooldown = LANE_CHECK_INTERVAL;
+            int dodge = FriendlyFireLanes.dodgeDirection(this.mob, target);
+            if (dodge != 0) {
+                // 사선에서 벗어날 때까지 같은 방향으로 움직이도록 방향 전환을 잠시 미룬다.
+                this.strafeSign = dodge;
+                this.strafeTicks = MIN_STRAFE_TICKS;
+            }
         }
         this.mob.lookAt(target, 30.0f, 30.0f);
-        float sideways = STRAFE_SPEED;
-        if (!this.strafeRight) {
-            sideways = -STRAFE_SPEED;
-        }
-        this.mob.getMoveControl().strafe(0.0f, sideways);
+        this.mob.getMoveControl().strafe(0.0f, this.strafeSign * STRAFE_SPEED);
         this.strafing = true;
     }
 

@@ -5,6 +5,7 @@ import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ShootResult;
 import com.tacz.guns.api.item.IGun;
+import com.tacz.guns.entity.ai.FriendlyFireLanes;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import com.tacz.guns.resource.pojo.data.gun.ChargeType;
 import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
@@ -148,6 +149,8 @@ public final class MonsterGunController {
         float yaw = (float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0f;
         float pitch = (float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz)));
         if (!isAimedAt(yaw, pitch)) return;
+        // 사선에 다른 몬스터가 있으면 쏘지 않는다. 오발은 피해를 주지 않지만 탄이 아군에 막혀 플레이어에게 닿지 못한다.
+        if (FriendlyFireLanes.isAllyInLane(this.mob, target)) return;
         ShootResult result = operator.shoot(() -> pitch, () -> yaw,
                 System.currentTimeMillis() - operator.getDataHolder().baseTimestamp, this.chargeProgress);
         if (result == ShootResult.NEED_BOLT) operator.bolt();
