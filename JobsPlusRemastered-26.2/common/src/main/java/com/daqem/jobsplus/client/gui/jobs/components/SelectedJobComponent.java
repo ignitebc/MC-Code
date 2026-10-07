@@ -5,6 +5,7 @@ import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.client.gui.jobs.widgets.StartJobButtonWidget;
 import com.daqem.jobsplus.client.gui.theme.JobsLayout;
 import com.daqem.jobsplus.client.gui.theme.JobsTheme;
+import com.daqem.jobsplus.client.gui.theme.JobIcons;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import com.daqem.jobsplus.player.job.Job;
 import com.daqem.uilib.gui.component.EmptyComponent;
@@ -14,7 +15,6 @@ import net.minecraft.network.chat.Component;
 public class SelectedJobComponent extends EmptyComponent {
     /** 직업정보 탭의 행동 아이콘과 같은 칸·아이템 크기 */
     private static final int ICON_SIZE = 32;
-    private static final float ICON_ITEM_SCALE = 1.5f;
     private static final int ICON_Y = 24;
     private static final int NAME_Y = ICON_Y + ICON_SIZE + 6;
 
@@ -52,14 +52,10 @@ public class SelectedJobComponent extends EmptyComponent {
             JobsTheme.text(graphics, Component.literal("직업 시작 · 스킬"), x + 8, y + 7, getWidth() - 16, JobsTheme.MUTED);
             int iconX = x + (getWidth() - ICON_SIZE) / 2;
             JobsTheme.texture(graphics, JobsTheme.Skin.SLOT, iconX, y + ICON_Y, ICON_SIZE, ICON_SIZE);
-            graphics.pose().pushMatrix();
-            graphics.pose().translate(iconX + 4, y + ICON_Y + 4);
-            graphics.pose().scale(ICON_ITEM_SCALE, ICON_ITEM_SCALE);
-            graphics.fakeItem(jobInstance.getIconItem(), 0, 0);
-            graphics.pose().popMatrix();
+            JobIcons.job(graphics, jobInstance, iconX + 2, y + ICON_Y + 2, ICON_SIZE - 4);
             JobsTheme.label(graphics, jobInstance.getName(), x + 6, y + NAME_Y, getWidth() - 12, 14, JobsTheme.TEXT);
         } else {
-            graphics.fakeItem(jobInstance.getIconItem(), x + 7, y + 5);
+            JobIcons.job(graphics, jobInstance, x + 6, y + 4, 18);
             JobsTheme.text(graphics, jobInstance.getName(), x + 29, y + 7, getWidth() - 35, JobsTheme.TEXT);
         }
 

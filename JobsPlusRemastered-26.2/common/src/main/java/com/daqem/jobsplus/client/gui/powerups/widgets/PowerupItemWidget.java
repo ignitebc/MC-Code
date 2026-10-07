@@ -1,6 +1,7 @@
 package com.daqem.jobsplus.client.gui.powerups.widgets;
 
 import com.daqem.jobsplus.client.gui.theme.JobsTheme;
+import com.daqem.jobsplus.client.gui.theme.JobIcons;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreen;
 import com.daqem.jobsplus.client.gui.confimation.ConfirmationScreenState;
@@ -23,7 +24,6 @@ import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.ItemStack;
 
 // powerup 추가시 그냥 위젯이 알아서 위치에 맞게 선을 그어줌(ui상) , 따로 건들일 필요 없고, json의 parent만 연결을 잘해주면 됨
 // powerup 스킬 추가, 삭제시 json parent 재배치 필요
@@ -138,19 +138,11 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
     private void blitSlot(GuiGraphicsExtractor guiGraphics) {
         JobsTheme.sprite(guiGraphics, this.getSprite(), this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
-        ItemStack icon;
-        String countText = null;
         if (this.powerup != null) {
-            PowerupInstance powerupInstance = this.powerup.getPowerupInstance();
-            icon = powerupInstance.getIcon();
-            if (powerupInstance.getIconCount() > 1) {
-                countText = Integer.toString(powerupInstance.getIconCount());
-            }
+            JobIcons.skill(guiGraphics, this.powerup.getPowerupInstance(), this.getX() + 2, this.getY() + 2, 20);
         } else {
-            icon = state.getJob().getJobInstance().getIconItem();
+            JobIcons.job(guiGraphics, state.getJob().getJobInstance(), this.getX() + 2, this.getY() + 2, 20);
         }
-        guiGraphics.fakeItem(icon, this.getX() + 4, this.getY() + 4);
-        guiGraphics.itemDecorations(Minecraft.getInstance().font, icon, this.getX() + 4, this.getY() + 4, countText);
     }
 
     @Override

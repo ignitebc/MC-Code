@@ -4,6 +4,7 @@ import com.daqem.jobsplus.client.gui.powerups.PowerupsScreenState;
 import com.daqem.jobsplus.client.gui.powerups.widgets.PowerupItemWidget;
 import com.daqem.jobsplus.client.gui.jobs.widgets.ActionScrollWidget;
 import com.daqem.jobsplus.client.gui.theme.JobsTheme;
+import com.daqem.jobsplus.client.gui.theme.JobIcons;
 import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
 import com.daqem.uilib.gui.component.EmptyComponent;
@@ -78,7 +79,7 @@ public class PowerupDetailsComponent extends EmptyComponent {
             this.updateParentPosition(getParentX(), getParentY(), parentWidth, parentHeight);
         }
         JobsTheme.texture(graphics, JobsTheme.Skin.SLOT, x + 8, y + ICON_Y, ICON_SIZE, ICON_SIZE);
-        graphics.fakeItem(instance.getIcon(), x + 12, y + ICON_Y + 4);
+        JobIcons.skill(graphics, instance, x + 10, y + ICON_Y + 2, ICON_SIZE - 4);
         JobsTheme.text(graphics, instance.getName(), x + 38, y + ICON_Y + 2, getWidth() - 46, JobsTheme.TEXT);
         String status = switch (powerup.getState()) {
             case ACTIVE -> "활성";

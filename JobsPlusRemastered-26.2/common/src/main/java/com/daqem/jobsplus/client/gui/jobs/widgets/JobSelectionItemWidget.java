@@ -1,6 +1,7 @@
 package com.daqem.jobsplus.client.gui.jobs.widgets;
 
 import com.daqem.jobsplus.client.gui.theme.JobsTheme;
+import com.daqem.jobsplus.client.gui.theme.JobIcons;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.gui.jobs.JobsScreenState;
 import com.daqem.jobsplus.player.job.Job;
@@ -38,11 +39,7 @@ public class JobSelectionItemWidget extends CustomButtonWidget
         {
             guiGraphics.fill(getX(), getY() + 2, getX() + 2, getY() + getHeight() - 2, JobsTheme.CYAN);
         }
-        guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().translate(getX() + 5, getY() + 4);
-        guiGraphics.pose().scale(1.0f, 1.0f);
-        guiGraphics.fakeItem(this.job.getJobInstance().getIconItem(), 0, 0);
-        guiGraphics.pose().popMatrix();
+        JobIcons.job(guiGraphics, this.job.getJobInstance(), getX() + 4, getY() + 2, 19);
         int statusWidth = 26;
         Component status;
         int statusColor;

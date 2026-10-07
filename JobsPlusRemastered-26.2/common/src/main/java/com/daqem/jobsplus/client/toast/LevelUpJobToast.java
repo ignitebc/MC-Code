@@ -1,6 +1,7 @@
 package com.daqem.jobsplus.client.toast;
 
 import com.daqem.jobsplus.client.gui.theme.JobsTheme;
+import com.daqem.jobsplus.client.gui.theme.JobIcons;
 import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.integration.arc.holder.holders.job.JobInstance;
 import net.fabricmc.api.EnvType;
@@ -65,7 +66,7 @@ public class LevelUpJobToast implements Toast
         JobsTheme.sprite(guiGraphics, BACKGROUND_SPRITE, 0, 0, this.width(), this.height());
         guiGraphics.text(font, entry.jobInstance.getName(), 30, 7, JobsTheme.CYAN, false);
         guiGraphics.text(font, JobsPlus.translatable("job.level_up.toast", entry.level), 30, 18, JobsTheme.TEXT, false);
-        guiGraphics.fakeItem(entry.jobInstance.getIconItem(), 8, 8);
+        JobIcons.job(guiGraphics, entry.jobInstance, 7, 7, 18);
     }
 
     private void addItem(JobInstance jobInstance, int level)
