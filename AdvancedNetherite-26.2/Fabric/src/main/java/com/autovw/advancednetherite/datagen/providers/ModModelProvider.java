@@ -15,11 +15,14 @@ import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
+import net.minecraft.client.renderer.item.SelectItemModel;
+import net.minecraft.client.renderer.item.properties.select.DisplayContext;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 
 import java.util.List;
@@ -57,8 +60,7 @@ public class ModModelProvider extends FabricModelProvider
         itemModel(generator, ModItems.SOUL_INGOT);
         itemModel(generator, ModItems.FROST_INGOT);
         
-        // bitcoin 추가
-        itemModel(generator, ModItems.BITCOIN);
+        bitcoinModel(generator);
         itemModel(generator, ModRewardCouponItems.EXPERIENCE_TRIPLE_COUPON);
         itemModel(generator, ModRewardCouponItems.BITCOIN_DOUBLE_COUPON);
         itemModel(generator, ModRewardCouponItems.BITCOIN_TRIPLE_COUPON);
@@ -164,6 +166,23 @@ public class ModModelProvider extends FabricModelProvider
         Identifier textureLoc = Identifier.fromNamespaceAndPath(itemId.getNamespace(), "item/" + itemId.getPath());
         TextureMapping textureMapping = new TextureMapping().put(TextureSlot.LAYER0, new Material(textureLoc));
         itemModels.itemModelOutput.accept(item, new CuboidItemModelWrapper.Unbaked(template.create(item, textureMapping, itemModels.modelOutput), Optional.empty(), List.of()));
+    }
+
+    private void bitcoinModel(ItemModelGenerators itemModels)
+    {
+        Identifier texture = Identifier.fromNamespaceAndPath("advancednetherite", "item/bitcoin");
+        TextureMapping mapping = new TextureMapping().put(TextureSlot.LAYER0, new Material(texture));
+        CuboidItemModelWrapper.Unbaked guiModel = new CuboidItemModelWrapper.Unbaked(
+                ModelTemplates.FLAT_ITEM.create(ModItems.BITCOIN, mapping, itemModels.modelOutput),
+                Optional.empty(), List.of());
+        // 손·바닥·액자에서는 공통 리소스에 작성한 입체 동전 모델을 사용한다.
+        CuboidItemModelWrapper.Unbaked worldModel = new CuboidItemModelWrapper.Unbaked(
+                Identifier.fromNamespaceAndPath("advancednetherite", "item/bitcoin_world"),
+                Optional.empty(), List.of());
+        SelectItemModel.UnbakedSwitch<DisplayContext, ItemDisplayContext> contexts = new SelectItemModel.UnbakedSwitch<>(
+                new DisplayContext(), List.of(new SelectItemModel.SwitchCase<>(List.of(ItemDisplayContext.GUI), guiModel)));
+        itemModels.itemModelOutput.accept(ModItems.BITCOIN,
+                new SelectItemModel.Unbaked(Optional.empty(), contexts, Optional.of(worldModel)));
     }
 
     public void armorModel(ItemModelGenerators itemModels, Item item, ResourceKey<EquipmentAsset> equipmentKey)
