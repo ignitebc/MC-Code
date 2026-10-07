@@ -26,17 +26,28 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.Objects;
 import java.util.Optional;
 
 public class EntityBulletRenderer extends EntityRenderer<EntityKineticBullet, EntityBulletRenderer.BulletRenderState> {
+    /** 1인칭 예광탄이 총구에서 출발해 실제 탄도와 합쳐지는 최대 거리(칸). 이보다 멀리 맞는 탄은 이 거리부터 실제 탄도를 따른다. */
+    private static final double MAX_CONVERGE_DISTANCE = 50.0;
+    /** 바로 앞을 쏘았을 때 0으로 나누지 않도록 둔 최소 합류 거리(칸) */
+    private static final double MIN_CONVERGE_DISTANCE = 1.0;
+    /** 탄착점을 찾을 때 엔티티 판정 상자를 넓히는 값(칸). 가장자리를 스치는 탄도 맞은 것으로 본다. */
+    private static final double ENTITY_HIT_MARGIN = 0.3;
 
     public static class BulletRenderState extends EntityRenderState {
         public EntityKineticBullet bullet;
@@ -122,44 +133,32 @@ public class EntityBulletRenderer extends EntityRenderer<EntityKineticBullet, En
                 double disToEye = bulletPosition.distanceTo(shooter.getEyePosition(partialTicks));
                 trailLength = Math.min(trailLength, disToEye * 0.8);
 
+                float yaw = Mth.lerp(partialTicks, bullet.yRotO, bullet.getYRot());
+                float pitch = Mth.lerp(partialTicks, bullet.xRotO, bullet.getXRot());
                 if (isFirstPerson) {
-                    // 第一人称渲染自己的曳光弹的时候需要应用偏移（偏移量 = 枪口相对摄像机的位置）
-                    //
-                    // 【第 9 轮修复】曳光弹不从枪口射出、而是固定从某个位置射出。
-                    //
-                    // 移植版这里有两处偏差：
-                    //   1) 摄像机旋转被硬编码成 0（原注释写"无法获取相机旋转，暂时设置默认值"）。
-                    //      于是下面的"旋转 -> 平移 -> 反旋转"退化成在<b>未旋转坐标系</b>里做平移，
-                    //      muzzleRenderOffset 被当成世界轴偏移 —— 无论朝哪个方向开枪，
-                    //      曳光弹起点都固定在同一处。
-                    //   2) 上游那对"旋转/反旋转"<b>只在 Iris 光影启用时</b>才需要
-                    //      （1.21.1+ 的渲染坐标空间已不需要手动转换，但 Iris 仍是老样子）。
-                    //      移植版无条件执行，即使拿到正确角度也会引入多余变换。
-                    //
-                    // 摄像机可直接从 Minecraft.gameRenderer.getMainCamera() 取得（与上游一致）。
-                    // 26.2: GameRenderer#getMainCamera() -> mainCamera()，Camera#getXRot/getYRot -> xRot()/yRot()
-                    Camera camera = Minecraft.getInstance().gameRenderer.mainCamera();
+                    // 실제 탄은 눈에서 나가므로 1인칭에서는 총구에서 나가는 것처럼 옮겨 그린다.
+                    // 옮긴 양을 날아간 거리에 비례해 줄여 탄착점에서 0이 되게 하면, 예광탄이 총구에서 탄착점까지 곧게 날아간다.
+                    prepareFirstPersonPath(bullet, shooter);
                     Vector3f offset = bullet.getFirstPersonRenderOffset();
-                    if (offset == null) {
-                        offset = new Vector3f(GunItemRendererWrapper.muzzleRenderOffset);
-                        // 记录开火瞬间的摄像机朝向，之后整条弹道都沿用，避免转视角时曳光弹跟着甩
-                        bullet.setCameraXRot(camera.xRot());
-                        bullet.setCameraYRot(camera.yRot());
-                        bullet.setFirstPersonRenderOffset(offset);
+                    Vec3 origin = bullet.getFirstPersonOrigin();
+                    double convergeDistance = origin.distanceTo(bullet.getFirstPersonImpact());
+                    double traveled = bulletPosition.distanceTo(origin);
+                    double offsetRatio = Math.max(0, convergeDistance - traveled) / convergeDistance;
+                    poseStack.translate(offset.x * offsetRatio, offset.y * offsetRatio, offset.z * offsetRatio);
+                    if (offsetRatio > 0) {
+                        // 탄착점에 닿기 전에는 실제 탄도가 아니라 총구에서 탄착점으로 이어지는 선 방향으로 눕힌다.
+                        Vec3 muzzle = origin.add(offset.x, offset.y, offset.z);
+                        Vec3 visualDirection = bullet.getFirstPersonImpact().subtract(muzzle);
+                        yaw = (float) Math.toDegrees(Mth.atan2(visualDirection.x, visualDirection.z));
+                        pitch = (float) Math.toDegrees(Mth.atan2(visualDirection.y, visualDirection.horizontalDistance()));
                     }
-                    // 按照生存时间减少曳光弹的偏移，避免渲染位置距离落点太远
-                    double offsetReducer = Math.max(0, (50 - disToEye)) / 50;
-                    // 摄像机旋转（仅 Iris 需要，见上）
-                    // 应用偏移
-                    poseStack.translate(offset.x * offsetReducer, offset.y * offsetReducer, offset.z * offsetReducer);
-                    // 逆转摄像机旋转
                 }
                 // 说是 override 其实默认值是 1
                 // 所以这里直接乘也没关系
                 width *= bullet.getTracerSizeOverride();
                 width *= (float) Math.max(1.0, disToEye / 3.5);
-                poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, bullet.yRotO, bullet.getYRot()) - 180.0F));
-                poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, bullet.xRotO, bullet.getXRot())));
+                poseStack.mulPose(Axis.YP.rotationDegrees(yaw - 180.0F));
+                poseStack.mulPose(Axis.XP.rotationDegrees(pitch));
                 poseStack.translate(0, isFirstPerson ? 0 : -0.2, trailLength / 2.0);
                 poseStack.scale(width, width, (float) trailLength);
                 // 距离两格外才渲染，只在前 5 tick 判定
@@ -173,6 +172,70 @@ public class EntityBulletRenderer extends EntityRenderer<EntityKineticBullet, En
             }
             poseStack.popPose();
         });
+    }
+
+    /**
+     * 1인칭 예광탄의 경로를 처음 그릴 때 한 번 정한다.
+     * <p>
+     * 총구 위치는 1인칭 손 렌더링에서 얻은 카메라 기준 좌표다. 엔티티는 카메라 회전 없이 월드 축으로 그려지므로,
+     * 쏜 순간의 카메라 회전으로 월드 축 좌표로 바꿔 둔다. 바꾸지 않으면 바라보는 방향과 관계없이 같은 월드 방향으로
+     * 밀려 예광탄이 조준점에서 벗어나 보인다. 이후 고개를 돌려도 예광탄이 따라 흔들리지 않도록 이 값을 계속 쓴다.
+     */
+    private static void prepareFirstPersonPath(EntityKineticBullet bullet, Entity shooter) {
+        if (bullet.getFirstPersonRenderOffset() != null) {
+            return;
+        }
+        Camera camera = Minecraft.getInstance().gameRenderer.mainCamera();
+        Quaternionf cameraRotation = new Quaternionf(camera.rotation());
+        Vector3f worldOffset = new Vector3f(GunItemRendererWrapper.muzzleRenderOffset).rotate(cameraRotation);
+        Vec3 origin = camera.position();
+        bullet.setFirstPersonRenderOffset(worldOffset);
+        bullet.setFirstPersonPath(origin, findImpactPoint(bullet, shooter, origin));
+    }
+
+    /**
+     * 탄이 날아가는 방향으로 처음 맞을 블록이나 엔티티의 지점. 합류 최대 거리 안에 없으면 그 거리 끝 지점이다.
+     * 탄착점이 멀면 그 거리부터 예광탄이 실제 탄도를 따라가므로 이후 탄착점까지도 곧게 이어진다.
+     */
+    private static Vec3 findImpactPoint(EntityKineticBullet bullet, Entity shooter, Vec3 origin) {
+        Vec3 direction = bullet.getDeltaMovement().normalize();
+        if (direction.lengthSqr() == 0) {
+            direction = Vec3.directionFromRotation(shooter.getXRot(), shooter.getYRot());
+        }
+        Vec3 farthest = origin.add(direction.scale(MAX_CONVERGE_DISTANCE));
+        BlockHitResult blockHit = bullet.level().clip(new ClipContext(origin, farthest,
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
+        Vec3 blockLimit = farthest;
+        if (blockHit.getType() != HitResult.Type.MISS) {
+            blockLimit = blockHit.getLocation();
+        }
+        Vec3 impact = blockLimit;
+        double nearestSqr = origin.distanceToSqr(blockLimit);
+        AABB searchArea = new AABB(origin, blockLimit).inflate(1.0);
+        for (Entity entity : bullet.level().getEntities(shooter, searchArea, candidate -> canStopTracer(candidate, shooter))) {
+            Optional<Vec3> entry = entity.getBoundingBox().inflate(ENTITY_HIT_MARGIN).clip(origin, blockLimit);
+            if (entry.isEmpty()) {
+                continue;
+            }
+            double distanceSqr = origin.distanceToSqr(entry.get());
+            if (distanceSqr < nearestSqr) {
+                nearestSqr = distanceSqr;
+                impact = entry.get();
+            }
+        }
+        if (nearestSqr < MIN_CONVERGE_DISTANCE * MIN_CONVERGE_DISTANCE) {
+            impact = origin.add(direction.scale(MIN_CONVERGE_DISTANCE));
+        }
+        return impact;
+    }
+
+    /** 탄을 멈추는 엔티티인지. 쏜 사람의 펫은 탄이 통과하므로 서버 판정(EntityUtil)과 같이 뺀다. */
+    private static boolean canStopTracer(Entity entity, Entity shooter) {
+        if (entity instanceof EntityKineticBullet || entity.isSpectator() || !entity.isPickable()) {
+            return false;
+        }
+        boolean shootersPet = entity instanceof OwnableEntity pet && pet.getOwner() == shooter;
+        return !shootersPet;
     }
 
     @Override

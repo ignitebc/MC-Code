@@ -145,7 +145,11 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
     // 以下几个是只对客户端有用的曳光弹数据
     private float cameraXRot;
     private float cameraYRot;
+    // 1인칭 예광탄을 총구에서 출발한 것처럼 옮겨 그리는 양. 월드 축 기준이다.
     private Vector3f firstPersonRenderOffset;
+    // 1인칭 예광탄을 처음 그릴 때의 카메라 위치와, 옮긴 양이 0이 되어 실제 탄도와 합쳐지는 탄착점
+    private Vec3 firstPersonOrigin;
+    private Vec3 firstPersonImpact;
     // 发射的枪械 ID
     private Identifier gunId = DefaultAssets.EMPTY_GUN_ID;
     // 枪械display ID
@@ -730,6 +734,19 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
 
     public void setFirstPersonRenderOffset(Vector3f originRenderOffset) {
         this.firstPersonRenderOffset = originRenderOffset;
+    }
+
+    public Vec3 getFirstPersonOrigin() {
+        return firstPersonOrigin;
+    }
+
+    public Vec3 getFirstPersonImpact() {
+        return firstPersonImpact;
+    }
+
+    public void setFirstPersonPath(Vec3 origin, Vec3 impact) {
+        this.firstPersonOrigin = origin;
+        this.firstPersonImpact = impact;
     }
 
     public Optional<float[]> getTracerColorOverride() {
