@@ -1,0 +1,452 @@
+[
+  {
+    "name": "adventurer",
+    "category": "job",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/jobs/adventurer.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1906983,
+    "sha256": "d0c16135ec7d919cccbd528cce1086fe58435e47c38f6fb0aee16470939065ce"
+  },
+  {
+    "name": "alchemist",
+    "category": "job",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/jobs/alchemist.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1488584,
+    "sha256": "0840b367d19f72f3f70915fc6f3d4674620fd538a97a9b2970aa10621ec29392"
+  },
+  {
+    "name": "digger",
+    "category": "job",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/jobs/digger.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1125520,
+    "sha256": "3809c522dd44875eb5fbd680390f823f233ee5f6e87f3b07a847518b15a6640f"
+  },
+  {
+    "name": "farmer",
+    "category": "job",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/jobs/farmer.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1465121,
+    "sha256": "8ffe878b853e6aedf14659d5b453c8df4df8c6b0f80a98bf19825867376ad95c"
+  },
+  {
+    "name": "fisherman",
+    "category": "job",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/jobs/fisherman.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1076419,
+    "sha256": "a0a4b1a0dad43e4079d900cf975457fdcc035fbcecf3649e9c9c67f61c35607d"
+  },
+  {
+    "name": "hunter",
+    "category": "job",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/jobs/hunter.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1105982,
+    "sha256": "48fb1bb6809d85b271fd5916b90d40ccabb6777cd6b89703930e1976c29a0960"
+  },
+  {
+    "name": "miner",
+    "category": "job",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/jobs/miner.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1406865,
+    "sha256": "7ed4cf047159059bb3b802376fd172b8b140ed88fb048587d4e8965d4afee1fb"
+  },
+  {
+    "name": "smith",
+    "category": "job",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/jobs/smith.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1530596,
+    "sha256": "9835e3de20ec10a25b7360e8174a860e1fd230e7ce70dec251ce2ff6ec082fc1"
+  },
+  {
+    "name": "job_exp",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/job_exp.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1469414,
+    "sha256": "d2a085d23b9921ac9ef9e58c1b3dec9a3de8792996788f74f41cc2565a40a577"
+  },
+  {
+    "name": "less_fall_damage",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/less_fall_damage.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1470182,
+    "sha256": "4544823b4b357a9da53cad1a02510745f61fc1c9ac5c9babc0b4692b87d49017"
+  },
+  {
+    "name": "run_speed",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/run_speed.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1485726,
+    "sha256": "f3d7e27455c05fcd70484a807c6affd4d3cfd1f7a17873294083634860c799d9"
+  },
+  {
+    "name": "safe_fall",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/safe_fall.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1982310,
+    "sha256": "d055a7ebd566bc61a5df1bfc584d96409a72cb986e0dcee5f41ea1351f8ae714"
+  },
+  {
+    "name": "water_breath",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/water_breath.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1431454,
+    "sha256": "a9d7c3c61ee393450ba8a9f3ae87bc2e0ba80c3d9f4c726285b09f061eb87abe"
+  },
+  {
+    "name": "water_speed",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/water_speed.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1642393,
+    "sha256": "ce82d7132770700c2b6cbefde28fd9c835ac53a22132eac18c5ba2377661d2bc"
+  },
+  {
+    "name": "alchemist_special_find",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/alchemist_special_find.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1013422,
+    "sha256": "fd7aa4121ef391b75ed098312276fa588bf829ef47d786dff032d3707015c557"
+  },
+  {
+    "name": "drop_multiplier",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/drop_multiplier.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1683623,
+    "sha256": "e2ade2feb0511e75cc8066f2fd7dd024eb654630be730f88ba7aa48c19766e70"
+  },
+  {
+    "name": "harmful_potion_immunity",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/harmful_potion_immunity.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1308128,
+    "sha256": "10e1624b3400c8c539e7befb3d275accffe05f9040d9d7da43035b33680433b4"
+  },
+  {
+    "name": "longer_potions",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/longer_potions.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1587737,
+    "sha256": "abaa9065bc22ea67fca3ce6dcab8c9d14420845441a06495da811fe4bb801335"
+  },
+  {
+    "name": "stronger_potions",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/stronger_potions.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1279710,
+    "sha256": "3dcab66bb650a5697fabc857fb2cae18396978939e799829a8b41feac99df79a"
+  },
+  {
+    "name": "gold_block_digger",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/gold_block_digger.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1464337,
+    "sha256": "314dd076a43ba167240baeaac1bfb9954cb2217944bf000f56fc1721d70bee8c"
+  },
+  {
+    "name": "gold_ingot_digger",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/gold_ingot_digger.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1493546,
+    "sha256": "2d1500bc5047ec9f3175aa4510cb4135ac1e4ad7e57f3cf71514891def739237"
+  },
+  {
+    "name": "gold_nugget_digger",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/gold_nugget_digger.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1584981,
+    "sha256": "bbaf5fc0b97d49ea51d174d7ecd26be53f4daaad4ae45b6ae81fc7ddfbb3bb88"
+  },
+  {
+    "name": "shovel_efficiency",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/shovel_efficiency.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1162948,
+    "sha256": "dbd42cf0e12ade398d1a1471fa90d5aacd0c8d12473d47c847dc56f6d3ce2cce"
+  },
+  {
+    "name": "shovel_range",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/shovel_range.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1096474,
+    "sha256": "3f1e958a4d8b203e88e6f851746cd3c6804b2e2f765e5aff263d2e8dca6bad49"
+  },
+  {
+    "name": "auto_replant",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/auto_replant.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1441725,
+    "sha256": "ccad4b03dced340b548f4c1f8cfe944e345538c7ac8bd966fb317993420f8dcb"
+  },
+  {
+    "name": "bone_meal_saver",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/bone_meal_saver.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1526711,
+    "sha256": "66d777a32d3b9ee9758aea2534e0f0e70d0f5554699f9a34ab0db2455b052a0e"
+  },
+  {
+    "name": "double_drops",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/double_drops.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1533693,
+    "sha256": "5dd19d8b09dac7a6c9fa4fa2970d5eec991111e94133ce353e1ccded2806e598"
+  },
+  {
+    "name": "livestock_bounty",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/livestock_bounty.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1578532,
+    "sha256": "41579466fd67637c9cb62c9399c1ef6f7d4f88e9c3be2ffe5001c7697dc0d9f6"
+  },
+  {
+    "name": "range_harvest",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/range_harvest.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1475622,
+    "sha256": "2ff23a1b44c563448881c67cbe0a1ecaf8f698de850fb9c15bc627b4954700f9"
+  },
+  {
+    "name": "casting_speed",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/casting_speed.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1511800,
+    "sha256": "194ba1dbd9509c345ac4c28f159421d51c311f3b5f3df9c600728903f04a4acb"
+  },
+  {
+    "name": "fish_school",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/fish_school.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1491217,
+    "sha256": "aa4525a7e100a16573efb8ddeaa2b320b8277d43ae916ef8721a996b8da326f4"
+  },
+  {
+    "name": "full_catch",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/full_catch.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1791716,
+    "sha256": "9528ba75d1862b27da5b1145e7c65aa3e4054126247a98f55c7e2347ef114e9f"
+  },
+  {
+    "name": "get_special_item",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/get_special_item.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 2033981,
+    "sha256": "de4782f5692771850731ce4a18bf0f57c5afddcf2cfe96ad158cc5e048352d62"
+  },
+  {
+    "name": "grappling_hook",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/grappling_hook.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1559154,
+    "sha256": "12799966b09df507f43c869b654f52c098271fd800039f5e40a0d2c3caaee24c"
+  },
+  {
+    "name": "attack_speed",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/attack_speed.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1378108,
+    "sha256": "61feddf592a4345d31049431a5c6dd36bf5dacc2e9c26816db14db6e89bd5672"
+  },
+  {
+    "name": "exp_boost_mob",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/exp_boost_mob.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1309298,
+    "sha256": "d2d025b0632dec90db8a48bfe1e1a12713112cd317e351d4f1d56ea8b437b6f2"
+  },
+  {
+    "name": "fire_arrows",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/fire_arrows.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1558594,
+    "sha256": "5a272ae664f9d889a3ba27ab82549a599a0edf35c4c00f0aa89654746a4537dd"
+  },
+  {
+    "name": "multiple_arrows",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/multiple_arrows.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1194644,
+    "sha256": "daf1a73917c63e284802532ff330f04d4fae1635aa56a158f2d5f993df5e4106"
+  },
+  {
+    "name": "exp_boost_block",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/exp_boost_block.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1446125,
+    "sha256": "043f9bded6b0ed8ec3f34e168bc969a1543746a4696e887a330bba04afe60909"
+  },
+  {
+    "name": "mining_special_find",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/mining_special_find.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1771041,
+    "sha256": "2da8dc90e3ab73e9d5124654b3ad95577bc2f0cfb13dda75b38d4d6b6996834f"
+  },
+  {
+    "name": "ore_refining",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/ore_refining.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1413216,
+    "sha256": "246eaf39c6f4832a388a9e62bfe3bc08881ac5b837a537f4ff8590895541722f"
+  },
+  {
+    "name": "pickaxe_efficiency",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/pickaxe_efficiency.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1355093,
+    "sha256": "98696f9f8dc3fb2b04ba8281ac62bf747cdb550d52aece049c1c3e99a64f2c4e"
+  },
+  {
+    "name": "pickaxe_range",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/pickaxe_range.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 844798,
+    "sha256": "ca28919da2149736c2c2f1756cbe37ac87f2b0e64eaa553f28a35255fd832fc7"
+  },
+  {
+    "name": "lapis_refund",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/lapis_refund.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1505434,
+    "sha256": "85fcfed9aaf77b6eb3130bc074b776402be4b60e0c65f790f100276febd229ee"
+  },
+  {
+    "name": "less_damage_melee",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/less_damage_melee.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1318890,
+    "sha256": "e10ae690f7f683d0f4ecf10150dbc010d3d392b68da31ba69530a3da5485fc48"
+  },
+  {
+    "name": "null_hit",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/null_hit.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1820693,
+    "sha256": "d41cb2ad9727253758cbd0b54564e1c26fb69c9d1429d71a252ece7dc53dc543"
+  },
+  {
+    "name": "steel_constitution",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/steel_constitution.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1532923,
+    "sha256": "0c18c9599da3ee93897050277e4de6a9863524338b53b130db94fd9052b7ef7b"
+  },
+  {
+    "name": "sword_range",
+    "category": "skill",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/sword_range.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1205140,
+    "sha256": "2ff53010e952c97517fa3176654271284460c30537b378f742062988cd0b588d"
+  },
+  {
+    "name": "bitcoin_face",
+    "category": "bitcoin",
+    "target": "AdvancedNetherite-26.2/Common/src/main/resources/assets/advancednetherite/textures/item/bitcoin_face.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 4046696,
+    "sha256": "69b11e474e4dd90faf001b7a7c06104f98411b02cd3e8ac357b2d6fdd79f7aba"
+  },
+  {
+    "name": "bitcoin_gui",
+    "category": "bitcoin",
+    "target": "AdvancedNetherite-26.2/Common/src/main/resources/assets/advancednetherite/textures/item/bitcoin.png",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1964249,
+    "sha256": "9d48456464b8b6e6f081c2579044077eac27873c5bf642f16cd37f15389d04d5"
+  }
+]

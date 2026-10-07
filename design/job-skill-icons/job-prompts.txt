@@ -1,0 +1,50 @@
+Generation mode: built-in image_gen
+Output: eight profession icons integrated into JobsPlus GUI resources. See assets.json for paths.
+
+=== hunter ===
+Use case: stylized-concept.
+Asset: one high-quality profession icon for a Minecraft-inspired RPG job-information menu.
+Create ONE isolated icon on genuinely transparent alpha background. Square canvas, centered full object with 12 percent safe padding. Consistent set style: premium stylized 3D game item illustration, chunky angular voxel-inspired forms, carefully painted bevel highlights, convincing material separation, clean strong silhouette, excellent small-size readability, detailed but not cluttered. Three-quarter view, upper-left soft key light, restrained cool rim lighting. Use the specified profession-specific materials and palette; do NOT make every object gold. No characters, scenery, text, badge border, pedestal, UI, watermark, floating debris or painted checkerboard. Neither photorealistic nor a low-resolution pixel sprite.
+Subject: Hunter: one powerful broad dark forged-steel sword angled up-right, bright silver cutting edges, burgundy leather grip, dark iron crossguard with one crimson inset. A small strip of red cloth wraps tightly around the grip, no dangling clutter. Blackened steel, silver and deep crimson palette. Sword dominates.
+
+=== miner ===
+Use case: stylized-concept.
+Asset: one high-quality profession icon for a Minecraft-inspired RPG job-information menu.
+Create ONE isolated icon on genuinely transparent alpha background. Square canvas, centered full object with 12 percent safe padding. Consistent set style: premium stylized 3D game item illustration, chunky angular voxel-inspired forms, carefully painted bevel highlights, convincing material separation, clean strong silhouette, excellent small-size readability, detailed but not cluttered. Three-quarter view, upper-left soft key light, restrained cool rim lighting. Use the specified profession-specific materials and palette; do NOT make every object gold. No characters, scenery, text, badge border, pedestal, UI, watermark, floating debris or painted checkerboard. Neither photorealistic nor a low-resolution pixel sprite.
+Subject: Miner: a robust steel pickaxe diagonally oriented, dark walnut shaft with charcoal iron bindings, accompanied at its base by one small rough charcoal ore chunk holding three bright turquoise diamond crystal facets. Silver steel, dark stone and cyan palette. Pickaxe dominates.
+
+=== digger ===
+Use case: stylized-concept.
+Asset: one high-quality profession icon for a Minecraft-inspired RPG job-information menu.
+Create ONE isolated icon on genuinely transparent alpha background. Square canvas, centered full object with 12 percent safe padding. Consistent set style: premium stylized 3D game item illustration, chunky angular voxel-inspired forms, carefully painted bevel highlights, convincing material separation, clean strong silhouette, excellent small-size readability, detailed but not cluttered. Three-quarter view, upper-left soft key light, restrained cool rim lighting. Use the specified profession-specific materials and palette; do NOT make every object gold. No characters, scenery, text, badge border, pedestal, UI, watermark, floating debris or painted checkerboard. Neither photorealistic nor a low-resolution pixel sprite.
+Subject: Digger: a sturdy broad squared steel spade shovel angled diagonally, ash-wood handle with olive canvas grip and dark bronze ferrule, subtle earth wear near cutting edge, one tiny compact earthy voxel clod at base. Warm umber, weathered silver and muted olive palette. Clear shovel silhouette.
+
+=== farmer ===
+Use case: stylized-concept.
+Asset: one high-quality profession icon for a Minecraft-inspired RPG job-information menu.
+Create ONE isolated icon on genuinely transparent alpha background. Square canvas, centered full object with 12 percent safe padding. Consistent set style: premium stylized 3D game item illustration, chunky angular voxel-inspired forms, carefully painted bevel highlights, convincing material separation, clean strong silhouette, excellent small-size readability, detailed but not cluttered. Three-quarter view, upper-left soft key light, restrained cool rim lighting. Use the specified profession-specific materials and palette; do NOT make every object gold. No characters, scenery, text, badge border, pedestal, UI, watermark, floating debris or painted checkerboard. Neither photorealistic nor a low-resolution pixel sprite.
+Subject: Farmer: one wooden-handled farming hoe with a broad weathered steel blade perpendicular to shaft, alongside a compact bundle of three ripe wheat stalks and two vivid green leaves. Warm natural wood, sage green, cream wheat and subdued silver palette. Hoe clearly identifiable.
+
+=== fisherman ===
+Use case: stylized-concept.
+Asset: one high-quality profession icon for a Minecraft-inspired RPG job-information menu.
+Create ONE isolated icon on genuinely transparent alpha background. Square canvas, centered full object with 12 percent safe padding. Consistent set style: premium stylized 3D game item illustration, chunky angular voxel-inspired forms, carefully painted bevel highlights, convincing material separation, clean strong silhouette, excellent small-size readability, detailed but not cluttered. Three-quarter view, upper-left soft key light, restrained cool rim lighting. Use the specified profession-specific materials and palette; do NOT make every object gold. No characters, scenery, text, badge border, pedestal, UI, watermark, floating debris or painted checkerboard. Neither photorealistic nor a low-resolution pixel sprite.
+Subject: Fisherman: a crafted curved dark wood fishing rod with a silver reel, clearly visible thick clean curved line and one chunky silver-blue fish attached near the base. Compact diagonal composition with readable fishing rod silhouette. Navy blue wraps, silvery scales and turquoise accent colors. No water backdrop.
+
+=== smith ===
+Use case: stylized-concept.
+Asset: one high-quality profession icon for a Minecraft-inspired RPG job-information menu.
+Create ONE isolated icon on genuinely transparent alpha background. Square canvas, centered full object with 12 percent safe padding. Consistent set style: premium stylized 3D game item illustration, chunky angular voxel-inspired forms, carefully painted bevel highlights, convincing material separation, clean strong silhouette, excellent small-size readability, detailed but not cluttered. Three-quarter view, upper-left soft key light, restrained cool rim lighting. Use the specified profession-specific materials and palette; do NOT make every object gold. No characters, scenery, text, badge border, pedestal, UI, watermark, floating debris or painted checkerboard. Neither photorealistic nor a low-resolution pixel sprite.
+Subject: Blacksmith: a heavy dark graphite forged-steel anvil with polished silver beveled edges, a single chunky steel smithing hammer leaning across it, deep reddish brown leather-wrapped wooden hammer handle. A narrow warm ember-orange reflection across anvil working surface conveys forge heat. Dark iron, silver and ember palette. Bold compact silhouette.
+
+=== alchemist ===
+Use case: stylized-concept.
+Asset: one high-quality profession icon for a Minecraft-inspired RPG job-information menu.
+Create ONE isolated icon on genuinely transparent alpha background. Square canvas, centered full object with 12 percent safe padding. Consistent set style: premium stylized 3D game item illustration, chunky angular voxel-inspired forms, carefully painted bevel highlights, convincing material separation, clean strong silhouette, excellent small-size readability, detailed but not cluttered. Three-quarter view, upper-left soft key light, restrained cool rim lighting. Use the specified profession-specific materials and palette; do NOT make every object gold. No characters, scenery, text, badge border, pedestal, UI, watermark, floating debris or painted checkerboard. Neither photorealistic nor a low-resolution pixel sprite.
+Subject: Alchemist: a compact Minecraft-inspired brewing stand with a central dark antique-brass upright and two squat faceted clear glass potion bottles on a dark stone base, one luminous violet liquid and one bright teal liquid. Deep purple, turquoise and subdued aged bronze palette. Beautiful glass refraction and readable triangular brewing-stand silhouette, no smoke cloud.
+
+=== adventurer ===
+Use case: stylized-concept.
+Asset: one high-quality profession icon for a Minecraft-inspired RPG job-information menu.
+Create ONE isolated icon on genuinely transparent alpha background. Square canvas, centered full object with 12 percent safe padding. Consistent set style: premium stylized 3D game item illustration, chunky angular voxel-inspired forms, carefully painted bevel highlights, convincing material separation, clean strong silhouette, excellent small-size readability, detailed but not cluttered. Three-quarter view, upper-left soft key light, restrained cool rim lighting. Use the specified profession-specific materials and palette; do NOT make every object gold. No characters, scenery, text, badge border, pedestal, UI, watermark, floating debris or painted checkerboard. Neither photorealistic nor a low-resolution pixel sprite.
+Subject: Adventurer: a pair of sturdy leather traveler boots arranged one forward and one behind, rich chestnut leather with forest-green textile cuffs, dark rugged soles, brushed silver protective toe caps and steel buckles. Fine leather stitching and strong chunky adventure-game shapes. Chestnut, forest green and silver palette. Instantly recognizable boots.

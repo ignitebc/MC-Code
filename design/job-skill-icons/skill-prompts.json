@@ -1,0 +1,215 @@
+{
+  "mode": "built-in image_gen",
+  "specs": [
+    {
+      "name": "job_exp",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: An open dark-leather journal with luminous emerald experience crystals rising from its cream pages. Profession experience mastery.",
+      "transparent": true
+    },
+    {
+      "name": "less_fall_damage",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: One sturdy silver-toed brown boot landing softly on a thick curved cyan cushion of air above a small stone. Reduced falling damage.",
+      "transparent": true
+    },
+    {
+      "name": "run_speed",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: One forest-green and brown leather boot with two bold silver-blue wind ribbons sweeping behind it. Movement speed.",
+      "transparent": true
+    },
+    {
+      "name": "safe_fall",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A soft white feather resting above a single graceful feline pawprint embossed on dark green leather. Safe landing height, compact emblem.",
+      "transparent": true
+    },
+    {
+      "name": "water_breath",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A beautiful azure air bubble enclosing a small silver oxygen-like spiral, framed below by a dark teal turtle-shell fragment. Underwater breathing, no lettering.",
+      "transparent": true
+    },
+    {
+      "name": "water_speed",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A silver-blue swimming fin cutting through a single thick turquoise wave curl, conveying underwater movement speed.",
+      "transparent": true
+    },
+    {
+      "name": "alchemist_special_find",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: One radiant cyan diamond emerging from a squat violet alchemy flask, aged bronze collar, symbolizing a rare diamond discovered through brewing.",
+      "transparent": true
+    },
+    {
+      "name": "drop_multiplier",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A compact alchemist dissecting kit: one small steel scalpel across a purple monster membrane and two orange blaze-powder crystals. Additional monster ingredients, non-gory.",
+      "transparent": true
+    },
+    {
+      "name": "harmful_potion_immunity",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A silver shield protecting a small green antidote vial from a violet poison droplet. Clean defensive silhouette.",
+      "transparent": true
+    },
+    {
+      "name": "longer_potions",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: One beautiful teal potion flask joined to a small bronze hourglass containing pale sand. Increased potion duration.",
+      "transparent": true
+    },
+    {
+      "name": "stronger_potions",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A squat faceted violet potion flask with a luminous concentrated magenta core and one bold upward chevron embossed in its metal collar. Stronger potion effects.",
+      "transparent": true
+    },
+    {
+      "name": "gold_block_digger",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: One large squared gold block emerging from a dark earthy voxel clod. Clear cubic shape with rich amber facets, rare gold block discovery.",
+      "transparent": true
+    },
+    {
+      "name": "gold_ingot_digger",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: One unmistakable trapezoidal gold ingot half-emerging from dark brown soil. Distinct elongated bar silhouette.",
+      "transparent": true
+    },
+    {
+      "name": "gold_nugget_digger",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: Three small irregular gold nuggets cradled in one dark soil clod, rough little metallic lumps rather than ingots or cubes.",
+      "transparent": true
+    },
+    {
+      "name": "shovel_efficiency",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A sturdy silver shovel blade cutting diagonally through one compact earth block with two short ochre speed strokes. Faster digging.",
+      "transparent": true
+    },
+    {
+      "name": "shovel_range",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: An exceptionally long-handled silver shovel with a single broad amber reach arc extending from its blade toward a small distant earth cube. Longer interaction reach, not area digging.",
+      "transparent": true
+    },
+    {
+      "name": "auto_replant",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A fresh vivid green seedling with two leaves growing from a compact square of tilled earth, encircled by a single clear curved green return arrow. Automatic replanting.",
+      "transparent": true
+    },
+    {
+      "name": "bone_meal_saver",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A small cream linen pouch of white bone meal with one polished ivory bone and a bold emerald return arrow curling tightly around it. Material refund.",
+      "transparent": true
+    },
+    {
+      "name": "double_drops",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: Two plump golden wheat bundles paired with one orange carrot, tied together with deep green ribbon. Bountiful doubled crop harvest, no numbers.",
+      "transparent": true
+    },
+    {
+      "name": "livestock_bounty",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A stylized friendly brown cow head medallion above two small leather rolls, warm chestnut and cream, livestock bounty. No blood.",
+      "transparent": true
+    },
+    {
+      "name": "range_harvest",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: One steel farming hoe sweeping above a compact three-by-three patch of ripe golden wheat, with a broad emerald arc indicating area harvesting.",
+      "transparent": true
+    },
+    {
+      "name": "casting_speed",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A navy-and-silver fishing reel with a compact curved fishing rod tip and one bright aqua speed swoosh. Fast fishing.",
+      "transparent": true
+    },
+    {
+      "name": "fish_school",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: Exactly three distinct silver-blue fish swimming together in a compact circular formation, strong turquoise fins and a small curved wave beneath.",
+      "transparent": true
+    },
+    {
+      "name": "full_catch",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: Two matching small treasure parcels with bright cyan crystals and silver clasps caught together in a compact dark-blue fishing net. Duplicated special catch, not ordinary fish.",
+      "transparent": true
+    },
+    {
+      "name": "get_special_item",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: An open barnacle-accented dark sea treasure chest revealing a cyan diamond and one pearl, navy blue and aged bronze, rare fishing treasure.",
+      "transparent": true
+    },
+    {
+      "name": "grappling_hook",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: One large three-pronged dark steel grappling hook attached to a thick coiled tan rope, a small teal highlight. Clear hook silhouette.",
+      "transparent": true
+    },
+    {
+      "name": "attack_speed",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: Two overlapping positions of one crimson-gripped steel sword with one bold scarlet slash arc showing rapid repeated strikes.",
+      "transparent": true
+    },
+    {
+      "name": "exp_boost_mob",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A small dark monster-skull-shaped stone with three vivid emerald experience orbs rising from it, violet accent, extra combat experience, stylized and non-gory.",
+      "transparent": true
+    },
+    {
+      "name": "fire_arrows",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: One large steel arrowhead with a dark shaft surrounded by compact orange flame on one side and vivid green poison on the other. Both fire and poison must be clear. No bow.",
+      "transparent": true
+    },
+    {
+      "name": "multiple_arrows",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: Exactly five silver arrows fanning outward from a tight shared lower center, dark shafts and crimson fletching. Multishot arrow volley.",
+      "transparent": true
+    },
+    {
+      "name": "exp_boost_block",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A cracked dark ore cube with three luminous green experience orbs emerging from the crack, silver mineral facets. Mining experience.",
+      "transparent": true
+    },
+    {
+      "name": "mining_special_find",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A large bright cyan diamond nestled within a fractured charcoal ore seam, small emerald mineral accent, rare mining discovery.",
+      "transparent": true
+    },
+    {
+      "name": "ore_refining",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A split ore lump transforming into a clean silver ingot across a compact orange heat arc. Instant ore refining.",
+      "transparent": true
+    },
+    {
+      "name": "pickaxe_efficiency",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A heavy silver pickaxe head smashing into one dark stone cube with two short cyan speed streaks. Faster mining, strong tool silhouette.",
+      "transparent": true
+    },
+    {
+      "name": "pickaxe_range",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A long-handled steel pickaxe with a broad cyan reach arc extending from its tip toward a small distant stone cube. Longer reach, not area mining.",
+      "transparent": true
+    },
+    {
+      "name": "lapis_refund",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: Three rich royal-blue lapis crystals above a small open enchanting book, a broad teal return arrow curling around them. Lapis refund.",
+      "transparent": true
+    },
+    {
+      "name": "less_damage_melee",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A chunky silver shield blocking one steel sword, a controlled amber impact flash at the contact point. Reduced melee damage.",
+      "transparent": true
+    },
+    {
+      "name": "null_hit",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A dark steel breastplate inside a clean luminous cyan protective ring, one incoming small silver blade deflected away. Complete hit negation.",
+      "transparent": true
+    },
+    {
+      "name": "steel_constitution",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A strong red faceted heart reinforced by dark forged-steel plates and silver rivets, clear health emblem with a heavy metal silhouette.",
+      "transparent": true
+    },
+    {
+      "name": "sword_range",
+      "prompt": "Use case: stylized-concept. Create ONE premium Minecraft-inspired RPG skill icon. Square 1024x1024 canvas. Isolated on genuine transparent alpha background. Main physical objects must be fully opaque; transparency only outside the silhouette and at edge antialiasing. Large bold forms readable in a 16-32 pixel GUI slot, rich but restrained 3D hand-painted material detail, angular voxel-inspired bevels, dark navy outline, silver highlights, profession-specific accent color described below, upper-left soft key light. Centered compact composition occupying 80 percent with safe padding. No scene background, no decorative badge frame, no text, no numbers, no watermark, no checkerboard. Not photorealism. Subject: A long elegant steel blade with a broad violet reach arc extending beyond its tip, dark leather hilt. Increased melee reach.",
+      "transparent": true
+    },
+    {
+      "name": "bitcoin_face",
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. A square opaque full-bleed texture for the FRONT FACE of a real 3D voxel-game Bitcoin coin model. Exactly orthographic straight-on, no perspective, no visible side thickness, no drop shadow, no surrounding scene. A large raised SILVER Bitcoin symbol ₿ centered on rich COPPER metal, broad silver concentric outer rim. The circular rim reaches the midpoints of all four square canvas edges; outside the circle in the four corners, continue the same silver metallic material so there are NO transparent pixels and NO black/white backdrop. Entire square covered with opaque copper/silver metal texture. Broad readable forms, premium hand-painted stylized 3D metallic relief, subtle even diffuse highlights, no tiny text, no letters except the central Bitcoin symbol, no jewels. 1024x1024 square, purpose is a model UV face, no coin mockup angle."
+    },
+    {
+      "name": "bitcoin_gui",
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Create a single premium Minecraft RPG Bitcoin inventory icon, nearly front facing with only a slight visible silver milled right edge, a huge raised silver Bitcoin symbol ₿ on a warm copper inner face and thick silver outer rim. Strong readability in a 16 pixel slot, simplified engraving, no tiny text. Square canvas 1024x1024, centered with 12 percent safe padding, full object visible. Genuine transparent background. CRITICAL: solid copper/silver coin body is completely opaque alpha255 everywhere except silhouette edge antialiasing; no overall transparency or faded metal. Premium hand-painted stylized angular 3D metal, warm highlights and dark bronze separation, no shadows outside coin, no particles, no frame, no watermark."
+    }
+  ]
+}
