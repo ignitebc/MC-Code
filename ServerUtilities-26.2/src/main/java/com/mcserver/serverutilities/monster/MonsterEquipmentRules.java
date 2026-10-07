@@ -34,6 +34,10 @@ public final class MonsterEquipmentRules {
     private static final EquipmentSlot[] ARMOR_SLOTS = {
             EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
     };
+    /** 아기 좀비 계열과 아기 피글린이 비워 두는 칸. 방어구 4부위와 무기를 드는 주 손이다. */
+    private static final EquipmentSlot[] BABY_EMPTY_SLOTS = {
+            EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET, EquipmentSlot.MAINHAND
+    };
     /** 부위별 아이템 ID 뒷부분. 순서는 {@link #ARMOR_SLOTS}와 같다. */
     private static final List<String> ARMOR_PIECE_SUFFIXES = List.of("_helmet", "_chestplate", "_leggings", "_boots");
     private static final int CHEST_PIECE_INDEX = 1;
@@ -92,9 +96,11 @@ public final class MonsterEquipmentRules {
         // 조건에 맞지 않는 개체도 추첨을 끝낸 것으로 기록한다.
         // 기록하지 않으면 생성 대기 표시가 남아, 네더에서 태어난 개체가 나중에 오버월드로 넘어올 때 추첨된다.
         boolean rollsArmor = rollsArmor(mob);
+        // 아기 좀비 계열과 아기 피글린은 방어구를 입지 않는다. 무기도 받지 않는다(rollWeapon).
+        boolean canWearArmor = rollsArmor && !isUnarmedBaby(mob);
 
         // 방어구와 무기를 따로 추첨하므로 한쪽만 갖춘 개체도 나온다.
-        boolean armorEquipped = rollsArmor && rollChance(mob, EQUIPMENT_CHANCE_PERCENT);
+        boolean armorEquipped = canWearArmor && rollChance(mob, EQUIPMENT_CHANCE_PERCENT);
         ItemStack weapon = rollWeapon(mob);
         boolean weaponEquipped = !weapon.isEmpty();
 
@@ -118,6 +124,51 @@ public final class MonsterEquipmentRules {
             level = calculateLevel(mob, armorEquipped, weaponEquipped);
         }
         state.serverutilities$finishEquipmentRoll(armorEquipped, weaponEquipped, level);
+    }
+
+    /**
+     * 아기 좀비 계열과 아기 피글린이 입거나 든 장비를 벗긴다. 월드에 들어올 때마다 부른다.
+     * <p>
+     * 방어구 4부위와 주 손을 비운다. 주 손에 든 것이 곧 무기이므로 종류를 가리지 않는다.
+     * 바닐라 기본 장비(좀비의 철 검·삽, 드라운드의 삼지창, 좀비 피글린의 금 검), 핼러윈 호박, 소환 명령으로 준 장비와
+     * 이 규칙 전에 장비를 갖춘 채 저장된 개체도 벗긴다. 보조손은 피글린이 금을 감정하는 칸이라 두고,
+     * 줍기로는 보조손에 들어가지 않는다. 추첨 장비였으면 지급 기록을 지우고 레벨을 다시 계산한다.
+     */
+    public static void stripBabyEquipment(Entity entity) {
+        if (!(entity instanceof Mob mob) || entity.level().isClientSide()) return;
+        if (!isUnarmedBaby(mob)) return;
+        boolean removed = false;
+        for (EquipmentSlot slot : BABY_EMPTY_SLOTS) {
+            if (mob.getItemBySlot(slot).isEmpty()) continue;
+            mob.setItemSlot(slot, ItemStack.EMPTY);
+            removed = true;
+        }
+        if (removed) ((MonsterEquipmentAccess) mob).serverutilities$clearRandomEquipment();
+    }
+
+    /** 아기 좀비 계열이나 아기 피글린이 이 칸에 장비를 갖추려는지. 줍기와 디스펜서로 갖추는 것을 막는 데 쓴다. */
+    public static boolean blocksBabyEquipment(Mob mob, EquipmentSlot slot) {
+        return isBabyEmptySlot(slot) && isUnarmedBaby(mob);
+    }
+
+    /** 방어구와 무기를 갖지 않는 아기인지. 아기 좀비 계열(좀비, 허스크, 드라운드, 좀비 주민, 좀비 피글린)과 아기 피글린이다. */
+    private static boolean isUnarmedBaby(Mob mob) {
+        boolean zombieOrPiglin = mob instanceof Zombie || isPiglin(mob);
+        return zombieOrPiglin && mob.isBaby();
+    }
+
+    private static boolean isBabyEmptySlot(EquipmentSlot slot) {
+        for (EquipmentSlot emptySlot : BABY_EMPTY_SLOTS) {
+            if (emptySlot == slot) return true;
+        }
+        return false;
+    }
+
+    private static boolean isArmorSlot(EquipmentSlot slot) {
+        for (EquipmentSlot armorSlot : ARMOR_SLOTS) {
+            if (armorSlot == slot) return true;
+        }
+        return false;
     }
 
     /** 크리퍼는 장비가 없으므로 LV1~LV7을 같은 확률로 뽑는다. 레벨이 폭발 피해와 블록 파괴 범위를 정한다. */
@@ -231,8 +282,10 @@ public final class MonsterEquipmentRules {
      * 지급할 무기. 지급하지 않으면 빈 아이템이다.
      * <p>
      * 오버월드 좀비·스켈레톤 계열은 근접 무기와 총기 중에서, 네더 피글린 계열은 총기 중에서만 고른다.
+     * 아기 좀비 계열과 아기 피글린은 무기를 받지 않는다.
      */
     private static ItemStack rollWeapon(Mob mob) {
+        if (isUnarmedBaby(mob)) return ItemStack.EMPTY;
         if (isFullyEquippable(mob)) {
             if (!rollChance(mob, EQUIPMENT_CHANCE_PERCENT)) return ItemStack.EMPTY;
             return createWeapon(mob, MELEE_WEAPONS);
@@ -290,9 +343,7 @@ public final class MonsterEquipmentRules {
      */
     public static boolean isRandomEquipmentSlot(EquipmentSlot slot, boolean armorEquipped, boolean weaponEquipped) {
         if (slot == EquipmentSlot.MAINHAND) return weaponEquipped;
-        for (EquipmentSlot armorSlot : ARMOR_SLOTS) {
-            if (armorSlot == slot) return armorEquipped;
-        }
+        if (isArmorSlot(slot)) return armorEquipped;
         return false;
     }
 

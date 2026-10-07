@@ -50,6 +50,14 @@ public abstract class MonsterEquipmentMixin implements MonsterEquipmentAccess {
     }
 
     @Override
+    public void serverutilities$clearRandomEquipment() {
+        serverutilities$randomArmor = false;
+        serverutilities$randomWeapon = false;
+        if (serverutilities$monsterLevel == MonsterLevel.NONE) return;
+        serverutilities$monsterLevel = MonsterEquipmentRules.equipmentLevel((Mob) (Object) this, false, false);
+    }
+
+    @Override
     public int serverutilities$monsterLevel() { return serverutilities$monsterLevel; }
 
     @Override
@@ -114,14 +122,27 @@ public abstract class MonsterEquipmentMixin implements MonsterEquipmentAccess {
         return MonsterEquipmentRules.equipmentLevel(mob, serverutilities$randomArmor, serverutilities$randomWeapon);
     }
 
-    /** 추첨으로 지급한 칸은 주운 아이템으로 바꾸지 않는다. 줍기를 막지 않는 피글린이 대상이다. */
+    /**
+     * 추첨으로 지급한 칸은 주운 아이템으로 바꾸지 않는다. 줍기를 막지 않는 피글린이 대상이다.
+     * 아기 좀비 계열과 아기 피글린은 방어구와 주 손 장비를 줍지 않는다.
+     * 좀비가 못 주운 아이템은 땅에 남고, 피글린은 인벤토리에 넣었다가 처치될 때 떨어뜨린다.
+     */
     @Inject(method = "equipItemIfPossible", at = @At("HEAD"), cancellable = true)
     private void serverutilities$keepRandomEquipment(ServerLevel level, ItemStack stack,
             CallbackInfoReturnable<ItemStack> cir) {
-        EquipmentSlot slot = ((Mob) (Object) this).getEquipmentSlotForItem(stack);
+        Mob mob = (Mob) (Object) this;
+        EquipmentSlot slot = mob.getEquipmentSlotForItem(stack);
         boolean randomSlot = MonsterEquipmentRules.isRandomEquipmentSlot(slot,
                 serverutilities$randomArmor, serverutilities$randomWeapon);
-        if (randomSlot) cir.setReturnValue(ItemStack.EMPTY);
+        boolean babySlot = MonsterEquipmentRules.blocksBabyEquipment(mob, slot);
+        if (randomSlot || babySlot) cir.setReturnValue(ItemStack.EMPTY);
+    }
+
+    /** 디스펜서로도 아기 좀비 계열과 아기 피글린에게 방어구를 입히지 못한다. 바닐라는 줍기가 가능한 몹이면 입힌다. */
+    @Inject(method = "canDispenserEquipIntoSlot", at = @At("HEAD"), cancellable = true)
+    private void serverutilities$blockBabyDispenserEquipment(EquipmentSlot slot,
+            CallbackInfoReturnable<Boolean> cir) {
+        if (MonsterEquipmentRules.blocksBabyEquipment((Mob) (Object) this, slot)) cir.setReturnValue(false);
     }
 
     @Inject(method = "dropCustomDeathLoot", at = @At("HEAD"))

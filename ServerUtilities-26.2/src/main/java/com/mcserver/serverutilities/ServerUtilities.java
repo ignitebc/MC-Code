@@ -50,6 +50,8 @@ public final class ServerUtilities implements ModInitializer {
                 // 소환 명령·분열도 포함하고, 디스크 로드·차원 이동은 신규 생성과 구별한다.
                 boolean newSpawn = !loadedFromDisk && reason != EntitySpawnReason.DIMENSION_TRAVEL;
                 if (newSpawn || state.serverutilities$equipmentPending()) MonsterEquipmentRules.onSpawn(entity);
+                // 디스크 로드·차원 이동을 포함해 들어올 때마다 아기 좀비 계열과 아기 피글린의 방어구·무기를 벗긴다.
+                MonsterEquipmentRules.stripBabyEquipment(entity);
             }
             return true;
         });
