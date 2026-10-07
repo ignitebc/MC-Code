@@ -25,4 +25,15 @@ public interface CoverCombatant {
     BlockPos tacz$getCoverPos();
 
     void tacz$setCoverPos(@Nullable BlockPos coverPos);
+
+    /**
+     * 총소리 경보로 이 틱까지 대상을 붙잡는다({@link GunfireAlert}).
+     * 그동안은 대상이 보이지 않거나 추적 범위 밖에 있어도 대상을 버리지 않는다.
+     */
+    void tacz$alertTarget(Entity target, long untilTick);
+
+    boolean tacz$isAlertedTo(Entity target, long gameTime);
+
+    /** 공격 대상 Goal로 대상을 고르는 몬스터인지. 피글린처럼 Brain으로만 고르는 몬스터는 false다. */
+    boolean tacz$usesTargetGoals();
 }

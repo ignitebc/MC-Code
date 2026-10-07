@@ -6,7 +6,10 @@ import cn.sh1rocu.tacz.util.forge.PartialNBTIngredient;
 import cn.sh1rocu.tacz.util.forge.StrictNBTIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
 import com.tacz.guns.GunMod;
+import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
+import com.tacz.guns.api.event.common.EntityKillByGunEvent;
 import com.tacz.guns.api.event.server.AmmoHitBlockEvent;
+import com.tacz.guns.entity.ai.GunfireAlert;
 import com.tacz.guns.config.ClientConfig;
 import com.tacz.guns.config.CommonConfig;
 import com.tacz.guns.config.PreLoadConfig;
@@ -105,6 +108,11 @@ public class TaCZFabric implements ModInitializer {
         AmmoHitBlockEvent.CALLBACK.register(BellRing::onAmmoHitBlock);
 
         AmmoHitBlockEvent.CALLBACK.register(DestroyGlassBlock::onAmmoHitBlock);
+
+        // 플레이어가 총으로 몬스터를 맞히거나 죽이면 주변 몬스터에게 알린다.
+        EntityHurtByGunEvent.POST.register(GunfireAlert::onHurtByGun);
+        EntityKillByGunEvent.CALLBACK.register(GunfireAlert::onKillByGun);
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> GunfireAlert.clear());
 
         LivingHurtEvent.CALLBACK.register(LOW, EntityDamageEvent::onLivingHurt);
 

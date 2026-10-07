@@ -10,6 +10,7 @@
     "common.MobArmedTruceMixin",
     "common.MobCoverMixin",
     "common.MonsterEquipmentGunMixin",
+    "common.PiglinAiInvoker",
     "common.PiglinSensorTruceMixin",
     "common.ServerGamePacketListenerImplMixin",
     "common.ServerPlayerMixin",
