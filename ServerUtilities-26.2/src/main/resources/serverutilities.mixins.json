@@ -7,6 +7,7 @@
     "ArmorAttributeLimitMixin",
     "ArmorDamageCurveMixin",
     "ArmorPrecisionMixin",
+    "BlockBreakWarningMixin",
     "CreeperExplosionDamageMixin",
     "CreeperExplosionRangeMixin",
     "DeathChestProtectionMixin",
