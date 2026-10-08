@@ -23,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class MixinHyperSplashPotion
 {
     @Unique private boolean jobsplus$rolled;
+    @Unique private boolean jobsplus$eligible;
     @Unique private boolean jobsplus$enhanced;
     @Unique private boolean jobsplus$notified;
 
@@ -32,7 +33,9 @@ public abstract class MixinHyperSplashPotion
         if (!jobsplus$rolled)
         {
             jobsplus$rolled = true;
-            jobsplus$enhanced = HyperAlchemyHandler.roll((ThrownSplashPotion) (Object) this, item);
+            ThrownSplashPotion potion = (ThrownSplashPotion) (Object) this;
+            jobsplus$eligible = HyperAlchemyHandler.isEligible(potion, item);
+            jobsplus$enhanced = jobsplus$eligible && HyperAlchemyHandler.roll(potion, item);
         }
         // 대상 범위·거리별 지속시간·몹의 효과는 원래 물약 처리를 유지한다.
         original.call(level, item, hit);
@@ -43,12 +46,15 @@ public abstract class MixinHyperSplashPotion
     private boolean jobsplus$enhanceEffect(LivingEntity target, MobEffectInstance effect, Entity source,
                                            Operation<Boolean> original)
     {
-        if (!jobsplus$enhanced || !(target instanceof ServerPlayer player)) return original.call(target, effect, source);
-        ThrownSplashPotion potion = (ThrownSplashPotion) (Object) this;
-        try (var scope = HyperAlchemyHandler.scope(player, potion.getOwner(), effect))
+        if (!(target instanceof ServerPlayer player)) return original.call(target, effect, source);
+        Entity owner = ((ThrownSplashPotion) (Object) this).getOwner();
+        boolean applies = HyperAlchemyHandler.appliesTo(player, owner, jobsplus$eligible, jobsplus$enhanced);
+        if (!applies) return original.call(target, effect, source);
+        try (var scope = HyperAlchemyHandler.scope(player, owner, effect, jobsplus$enhanced))
         {
             boolean applied = original.call(target, HyperAlchemyHandler.enhanced(player, effect), source);
-            if (applied) jobsplus$notify();
+            // 본인 확정 강화는 던질 때마다 일어나므로 판정에 성공했을 때만 알린다.
+            if (applied && jobsplus$enhanced) jobsplus$notify();
             return applied;
         }
     }
@@ -58,18 +64,24 @@ public abstract class MixinHyperSplashPotion
     private void jobsplus$enhanceInstant(MobEffect effect, ServerLevel level, Entity direct, Entity owner,
                                          LivingEntity target, int amplifier, double scale, Operation<Void> original)
     {
-        if (!jobsplus$enhanced || !(target instanceof ServerPlayer player))
+        if (!(target instanceof ServerPlayer player))
+        {
+            original.call(effect, level, direct, owner, target, amplifier, scale);
+            return;
+        }
+        boolean applies = HyperAlchemyHandler.appliesTo(player, owner, jobsplus$eligible, jobsplus$enhanced);
+        if (!applies)
         {
             original.call(effect, level, direct, owner, target, amplifier, scale);
             return;
         }
         MobEffectInstance instance = new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect), 1, amplifier);
-        try (var scope = HyperAlchemyHandler.scope(player, owner, instance))
+        try (var scope = HyperAlchemyHandler.scope(player, owner, instance, jobsplus$enhanced))
         {
             int enhanced = EffectAmplifierScope.resolve(player, instance, 0);
             // 즉시 회복도 원본 호출을 대체하여 기본 회복과 강화 회복이 두 번 들어가지 않게 한다.
             original.call(effect, level, direct, owner, target, enhanced, scale);
-            jobsplus$notify();
+            if (jobsplus$enhanced) jobsplus$notify();
         }
     }
 

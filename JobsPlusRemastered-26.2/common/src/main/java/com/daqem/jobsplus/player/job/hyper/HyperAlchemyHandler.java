@@ -31,11 +31,10 @@ public final class HyperAlchemyHandler
         potion.setItem(item);
     }
 
-    public static boolean roll(ThrownSplashPotion potion, ItemStack item)
+    /** 하이퍼를 켠 연금술사가 던진, 이로운 효과만 담긴 투척 물약인지. 본인 확정 강화와 아군 강화 판정의 공통 조건이다. */
+    public static boolean isEligible(ThrownSplashPotion potion, ItemStack item)
     {
-        int level = item.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-                .copyTag().getIntOr(LEVEL_KEY, 0);
-        if (level <= 0 || !(potion.getOwner() instanceof ServerPlayer)) return false;
+        if (thrownLevel(item) <= 0 || !(potion.getOwner() instanceof ServerPlayer)) return false;
         PotionContents contents = item.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
         boolean hasEffect = false;
         for (MobEffectInstance effect : contents.getAllEffects())
@@ -43,7 +42,34 @@ public final class HyperAlchemyHandler
             if (effect.getEffect().value().getCategory() != MobEffectCategory.BENEFICIAL) return false;
             hasEffect = true;
         }
-        return hasEffect && potion.getRandom().nextDouble() * 100.0D < HyperSkillRules.getAlchemistChance(level);
+        return hasEffect;
+    }
+
+    /** 한 병당 한 번 하는 강화 판정. 성공하면 범위 안 아군도 강화된다. */
+    public static boolean roll(ThrownSplashPotion potion, ItemStack item)
+    {
+        double chance = HyperSkillRules.getAlchemistChance(thrownLevel(item));
+        return potion.getRandom().nextDouble() * 100.0D < chance;
+    }
+
+    /** 본인은 판정과 관계없이 강화하고, 다른 플레이어는 판정에 성공했을 때만 강화한다. */
+    public static boolean appliesTo(ServerPlayer target, Entity owner, boolean eligible, boolean enhanced)
+    {
+        if (enhanced)
+        {
+            return true;
+        }
+        return eligible && isOwner(target, owner);
+    }
+
+    private static boolean isOwner(ServerPlayer target, Entity owner)
+    {
+        return owner != null && owner.getUUID().equals(target.getUUID());
+    }
+
+    private static int thrownLevel(ItemStack item)
+    {
+        return item.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getIntOr(LEVEL_KEY, 0);
     }
 
     public static boolean hasEffectLevels(MobEffectInstance effect)
@@ -55,10 +81,13 @@ public final class HyperAlchemyHandler
                 && !type.equals(MobEffects.DOLPHINS_GRACE) && !type.equals(MobEffects.BREATH_OF_THE_NAUTILUS);
     }
 
-    public static EffectAmplifierScope scope(ServerPlayer target, Entity owner, MobEffectInstance original)
+    public static EffectAmplifierScope scope(ServerPlayer target, Entity owner, MobEffectInstance original,
+                                             boolean enhanced)
     {
         boolean scalable = hasEffectLevels(original);
-        int extra = scalable && owner != null && owner.getUUID().equals(target.getUUID()) ? 1 : 0;
+        // 기본 +1은 본인 확정분과 판정 성공분이 같다. 본인이 판정에도 성공하면 기존처럼 +1을 더 받는다.
+        boolean ownerBonus = scalable && enhanced && isOwner(target, owner);
+        int extra = ownerBonus ? 1 : 0;
         // 저항 V의 완전 면역과 높은 단계의 회복 폭증을 막기 위해 하이퍼 강화 상한은 IV다.
         int cap = scalable ? 3 : original.getAmplifier();
         return new EffectAmplifierScope(target, original, scalable ? 1 : 0, extra, cap);
