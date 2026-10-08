@@ -15,6 +15,7 @@
     "client.TitleTabLayoutMixin"
   ],
   "mixins": [
+    "MixinFirepowerBoostMagazine",
     "MixinFoodAbsorption",
     "MixinHyperPlayer",
     "MixinHyperServerPlayer",

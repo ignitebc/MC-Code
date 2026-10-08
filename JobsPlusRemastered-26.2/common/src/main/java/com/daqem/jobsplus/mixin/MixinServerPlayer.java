@@ -12,6 +12,7 @@ import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.ServerPlayerData;
 import com.daqem.jobsplus.player.job.Job;
 import com.daqem.jobsplus.player.job.exp.ExpCollector;
+import com.daqem.jobsplus.player.job.powerup.FirepowerBoost;
 import com.daqem.jobsplus.player.job.powerup.Powerup;
 import com.daqem.jobsplus.player.job.powerup.PowerupState;
 import com.daqem.jobsplus.player.stock.StockAccount;
@@ -109,6 +110,7 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
             jobsplus$jobs.remove(job);
             jobsplus$removeActionHolders(job);
             JobHealthSync.sync(this);
+            FirepowerBoost.sync(jobsplus$getServerPlayer());
         }
     }
 
@@ -243,6 +245,8 @@ public abstract class MixinServerPlayer extends Player implements JobsServerPlay
     @Override
     public void jobsplus$updateJob(Job job) {
         this.jobsplus$updateActionHolders(job);
+        // 일반스킬 구매·ON/OFF가 이 경로를 거치므로 화력 증강 장탄 보너스도 여기서 클라이언트와 맞춘다.
+        FirepowerBoost.sync(jobsplus$getServerPlayer());
     }
 
     @Override

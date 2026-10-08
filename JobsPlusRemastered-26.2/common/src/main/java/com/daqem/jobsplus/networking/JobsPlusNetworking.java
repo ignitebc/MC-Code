@@ -4,6 +4,7 @@ import com.daqem.jobsplus.JobsPlus;
 import com.daqem.jobsplus.client.hyper.ClientHyperSkills;
 import com.daqem.jobsplus.client.networking.ClientboundAlertPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundAchievementPacketHandler;
+import com.daqem.jobsplus.client.networking.ClientboundFirepowerBoostPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundLevelUpJobPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundOpenJobsScreenPacketHandler;
 import com.daqem.jobsplus.client.networking.ClientboundOpenPowerupsScreenPacketHandler;
@@ -60,6 +61,8 @@ public interface JobsPlusNetworking
         // 칭호 탭의 보유자 목록과 장착 칭호를 주고받는다.
         CustomPacketPayload.Type<ServerboundEquipTitlePacket> SERVERBOUND_EQUIP_TITLE = new CustomPacketPayload.Type<>(JobsPlus.getId("serverbound_equip_title"));
         CustomPacketPayload.Type<ClientboundTitlesPacket> CLIENTBOUND_TITLES = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_titles"));
+        // 사냥꾼 화력 증강의 장탄 보너스를 TACZ 클라이언트 재장전 판정과 맞춘다.
+        CustomPacketPayload.Type<ClientboundFirepowerBoostPacket> CLIENTBOUND_FIREPOWER_BOOST = new CustomPacketPayload.Type<>(JobsPlus.getId("clientbound_firepower_boost"));
 
         static void initClient()
         {
@@ -77,6 +80,7 @@ public interface JobsPlusNetworking
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_SYNC_ACTION_HOLDERS, ClientboundSyncActionHoldersPacket.STREAM_CODEC, ClientboundSyncActionHoldersPacketHandler::handleClientSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_SKILL_NOTIFICATIONS, ClientboundSkillNotificationsPacket.STREAM_CODEC, ClientboundSkillNotificationsPacketHandler::handleClientSide);
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_TITLES, ClientboundTitlesPacket.STREAM_CODEC, ClientboundTitlesPacketHandler::handleClientSide);
+                NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_FIREPOWER_BOOST, ClientboundFirepowerBoostPacket.STREAM_CODEC, ClientboundFirepowerBoostPacketHandler::handleClientSide);
         }
 
         static void initCommon()
@@ -115,6 +119,7 @@ public interface JobsPlusNetworking
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_SYNC_ACTION_HOLDERS, ClientboundSyncActionHoldersPacket.STREAM_CODEC);
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_SKILL_NOTIFICATIONS, ClientboundSkillNotificationsPacket.STREAM_CODEC);
                 NetworkManager.registerS2CPayloadType(CLIENTBOUND_TITLES, ClientboundTitlesPacket.STREAM_CODEC);
+                NetworkManager.registerS2CPayloadType(CLIENTBOUND_FIREPOWER_BOOST, ClientboundFirepowerBoostPacket.STREAM_CODEC);
         }
 
         static void init()

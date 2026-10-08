@@ -10,6 +10,7 @@ import com.daqem.jobsplus.event.item.EventJobSelectTicketUse;
 import com.daqem.jobsplus.event.item.EventRewardCouponUse;
 import com.daqem.jobsplus.event.player.EventJobHealthSync;
 import com.daqem.jobsplus.event.player.EventRewardCouponEffectSync;
+import com.daqem.jobsplus.event.player.EventFirepowerBoostSync;
 import com.daqem.jobsplus.event.player.EventSkillNotificationSync;
 import com.daqem.jobsplus.event.player.EventTitleEquipmentCheck;
 import com.daqem.jobsplus.event.player.EventTitleSync;
@@ -58,6 +59,7 @@ public class JobsPlus
         EventRewardCouponEffectSync.registerEvent();
         EventJobHealthSync.registerEvent(); // 직업 기록이 없는 첫 접속자도 직업 선택 전 체력을 받도록 접속 시 맞춤
         EventSkillNotificationSync.registerEvent(); // 스킬 화면 알림 버튼이 저장된 설정을 표시하도록 접속 시 전달
+        EventFirepowerBoostSync.registerEvent(); // 사냥꾼 화력 증강 장탄 보너스를 TACZ 클라이언트 재장전 판정과 맞추도록 접속 시 전달
         EventTitleSync.registerEvent(); // 장착 칭호 배지와 칭호 탭 보유자 목록을 접속 시 맞춤
         EventTitleEquipmentCheck.registerEvent(); // 겉날개·서리빛 +10강 칭호 조건을 1초마다 확인
         CropReplantManager.registerEvent();
