@@ -85,6 +85,8 @@ public class Job
         this.player = player;
         this.jobInstance = jobInstance;
         this.powerupManager = new JobPowerupManager(new ArrayList<>(powerups));
+        // 단계마다 따로 켜고 끄던 시절의 저장 데이터는 계열 단위로 상태를 맞춰 읽는다.
+        this.powerupManager.alignLineStatesToHighestTier();
         this.level = clampLevel(level);
         this.experience = this.level >= MAX_JOB_LEVEL ? 0 : experience;
         this.experienceRemainder = this.level >= MAX_JOB_LEVEL ? 0.0D : experienceRemainder;

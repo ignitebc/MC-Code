@@ -95,7 +95,7 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
         return powerup;
     }
 
-    /** 구매 후 분리된 위젯과 직업 데이터에 같은 활성 상태를 반영한다. */
+    /** 구매 후 분리된 위젯과 직업 데이터에 같은 활성 상태를 반영한다. 서버처럼 같은 계열의 다른 단계도 함께 바꾼다. */
     private void togglePowerup() {
         PowerupState nextState = PowerupState.ACTIVE;
         if (this.powerup.getState() == PowerupState.ACTIVE) {
@@ -107,6 +107,10 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
                 .getPowerup(this.powerup.getPowerupLocation()).orElse(null);
         if (ownedPowerup != null) {
             ownedPowerup.setState(nextState);
+            this.state.getJob().getPowerupManager().setLineState(ownedPowerup, nextState);
+        }
+        if (Minecraft.getInstance().gui.screen() instanceof PowerupsScreen powerupsScreen) {
+            powerupsScreen.refreshPowerupStates();
         }
     }
 

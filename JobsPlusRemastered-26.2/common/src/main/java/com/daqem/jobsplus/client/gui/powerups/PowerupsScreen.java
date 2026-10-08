@@ -52,6 +52,12 @@ public class PowerupsScreen extends AbstractScreen
         if (this.powerupsComponent != null) this.powerupsComponent.refreshPowerups();
     }
 
+    /** 같은 계열을 함께 켜고 끈 뒤 다른 단계 칸의 표시 상태를 직업 데이터에 맞춘다. */
+    public void refreshPowerupStates()
+    {
+        if (this.powerupsComponent != null) this.powerupsComponent.refreshPowerups();
+    }
+
     public Screen getPreviousScreen()
     {
         return previousScreen;
