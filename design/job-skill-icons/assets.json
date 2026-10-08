@@ -309,10 +309,10 @@
     "name": "gunpowder_charge",
     "category": "skill",
     "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/gunpowder_charge.png",
-    "width": 1254,
-    "height": 1254,
-    "bytes": 1378108,
-    "sha256": "61feddf592a4345d31049431a5c6dd36bf5dacc2e9c26816db14db6e89bd5672"
+    "width": 256,
+    "height": 256,
+    "bytes": 98869,
+    "sha256": "9441d91027387c31e3366027cb183c88507224d0638cbc9cbafe0e92c0866269"
   },
   {
     "name": "exp_boost_mob",
@@ -336,10 +336,10 @@
     "name": "multiple_arrows",
     "category": "skill",
     "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/multiple_arrows.png",
-    "width": 1254,
-    "height": 1254,
-    "bytes": 1194644,
-    "sha256": "daf1a73917c63e284802532ff330f04d4fae1635aa56a158f2d5f993df5e4106"
+    "width": 256,
+    "height": 256,
+    "bytes": 86032,
+    "sha256": "5801013a4c0ff7921201e44f5b4cd98872d801f31cd030c2689aebe5c2a2f276"
   },
   {
     "name": "exp_boost_block",
