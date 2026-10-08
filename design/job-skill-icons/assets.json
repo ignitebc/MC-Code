@@ -306,9 +306,9 @@
     "sha256": "12799966b09df507f43c869b654f52c098271fd800039f5e40a0d2c3caaee24c"
   },
   {
-    "name": "attack_speed",
+    "name": "gunpowder_charge",
     "category": "skill",
-    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/attack_speed.png",
+    "target": "JobsPlusRemastered-26.2/common/src/main/resources/assets/jobsplus/textures/gui/skills/gunpowder_charge.png",
     "width": 1254,
     "height": 1254,
     "bytes": 1378108,
