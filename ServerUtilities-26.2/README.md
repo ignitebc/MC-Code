@@ -11,6 +11,14 @@
 - Jobs+·Advanced Netherite·TACZ 등 기존 모드의 클라이언트 설치 요구는 그대로입니다.
 - Server Utilities 자체는 Jobs+·Advanced Netherite·ArcLib·YamlConfig·UILib에 의존하지 않습니다. 보존권은 기존 아이템 ID로 찾아 사용하므로 Advanced Netherite가 없으면 보존권 소비 없이 설정된 사망 손실 정책을 적용합니다.
 
+## 채굴 위치 불일치 경고
+
+- `ServerPlayerGameMode.handleBlockBreakAction`에서 출력하는 `Mismatch in destroy block pos: {} {}` 경고만 억제합니다.
+- 서버의 채굴 위치와 클라이언트의 채굴 취소 위치가 다를 때 발생하는 로그입니다. 위치 불일치 자체를 교정하는 변경은 아닙니다.
+- 해당 로그 호출만 건너뛰며 채굴 취소, 파괴 진행 표시 정리, 거리·권한 검사와 다른 경고는 유지합니다.
+- 수정된 Server Utilities를 빌드해 서버에 적용한 뒤 재시작해야 합니다. `/serverutilities reload`로 반영하지 않습니다.
+- 소스 커밋 시점에는 빌드·게임 검증 전입니다. Java 25 환경에서 이 디렉터리의 `.\gradlew.bat build`를 실행한 뒤 일반·범위 채굴과 채굴 취소를 반복해 경고 억제 및 블록 상태 동기화를 확인합니다.
+
 ## 보스 체력과 공격
 
 - 워든의 기본 최대 체력은 500 → 1,000, 위더는 300 → 600, 엔더 드래곤은 200 → 2,000입니다. 차원에 관계없이 신규 생성·기존 개체 로드 때 적용합니다.

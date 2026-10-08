@@ -12,11 +12,13 @@
 | `bitcoin_double_coupon` | 청록색 티켓, 비트코인 문양, 2X | 10분간 직업 비트코인 획득 확률 ×2 |
 | `bitcoin_triple_coupon` | 보라색·금색 티켓, 비트코인 문양, 3X | 10분간 직업 비트코인 획득 확률 ×3 |
 
-원본 디자인은 `source/`, 제작 사양은 `prompts.json`에 있다.
+배낭 원본과 쿠폰의 이전 디자인은 `source/`, 당시 제작 사양은 `prompts.json`에 있다.
 게임용 PNG는 `Common/src/main/resources/assets/advancednetherite/textures/item/`의
-같은 이름 파일이며, 모두 32×32 RGBA다. 원본을 최근접 보간으로 축소하고
-알파를 이진화해 작은 슬롯에서도 경계가 선명하게 보이도록 내보냈다.
-쿠폰 상태 효과 아이콘도 같은 디자인을 사용한다.
+같은 이름 파일이다. 배낭 3종은 기존 32×32 RGBA와 최근접 보간·이진 알파를 유지한다.
+2026-10-08 재제작한 비트코인 쿠폰 2종의 아이템 텍스처는 64×64 RGBA이며, 고품질 Bicubic 보간으로
+축소하고 투명 배경을 유지했다. 쿠폰 상태 효과 아이콘은 같은 새 디자인의 256×256 RGBA를 사용한다.
+현재 쿠폰의 제작 사양과 미리보기는 저장소 루트의
+[`design/item-icons/`](../../../design/item-icons/README.txt)에 있다.
 
 ## 배낭 사용과 저장
 
