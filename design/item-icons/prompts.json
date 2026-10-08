@@ -1,0 +1,178 @@
+{
+  "created": "2026-10-08",
+  "generator": "image_gen",
+  "finalSize": [
+    64,
+    64
+  ],
+  "transparentBackground": true,
+  "assets": [
+    {
+      "name": "bitcoin_double_coupon",
+      "label": "비트코인 획득 확률 2배 쿠폰",
+      "category": "coupon",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: A thick horizontal notched parchment coupon with beveled emerald-teal metal edging. Almost frontal with slight three-dimensional thickness, corners complete. Left half a large embossed copper Bitcoin symbol with silver outline. Right half ONLY exact very large dark navy text '2X' on pale ivory paper. A thin perforation separates halves. Two short silver tabs in upper corner reinforce the double tier. This must read as a ticket, not a coin. High contrast and simple composition.",
+      "transparent": true,
+      "editPrompt": "Use case: background-extraction. Image 1 is the edit target. Preserve the ticket illustration exactly, including its color, Bitcoin emblem and 2X lettering. Remove ALL haze, glow, colored shadow and vignette outside the physical ticket silhouette. The entire background must be alpha=0 with no residual navy/teal/purple fog. Put the full intact ticket, without stretching, in the center of a SQUARE transparent canvas, taking up 85 percent of its width with generous clear space above and below. Keep physical ticket fully opaque, antialias only its boundary. No new illustration, no restyling, no new text."
+    },
+    {
+      "name": "bitcoin_triple_coupon",
+      "label": "비트코인 획득 확률 3배 쿠폰",
+      "category": "coupon",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: A thick horizontal notched parchment coupon with beveled royal purple and gold metal edging. Almost frontal with slight three-dimensional thickness, corners complete. Left half a large embossed copper Bitcoin symbol with silver outline. Right half ONLY exact very large dark navy text '3X' on pale ivory paper. A thin perforation separates halves. Three short gold tabs in upper corner reinforce the triple tier. This must read as a ticket, not a coin. High contrast and simple composition.",
+      "transparent": true,
+      "editPrompt": "Use case: background-extraction. Image 1 is the edit target. Preserve the ticket illustration exactly, including its color, Bitcoin emblem and 3X lettering. Remove ALL haze, glow, colored shadow and vignette outside the physical ticket silhouette. The entire background must be alpha=0 with no residual navy/teal/purple fog. Put the full intact ticket, without stretching, in the center of a SQUARE transparent canvas, taking up 85 percent of its width with generous clear space above and below. Keep physical ticket fully opaque, antialias only its boundary. No new illustration, no restyling, no new text."
+    },
+    {
+      "name": "random_box_i",
+      "label": "랜덤 상자 I",
+      "category": "random_box",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: A closed compact treasure chest viewed from front and slightly above in three-quarter view, warm walnut wood and sturdy copper bands, one simple round amber gem on the plain square buckle. Broad readable front face, domed lid, sturdy feet. On a broad front metal plaque display ONLY the large engraved Roman numeral 'I'. Tier design should pair with a key of the same metal and gemstone. No coins spilling out, no floating objects, no question mark.",
+      "transparent": true
+    },
+    {
+      "name": "reward_key_i",
+      "label": "보상 열쇠 I",
+      "category": "key",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: A single large fantasy skeleton key leaning diagonally from lower-left teeth to upper-right bow, made with warm walnut material and sturdy copper bands. Simplify to a metallic shaft and a bold plain square buckle bow containing one simple round amber gem. Broad geometric teeth and thick shaft, no chains. On a small wide integrated plaque just below the bow display ONLY Roman numeral 'I'. Clear key silhouette. Color and gem match a treasure chest of this tier.",
+      "transparent": true
+    },
+    {
+      "name": "random_box_ii",
+      "label": "랜덤 상자 II",
+      "category": "random_box",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: A closed compact treasure chest viewed from front and slightly above in three-quarter view, deep teal lacquered wood and broad silver bands, one large cyan diamond-shaped gem on the angular diamond buckle. Broad readable front face, domed lid, sturdy feet. On a broad front metal plaque display ONLY the large engraved Roman numeral 'II'. Tier design should pair with a key of the same metal and gemstone. No coins spilling out, no floating objects, no question mark.",
+      "transparent": true
+    },
+    {
+      "name": "reward_key_ii",
+      "label": "보상 열쇠 II",
+      "category": "key",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: A single large fantasy skeleton key leaning diagonally from lower-left teeth to upper-right bow, made with deep teal enameled material and broad silver bands. Simplify to a metallic shaft and a bold angular diamond buckle bow containing one large cyan diamond-shaped gem. Broad geometric teeth and thick shaft, no chains. On a small wide integrated plaque just below the bow display ONLY Roman numeral 'II'. Clear key silhouette. Color and gem match a treasure chest of this tier.",
+      "transparent": true
+    },
+    {
+      "name": "random_box_iii",
+      "label": "랜덤 상자 III",
+      "category": "random_box",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: A closed compact treasure chest viewed from front and slightly above in three-quarter view, royal violet lacquered wood and pale silver bands, one large violet hexagonal gem on the winged hexagonal buckle. Broad readable front face, domed lid, sturdy feet. On a broad front metal plaque display ONLY the large engraved Roman numeral 'III'. Tier design should pair with a key of the same metal and gemstone. No coins spilling out, no floating objects, no question mark.",
+      "transparent": true
+    },
+    {
+      "name": "reward_key_iii",
+      "label": "보상 열쇠 III",
+      "category": "key",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: A single large fantasy skeleton key leaning diagonally from lower-left teeth to upper-right bow, made with royal violet enameled material and pale silver bands. Simplify to a metallic shaft and a bold winged hexagonal buckle bow containing one large violet hexagonal gem. Broad geometric teeth and thick shaft, no chains. On a small wide integrated plaque just below the bow display ONLY Roman numeral 'III'. Clear key silhouette. Color and gem match a treasure chest of this tier.",
+      "transparent": true
+    },
+    {
+      "name": "random_box_iv",
+      "label": "랜덤 상자 IV",
+      "category": "random_box",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: A closed compact treasure chest viewed from front and slightly above in three-quarter view, dark burgundy wood and thick brilliant gold bands, one large red-orange star-cut gem on the small crown-shaped buckle. Broad readable front face, domed lid, sturdy feet. On a broad front metal plaque display ONLY the large engraved Roman numeral 'IV'. Tier design should pair with a key of the same metal and gemstone. No coins spilling out, no floating objects, no question mark.",
+      "transparent": true
+    },
+    {
+      "name": "reward_key_iv",
+      "label": "보상 열쇠 IV",
+      "category": "key",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: A single large fantasy skeleton key leaning diagonally from lower-left teeth to upper-right bow, made with dark burgundy material and thick brilliant gold bands. Simplify to a metallic shaft and a bold small crown-shaped buckle bow containing one large red-orange star-cut gem. Broad geometric teeth and thick shaft, no chains. On a small wide integrated plaque just below the bow display ONLY Roman numeral 'IV'. Clear key silhouette. Color and gem match a treasure chest of this tier.",
+      "transparent": true
+    },
+    {
+      "name": "enhancement_shard",
+      "label": "강화 조각",
+      "category": "enhancement",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: Exactly three connected jagged shards of luminous ice-cyan crystal, one large broken triangular piece and two smaller pieces clustered at its base. Rough fractured edges, dark blue mineral rind, a faint violet inner core, broad bright facets. Clearly incomplete fragments, no jewelry setting, no orb, no surrounding sparkles.",
+      "transparent": true
+    },
+    {
+      "name": "enhancement_gem",
+      "label": "강화 원석",
+      "category": "enhancement",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: One large complete tall hexagonal magical mineral crystal with a pointed tip, luminous ice-cyan facets surrounding a vivid violet core, seated in a small dark stone base. A whole valuable raw gemstone, not jewelry, not shards. Broad clean faces and powerful single silhouette, no decorative border, no floating sparkles.",
+      "transparent": true
+    },
+    {
+      "name": "job_select_ticket",
+      "label": "직업 선택권",
+      "category": "utility",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: One broad vertical ivory parchment certificate with rolled top edge, navy binding, and a large bronze compass medallion over a simple crossed silver pickaxe and sword symbol at its center. A rich teal ribbon seal hangs from its lower edge. Symbolizes choosing a profession. Compact certificate silhouette, no writing or letters, symbols dominate the page.",
+      "transparent": true
+    },
+    {
+      "name": "death_item_protection_scroll",
+      "label": "사망 시 아이템 보존권",
+      "category": "utility",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: One broad ivory parchment scroll with silver end rods and deep emerald ribbon. In its center a large translucent emerald shield protects a small clearly visible brown inventory backpack. The shield and backpack are the main readable motif and look embossed on the parchment. Gentle pale-blue protective arc, no skull, no text, no extra weapons.",
+      "transparent": true
+    },
+    {
+      "name": "chunk_claim_map",
+      "label": "땅 구입 문서",
+      "category": "utility",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: One broad partially unrolled warm parchment land deed, shown from slightly above, with a bold green square grassy land plot divided by a thick dark boundary line at its center, a tiny sturdy gold flag planted on the plot, and one burgundy wax seal at the lower corner. Simple map lines, no writing, no buildings, no scene beyond the parchment.",
+      "transparent": true
+    },
+    {
+      "name": "enhance_protection_scroll",
+      "label": "강화 파괴 방지권",
+      "category": "utility",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: One broad ivory parchment scroll with silver end rods and deep cobalt ribbon. A large blue steel shield emblem encloses a single intact silver sword and a small cyan gemstone. The shield is surrounded by one bold gold protective arc. Clearly protects equipment against breaking. No backpack, no skull, no shattered pieces, no text.",
+      "transparent": true
+    },
+    {
+      "name": "enhance_success_scroll_3",
+      "label": "견습공의 축복 주문서",
+      "category": "blessing",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: One broad vertical ivory parchment blessing scroll, rolled top and bottom attached to copper end rods, emerald green ribbon and seal. Center has a bold embossed copper hammer over a faceted cyan gemstone, with one simple four-point star integrated above it. A wide pale lower panel carries ONLY the exact large dark text '+3%'. Keep the percentage very legible and main tools simple. Increasingly prestigious crafting blessing, no extra text.",
+      "transparent": true
+    },
+    {
+      "name": "enhance_success_scroll_5",
+      "label": "숙련공의 축복 주문서",
+      "category": "blessing",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: One broad vertical ivory parchment blessing scroll, rolled top and bottom attached to silver end rods, sapphire blue ribbon and seal. Center has a bold embossed silver hammer over a faceted cyan gemstone, with two simple four-point stars integrated above it. A wide pale lower panel carries ONLY the exact large dark text '+5%'. Keep the percentage very legible and main tools simple. Increasingly prestigious crafting blessing, no extra text.",
+      "transparent": true
+    },
+    {
+      "name": "enhance_success_scroll_7",
+      "label": "장인의 축복 주문서",
+      "category": "blessing",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: One broad vertical ivory parchment blessing scroll, rolled top and bottom attached to silver and gold end rods, royal purple ribbon and seal. Center has a bold embossed silver and gold hammer over a faceted cyan gemstone, with three simple four-point stars integrated above it. A wide pale lower panel carries ONLY the exact large dark text '+7%'. Keep the percentage very legible and main tools simple. Increasingly prestigious crafting blessing, no extra text.",
+      "transparent": true
+    },
+    {
+      "name": "enhance_success_scroll_10",
+      "label": "명장의 축복 주문서",
+      "category": "blessing",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: One broad vertical ivory parchment blessing scroll, rolled top and bottom attached to brilliant gold end rods, crimson red ribbon and seal. Center has a bold embossed brilliant gold hammer over a faceted cyan gemstone, with a small crown above one large four-point star integrated above it. A wide pale lower panel carries ONLY the exact large dark text '+10%'. Keep the percentage very legible and main tools simple. Increasingly prestigious crafting blessing, no extra text.",
+      "transparent": true
+    },
+    {
+      "name": "nomal_petbox",
+      "label": "일반 펫 상자",
+      "category": "pet_box",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: A closed compact pet adoption carrier chest with a small rounded arch handle on top and two simple side ventilation slots, viewed from front and slightly above in three-quarter view. Made of warm light oak with broad silver bands and white enamel panels. Front displays a simple round silver paw medallion. Friendly rounded-cube silhouette clearly distinct from a treasure chest. The pawprint is the dominant emblem. No actual animal, no letters, no numerals, no spilling items.",
+      "transparent": true
+    },
+    {
+      "name": "rare_petbox",
+      "label": "희귀 펫 상자",
+      "category": "pet_box",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: A closed compact pet adoption carrier chest with a small rounded arch handle on top and two simple side ventilation slots, viewed from front and slightly above in three-quarter view. Made of deep navy wood with bright silver bands and sapphire blue enamel panels. Front displays a large glowing cyan paw medallion with two small angular silver side ornaments. Friendly rounded-cube silhouette clearly distinct from a treasure chest. The pawprint is the dominant emblem. No actual animal, no letters, no numerals, no spilling items.",
+      "transparent": true
+    },
+    {
+      "name": "legend_petbox",
+      "label": "전설 펫 상자",
+      "category": "pet_box",
+      "prompt": "Use case: stylized-concept. Create ONE production Minecraft-inspired fantasy RPG inventory icon, square canvas, genuinely transparent alpha background. Final asset will be downsampled to 256x256 and displayed in a 16-32 pixel game slot. Match a cohesive premium hand-painted 3D icon set: bold angular voxel-inspired bevels, thick dark navy outer contour, silver highlights, soft upper-left light, rich restrained shading, opaque solid physical objects. Compact centered silhouette filling 80-85 percent of square with safe margin. One clearly readable main object, large symbols, few details. No background, ground, cast shadow outside object, decorative frame, watermark, scene, hands, characters or tiny writing. No text except the explicit short symbols requested. Do not make a sprite sheet. Subject: A closed compact pet adoption carrier chest with a small rounded arch handle on top and two simple side ventilation slots, viewed from front and slightly above in three-quarter view. Made of dark burgundy wood with brilliant gold bands and amber-orange enamel panels. Front displays a large golden paw medallion beneath a compact gold crown. Friendly rounded-cube silhouette clearly distinct from a treasure chest. The pawprint is the dominant emblem. No actual animal, no letters, no numerals, no spilling items.",
+      "transparent": true
+    }
+  ],
+  "statusEffectSize": [
+    256,
+    256
+  ]
+}
