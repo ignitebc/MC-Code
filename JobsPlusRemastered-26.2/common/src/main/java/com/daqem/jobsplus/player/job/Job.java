@@ -30,6 +30,8 @@ public class Job
 
     // 정책: 직업 최대 레벨은 500으로 고정한다. 이 상한을 넘는 레벨업·경험치 누적·코인 지급은 없다.
     public static final int MAX_JOB_LEVEL = 500;
+    /** 필요 경험치 곡선이 오르는 마지막 레벨. 이 레벨에서 다음 레벨로 가는 양(5,775)을 이후 모든 레벨에 쓴다. */
+    private static final int EXPERIENCE_CURVE_LAST_LEVEL = 99;
 
     public static final Codec<Job> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Identifier.CODEC.fieldOf("job_instance").forGetter(job -> job.getJobInstance().getLocation()),
@@ -223,11 +225,14 @@ public class Job
     }
 
     // 다음 레벨업 총 추가 경험치
+    // 정책: LV99→100까지만 필요 경험치가 오르고, LV100부터 LV500까지는 99→100 구간과 같은 양을 유지한다.
+    // 모든 일반스킬이 LV100 안에서 끝나므로 그 이후 구간이 막히지 않게 해서 LV500까지 도달할 수 있게 한다.
     public static int getExperienceToLevelUp(int level)
     {
         if (level == 0)
             return 0;
-        return (int) (100 + level * level * 0.5791);
+        int curveLevel = Math.min(level, EXPERIENCE_CURVE_LAST_LEVEL);
+        return (int) (100 + curveLevel * curveLevel * 0.5791);
     }
 
     public void setPlayer(JobsPlayer player)
