@@ -29,10 +29,11 @@ import java.util.UUID;
 /** 개별 총기의 누적 경험치, 레벨과 직접 사격 피해 배율을 관리한다. */
 public final class GunLevelManager {
     public static final int MIN_LEVEL = 1;
-    public static final int MAX_LEVEL = 100;
+    public static final int MAX_LEVEL = 500;
     public static final int EXP_PER_LEVEL = 100;
     public static final int MAX_EXP = (MAX_LEVEL - MIN_LEVEL) * EXP_PER_LEVEL;
-    public static final double DAMAGE_BONUS_PER_LEVEL = 0.002;
+    /** 레벨마다 직접 사격 피해 +1%. LV500에서 +499%다. */
+    public static final double DAMAGE_BONUS_PER_LEVEL = 0.01;
 
     public static final TagKey<EntityType<?>> EXP_TARGETS = TagKey.create(
             Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "gun_level_exp_targets"));
@@ -51,7 +52,7 @@ public final class GunLevelManager {
         return MIN_LEVEL + accumulatedExp / EXP_PER_LEVEL;
     }
 
-    /** 해당 레벨에 처음 도달하는 누적 경험치. LV1은 0, LV100은 9,900이다. */
+    /** 해당 레벨에 처음 도달하는 누적 경험치. LV1은 0, LV100은 9,900, LV500은 49,900이다. */
     public static int getExp(int level) {
         int validLevel = Math.clamp(level, MIN_LEVEL, MAX_LEVEL);
         return (validLevel - MIN_LEVEL) * EXP_PER_LEVEL;
