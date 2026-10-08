@@ -10,6 +10,7 @@
     "client.HyperEntityRenderStateMixin",
     "client.HyperEntityRendererMixin",
     "client.AbstractScrollAreaAccessor",
+    "client.ChatTextScaleMixin",
     "client.TitleChatLayoutMixin",
     "client.TitleChatMessageMixin",
     "client.TitleTabLayoutMixin"
