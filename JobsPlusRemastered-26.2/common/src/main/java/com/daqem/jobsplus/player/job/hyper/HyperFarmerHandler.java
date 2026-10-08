@@ -3,6 +3,9 @@ package com.daqem.jobsplus.player.job.hyper;
 import com.daqem.arc.player.SkillActivationNotifier;
 import com.daqem.jobsplus.JobsPlus;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
@@ -13,10 +16,36 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-/** 결과를 실제로 꺼낸 뒤 변환한다. 조합 미리보기와 자동 제작기는 추첨하지 않는다. */
+/**
+ * 황금사과 제작 변환과 황금당근 섭취 시 임시 체력을 처리한다.
+ * 변환은 결과를 실제로 꺼낸 뒤 판정하며, 조합 미리보기와 자동 제작기는 추첨하지 않는다.
+ */
 public final class HyperFarmerHandler
 {
     private HyperFarmerHandler() {}
+
+    /** 바닐라 섭취 효과를 모두 적용한 뒤 호출된다. 발동하면 황금사과류와 중첩되는 흡수 몫을 등록한다. */
+    public static void eatGoldenCarrot(LivingEntity entity, ItemStack stack)
+    {
+        if (!(entity instanceof ServerPlayer player) || !stack.is(Items.GOLDEN_CARROT))
+        {
+            return;
+        }
+        int level = HyperSkillRules.getActiveLevel(player, HyperSkillRules.FARMER);
+        if (level == 0)
+        {
+            return;
+        }
+        if (player.getRandom().nextInt(100) >= HyperSkillRules.getFarmerCarrotChance(level))
+        {
+            return;
+        }
+        // 연금술사 스킬 발동 알림이 이 알림 뒤에 이어지도록 먼저 보낸다.
+        SkillActivationNotifier.notifySkillActivated(player, JobsPlus.translatable("hyper.farmer.carrot_activated"));
+        MobEffectInstance absorption = new MobEffectInstance(MobEffects.ABSORPTION,
+                HyperSkillRules.FARMER_CARROT_ABSORPTION_TICKS, HyperSkillRules.FARMER_CARROT_ABSORPTION_AMPLIFIER);
+        FoodAbsorptionStack.add(player, FoodAbsorptionShare.Source.GOLDEN_CARROT, absorption);
+    }
 
     public static boolean craft(AbstractContainerMenu menu, int slotIndex, int button,
                                 ContainerInput input, Player player)

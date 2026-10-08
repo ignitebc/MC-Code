@@ -15,9 +15,11 @@
     "client.TitleTabLayoutMixin"
   ],
   "mixins": [
+    "MixinFoodAbsorption",
     "MixinHyperPlayer",
     "MixinHyperServerPlayer",
     "MixinHyperCrafting",
+    "MixinHyperGoldenCarrot",
     "MixinHyperLifeSteal",
     "MixinHyperProjectile",
     "MixinHyperSplashPotion",

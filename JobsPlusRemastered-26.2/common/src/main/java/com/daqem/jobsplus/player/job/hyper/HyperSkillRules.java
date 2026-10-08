@@ -27,6 +27,9 @@ public final class HyperSkillRules
     public static final int LEECH_COOLDOWN_TICKS = 20;
     public static final float LEECH_HEALTH = 2.0F;
     public static final int LEAP_CHARGE_TICKS = 20;
+    /** 황금사과(흡수 I, 2칸)보다 한 단계 높은 흡수 II(임시 체력 4칸). 지속시간은 황금사과와 같은 2분이다. */
+    public static final int FARMER_CARROT_ABSORPTION_AMPLIFIER = 1;
+    public static final int FARMER_CARROT_ABSORPTION_TICKS = 2400;
     public static final Identifier MINER = JobsPlus.getId("miner");
     public static final Identifier DIGGER = JobsPlus.getId("digger");
     public static final Identifier FARMER = JobsPlus.getId("farmer");
@@ -119,6 +122,11 @@ public final class HyperSkillRules
         return Math.clamp(level, 0, MAX_LEVEL) * 3;
     }
 
+    public static int getFarmerCarrotChance(int level)
+    {
+        return Math.clamp(level, 0, MAX_LEVEL) * 5;
+    }
+
     public static double getHunterChance(int level)
     {
         return level <= 0 ? 0.0D : 10.0D + (Math.clamp(level, 1, MAX_LEVEL) - 1) * 30.0D / 9.0D;
@@ -148,7 +156,7 @@ public final class HyperSkillRules
     {
         if (FARMER.equals(jobLocation))
         {
-            return JobsPlus.translatable("hyper.farmer.summary", getFarmerChance(level));
+            return JobsPlus.translatable("hyper.farmer.summary", getFarmerChance(level), getFarmerCarrotChance(level));
         }
         if (HUNTER.equals(jobLocation))
         {

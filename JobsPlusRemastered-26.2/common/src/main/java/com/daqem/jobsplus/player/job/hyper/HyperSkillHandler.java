@@ -37,6 +37,11 @@ public final class HyperSkillHandler
     {
         HyperPlayerState state = state(player);
         long now = now(player);
+        // 바닐라 흡수 효과는 관전자·크리에이티브에서도 시간이 흐르므로 몫도 같은 조건으로 줄인다.
+        if (player.isAlive())
+        {
+            FoodAbsorptionStack.tick(player, state);
+        }
         if (!player.isAlive() || player.isSpectator() || player.isCreative())
         {
             state.clearTransient();
