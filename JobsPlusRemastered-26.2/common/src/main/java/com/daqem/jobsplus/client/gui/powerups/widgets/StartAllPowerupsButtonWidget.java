@@ -19,12 +19,12 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
-/** 현재 레벨에서 해금된 모든 미습득 스킬을 한 번에 구매하는 버튼. */
+/** 현재 레벨에서 해금된 모든 미습득 일반스킬을 한 번에 구매하는 버튼. */
 public class StartAllPowerupsButtonWidget extends CustomButtonWidget
 {
-    private static final Component BUTTON_MESSAGE = Component.literal("모든 스킬 찍기");
+    private static final Component BUTTON_MESSAGE = Component.literal("모든 일반스킬 찍기");
     private static final Component QUESTION_MESSAGE =
-            Component.literal("활성화된 모든 스킬을 다 찍으시겠습니까?");
+            Component.literal("해방된 일반스킬을 모두 찍으시겠습니까?");
     private static final Component YES_MESSAGE = Component.literal("네");
     private static final Component NO_MESSAGE = Component.literal("아니오");
 

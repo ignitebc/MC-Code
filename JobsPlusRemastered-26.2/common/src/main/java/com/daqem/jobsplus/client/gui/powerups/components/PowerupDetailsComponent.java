@@ -51,7 +51,7 @@ public class PowerupDetailsComponent extends EmptyComponent {
         int y = getTotalY();
         JobsTheme.panel(graphics, x, y, getWidth(), getHeight());
         JobsTheme.texture(graphics, JobsTheme.Skin.HEADER, x + 2, y + 2, getWidth() - 4, 18);
-        JobsTheme.text(graphics, Component.literal("스킬상세정보"), x + 8, y + 7,
+        JobsTheme.text(graphics, Component.literal("일반스킬 상세정보"), x + 8, y + 7,
                 getWidth() - 16, JobsTheme.TEXT);
         PowerupItemWidget preview = state.getPreviewWidget();
         Powerup powerup = preview == null ? null : preview.getPowerup();
@@ -131,7 +131,7 @@ public class PowerupDetailsComponent extends EmptyComponent {
 
     /** 아직 없는 스킬을 살 때만 눌린다. */
     private static final class PurchaseButton extends DetailButton {
-        private static final Component LABEL = Component.literal("스킬 구매");
+        private static final Component LABEL = Component.literal("일반스킬 구매");
 
         PurchaseButton(PowerupsScreenState state, int x, int y, int width) {
             super(state, x, y, width);

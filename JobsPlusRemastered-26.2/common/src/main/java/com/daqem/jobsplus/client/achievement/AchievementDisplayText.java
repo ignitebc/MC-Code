@@ -81,7 +81,7 @@ public final class AchievementDisplayText
     {
         return switch (definition.id())
         {
-            case "A14" -> "각 직업의 장인 업적 중 2개를 달성해야 합니다.\n구매 후 비활성화한 일반 스킬도 인정하며 하이퍼스킬은 제외합니다.";
+            case "A14" -> "각 직업의 장인 업적 중 2개를 달성해야 합니다.\n구매 후 비활성화한 일반스킬도 인정하며 하이퍼스킬은 제외합니다.";
             case "B01", "B02", "B03", "B34" -> "직접 설치한 블록은 집계하지 않습니다.\n대상 광석:\n"
                     + names("block", AchievementRules.ORES.stream().sorted().toList());
             case "B04", "B33" -> "자연 생성된 고대 잔해만 집계합니다.\n직접 설치한 블록은 제외합니다.";

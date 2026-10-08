@@ -236,7 +236,7 @@ public class PowerupsComponent extends JobsSpriteComponent
         JobsTheme.texture(graphics, JobsTheme.Skin.HEADER, getTotalX() + 2, getTotalY() + 2,
                 getWidth() - 4, 25);
         Component title = this.state.getJob().getJobInstance().getName().copy()
-                .append(Component.literal("  /  스킬  ·  Lv. " + this.state.getJob().getLevel()));
+                .append(Component.literal("  /  일반스킬  ·  Lv. " + this.state.getJob().getLevel()));
         if (this.cachedTab == PowerupTab.HYPER)
         {
             title = JobsPlus.translatable("hyper.title");
@@ -250,7 +250,7 @@ public class PowerupsComponent extends JobsSpriteComponent
             JobsTheme.cutBox(graphics, getTotalX() + 8, getTotalY() + CONTENT_Y,
                     getWidth() - 16, getContentHeight(), JobsTheme.INSET, JobsTheme.BORDER);
         }
-        Component footer = Component.literal("드래그 이동  ·  스킬 선택  ·  ESC 돌아가기");
+        Component footer = Component.literal("드래그 이동  ·  일반스킬 선택  ·  ESC 돌아가기");
         if (this.cachedTab == PowerupTab.HYPER)
         {
             footer = JobsPlus.translatable("hyper.footer");

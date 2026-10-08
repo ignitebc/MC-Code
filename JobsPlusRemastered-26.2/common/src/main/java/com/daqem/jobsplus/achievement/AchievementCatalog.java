@@ -71,17 +71,17 @@ public final class AchievementCatalog
         for (int index = 0; index < JOBS.size(); index++)
         {
             String id = String.format(java.util.Locale.ROOT, "A%02d", index + 6);
-            add(definitions, id, masters[index], 3, 9, "", o("job_master:" + JOBS.get(index), 1, "일반 스킬 전체 구매"));
+            add(definitions, id, masters[index], 3, 9, "", o("job_master:" + JOBS.get(index), 1, "일반스킬 전체 구매"));
             masterIds.add(id);
         }
         definitions.put("A14", new AchievementDefinition("A14", "두 길의 장인", 4, 17, masterIds, 2,
-                List.of(o("job_master_count", 2, "완성한 직업")), "A06~A13 중 2개 완료. 비활성화한 구매 스킬도 인정하며 하이퍼는 제외합니다."));
+                List.of(o("job_master_count", 2, "완성한 직업")), "A06~A13 중 2개 완료. 비활성화한 일반스킬도 인정하며 하이퍼스킬은 제외합니다."));
         add(definitions, "A15", "세 길의 장인", 5, 23, "A14", o("job_master_count", 3, "완성한 직업"));
         add(definitions, "A16", "다재다능", 3, 10, "", o("jobs_level50", 4, "Lv.50 직업"));
         add(definitions, "A17", "팔방미인", 3, 9, "", o("jobs_level20", 8, "Lv.20 직업"));
-        add(definitions, "A18", "잠든 힘의 문", 3, 8, "A03", o("hyper_max_level", 1, "광부·굴착가 하이퍼 레벨"));
-        add(definitions, "A19", "깨어나는 힘", 3, 11, "A18", o("hyper_max_level", 5, "최고 하이퍼 레벨"));
-        add(definitions, "A20", "극한 각성", 5, 30, "A19", o("hyper_max_level", 10, "최고 하이퍼 레벨"));
+        add(definitions, "A18", "잠든 힘의 문", 3, 8, "A03", o("hyper_max_level", 1, "광부·굴착공 하이퍼스킬 레벨"));
+        add(definitions, "A19", "깨어나는 힘", 3, 11, "A18", o("hyper_max_level", 5, "최고 하이퍼스킬 레벨"));
+        add(definitions, "A20", "극한 각성", 5, 30, "A19", o("hyper_max_level", 10, "최고 하이퍼스킬 레벨"));
 
         add(definitions, "B01", "광맥의 흔적", 1, 1, "", o("ores", 500, "자연 광석"));
         add(definitions, "B02", "광맥 추적자", 2, 4, "B01", o("ores", 2000, "자연 광석"));
@@ -194,12 +194,12 @@ public final class AchievementCatalog
         add(definitions, "A29", "여덟 갈래의 길", 4, 17, "A16", o("jobs_level50", 8, "Lv.50 직업"));
         add(definitions, "A30", "세 개의 백", 4, 17, "A03", o("jobs_level100", 3, "Lv.100 직업"));
         add(definitions, "A31", "네 길의 장인", 5, 30, "A15", o("job_master_count", 4, "완성한 직업"));
-        add(definitions, "A32", "스킬 수집가", 2, 4, "", o("skills_purchased", 30, "구매한 일반 스킬 단계"));
-        add(definitions, "A33", "스킬 백과사전", 4, 15, "A32", o("skills_purchased", 150, "구매한 일반 스킬 단계"));
+        add(definitions, "A32", "스킬 수집가", 2, 4, "", o("skills_purchased", 30, "구매한 일반스킬 단계"));
+        add(definitions, "A33", "스킬 백과사전", 4, 15, "A32", o("skills_purchased", 150, "구매한 일반스킬 단계"));
         add(definitions, "A34", "쌍둥이 각성", 3, 9, "A18",
-                o("hyper_level:miner", 1, "광부 하이퍼 레벨"), o("hyper_level:digger", 1, "굴착공 하이퍼 레벨"));
+                o("hyper_level:miner", 1, "광부 하이퍼스킬 레벨"), o("hyper_level:digger", 1, "굴착공 하이퍼스킬 레벨"));
         add(definitions, "A35", "두 개의 각성", 4, 20, "A34",
-                o("hyper_level:miner", 7, "광부 하이퍼 레벨"), o("hyper_level:digger", 7, "굴착공 하이퍼 레벨"));
+                o("hyper_level:miner", 7, "광부 하이퍼스킬 레벨"), o("hyper_level:digger", 7, "굴착공 하이퍼스킬 레벨"));
         add(definitions, "A36", "첫걸음", 1, 1, "", o("job_max_level", 10, "최고 직업 레벨"));
 
         add(definitions, "B31", "다이아몬드 광맥", 2, 5, "B01", o("ore:diamond", 100, "자연 다이아몬드 광석"));

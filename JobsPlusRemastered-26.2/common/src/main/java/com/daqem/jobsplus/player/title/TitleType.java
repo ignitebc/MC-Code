@@ -22,7 +22,7 @@ import java.util.Optional;
 public enum TitleType
 {
     NETHER_STAR("nether_star", "네더의별", "서버에서 처음으로 위더 처치", '', 1152),
-    SEAL_BREAKER("seal_breaker", "봉인해제", "서버에서 처음으로 하이퍼 스킬 개방", '', 1152),
+    SEAL_BREAKER("seal_breaker", "봉인해제", "서버에서 처음으로 하이퍼스킬 개방", '', 1152),
     LAST_STRIKE("last_strike", "마지막일격", "서버에서 처음으로 엔더 드래곤 처치 (마지막 일격)", '', 1152),
     TEN_THOUSAND_SOULS("ten_thousand_souls", "만개의영혼", "서버에서 처음으로 적대 몹 1만 마리 처치", '', 1152),
     SKY_RULER("sky_ruler", "하늘의지배자", "서버에서 처음으로 겉날개 획득", '\uE104', 1152),
