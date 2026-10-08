@@ -15,6 +15,40 @@
   ],
   "conditions": [
     {
+      "type": "arc:or",
+      "conditions": [
+        {
+          "type": "arc:effect_category",
+          "category": "BENEFICIAL"
+        },
+        {
+          "type": "arc:entity_type",
+          "entity_type": "minecraft:player"
+        }
+      ]
+    },
+    {
+      "type": "arc:not",
+      "conditions": [
+        {
+          "type": "arc:effect",
+          "effect": "jobsplus:experience_double"
+        },
+        {
+          "type": "arc:effect",
+          "effect": "jobsplus:experience_triple"
+        },
+        {
+          "type": "arc:effect",
+          "effect": "jobsplus:bitcoin_double"
+        },
+        {
+          "type": "arc:effect",
+          "effect": "jobsplus:bitcoin_triple"
+        }
+      ]
+    },
+    {
       "type": "jobsplus:powerup_not_active",
       "powerup": "jobsplus:alchemist/stronger_potions_ii"
     },
