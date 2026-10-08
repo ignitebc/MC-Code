@@ -119,9 +119,9 @@ public final class HyperSkillRules
         return Math.clamp(level, 0, MAX_LEVEL) * 3;
     }
 
-    public static int getHunterChance(int level)
+    public static double getHunterChance(int level)
     {
-        return Math.clamp(level, 0, MAX_LEVEL) * 4;
+        return level <= 0 ? 0.0D : 10.0D + (Math.clamp(level, 1, MAX_LEVEL) - 1) * 30.0D / 9.0D;
     }
 
     public static double getAlchemistChance(int level)
@@ -152,7 +152,7 @@ public final class HyperSkillRules
         }
         if (HUNTER.equals(jobLocation))
         {
-            return JobsPlus.translatable("hyper.hunter.summary", getHunterChance(level));
+            return JobsPlus.translatable("hyper.hunter.summary", decimal(getHunterChance(level)));
         }
         if (ALCHEMIST.equals(jobLocation))
         {

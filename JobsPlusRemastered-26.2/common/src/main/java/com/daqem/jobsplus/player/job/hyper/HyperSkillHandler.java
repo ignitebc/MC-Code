@@ -149,7 +149,7 @@ public final class HyperSkillHandler
         // 총알의 일반·관통 피해, 산탄·휩쓸기 등 같은 틱의 다중 피해는 한 번만 추첨한다.
         if (state.leechReadyAt > now || state.lastLeechAttempt == now) return;
         state.lastLeechAttempt = now;
-        if (player.getRandom().nextInt(100) >= HyperSkillRules.getHunterChance(level)) return;
+        if (player.getRandom().nextDouble() * 100.0D >= HyperSkillRules.getHunterChance(level)) return;
         state.leechReadyAt = now + HyperSkillRules.LEECH_COOLDOWN_TICKS;
         player.heal(HyperSkillRules.LEECH_HEALTH);
         SkillActivationNotifier.notifySkillActivated(player, JobsPlus.translatable("hyper.hunter.activated"));
