@@ -53,8 +53,10 @@ public class ClientHandler implements ClientModInitializer
         ModelLayerRegistry.registerModelLayer(SuperGomiPetModel.LAYER_LOCATION, SuperGomiPetModel::createBodyLayer);
         EntityRendererRegistry.register(ModEntityTypes.SUPER_GOMI_PET, SuperGomiPetRenderer::new);
 
-        ClientPlayNetworking.registerGlobalReceiver(PetListSyncPayload.TYPE,
-                (payload, context) -> ClientPetData.setPets(payload.pets()));
+        ClientPlayNetworking.registerGlobalReceiver(PetListSyncPayload.TYPE, (payload, context) -> {
+            ClientPetData.setAutoAttack(payload.autoAttack());
+            ClientPetData.setPets(payload.pets());
+        });
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ClientPetData.clear());
     }
 }

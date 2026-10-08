@@ -1,5 +1,6 @@
 package com.autovw.advancednetherite.network;
 
+import com.autovw.advancednetherite.common.pet.PetAttackMode;
 import com.autovw.advancednetherite.common.pet.PetManager;
 import com.autovw.advancednetherite.common.pet.PetRecord;
 import com.autovw.advancednetherite.common.pet.PetStorage;
@@ -32,11 +33,14 @@ public final class PetNetworking
         PayloadTypeRegistry.clientboundPlay().register(PetListSyncPayload.TYPE, PetListSyncPayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(PetTogglePayload.TYPE, PetTogglePayload.STREAM_CODEC);
         PayloadTypeRegistry.serverboundPlay().register(PetRenamePayload.TYPE, PetRenamePayload.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(PetAttackModePayload.TYPE, PetAttackModePayload.STREAM_CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(PetTogglePayload.TYPE,
                 (payload, context) -> PetManager.togglePet(context.player(), payload.recordId()));
         ServerPlayNetworking.registerGlobalReceiver(PetRenamePayload.TYPE,
                 (payload, context) -> PetManager.renamePet(context.player(), payload.recordId(), payload.name()));
+        ServerPlayNetworking.registerGlobalReceiver(PetAttackModePayload.TYPE,
+                (payload, context) -> PetManager.setAttackMode(context.player(), toAttackMode(payload.autoAttack())));
 
         PetManager.setSyncHandler(PetNetworking::sendPetList);
 
@@ -78,6 +82,16 @@ public final class PetNetworking
             entries.add(new PetStatusEntry(record.id(), record.petTypeId(), record.enabled(), record.name(),
                     record.level(), record.exp(), health, Math.max(0L, record.reviveAtMillis() - now)));
         }
-        ServerPlayNetworking.send(player, new PetListSyncPayload(entries));
+        boolean autoAttack = PetManager.getAttackMode(player) == PetAttackMode.AUTO;
+        ServerPlayNetworking.send(player, new PetListSyncPayload(entries, autoAttack));
+    }
+
+    private static PetAttackMode toAttackMode(boolean autoAttack)
+    {
+        if (autoAttack)
+        {
+            return PetAttackMode.AUTO;
+        }
+        return PetAttackMode.NORMAL;
     }
 }

@@ -1,5 +1,6 @@
 package com.autovw.advancednetherite.common.entity;
 
+import com.autovw.advancednetherite.common.pet.PetAttackMode;
 import com.autovw.advancednetherite.common.pet.PetManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -54,6 +55,8 @@ public class DialgaPetEntity extends TamableAnimal
     /** 닿지 못해 놓은 대상과, 그 대상을 다시 고르지 않는 마지막 틱 */
     private int ignoredTargetId = -1;
     private int ignoreTargetUntilTick;
+    /** 사냥 AI가 잡은 추격 대상의 ID. 주인이 일반공격으로 바꾸면 이 대상만 놓는다. 반격으로 잡은 대상이면 -1이다. */
+    private int huntTargetId = -1;
 
     private static final String TAG_RECORD_ID = "PetRecordId";
     /** 주인 조회가 잠깐 비어도(사망→리스폰 전환 등) 이 시간(5초) 안에 돌아오면 소멸하지 않는다. */
@@ -326,9 +329,14 @@ public class DialgaPetEntity extends TamableAnimal
             this.ignoredTargetId = this.pursuitTarget.getId();
             this.ignoreTargetUntilTick = this.tickCount + IGNORE_TARGET_TICKS;
         }
-        if (targetGone || targetTooFarFromOwner || stalled)
+        // 주인이 일반공격으로 바꾸면 사냥으로 쫓던 대상은 놓고, 주인을 때린 대상만 계속 쫓는다.
+        boolean huntStopped = !targetGone
+                && this.pursuitTarget.getId() == this.huntTargetId
+                && PetManager.getAttackMode(owner) != PetAttackMode.AUTO;
+        if (targetGone || targetTooFarFromOwner || stalled || huntStopped)
         {
             this.pursuitTarget = null;
+            this.huntTargetId = -1;
             this.setTarget(null);
             return;
         }
@@ -343,6 +351,18 @@ public class DialgaPetEntity extends TamableAnimal
     public boolean isIgnoringTarget(Entity entity)
     {
         return entity.getId() == this.ignoredTargetId && this.tickCount < this.ignoreTargetUntilTick;
+    }
+
+    /** 사냥 AI가 고른 대상임을 남긴다. */
+    void markHuntTarget(LivingEntity target)
+    {
+        this.huntTargetId = target.getId();
+    }
+
+    /** 반격으로 대상을 잡으면 사냥 표시를 지운다. 사냥하던 몹이 주인을 때렸다면 반격 대상으로 계속 쫓는다. */
+    void clearHuntTarget()
+    {
+        this.huntTargetId = -1;
     }
 
     /**
@@ -546,21 +566,26 @@ public class DialgaPetEntity extends TamableAnimal
     }
 
     /**
-     * 주인이 최근에 맞았을 때만 복수에 나서는 AI.
+     * 주인이 최근에 맞았을 때만 복수에 나서는 AI. 자동공격과 일반공격 모두에서 동작한다.
      * <p>
      * 바닐라 {@link OwnerHurtByTargetGoal}은 피격 시각의 최신 여부만 비교해서,
      * 재접속으로 AI나 플레이어 인스턴스가 새로 만들어지면 낡은 전투 기억을
      * 새 피격으로 착각하고 이미 끝난 싸움의 상대를 다시 공격한다.
      * 실제 피격 후 짧은 시간 안에만 발동하도록 제한해 이를 막는다.
+     * <p>
+     * 멀리서 쏜 상대를 쫓아 펫이 주인 곁을 떠나지 않도록, 공격자가 사냥 범위(3청크) 안에 있을 때만 반격한다.
      */
     private static class RecentOwnerHurtByTargetGoal extends OwnerHurtByTargetGoal
     {
         /** 주인이 맞은 지 이 시간(5초)이 지나면 복수하지 않는다. */
         private static final int MAX_HURT_AGE_TICKS = 100;
+        /** 공격자가 주인에게서 이 거리(3청크, 48칸) 안에 있을 때만 반격한다. 자동공격의 사냥 범위와 같다. */
+        private static final double RETALIATION_RANGE_SQR =
+                HuntNearbyMonstersGoal.HUNT_RADIUS * HuntNearbyMonstersGoal.HUNT_RADIUS;
 
-        private final TamableAnimal pet;
+        private final DialgaPetEntity pet;
 
-        RecentOwnerHurtByTargetGoal(TamableAnimal pet)
+        RecentOwnerHurtByTargetGoal(DialgaPetEntity pet)
         {
             super(pet);
             this.pet = pet;
@@ -577,7 +602,16 @@ public class DialgaPetEntity extends TamableAnimal
 
             int hurtAge = owner.tickCount - owner.getLastHurtByMobTimestamp();
             boolean isRecentHurt = hurtAge >= 0 && hurtAge <= MAX_HURT_AGE_TICKS;
-            return isRecentHurt && super.canUse();
+            LivingEntity attacker = owner.getLastHurtByMob();
+            boolean attackerInRange = attacker != null && attacker.distanceToSqr(owner) <= RETALIATION_RANGE_SQR;
+            return isRecentHurt && attackerInRange && super.canUse();
+        }
+
+        @Override
+        public void start()
+        {
+            super.start();
+            this.pet.clearHuntTarget();
         }
     }
 }

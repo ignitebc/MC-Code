@@ -269,6 +269,29 @@ public final class PetManager
         syncPets(player);
     }
 
+    /** 주인이 고른 펫 공격 방식. 저장 정보를 읽을 수 없으면 기존 동작인 자동공격이다. */
+    public static PetAttackMode getAttackMode(LivingEntity owner)
+    {
+        if (owner instanceof PetAttackModeAccess access)
+        {
+            return access.advancednetherite$getPetAttackMode();
+        }
+        return PetAttackMode.AUTO;
+    }
+
+    /**
+     * 펫 공격 방식을 바꾼다. 일반공격으로 바꾸면 사냥으로 쫓던 대상은 펫이 다음 틱에 놓는다.
+     * 연타 제한에 걸리면 바꾸지 않고, 먼저 바뀐 화면을 실제 상태로 되돌린다.
+     */
+    public static void setAttackMode(ServerPlayer player, PetAttackMode mode)
+    {
+        if (passedToggleCooldown(player) && player instanceof PetAttackModeAccess access)
+        {
+            access.advancednetherite$setPetAttackMode(mode);
+        }
+        syncPets(player);
+    }
+
     /**
      * 펫이 매 틱 자신의 존재 자격을 확인한다. false면 펫은 스스로 소멸해야 한다.
      * 기록이 없거나 삭제되었거나 OFF 상태이거나, 같은 기록의 다른 펫이 이미 살아 있으면 자격이 없다.

@@ -11,7 +11,8 @@
     "BackpackTransferMixin",
     "BackpackSyncMixin",
     "BackpackDeathPenaltyMixin",
-    "BackpackRecipePlacementMixin"
+    "BackpackRecipePlacementMixin",
+    "PetAttackModeMixin"
   ],
   "client": [
     "client.BackpackScreenGeometryMixin",

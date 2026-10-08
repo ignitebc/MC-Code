@@ -1,5 +1,7 @@
 package com.autovw.advancednetherite.common.entity;
 
+import com.autovw.advancednetherite.common.pet.PetAttackMode;
+import com.autovw.advancednetherite.common.pet.PetManager;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -16,6 +18,7 @@ import java.util.List;
 
 /**
  * 주인 둘레 3청크 안의 적대 몹을 찾아 먼저 공격한다. 주인이 맞지 않아도 덤빈다.
+ * 주인이 펫 공격 방식을 자동공격으로 둔 동안에만 동작한다.
  *
  * <p>주인에게 가까운 몹부터 고르고, 걸어서 닿을 수 없는 몹(공중에 뜬 몹, 막힌 동굴 속 몹 등)은 건너뛴다.
  * 주인을 때린 상대를 노리는 복수 AI가 더 높은 우선순위라서, 사냥 중에도 주인이 맞으면 그쪽으로 바꾼다.
@@ -64,6 +67,11 @@ public class HuntNearbyMonstersGoal extends TargetGoal
         {
             return false;
         }
+        // 일반공격을 고른 주인의 펫은 먼저 덤비지 않고, 주인이 맞았을 때만 반격 AI가 움직인다.
+        if (PetManager.getAttackMode(owner) != PetAttackMode.AUTO)
+        {
+            return false;
+        }
         this.prey = findPrey(owner);
         return this.prey != null;
     }
@@ -72,6 +80,8 @@ public class HuntNearbyMonstersGoal extends TargetGoal
     public void start()
     {
         this.mob.setTarget(this.prey);
+        // 일반공격으로 바꾸면 이 대상만 놓을 수 있도록 사냥으로 잡은 대상임을 남긴다.
+        this.pet.markHuntTarget(this.prey);
         super.start();
     }
 

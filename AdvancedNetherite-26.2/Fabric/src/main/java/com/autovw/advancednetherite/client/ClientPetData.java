@@ -17,6 +17,8 @@ public final class ClientPetData
     private static volatile List<PetStatusEntry> pets = List.of();
     /** 목록을 받은 시각. 부활까지 남은 시간은 받은 시점 기준이라 여기서부터 흐른 만큼 뺀다. */
     private static volatile long receivedAtMillis;
+    /** 펫 공격 방식. true면 자동공격, false면 일반공격이며 보유한 모든 펫에 같이 적용된다. */
+    private static volatile boolean autoAttack = true;
 
     private ClientPetData()
     {
@@ -43,6 +45,18 @@ public final class ClientPetData
     public static void clear()
     {
         pets = List.of();
+        autoAttack = true;
+    }
+
+    public static boolean isAutoAttack()
+    {
+        return autoAttack;
+    }
+
+    /** 서버가 보낸 공격 방식. 버튼을 눌러 먼저 바꾼 값도 이 값으로 덮어써진다. */
+    public static void setAutoAttack(boolean newAutoAttack)
+    {
+        autoAttack = newAutoAttack;
     }
 
     /**
