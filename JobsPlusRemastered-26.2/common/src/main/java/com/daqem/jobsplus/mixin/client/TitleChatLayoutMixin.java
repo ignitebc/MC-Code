@@ -52,7 +52,7 @@ public abstract class TitleChatLayoutMixin
             constant = @Constant(doubleValue = 8.0))
     private double jobsplus$textBaseline(double original)
     {
-        // height 14 / ascent 10인 배지의 아래쪽이 채팅 한 줄의 바닥을 넘지 않게 한다.
+        // height 12 / ascent 9인 배지의 아래쪽이 채팅 한 줄의 바닥을 넘지 않게 한다.
         return this.jobsplus$hasTitleBadge() ? original + TitleType.CHAT_BADGE_TEXT_OFFSET : original;
     }
 

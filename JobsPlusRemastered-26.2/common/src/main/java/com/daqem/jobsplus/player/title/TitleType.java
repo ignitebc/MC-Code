@@ -34,9 +34,9 @@ public enum TitleType
     public static final int BADGE_LINE_HEIGHT = 20;
     /** ascent 12인 배지의 위쪽 돌출분(12 - 바닐라 기준선 7)을 보정한다. */
     public static final int BADGE_TEXT_OFFSET = 5;
-    /** 채팅 전용 배지는 height 14 / ascent 10으로 표시한다. */
-    public static final int CHAT_BADGE_LINE_HEIGHT = 16;
-    public static final int CHAT_BADGE_TEXT_OFFSET = 3;
+    /** 채팅 전용 배지는 height 12 / ascent 9로 표시하고, 위아래 줄의 배지 사이에 1px만 남긴다. */
+    public static final int CHAT_BADGE_LINE_HEIGHT = 13;
+    public static final int CHAT_BADGE_TEXT_OFFSET = 2;
 
     private static final FontDescription BADGE_FONT = new FontDescription.Resource(JobsPlus.getId("title_badge"));
     private static final FontDescription CHAT_BADGE_FONT = new FontDescription.Resource(JobsPlus.getId("title_badge_chat"));

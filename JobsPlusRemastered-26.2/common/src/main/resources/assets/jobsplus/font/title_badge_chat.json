@@ -3,43 +3,43 @@
     {
       "type": "bitmap",
       "file": "jobsplus:font/title_badge/nether_star.png",
-      "height": 14,
-      "ascent": 10,
+      "height": 12,
+      "ascent": 9,
       "chars": ["\uE100"]
     },
     {
       "type": "bitmap",
       "file": "jobsplus:font/title_badge/seal_breaker.png",
-      "height": 14,
-      "ascent": 10,
+      "height": 12,
+      "ascent": 9,
       "chars": ["\uE101"]
     },
     {
       "type": "bitmap",
       "file": "jobsplus:font/title_badge/last_strike.png",
-      "height": 14,
-      "ascent": 10,
+      "height": 12,
+      "ascent": 9,
       "chars": ["\uE102"]
     },
     {
       "type": "bitmap",
       "file": "jobsplus:font/title_badge/ten_thousand_souls.png",
-      "height": 14,
-      "ascent": 10,
+      "height": 12,
+      "ascent": 9,
       "chars": ["\uE103"]
     },
     {
       "type": "bitmap",
       "file": "jobsplus:font/title_badge/sky_ruler.png",
-      "height": 14,
-      "ascent": 10,
+      "height": 12,
+      "ascent": 9,
       "chars": ["\uE104"]
     },
     {
       "type": "bitmap",
       "file": "jobsplus:font/title_badge/eternal_peak.png",
-      "height": 14,
-      "ascent": 10,
+      "height": 12,
+      "ascent": 9,
       "chars": ["\uE105"]
     }
   ]
