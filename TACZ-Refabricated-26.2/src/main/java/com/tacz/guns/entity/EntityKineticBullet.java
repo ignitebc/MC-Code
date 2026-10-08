@@ -159,6 +159,8 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
     private float shotDamageMultiplier = 1f;
     private float gunLevelDamageMultiplier = 1f;
     private @Nullable GunShotContext shotContext;
+    // 소음기를 단 총에서 쏜 탄. 맞히거나 죽였을 때 주변 몬스터에게 경보가 퍼지는 범위를 줄인다.
+    private boolean silenced;
 
     public EntityKineticBullet(EntityType<? extends Projectile> type, Level worldIn) {
         super(type, worldIn);
@@ -252,6 +254,16 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
     public void setShotContext(GunShotContext shotContext) {
         this.shotContext = shotContext;
         this.gunLevelDamageMultiplier = shotContext.getDamageMultiplier();
+    }
+
+    @ApiStatus.Internal
+    public void setSilenced(boolean silenced) {
+        this.silenced = silenced;
+    }
+
+    /** 소음기를 단 총에서 쏜 탄인지. 서버에서 발사할 때 정하며 클라이언트에는 보내지 않는다. */
+    public boolean isSilenced() {
+        return this.silenced;
     }
 
     @Override

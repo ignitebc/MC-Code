@@ -2,6 +2,7 @@ package com.tacz.guns.entity.ai;
 
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.event.common.EntityKillByGunEvent;
+import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.entity.shooter.MonsterGunController;
 import com.tacz.guns.mixin.common.PiglinAiInvoker;
 import net.minecraft.server.level.ServerLevel;
@@ -34,8 +35,9 @@ import java.util.UUID;
  * 플레이어의 지금 위치를 쫓지 않도록 대상을 잡지 않고 짐작 위치로 다가가 살핀다.
  */
 public final class GunfireAlert {
-    /** 맞은 몬스터를 중심으로 경보가 퍼지는 반경(칸). */
+    /** 맞은 몬스터를 중심으로 경보가 퍼지는 반경(칸). 소음기를 단 총에서 쏜 탄이면 바로 옆 몬스터만 알아챈다. */
     private static final double ALERT_RADIUS = 24.0;
+    private static final double SILENCED_ALERT_RADIUS = 5.0;
     /** 쏜 플레이어가 이 거리(칸) 안이면 대상으로 잡고, 더 멀면 그쪽으로 다가가기만 한다. */
     private static final double LOCK_ON_DISTANCE = 128.0;
     /** 경보를 받은 몬스터가 추적 범위와 관계없이 대상을 붙잡아 두는 거리(칸). 경보 반경만큼 여유를 둔다. */
@@ -43,14 +45,14 @@ public final class GunfireAlert {
     /** 경보로 대상을 붙잡아 두는 시간(20초). 이후에는 바닐라 규칙대로 대상을 잊을 수 있다. */
     private static final int ALERT_HOLD_TICKS = 400;
     /** 한 번에 경보를 받는 최대 몬스터 수. 맞은 몬스터에게 가까운 순서다. 동굴 하나가 통째로 몰려오지 않게 한다. */
-    private static final int MAX_ALERTED = 12;
+    private static final int MAX_ALERTED = 16;
     /** 같은 플레이어의 명중으로 경보를 다시 내기까지 기다리는 시간(틱). 연사 중 매 발마다 주변을 훑지 않게 한다. */
     private static final int ALERT_INTERVAL_TICKS = 10;
     /** 총성을 듣는 거리(칸). 소음기를 달면 바로 옆이 아니면 듣지 못한다. */
-    private static final double LOUD_HEARING_RADIUS = 32.0;
-    private static final double SILENCED_HEARING_RADIUS = 8.0;
+    private static final double LOUD_HEARING_RADIUS = 24.0;
+    private static final double SILENCED_HEARING_RADIUS = 5.0;
     /** 한 번의 총성을 듣고 움직이는 최대 몬스터 수와, 같은 플레이어의 총성을 다시 처리하기까지의 간격(틱) */
-    private static final int MAX_HEARING = 8;
+    private static final int MAX_HEARING = 16;
     private static final int GUNSHOT_INTERVAL_TICKS = 20;
     /** 맞거나 스친 탄으로 짐작하는 위치의 오차. 거리에 비례하되 이 값(칸)을 넘지 않는다. */
     private static final double SHOT_GUESS_ERROR_RATIO = 0.08;
@@ -71,11 +73,16 @@ public final class GunfireAlert {
     }
 
     public static void onHurtByGun(EntityHurtByGunEvent.Post event) {
-        alert(event.getHurtEntity(), event.getAttacker());
+        alert(event.getHurtEntity(), event.getAttacker(), isSilenced(event.getBullet()));
     }
 
     public static void onKillByGun(EntityKillByGunEvent event) {
-        alert(event.getKilledEntity(), event.getAttacker());
+        alert(event.getKilledEntity(), event.getAttacker(), isSilenced(event.getBullet()));
+    }
+
+    /** 소음기를 단 총에서 쏜 탄인지. 탄 없이 입힌 피해(불, 폭발 등)는 소음기가 없는 사격으로 본다. */
+    private static boolean isSilenced(Entity bullet) {
+        return bullet instanceof EntityKineticBullet kineticBullet && kineticBullet.isSilenced();
     }
 
     /** 서버를 끌 때 플레이어별 경보 시각을 비운다. */
@@ -130,7 +137,7 @@ public final class GunfireAlert {
                 .forEach(mob -> respond(level, mob, shooter, true, SOUND_GUESS_ERROR_RATIO, MAX_SOUND_GUESS_ERROR));
     }
 
-    private static void alert(Entity hitEntity, LivingEntity attacker) {
+    private static void alert(Entity hitEntity, LivingEntity attacker, boolean silenced) {
         if (!(attacker instanceof ServerPlayer shooter) || !canAlertFor(shooter)) {
             return;
         }
@@ -145,8 +152,15 @@ public final class GunfireAlert {
         }
 
         boolean lockOn = victim.distanceToSqr(shooter) <= LOCK_ON_DISTANCE * LOCK_ON_DISTANCE;
-        AABB area = victim.getBoundingBox().inflate(ALERT_RADIUS);
-        List<Mob> listeners = level.getEntitiesOfClass(Mob.class, area, mob -> canHear(mob, victim, shooter));
+        double radius = ALERT_RADIUS;
+        if (silenced) {
+            radius = SILENCED_ALERT_RADIUS;
+        }
+        // 상자 모서리까지 넣으면 반경보다 멀리 퍼지므로 실제 거리로 한 번 더 거른다. 맞은 몬스터 자신은 거리 0이라 늘 포함된다.
+        double radiusSqr = radius * radius;
+        AABB area = victim.getBoundingBox().inflate(radius);
+        List<Mob> listeners = level.getEntitiesOfClass(Mob.class, area,
+                mob -> canHear(mob, victim, shooter) && mob.distanceToSqr(victim) <= radiusSqr);
         listeners.stream()
                 .sorted(Comparator.comparingDouble(mob -> mob.distanceToSqr(victim)))
                 .limit(MAX_ALERTED)

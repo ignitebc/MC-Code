@@ -232,6 +232,8 @@ public class ModernKineticGunScriptAPI {
                     bullet.applyShotgunDamageSpread(bulletAmount);
                     bullet.setShotDamageMultiplier(shotDamageMultiplier);
                     bullet.setShotContext(shotContext);
+                    // 명중·처치 경보도 총소리 경보와 같은 기준으로 소음기 사격인지 판단한다.
+                    bullet.setSilenced(useSilenceSound);
                     abstractGunItem.doBulletSpread(dataHolder, itemStack, shooter, bullet, i, processedSpeed,
                             inaccuracy, pitch, yaw);
                     world.addFreshEntity(bullet);
