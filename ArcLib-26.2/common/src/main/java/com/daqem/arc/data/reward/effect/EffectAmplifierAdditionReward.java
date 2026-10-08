@@ -9,6 +9,7 @@ import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.daqem.arc.player.SkillActivationNotifier;
 import com.daqem.arc.player.EffectAmplifierScope;
+import com.daqem.arc.player.EffectRewardPreview;
 import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -52,7 +53,10 @@ public class EffectAmplifierAdditionReward extends AbstractReward {
                 int amplifier = EffectAmplifierScope.resolve(player, effect, addition);
                 MobEffectInstance newEffect = new MobEffectInstance(effect.getEffect(), effect.getDuration(), amplifier, effect.isAmbient(), effect.isVisible());
                 actionData.setData(ActionDataType.MOB_EFFECT_INSTANCE, newEffect);
-                player.addEffect(newEffect, new ServerPlayer(Objects.requireNonNull(player.level().getServer()), player.level(), new GameProfile(UUID.randomUUID(), "a"), player.clientInformation()));
+                // 결과만 계산하는 중에는 호출한 쪽이 직접 적용하므로 효과를 다시 넣지 않는다.
+                if (!EffectRewardPreview.isPreviewing()) {
+                    player.addEffect(newEffect, new ServerPlayer(Objects.requireNonNull(player.level().getServer()), player.level(), new GameProfile(UUID.randomUUID(), "a"), player.clientInformation()));
+                }
                 if (activationMessageKey != null) {
                     Component effectName = newEffect.getEffect().value().getDisplayName();
                     SkillActivationNotifier.notifySkillActivated(

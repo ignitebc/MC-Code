@@ -7,6 +7,7 @@ import com.daqem.arc.api.reward.AbstractReward;
 import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
+import com.daqem.arc.player.EffectRewardPreview;
 import com.daqem.arc.player.SkillActivationNotifier;
 import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
@@ -42,7 +43,10 @@ public class EffectDurationMultiplierReward extends AbstractReward {
             if (actionData.getPlayer().arc$getPlayer() instanceof ServerPlayer player){
                 MobEffectInstance newEffect = new MobEffectInstance(effect.getEffect(), Mth.floor(effect.getDuration() * multiplier), effect.getAmplifier(), effect.isAmbient(), effect.isVisible());
                 actionData.setData(ActionDataType.MOB_EFFECT_INSTANCE, newEffect);
-                player.addEffect(newEffect, new ServerPlayer(Objects.requireNonNull(player.level().getServer()), player.level(), new GameProfile(UUID.randomUUID(), "a"), player.clientInformation()));
+                // 결과만 계산하는 중에는 호출한 쪽이 직접 적용하므로 효과를 다시 넣지 않는다.
+                if (!EffectRewardPreview.isPreviewing()) {
+                    player.addEffect(newEffect, new ServerPlayer(Objects.requireNonNull(player.level().getServer()), player.level(), new GameProfile(UUID.randomUUID(), "a"), player.clientInformation()));
+                }
                 int increasePercent = Mth.floor((multiplier - 1.0D) * 100.0D);
                 SkillActivationNotifier.notifySkillActivated(
                         player,
