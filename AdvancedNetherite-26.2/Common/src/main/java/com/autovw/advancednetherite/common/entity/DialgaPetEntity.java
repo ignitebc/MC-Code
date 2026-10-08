@@ -43,6 +43,11 @@ public class DialgaPetEntity extends TamableAnimal
      */
     private static final int RETURN_DELAY_AFTER_COMBAT_TICKS = 40;
     /**
+     * 길을 찾을 때 한 번에 내려가는 최대 높이(1칸).
+     * 1칸은 다시 뛰어올라 돌아올 수 있으므로, 이보다 깊은 곳은 구덩이로 보고 돌아가는 길을 찾는다.
+     */
+    private static final int MAX_STEP_DOWN_HEIGHT = 1;
+    /**
      * 추격 대상이 주인에게서 이 거리(56칸)보다 멀어지면 추격을 포기하고 주인에게 돌아간다.
      * 사냥 범위(3청크, 48칸)보다 넉넉하게 두어, 범위 경계의 몹을 잡았다 놓았다 반복하지 않게 한다.
      */
@@ -469,6 +474,19 @@ public class DialgaPetEntity extends TamableAnimal
             return;
         }
         super.doPush(entity);
+    }
+
+    /**
+     * 길을 찾을 때 한 번에 1칸까지만 내려가게 한다. 더 깊은 구덩이와 낭떠러지는 돌아가는 길을 찾는다.
+     * <p>
+     * 바닐라는 공격 대상이 있으면 남은 체력이 많을수록 높은 곳에서 뛰어내려도 된다고 본다.
+     * 펫은 체력이 100 이상이라 수십 칸을 한 번에 뛰어내리고, 다시 올라오지 못하는 구덩이에 갇혔다.
+     * 낙하 피해를 받지 않아도 내려간 곳에서 돌아오지 못하는 문제는 그대로라서 체력과 상관없이 막는다.
+     */
+    @Override
+    public int getMaxFallDistance()
+    {
+        return MAX_STEP_DOWN_HEIGHT;
     }
 
     @Override
