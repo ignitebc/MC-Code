@@ -15,6 +15,9 @@
     "client.TitleTabLayoutMixin"
   ],
   "mixins": [
+    "MixinAlchemistLingeringCloud",
+    "MixinAlchemistSplashPotion",
+    "MixinAlchemistTippedArrow",
     "MixinFirepowerBoostMagazine",
     "MixinFoodAbsorption",
     "MixinHyperPlayer",
