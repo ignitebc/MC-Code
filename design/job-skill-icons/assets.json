@@ -435,18 +435,18 @@
     "name": "bitcoin_face",
     "category": "bitcoin",
     "target": "AdvancedNetherite-26.2/Common/src/main/resources/assets/advancednetherite/textures/item/bitcoin_face.png",
-    "width": 1254,
-    "height": 1254,
-    "bytes": 4046696,
-    "sha256": "69b11e474e4dd90faf001b7a7c06104f98411b02cd3e8ac357b2d6fdd79f7aba"
+    "width": 64,
+    "height": 64,
+    "bytes": 12510,
+    "sha256": "bf84899bf10164fa81dd22b2b1387e32a5a8df63fcaf12bf2fbd09f955a67f64"
   },
   {
     "name": "bitcoin_gui",
     "category": "bitcoin",
     "target": "AdvancedNetherite-26.2/Common/src/main/resources/assets/advancednetherite/textures/item/bitcoin.png",
-    "width": 1254,
-    "height": 1254,
-    "bytes": 1964249,
-    "sha256": "9d48456464b8b6e6f081c2579044077eac27873c5bf642f16cd37f15389d04d5"
+    "width": 64,
+    "height": 64,
+    "bytes": 9335,
+    "sha256": "e226d443ee1d73b0547db987b213103714e9f1d050a3be33dbf8ea4ead15e730"
   }
 ]
