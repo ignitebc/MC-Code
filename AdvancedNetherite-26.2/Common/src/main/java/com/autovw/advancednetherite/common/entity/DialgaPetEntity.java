@@ -117,9 +117,11 @@ public class DialgaPetEntity extends TamableAnimal
     {
         // 추적 범위는 길찾기 거리와 대상 유지 거리를 함께 정한다.
         // 추격을 놓는 거리(주인에게서 56칸)에 주인 둘레 자리까지 더해도 닿도록 64칸으로 둔다.
+        // 이동 속도는 늑대와 같은 0.3이다. 공격(1.4배)·따라가기(1.25배) 배율을 곱해 달리므로
+        // 몹 이동은 속도의 제곱에 비례해 빨라진다. 0.35에서는 공격 시 달리기하는 주인의 2배 가까이 빨랐다.
         return TamableAnimal.createAnimalAttributes()
                 .add(Attributes.MAX_HEALTH, 100.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.35)
+                .add(Attributes.MOVEMENT_SPEED, 0.3)
                 .add(Attributes.FOLLOW_RANGE, 64.0)
                 .add(Attributes.ATTACK_DAMAGE, 1.0);
     }
