@@ -8,11 +8,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -267,6 +269,19 @@ public final class PetManager
             recallPet(recordId);
         }
         syncPets(player);
+    }
+
+    /**
+     * 대상이 이 주인의 펫인지. 주인의 모든 공격(근접·투사체·창·총탄·폭발)이 펫을 맞히지 않고 통과하게 할 때 쓴다.
+     * 펫은 주인의 공격에 피해를 받지 않으므로, 막히면 펫 뒤에서 싸우는 몹을 맞힐 수 없다.
+     */
+    public static boolean isPetOf(Entity target, @Nullable Entity owner)
+    {
+        if (!(owner instanceof LivingEntity livingOwner))
+        {
+            return false;
+        }
+        return target instanceof DialgaPetEntity pet && pet.isOwnedBy(livingOwner);
     }
 
     /** 주인이 고른 펫 공격 방식. 저장 정보를 읽을 수 없으면 기존 동작인 자동공격이다. */

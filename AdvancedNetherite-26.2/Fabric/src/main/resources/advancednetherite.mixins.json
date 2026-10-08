@@ -12,14 +12,17 @@
     "BackpackSyncMixin",
     "BackpackDeathPenaltyMixin",
     "BackpackRecipePlacementMixin",
-    "PetAttackModeMixin"
+    "PetAttackModeMixin",
+    "PetProjectilePassThroughMixin",
+    "PetPiercingWeaponPassThroughMixin"
   ],
   "client": [
     "client.BackpackScreenGeometryMixin",
     "client.BackpackScreenMixin",
     "client.BackpackCreativeScreenMixin",
     "client.BackpackRecipeBookMixin",
-    "client.BackpackRecipeBookLayoutMixin"
+    "client.BackpackRecipeBookLayoutMixin",
+    "client.PetPickPassThroughMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -20,6 +20,7 @@ import com.tacz.guns.resource.pojo.data.attachment.EffectData;
 import com.tacz.guns.resource.pojo.data.attachment.MeleeData;
 import com.tacz.guns.resource.pojo.data.gun.*;
 import com.tacz.guns.util.AllowAttachmentTagMatcher;
+import com.tacz.guns.util.EntityUtil;
 import com.tacz.guns.util.GunLevelManager;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -492,6 +493,10 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
         });
         // 而后检查是否在锥形范围内
         for (LivingEntity living : entityList) {
+            // 주인의 펫은 총검·개머리판 공격을 통과한다. 밀려나거나 총검 효과를 받지 않는다.
+            if (EntityUtil.isShootersPet(living, user)) {
+                continue;
+            }
             // 先计算出球心->目标向量
             Vec3 targetVec = living.getEyePosition().subtract(centrePos);
             // 目标到球心距离

@@ -7,6 +7,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -27,6 +29,7 @@ import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -494,6 +497,21 @@ public class DialgaPetEntity extends TamableAnimal
             delayRegeneration();
         }
         return damaged;
+    }
+
+    /**
+     * 주인과 주인의 다른 펫이 건 해로운 효과는 받지 않는다. 몹에게 던진 투척·잔류 포션이 곁의 펫에게 번져도 멀쩡하다.
+     * 이로운 효과는 그대로 받아, 주인이 포션으로 펫을 도울 수 있다.
+     */
+    @Override
+    public boolean addEffect(MobEffectInstance effect, @Nullable Entity source)
+    {
+        boolean harmful = effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL;
+        if (harmful && source != null && isFriendly(source))
+        {
+            return false;
+        }
+        return super.addEffect(effect, source);
     }
 
     /** 주인과 주인의 다른 펫에게서는 피해를 받지 않는다. */

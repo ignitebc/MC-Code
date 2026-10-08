@@ -87,7 +87,9 @@ public final class ExplodeUtil {
         AABB area = new AABB(center.x - reach, center.y - reach, center.z - reach,
                 center.x + reach, center.y + reach, center.z + reach);
         for (Entity entity : blast.level().getEntities(exploder, area)) {
-            if (entity.ignoreExplosion(blast.explosion())) {
+            // 쏜 사람의 펫은 폭발을 통과한다. 피해도 밀어내기도 받지 않는다.
+            boolean shootersPet = EntityUtil.isShootersPet(entity, blast.owner());
+            if (shootersPet || entity.ignoreExplosion(blast.explosion())) {
                 continue;
             }
             AABB hitbox = null;

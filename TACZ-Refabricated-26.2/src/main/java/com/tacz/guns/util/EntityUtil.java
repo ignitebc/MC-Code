@@ -84,11 +84,11 @@ public class EntityUtil {
     }
 
     /**
-     * 쏜 사람이 기르는 펫인지. 이 탄은 펫을 그대로 통과한다.
+     * 쏜 사람이 기르는 펫인지. 주인의 탄·폭발·총기 근접 공격은 펫을 그대로 통과한다.
      * <p>
      * 펫은 주인의 탄에 피해를 받지 않지만, 통과시키지 않으면 탄이 펫에서 멈춰 펫이 붙어 싸우는 몹을 맞힐 수 없다.
      */
-    private static boolean isShootersPet(Entity entity, @Nullable Entity shooter) {
+    public static boolean isShootersPet(Entity entity, @Nullable Entity shooter) {
         return shooter != null && entity instanceof OwnableEntity pet && pet.getOwner() == shooter;
     }
 
