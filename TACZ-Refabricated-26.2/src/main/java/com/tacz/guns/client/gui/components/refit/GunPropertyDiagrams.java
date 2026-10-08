@@ -8,7 +8,7 @@ import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
-import com.tacz.guns.util.AttachmentDataUtils;
+import com.tacz.guns.util.ShooterMagazineBonus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -103,7 +103,7 @@ public final class GunPropertyDiagrams {
                 int ammoAmount = gunData.getAmmoAmount() + barrelBulletAmount;
                 double ammoAmountPercent = Math.min(ammoAmount / 100.0, 1);
                 int ammoLength = (int) (barStartX + barMaxWidth * ammoAmountPercent);
-                int maxAmmoCount = AttachmentDataUtils.getAmmoCountWithAttachment(gunItem, index.getGunData()) + barrelBulletAmount;
+                int maxAmmoCount = ShooterMagazineBonus.maxAmmoCount(Minecraft.getInstance().player, gunItem, index) + barrelBulletAmount;
                 int addAmmoCount = Math.max(maxAmmoCount - ammoAmount, 0);
                 int addAmmoCountLength = (int) (barMaxWidth * addAmmoCount / 100.0);
 

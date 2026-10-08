@@ -18,6 +18,7 @@ import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.util.AllowAttachmentTagMatcher;
 import com.tacz.guns.util.AttachmentDataUtils;
 import com.tacz.guns.util.GunLevelManager;
+import com.tacz.guns.util.ShooterMagazineBonus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -128,7 +129,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             this.maxWidth = Math.max(font.width(this.ammoName) + 22, this.maxWidth);
 
             int barrelBulletAmount = (iGun.hasBulletInBarrel(gun) && gunIndex.getGunData().getBolt() != Bolt.OPEN_BOLT) ? 1 : 0;
-            int maxAmmoCount = AttachmentDataUtils.getAmmoCountWithAttachment(gun, gunIndex.getGunData()) + barrelBulletAmount;
+            int maxAmmoCount = ShooterMagazineBonus.maxAmmoCount(Minecraft.getInstance().player, gun, gunIndex) + barrelBulletAmount;
             int currentAmmoCount = iGun.getCurrentAmmoCount(this.gun) + barrelBulletAmount;
 
             if (!iGun.useDummyAmmo(gun)) {

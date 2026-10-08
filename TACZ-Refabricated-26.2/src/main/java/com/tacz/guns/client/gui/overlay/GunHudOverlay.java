@@ -13,7 +13,7 @@ import com.tacz.guns.client.resource.pojo.display.gun.AmmoCountStyle;
 import com.tacz.guns.config.client.RenderConfig;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
-import com.tacz.guns.util.AttachmentDataUtils;
+import com.tacz.guns.util.ShooterMagazineBonus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -193,7 +193,7 @@ public class GunHudOverlay {
     private static void handleCacheCount(LocalPlayer player, ItemStack stack, GunData gunData, IGun iGun, boolean useInventoryAmmo) {
         if ((System.currentTimeMillis() - checkAmmoTimestamp) > 50) {
             checkAmmoTimestamp = System.currentTimeMillis();
-            cacheMaxAmmoCount = AttachmentDataUtils.getAmmoCountWithAttachment(stack, gunData);
+            cacheMaxAmmoCount = ShooterMagazineBonus.maxAmmoCount(player, stack, gunData);
             if (IGunOperator.fromLivingEntity(player).needCheckAmmo()) {
                 if (iGun.useDummyAmmo(stack)) {
                     cacheInventoryAmmoCount = iGun.getDummyAmmoAmount(stack);

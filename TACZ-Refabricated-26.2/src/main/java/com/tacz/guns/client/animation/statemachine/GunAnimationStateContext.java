@@ -19,6 +19,7 @@ import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.util.AttachmentDataUtils;
+import com.tacz.guns.util.ShooterMagazineBonus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
@@ -164,7 +165,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     public int getMaxAmmoCount() {
         return processGunData(
                 (iGun, gunIndex) ->
-                        AttachmentDataUtils.getAmmoCountWithAttachment(currentGunItem, gunData)
+                        ShooterMagazineBonus.maxAmmoCount(Minecraft.getInstance().player, currentGunItem, gunData)
         ).orElse(0);
     }
 

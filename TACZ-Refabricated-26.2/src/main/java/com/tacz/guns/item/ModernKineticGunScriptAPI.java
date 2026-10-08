@@ -33,6 +33,7 @@ import com.tacz.guns.util.CycleTaskHelper;
 import com.tacz.guns.util.GunLevelManager;
 import com.tacz.guns.util.GunShotContext;
 import com.tacz.guns.util.ItemNbtUtils;
+import com.tacz.guns.util.ShooterMagazineBonus;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -548,7 +549,7 @@ public class ModernKineticGunScriptAPI {
      * @return 当前枪械需要的弹药数量
      */
     public int getNeededAmmoAmount() {
-        int maxAmmoCount = AttachmentDataUtils.getAmmoCountWithAttachment(itemStack, gunIndex.getGunData());
+        int maxAmmoCount = ShooterMagazineBonus.maxAmmoCount(shooter, itemStack, gunIndex);
         int currentAmmoCount = abstractGunItem.getCurrentAmmoCount(itemStack);
         return maxAmmoCount - currentAmmoCount;
     }
@@ -568,7 +569,7 @@ public class ModernKineticGunScriptAPI {
      * @return 返回枪械弹匣的最大备弹数，不计算已在枪管中的弹药。
      */
     public int getMaxAmmoCount() {
-        return AttachmentDataUtils.getAmmoCountWithAttachment(itemStack, gunIndex.getGunData());
+        return ShooterMagazineBonus.maxAmmoCount(shooter, itemStack, gunIndex);
     }
 
     /**
@@ -638,7 +639,7 @@ public class ModernKineticGunScriptAPI {
         if (amount < 0) {
             return 0;
         }
-        int maxAmmoCount = AttachmentDataUtils.getAmmoCountWithAttachment(itemStack, gunIndex.getGunData());
+        int maxAmmoCount = ShooterMagazineBonus.maxAmmoCount(shooter, itemStack, gunIndex);
         int currentAmmoCount = abstractGunItem.getCurrentAmmoCount(itemStack);
         int newAmmoCount = currentAmmoCount + amount;
         if (maxAmmoCount < newAmmoCount) {

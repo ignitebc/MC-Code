@@ -18,7 +18,7 @@ import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.FeedType;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.util.AllowAttachmentTagMatcher;
-import com.tacz.guns.util.AttachmentDataUtils;
+import com.tacz.guns.util.ShooterMagazineBonus;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import cn.sh1rocu.tacz.compat.fabric.BuiltinItemRendererRegistry;
@@ -133,7 +133,7 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
         }
 
         int currentAmmoCount = getCurrentAmmoCount(gunItem);
-        int maxAmmoCount = AttachmentDataUtils.getAmmoCountWithAttachment(gunItem, gunIndex.getGunData());
+        int maxAmmoCount = ShooterMagazineBonus.maxAmmoCount(shooter, gunItem, gunIndex);
         if (currentAmmoCount >= maxAmmoCount) {
             return false;
         }
@@ -200,7 +200,7 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
             Identifier ammoId = index.getGunData().getAmmoId();
             // 创造模式类型的换弹，只填满子弹总数，不进行任何卸载弹药逻辑
             if (player.isCreative()) {
-                int maxAmmCount = AttachmentDataUtils.getAmmoCountWithAttachment(gunItem, index.getGunData());
+                int maxAmmCount = ShooterMagazineBonus.maxAmmoCount(player, gunItem, index);
                 setCurrentAmmoCount(gunItem, maxAmmCount);
                 return;
             }
