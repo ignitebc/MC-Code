@@ -11,6 +11,7 @@ import com.mcserver.serverutilities.config.UtilitiesConfig;
 import com.mcserver.serverutilities.death.DeathChests;
 import com.mcserver.serverutilities.lodestone.LodestoneOwnership;
 import com.mcserver.serverutilities.level.ToolLevelRules;
+import com.mcserver.serverutilities.recipe.RecipeUnlockRules;
 import com.mcserver.serverutilities.sleep.SleepRuleManager;
 import com.mcserver.serverutilities.spawn.SpawnScatterRules;
 import com.mcserver.serverutilities.starter.StarterKitRules;
@@ -74,6 +75,11 @@ public final class ServerUtilities implements ModInitializer {
         });
         ServerPlayerEvents.JOIN.register(SpawnScatterRules::onJoin);
         ServerPlayerEvents.JOIN.register(StarterKitRules::onJoin);
+        ServerPlayerEvents.JOIN.register(RecipeUnlockRules::onJoin);
+        // /reload로 레시피가 추가·교체되면 접속 중인 플레이어에게도 바로 해금한다.
+        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
+            if (success) RecipeUnlockRules.unlockForOnlinePlayers(server);
+        });
         ServerPlayerEvents.AFTER_RESPAWN.register(SpawnScatterRules::onRespawn);
         ServerPlayerEvents.LEAVE.register(SpawnScatterRules::onLeave);
         ServerTickEvents.END_SERVER_TICK.register(server -> {
@@ -105,7 +111,8 @@ public final class ServerUtilities implements ModInitializer {
                                     + ", 시작 위치 분산=" + settings.spawnScatter()
                                     + " ±" + settings.spawnScatterRadius()
                                     + " (기준=" + describeAnchor() + ")"
-                                    + ", 시작 장비=" + settings.starterKit()), false);
+                                    + ", 시작 장비=" + settings.starterKit()
+                                    + ", 조합법 일괄 해금=" + settings.recipeUnlockAll()), false);
                             return 1;
                         }))
                         .then(Commands.literal("reload").executes(ctx -> {
@@ -130,6 +137,8 @@ public final class ServerUtilities implements ModInitializer {
                 value -> server.getGameRules().set(GameRules.PLAYERS_SLEEPING_PERCENTAGE, value, server));
         SpawnScatterRules.initialize(server);
         config = candidate;
+        // 설정을 꺼 둔 채 운영하다 켜면 재접속을 기다리지 않고 접속 중인 플레이어에게 적용한다.
+        RecipeUnlockRules.unlockForOnlinePlayers(server);
     }
 
     private static String describeAnchor() {

@@ -10,10 +10,11 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
                               boolean hunger, float hungerMultiplier, boolean armorCurve,
                               boolean equipmentTiers, boolean deathPenalty, boolean deathProtection,
                               boolean deathChest, int deathChestExpireSeconds, int deathChestEmptySeconds,
-                              boolean spawnScatter, int spawnScatterRadius, boolean starterKit) {
+                              boolean spawnScatter, int spawnScatterRadius, boolean starterKit,
+                              boolean recipeUnlockAll) {
     public static final UtilitiesConfig DEFAULT = new UtilitiesConfig(
             true, true, true, 80.0, true, true, 1.5F, true, true, true, true, true, 300, 3,
-            true, 5000, true);
+            true, 5000, true, true);
 
     public static UtilitiesConfig load(Path path) throws IOException {
         Properties defaults = DEFAULT.toProperties();
@@ -39,7 +40,7 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
                 bool(merged, "death.chest.enabled"), integer(merged, "death.chest.expire_seconds", 1, 86_400),
                 integer(merged, "death.chest.empty_seconds", 0, 3_600),
                 bool(merged, "spawn.scatter.enabled"), integer(merged, "spawn.scatter.radius", 1, 1_000_000),
-                bool(merged, "starter.kit.enabled"));
+                bool(merged, "starter.kit.enabled"), bool(merged, "recipes.unlock_all.enabled"));
     }
 
     public Properties toProperties() {
@@ -61,6 +62,7 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
         values.setProperty("spawn.scatter.enabled", Boolean.toString(spawnScatter));
         values.setProperty("spawn.scatter.radius", Integer.toString(spawnScatterRadius));
         values.setProperty("starter.kit.enabled", Boolean.toString(starterKit));
+        values.setProperty("recipes.unlock_all.enabled", Boolean.toString(recipeUnlockAll));
         return values;
     }
 
