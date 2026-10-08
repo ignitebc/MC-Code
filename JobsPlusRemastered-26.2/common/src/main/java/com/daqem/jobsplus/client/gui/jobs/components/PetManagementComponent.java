@@ -1,7 +1,9 @@
 package com.daqem.jobsplus.client.gui.jobs.components;
 
 import com.autovw.advancednetherite.client.ClientPetData;
+import com.autovw.advancednetherite.common.pet.PetAttackMode;
 import com.autovw.advancednetherite.common.pet.PetNames;
+import com.autovw.advancednetherite.network.PetAttackModePayload;
 import com.autovw.advancednetherite.network.PetRenamePayload;
 import com.autovw.advancednetherite.network.PetStatusEntry;
 import com.autovw.advancednetherite.network.PetTogglePayload;
@@ -26,6 +28,8 @@ import java.util.function.BooleanSupplier;
 final class PetManagementComponent extends EmptyComponent
 {
     private static final int TITLE_HEIGHT = 12;
+    /** 제목 아래 펫 공격 방식 단추 줄 */
+    private static final int MODE_ROW_HEIGHT = JobsTheme.BUTTON_HEIGHT + 4;
     private static final int RENAME_HEIGHT = 22;
     private static final int ROW_HEIGHT = 34;
     private static final int BUTTON_WIDTH = 28;
@@ -41,8 +45,10 @@ final class PetManagementComponent extends EmptyComponent
     PetManagementComponent(int x, int y, int width, int height)
     {
         super(x, y, width, height);
-        this.petScroll = new ActionScrollWidget(width, Math.max(1, height - TITLE_HEIGHT - RENAME_HEIGHT));
-        this.petScroll.setY(TITLE_HEIGHT);
+        addWidget(new AttackModeButton(3, TITLE_HEIGHT + 1, Math.max(1, width - 6)));
+        int listY = TITLE_HEIGHT + MODE_ROW_HEIGHT;
+        this.petScroll = new ActionScrollWidget(width, Math.max(1, height - listY - RENAME_HEIGHT));
+        this.petScroll.setY(listY);
         addWidget(this.petScroll);
 
         int renameY = height - RENAME_HEIGHT + 3;
@@ -143,6 +149,15 @@ final class PetManagementComponent extends EmptyComponent
         }
         // 표시 상태는 서버 응답으로 갱신해 연타 제한에 걸려도 실제 상태와 일치시킨다.
         send(new PetTogglePayload(recordId));
+    }
+
+    /** 펫 공격 방식을 자동공격 ↔ 일반공격으로 바꾼다. 보유한 모든 펫에 같이 적용된다. */
+    private static void switchAttackMode()
+    {
+        boolean nextAutoAttack = !ClientPetData.isAutoAttack();
+        // 표시 상태는 서버 동기화로 다시 맞춰져 연타 제한에 걸려도 실제 상태와 일치한다.
+        ClientPetData.setAutoAttack(nextAutoAttack);
+        send(new PetAttackModePayload(nextAutoAttack));
     }
 
     /** Advanced Netherite가 등록한 페이로드를 기존 바닐라 패킷 경로로 보낸다. */
@@ -259,6 +274,28 @@ final class PetManagementComponent extends EmptyComponent
             setMessage(title);
             JobsTheme.button(graphics, getX(), getY(), getWidth(), getHeight(), active,
                     isHoveredOrFocused(), on, false);
+            JobsTheme.label(graphics, title, getX(), getY(), getWidth(), getHeight(), color);
+        }
+    }
+
+    /** 펫 공격 방식 단추. 누를 때마다 자동공격과 일반공격이 바뀐다. */
+    private static class AttackModeButton extends CustomButtonWidget
+    {
+        AttackModeButton(int x, int y, int width)
+        {
+            super(x, y, width, JobsTheme.BUTTON_HEIGHT, Component.empty(), null, button -> switchAttackMode());
+        }
+
+        @Override
+        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick)
+        {
+            boolean autoAttack = ClientPetData.isAutoAttack();
+            PetAttackMode mode = autoAttack ? PetAttackMode.AUTO : PetAttackMode.NORMAL;
+            Component title = Component.literal("공격 방식: " + mode.label());
+            int color = autoAttack ? JobsTheme.SUCCESS : JobsTheme.CYAN;
+            setMessage(title);
+            JobsTheme.button(graphics, getX(), getY(), getWidth(), getHeight(), active,
+                    isHoveredOrFocused(), autoAttack, false);
             JobsTheme.label(graphics, title, getX(), getY(), getWidth(), getHeight(), color);
         }
     }
