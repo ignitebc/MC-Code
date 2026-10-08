@@ -1,0 +1,23 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:hunter/gunpowder_charge_x"
+  },
+  "type": "arc:on_kill_entity",
+  "rewards": [
+    {
+      "type": "arc:item",
+      "chance": 50,
+      "item": {
+        "id": "minecraft:gunpowder"
+      },
+      "amount": 1,
+      "overflow": "drop"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:hostile_entity"
+    }
+  ]
+}

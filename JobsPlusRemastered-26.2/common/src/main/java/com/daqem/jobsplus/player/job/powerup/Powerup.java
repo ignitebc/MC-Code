@@ -19,8 +19,9 @@ public class Powerup
 
     public Powerup(Identifier powerupLocation, PowerupState powerupState)
     {
-        this.powerupLocation = powerupLocation;
-        this.powerupInstance = PowerupInstance.of(powerupLocation);
+        // 저장 데이터와 패킷 모두 이 생성자로 읽으므로 대체된 스킬 ID는 여기서 새 ID로 바꾼다.
+        this.powerupLocation = PowerupAliases.resolve(powerupLocation);
+        this.powerupInstance = PowerupInstance.of(this.powerupLocation);
         this.powerupState = powerupState;
     }
 

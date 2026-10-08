@@ -1,6 +1,6 @@
 {
   "job": "jobsplus:hunter",
-  "parent": "jobsplus:hunter/attack_speed_viii",
+  "parent": "jobsplus:hunter/gunpowder_charge_viii",
   "icon": {
     "id": "minecraft:feather",
     "count": 9

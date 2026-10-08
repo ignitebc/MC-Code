@@ -1,0 +1,43 @@
+{
+  "holder": {
+    "type": "jobsplus:powerup",
+    "id": "jobsplus:hunter/gunpowder_charge_v"
+  },
+  "type": "arc:on_kill_entity",
+  "rewards": [
+    {
+      "type": "arc:item",
+      "chance": 25,
+      "item": {
+        "id": "minecraft:gunpowder"
+      },
+      "amount": 1,
+      "overflow": "drop"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "arc:hostile_entity"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/gunpowder_charge_vi"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/gunpowder_charge_vii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/gunpowder_charge_viii"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/gunpowder_charge_ix"
+    },
+    {
+      "type": "jobsplus:powerup_not_active",
+      "powerup": "jobsplus:hunter/gunpowder_charge_x"
+    }
+  ]
+}

@@ -24,7 +24,7 @@ public final class JobIcons {
             "stronger_potions", "gold_block_digger", "gold_ingot_digger", "gold_nugget_digger",
             "shovel_efficiency", "shovel_range", "auto_replant", "bone_meal_saver", "double_drops",
             "livestock_bounty", "range_harvest", "casting_speed", "fish_school", "full_catch",
-            "get_special_item", "grappling_hook", "attack_speed", "exp_boost_mob", "fire_arrows",
+            "get_special_item", "grappling_hook", "gunpowder_charge", "exp_boost_mob", "fire_arrows",
             "multiple_arrows", "exp_boost_block", "mining_special_find", "ore_refining",
             "pickaxe_efficiency", "pickaxe_range", "lapis_refund", "less_damage_melee", "null_hit",
             "steel_constitution", "sword_range"));
