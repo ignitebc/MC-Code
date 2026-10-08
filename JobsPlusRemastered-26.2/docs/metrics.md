@@ -59,7 +59,7 @@ logs/jobsplus-metrics/v2/<시즌>/
 | `LEVEL_UP` | 직업 레벨업. 레벨 전후와 코인 전후 |
 | `POWERUP_BUY` | 스킬 구매. 가격, 코인 전후, 직업 레벨, 요구 레벨, 선행 스킬, 구매 후 보유 수 |
 | `POWERUP_BUY_FAILED` | 구매 실패. `reason`이 `not_enough_coins`, `level_too_low`, `parent_missing` |
-| `POWERUP_TOGGLE` | 스킬 켜기·끄기 |
+| `POWERUP_TOGGLE` | 일반스킬 켜기·끄기. 같은 계열의 보유 단계가 함께 바뀌므로 실제로 바뀐 단계마다 한 줄씩 남는다 |
 | `JOB_START`, `JOB_SLOT_ADD` | 직업 선택, 직업선택권으로 최대 직업 수 증가 |
 | `COUPON_USE` | 쿠폰 종류·배율·만료 시각 |
 | `COIN_REWARD` | 직업 코인 보상(현재 데이터에서는 사용하지 않음) |
