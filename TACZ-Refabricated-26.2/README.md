@@ -141,7 +141,8 @@ Forge Config API Port는 TaCZ 설정 구현에 필요한 Fabric 라이브러리�
 ## 주인 탄과 펫
 
 - 플레이어가 쏜 총알은 그 플레이어의 펫(`OwnableEntity`로 주인이 쏜 사람인 개체)에 막히지 않고 통과해 뒤의 대상을 맞힙니다. 다른 플레이어의 펫과 중립 몹은 지금처럼 맞습니다.
-- 구현은 `EntityUtil.findEntityOnPath`·`findEntitiesOnPath`에서 쏜 사람의 펫을 건너뜁니다. 주인의 공격과 그 폭발은 원래 펫(`DialgaPetEntity`)이 피해를 받지 않습니다.
+- 주인의 폭발과 총검·개머리판 근접 공격도 주인의 펫을 건너뜁니다. 펫은 피해도, 밀어내기나 총검 효과도 받지 않습니다.
+- 구현은 `EntityUtil.isShootersPet`으로 판정하며 `findEntityOnPath`·`findEntitiesOnPath`(탄), `ExplodeUtil`(폭발), `ModernKineticGunItem.doMelee`(근접)에서 씁니다. 바닐라 투사체·창·근접 조준의 통과와 펫 피해 차단은 Advanced Netherite(`DialgaPetEntity`, 펫 통과 Mixin)가 맡습니다.
 
 ## 예광탄과 총구 섬광
 
