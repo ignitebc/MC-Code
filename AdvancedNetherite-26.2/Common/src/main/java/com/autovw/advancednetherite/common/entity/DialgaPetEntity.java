@@ -19,7 +19,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.player.Player;
@@ -37,6 +36,12 @@ public class DialgaPetEntity extends TamableAnimal
 {
     /** 주인과 이 거리(10칸)보다 멀어지면 곁으로 순간이동한다. */
     private static final double TELEPORT_DISTANCE_SQR = 10.0 * 10.0;
+    /**
+     * 공격 대상이 없어진 뒤 이 시간(2초) 동안은 순간이동으로 돌아가지 않는다.
+     * 그 사이 사냥 AI가 다음 사냥감을 골라, 한 마리 잡을 때마다 주인 곁으로 끌려오지 않게 한다.
+     * 사냥 AI는 1초마다 찾으므로 한 번 놓쳐도 다시 찾을 여유가 있다.
+     */
+    private static final int RETURN_DELAY_AFTER_COMBAT_TICKS = 40;
     /**
      * 추격 대상이 주인에게서 이 거리(56칸)보다 멀어지면 추격을 포기하고 주인에게 돌아간다.
      * 사냥 범위(3청크, 48칸)보다 넉넉하게 두어, 범위 경계의 몹을 잡았다 놓았다 반복하지 않게 한다.
@@ -60,6 +65,8 @@ public class DialgaPetEntity extends TamableAnimal
     private int ignoreTargetUntilTick;
     /** 사냥 AI가 잡은 추격 대상의 ID. 주인이 일반공격으로 바꾸면 이 대상만 놓는다. 반격으로 잡은 대상이면 -1이다. */
     private int huntTargetId = -1;
+    /** 마지막으로 공격 대상이 있던 틱. 전투가 끝난 뒤 순간이동을 미루는 데 쓴다. */
+    private int lastCombatTick;
 
     private static final String TAG_RECORD_ID = "PetRecordId";
     /** 주인 조회가 잠깐 비어도(사망→리스폰 전환 등) 이 시간(5초) 안에 돌아오면 소멸하지 않는다. */
@@ -121,7 +128,7 @@ public class DialgaPetEntity extends TamableAnimal
     protected void registerGoals()
     {
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.4, true));
+        this.goalSelector.addGoal(1, new PetMeleeAttackGoal(this, 1.4));
         this.goalSelector.addGoal(2, new FollowOwnerRingGoal(this, 1.25, 3.0F, 1.0F));
         this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
@@ -189,7 +196,12 @@ public class DialgaPetEntity extends TamableAnimal
         regenerateOutOfCombat();
 
         // 추격 중이 아닐 때 주인과 10칸 이상 벌어지면 곁으로 순간이동한다.
-        boolean isIdle = this.getTarget() == null;
+        // 사냥감을 잡은 직후에는 2초를 기다려, 다음 사냥감이 있으면 그 자리에서 바로 이어서 사냥한다.
+        if (this.getTarget() != null)
+        {
+            this.lastCombatTick = this.tickCount;
+        }
+        boolean isIdle = this.tickCount - this.lastCombatTick > RETURN_DELAY_AFTER_COMBAT_TICKS;
         if (isIdle && this.distanceToSqr(owner) > TELEPORT_DISTANCE_SQR)
         {
             teleportBesideOwner(owner);
