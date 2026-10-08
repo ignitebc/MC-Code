@@ -158,6 +158,8 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
     private float headShot;
     private float shotDamageMultiplier = 1f;
     private float gunLevelDamageMultiplier = 1f;
+    // 총기 레벨의 폭발 피해 배율. 폭발은 서버에서만 계산하므로 클라이언트에는 보내지 않는다.
+    private float gunLevelExplosionMultiplier = 1f;
     private @Nullable GunShotContext shotContext;
     // 소음기를 단 총에서 쏜 탄. 맞히거나 죽였을 때 주변 몬스터에게 경보가 퍼지는 범위를 줄인다.
     private boolean silenced;
@@ -188,6 +190,7 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         // gunId 提前赋值，以让 modifyProperty 可以在构造函数中运行
         this.gunId = gunId;
         this.gunLevelDamageMultiplier = (float) GunLevelManager.getDamageMultiplier(gunItem);
+        this.gunLevelExplosionMultiplier = (float) GunLevelManager.getExplosionDamageMultiplier(gunItem);
         AttachmentCacheProperty cacheProperty = Objects.requireNonNull(IGunOperator.fromLivingEntity(throwerIn).getCacheProperty());
         float armorIgnore = modifyProperty(GunProperties.ARMOR_IGNORE, Float.class, cacheProperty.getCache(GunProperties.ARMOR_IGNORE));
         float headshot = modifyProperty(GunProperties.HEADSHOT_MULTIPLIER, Float.class, cacheProperty.getCache(GunProperties.HEADSHOT_MULTIPLIER));
@@ -329,7 +332,8 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
                 if (this.explosionDelayCount > 0) {
                     this.explosionDelayCount--;
                 } else {
-                    ExplodeUtil.createExplosion(this.getOwner(), this, this.explosionDamage, this.explosionRadius, this.explosionKnockback, this.explosionDestroyBlock, this.position());
+                    // 같은 사격의 다른 산탄이 이미 폭발했으면 터지지 않고 사라진다.
+                    tryExplode(this.position());
                     // 爆炸直接结束不留弹孔，不处理之后的逻辑
                     this.discard();
                     return;
@@ -493,7 +497,7 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         if (this.explosion) {
             // 取消无敌时间
             parts.core().invulnerableTime = 0;
-            ExplodeUtil.createExplosion(this.getOwner(), this, this.explosionDamage, this.explosionRadius, this.explosionKnockback, this.explosionDestroyBlock, result.getLocation());
+            tryExplode(result.getLocation());
         }
         // 只对 LivingEntity 执行击杀判定
         if (parts.core() instanceof LivingEntity livingCore) {
@@ -512,6 +516,24 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
                 }
             }
         }
+    }
+
+    /**
+     * 폭발탄이면 이 자리에서 폭발한다. 한 발의 산탄은 사격 정보를 공유하므로 처음 폭발한 알만 터진다.
+     *
+     * @return 폭발했으면 true
+     */
+    private boolean tryExplode(Vec3 position) {
+        if (!this.explosion) {
+            return false;
+        }
+        boolean alreadyExploded = this.shotContext != null && !this.shotContext.claimExplosion();
+        if (alreadyExploded) {
+            return false;
+        }
+        ExplodeUtil.createExplosion(this.getOwner(), this, this.explosionDamage, this.gunLevelExplosionMultiplier,
+                this.explosionRadius, this.explosionKnockback, this.explosionDestroyBlock, position, this.shotContext);
+        return true;
     }
 
     private void awardShotExperience(LivingEntity target, float healthBefore, float absorptionBefore) {
@@ -544,9 +566,8 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
             return;
         }
         super.onHitBlock(result);
-        // 爆炸
-        if (this.explosion) {
-            ExplodeUtil.createExplosion(this.getOwner(), this, this.explosionDamage, this.explosionRadius, this.explosionKnockback, this.explosionDestroyBlock, hitVec);
+        // 爆炸。같은 사격의 다른 산탄이 이미 폭발했으면 일반 탄처럼 탄흔을 남긴다.
+        if (tryExplode(hitVec)) {
             // 爆炸直接结束不留弹孔，不处理之后的逻辑
             this.discard();
             return;

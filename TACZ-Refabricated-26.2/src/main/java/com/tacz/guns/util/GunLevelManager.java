@@ -26,7 +26,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-/** 개별 총기의 누적 경험치, 레벨과 직접 사격 피해 배율을 관리한다. */
+/** 개별 총기의 누적 경험치, 레벨과 직접 사격·폭발 피해 배율을 관리한다. */
 public final class GunLevelManager {
     public static final int MIN_LEVEL = 1;
     public static final int MAX_LEVEL = 500;
@@ -34,6 +34,8 @@ public final class GunLevelManager {
     public static final int MAX_EXP = (MAX_LEVEL - MIN_LEVEL) * EXP_PER_LEVEL;
     /** 레벨마다 직접 사격 피해 +1%. LV500에서 +499%다. */
     public static final double DAMAGE_BONUS_PER_LEVEL = 0.01;
+    /** 레벨마다 폭발 피해 +0.8%. LV500에서 +399.2%다. 쏜 사람 자신과 다른 플레이어도 같은 배율로 맞는다. */
+    public static final double EXPLOSION_DAMAGE_BONUS_PER_LEVEL = 0.008;
 
     public static final TagKey<EntityType<?>> EXP_TARGETS = TagKey.create(
             Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "gun_level_exp_targets"));
@@ -69,6 +71,19 @@ public final class GunLevelManager {
             return 1.0;
         }
         return getDamageMultiplier(iGun.getLevel(gun));
+    }
+
+    public static double getExplosionDamageMultiplier(int level) {
+        int validLevel = Math.clamp(level, MIN_LEVEL, MAX_LEVEL);
+        return 1.0 + (validLevel - MIN_LEVEL) * EXPLOSION_DAMAGE_BONUS_PER_LEVEL;
+    }
+
+    public static double getExplosionDamageMultiplier(ItemStack gun) {
+        IGun iGun = IGun.getIGunOrNull(gun);
+        if (iGun == null) {
+            return 1.0;
+        }
+        return getExplosionDamageMultiplier(iGun.getLevel(gun));
     }
 
     public static double getDamageBonusPercent(int level) {
