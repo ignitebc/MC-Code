@@ -1,10 +1,10 @@
 package moe.caramel.chat.driver;
 
 /**
- * Gets the current keyboard status.
+ * 현재 키보드 상태를 가져온다.
  *
- * @param language current ime language
- * @param useNative whether to using the native language
+ * @param language 현재 IME 언어
+ * @param useNative 모국어 표시를 쓸지 여부
  */
 public record KeyboardStatus(Language language, boolean useNative) {
 
@@ -14,25 +14,25 @@ public record KeyboardStatus(Language language, boolean useNative) {
     }
 
     /**
-     * Gets the display to use for language change notifications.
+     * 언어 전환 알림에 쓸 표시를 가져온다.
      *
-     * @return display
+     * @return 표시
      */
     public String display() {
         return language().display;
     }
 
     /**
-     * Gets the indicator X offset.
+     * 표시기 X 오프셋을 가져온다.
      *
-     * @return X offset
+     * @return X 오프셋
      */
     public float offset() {
         return language().offset;
     }
 
     /**
-     * Display List
+     * 표시 목록
      */
     public enum Language {
 

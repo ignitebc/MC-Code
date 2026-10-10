@@ -6,21 +6,21 @@ import com.sun.jna.Pointer;
 import com.sun.jna.WString;
 
 /**
- * caramelChat Wayland Driver
+ * caramelChat Wayland 드라이버
  */
 public interface Driver_Wayland extends Library {
 
     /**
-     * Initialize caramelChat Wayland Driver.
+     * caramelChat Wayland 드라이버를 초기화한다.
      *
-     * @param wlDisplay Wayland Display
-     * @param preEdit PreEdit Callback
-     * @param preEditNull PreEdit Null Callback
-     * @param done Done Callback
-     * @param rect Rect Callback
-     * @param log Log Info Callback
-     * @param error Log Error Callback
-     * @param debug Log Debug Callback
+     * @param wlDisplay Wayland 디스플레이
+     * @param preEdit 조합 중 글자 콜백
+     * @param preEditNull 조합 중 글자 비움 콜백
+     * @param done 완료 콜백
+     * @param rect 사각형 콜백
+     * @param log 정보 로그 콜백
+     * @param error 오류 로그 콜백
+     * @param debug 디버그 로그 콜백
      */
     void initialize(
         final long wlDisplay,
@@ -34,9 +34,9 @@ public interface Driver_Wayland extends Library {
     );
 
     /**
-     * Set whether to focus or not.
+     * 포커스 여부를 설정한다.
      *
-     * @param flag focus
+     * @param flag 포커스
      */
     void setFocus(final boolean flag);
 

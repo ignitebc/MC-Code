@@ -1,28 +1,28 @@
 package moe.caramel.chat.driver;
 
 /**
- * IME Operator Interface
+ * IME 오퍼레이터 인터페이스
  */
 public interface IOperator {
 
     /**
-     * Gets the IME controller.
+     * IME 컨트롤러를 가져온다.
      *
-     * @return controller
+     * @return 컨트롤러
      */
     IController getController();
 
     /**
-     * Set whether to focus or not. (Wrapper)
+     * 포커스 여부를 설정한다. (래퍼)
      *
-     * @param focus focus
+     * @param focus 포커스
      */
     void setFocused(final boolean focus);
 
     /**
-     * Get whether to focus or not. (Wrapper)
+     * 포커스 여부를 가져온다. (래퍼)
      *
-     * @return focus
+     * @return 포커스
      */
     boolean isFocused();
 }

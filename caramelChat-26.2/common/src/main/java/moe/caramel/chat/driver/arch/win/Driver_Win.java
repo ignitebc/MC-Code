@@ -8,7 +8,7 @@ import moe.caramel.chat.driver.KeyboardStatus.Language;
 import java.util.Map;
 
 /**
- * CocoaInput Windows Driver
+ * CocoaInput Windows 드라이버
  */
 public interface Driver_Win extends Library {
 
@@ -27,15 +27,15 @@ public interface Driver_Win extends Library {
     // ================================
 
     /**
-     * Initialize CocoaInput Windows Driver.
+     * CocoaInput Windows 드라이버를 초기화한다.
      *
-     * @param windowId Window Id
-     * @param preEdit PreEdit Callback
-     * @param done Done Callback
-     * @param rect Rect Callback
-     * @param log Log Info Callback
-     * @param error Log Error Callback
-     * @param debug Log Debug Callback
+     * @param windowId 창 Id
+     * @param preEdit 조합 중 글자 콜백
+     * @param done 완료 콜백
+     * @param rect 사각형 콜백
+     * @param log 정보 로그 콜백
+     * @param error 오류 로그 콜백
+     * @param debug 디버그 로그 콜백
      */
     void initialize(
         final long windowId,
@@ -48,23 +48,23 @@ public interface Driver_Win extends Library {
     );
 
     /**
-     * Set whether to focus or not.
+     * 포커스 여부를 설정한다.
      *
-     * @param flag focus
+     * @param flag 포커스
      */
     void set_focus(final int flag);
 
     /**
-     * Gets the current keyboard layout.
+     * 현재 키보드 배열을 가져온다.
      *
-     * @return current keyboard layout
+     * @return 현재 키보드 배열
      */
     int getKeyboardLayout();
 
     /**
-     * Gets the current IME status.
+     * 현재 IME 상태를 가져온다.
      *
-     * @return IME status. (Native if 1)
+     * @return IME 상태(1이면 모국어 입력)
      */
     int getStatus();
 

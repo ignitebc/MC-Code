@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screens.inventory.HangingSignEditScreen;
 import net.minecraft.world.level.block.StandingSignBlock;
 
 /**
- * SignEdit Screen Wrapper
+ * 표지판 편집 화면 래퍼
  */
 public final class WrapperSignEditScreen extends AbstractIMEWrapper {
 
@@ -64,12 +64,12 @@ public final class WrapperSignEditScreen extends AbstractIMEWrapper {
 
     @Override
     public Rect getRect() {
-        /* What? */
+        /* 알 수 없음 */
         if (wrapped.signField == null) {
             return Rect.EMPTY;
         }
 
-        /* Calc Position */
+        /* 위치 계산 */
         final String preview = this.getTextWithPreview();
         final int xWidth = wrapped.font.width(preview.substring(0, Math.min(wrapped.signField.getCursorPos(), preview.length())));
         final float x = ( (wrapped.width / 2.0f) + (xWidth / 2.0f) );

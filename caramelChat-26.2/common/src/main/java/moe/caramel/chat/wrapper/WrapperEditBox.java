@@ -4,7 +4,7 @@ import moe.caramel.chat.util.Rect;
 import net.minecraft.client.gui.components.EditBox;
 
 /**
- * EditBox Component Wrapper
+ * EditBox 구성 요소 래퍼
  */
 public final class WrapperEditBox extends AbstractIMEWrapper {
 
@@ -15,7 +15,7 @@ public final class WrapperEditBox extends AbstractIMEWrapper {
     public WrapperEditBox(final EditBox box) {
         super(box.value);
         this.wrapped = box;
-        this.insertCallback = () -> {}; // Empty Callback
+        this.insertCallback = () -> {}; // 빈 콜백
     }
 
     @Override
@@ -77,9 +77,9 @@ public final class WrapperEditBox extends AbstractIMEWrapper {
     }
 
     /**
-     * Sets the callback to be executed upon insert.
+     * 글자를 넣을 때 실행할 콜백을 설정한다.
      *
-     * @param callback insert callback
+     * @param callback 삽입 콜백
      */
     public void setInsertCallback(final Runnable callback) {
         this.insertCallback = callback;

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * EditBox Component Mixin
+ * EditBox 구성 요소 Mixin
  */
 @Mixin(value = EditBox.class, priority = 0)
 public abstract class MixinEditBox implements EditBoxController {
@@ -58,32 +58,32 @@ public abstract class MixinEditBox implements EditBoxController {
         return caramelChat$wrapper;
     }
 
-    // ================================ (Formatter)
+    // ================================ (서식 지정기)
 
     @Unique
     private EditBox.TextFormatter caramelChat$caretFormatter() {
-        // Set caret renderer
+        // 커서 렌더러 설정
         return ((original, firstPos) -> {
-            /* Original */
+            /* 원래 */
             if (caramelChat$wrapper.getStatus() == AbstractIMEWrapper.InputStatus.NONE) {
                 return null;
             }
-            /* Warning */
+            /* 경고 */
             else if (caramelChat$wrapper.blockTyping()) {
                 return FormattedCharSequence.forward(original, Style.EMPTY.withColor(ChatFormatting.RED));
             }
-            /* Custom */
+            /* 사용자 정의 */
             else {
-                // Check Position
-                // Empty
-                // FirstPos ex. [ ABCD|EFG}(INPUT)HIJK ]
-                // LastPos ex. [ ABCDEFG(INPUT)HI|JK} ]
+                // 위치 확인
+                // 비어 있음
+                // 첫 위치 예. [ ABCD|EFG}(INPUT)HIJK ]
+                // 마지막 위치 예. [ ABCDEFG(INPUT)HI|JK} ]
                 final int lastPos = (firstPos + original.length()); // firstPos ~ lastPos
                 if (lastPos <= caramelChat$wrapper.getFirstEndPos() || caramelChat$wrapper.getSecondStartPos() < firstPos) {
                     return null;
                 }
 
-                // Process
+                // 처리
                 final int firstLen = (caramelChat$wrapper.getFirstEndPos() - firstPos);
                 final int previewLen = (caramelChat$wrapper.getSecondStartPos() - caramelChat$wrapper.getFirstEndPos());
                 final int inputEndPoint = Math.min(original.length(), (firstLen + previewLen));
@@ -124,7 +124,7 @@ public abstract class MixinEditBox implements EditBoxController {
     private void setValueInvoke(final String text, final CallbackInfo ci) {
         if (this.caramelChat$wrapper != null && this.caramelChat$wrapper.valueChanged) {
             ci.cancel();
-            // caxton Compatibility
+            // caxton 호환
             this.cursorPos = Mth.clamp(this.caramelChat$cacheCursorPos, 0, this.value.length());
             this.highlightPos = Mth.clamp(this.caramelChat$cacheHighlightPos, 0, this.value.length());
             this.caramelChat$wrapper.valueChanged = false;

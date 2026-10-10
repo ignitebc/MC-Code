@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * Mixin Plugin for compatibility with other mods
+ * 다른 모드와 호환하기 위한 Mixin 플러그인
  */
 public final class MixinPlugin implements IMixinConfigPlugin {
 
@@ -49,7 +49,7 @@ public final class MixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void acceptTargets(final Set<String> myTargets, final Set<String> otherTargets) {
-        // Print logs
+        // 로그 출력
         final List<String> mods = new ArrayList<>();
         for (final Entry<Data, Boolean> data : this.checkStatus.entrySet()) {
             if (data.getValue()) {

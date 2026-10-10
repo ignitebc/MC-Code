@@ -4,7 +4,7 @@ import moe.caramel.chat.driver.IController;
 import moe.caramel.chat.driver.IOperator;
 
 /**
- * Unknown IME Operator
+ * 알 수 없는 OS용 IME 오퍼레이터
  */
 public final class UnknownOperator implements IOperator {
 

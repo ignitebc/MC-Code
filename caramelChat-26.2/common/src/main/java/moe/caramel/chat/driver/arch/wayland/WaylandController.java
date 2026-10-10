@@ -13,7 +13,7 @@ import net.minecraft.client.gui.screens.Screen;
 import org.lwjgl.glfw.GLFWNativeWayland;
 
 /**
- * Wayland Controller
+ * Wayland 컨트롤러
  */
 public final class WaylandController implements IController {
 
@@ -22,37 +22,37 @@ public final class WaylandController implements IController {
     private final Driver_Wayland driver;
 
     /**
-     * Create Wayland Controller
+     * Wayland 컨트롤러를 만든다
      */
     public WaylandController() {
         ModLogger.log("[Native] Load the Wayland Controller.");
         this.driver = Native.load(Main.copyLibrary("libcaramelchatwl.so"), Driver_Wayland.class);
 
         this.driver.initialize(
-            // Wayland Display Id
+            // Wayland 디스플레이 Id
             GLFWNativeWayland.glfwGetWaylandDisplay(),
-            // PreEdit
+            // 조합 중 글자
             (str) -> {
                 if (focused != null) {
                     ModLogger.debug("[Native|Java] Preedit Callback (" + str.toString() + ")");
                     focused.getWrapper().appendPreviewText(str.toString());
                 }
             },
-            // PreEdit (Null)
+            // 조합 중 글자(비움)
             () -> {
                 if (focused != null) {
                     ModLogger.debug("[Native|Java] Preedit Null Callback");
                     focused.getWrapper().appendPreviewText("");
                 }
             },
-            // Done
+            // 완료
             (str) -> {
                 if (focused != null) {
                     ModLogger.debug("[Native|Java] Done Callback (" + str.toString() + ")");
                     focused.getWrapper().insertText(str.toString());
                 }
             },
-            // Rect
+            // 사각형
             (rect) -> {
                 if (focused != null) {
                     ModLogger.debug("[Native|Java] Rect Callback");
@@ -73,11 +73,11 @@ public final class WaylandController implements IController {
                 }
                 return 1;
             },
-            // Info
+            // 정보
             (log) -> ModLogger.log("[Native|C] " + log),
-            // Error
+            // 오류
             (log) -> ModLogger.error("[Native|C] " + log),
-            // Debug
+            // 디버그
             (log) -> ModLogger.debug("[Native|C] " + log)
         );
 

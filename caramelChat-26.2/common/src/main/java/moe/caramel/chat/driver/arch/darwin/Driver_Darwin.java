@@ -5,16 +5,16 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 
 /**
- * CocoaInput Darwin Driver
+ * CocoaInput Darwin 드라이버
  */
 public interface Driver_Darwin extends Library {
 
     /**
-     * Initialize CocoaInput Darwin Driver.
+     * CocoaInput Darwin 드라이버를 초기화한다.
      *
-     * @param log Log Info Callback
-     * @param error Log Error Callback
-     * @param debug Log Debug Callback
+     * @param log 정보 로그 콜백
+     * @param error 오류 로그 콜백
+     * @param debug 디버그 로그 콜백
      */
     void initialize(final LogInfoCallback log, final LogErrorCallback error, final LogDebugCallback debug);
 

@@ -15,7 +15,7 @@ import net.minecraft.client.gui.screens.Screen;
 import org.lwjgl.glfw.GLFWNativeWin32;
 
 /**
- * Windows Controller
+ * Windows 컨트롤러
  */
 public final class WinController implements IController {
 
@@ -24,29 +24,29 @@ public final class WinController implements IController {
     private final Driver_Win driver;
 
     /**
-     * Create Windows Controller
+     * Windows 컨트롤러를 만든다
      */
     public WinController() {
         ModLogger.log("[Native] Load the Windows Controller.");
         this.driver = Native.load(Main.copyLibrary("libwincocoainput.dll"), Driver_Win.class);
         this.driver.initialize(
-            // Window Id
+            // 창 Id
             GLFWNativeWin32.glfwGetWin32Window(Minecraft.getInstance().getWindow().handle()),
-            // Pre Edit Callback
+            // 조합 중 글자 콜백
             (str, cursor, length) -> {
                 if (focused != null) {
                     ModLogger.debug("[Native|Java] Preedit Callback (" + str.toString() + ") (" + cursor + ") (" + length + ")");
                     focused.getWrapper().appendPreviewText(str.toString());
                 }
             },
-            // Done Callback
+            // 완료 콜백
             (str) -> {
                 if (focused != null) {
                     ModLogger.debug("[Native|Java] Done Callback (" + str.toString() + ")");
                     focused.getWrapper().insertText(str.toString());
                 }
             },
-            // Rect Callback
+            // 사각형 콜백
             (rect) -> {
                 if (focused != null) {
                     ModLogger.debug("[Native|Java] Rect Callback");
@@ -62,11 +62,11 @@ public final class WinController implements IController {
                 }
                 return 1;
             },
-            // Info
+            // 정보
             (log) -> ModLogger.log("[Native|C] " + log),
-            // Error
+            // 오류
             (log) -> ModLogger.error("[Native|C] " + log),
-            // Debug
+            // 디버그
             (log) -> ModLogger.debug("[Native|C] " + log)
         );
     }

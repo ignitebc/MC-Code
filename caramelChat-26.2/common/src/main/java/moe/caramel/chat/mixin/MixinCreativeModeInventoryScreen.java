@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * CreativeModeInventory Screen Mixin
+ * 크리에이티브 모드 인벤토리 화면 Mixin
  */
 @Mixin(CreativeModeInventoryScreen.class)
 public abstract class MixinCreativeModeInventoryScreen {
@@ -43,6 +43,6 @@ public abstract class MixinCreativeModeInventoryScreen {
     )
     private boolean slotClicked(final CreativeModeInventoryScreen screen, final Slot slot) {
         final boolean imeFocused = EditBoxController.getWrapper(this.searchBox).getIme().isFocused();
-        return isCreativeSlot(slot) && !(imeFocused && this.searchBox.isFocused()); // OMG
+        return isCreativeSlot(slot) && !(imeFocused && this.searchBox.isFocused()); // 이런
     }
 }

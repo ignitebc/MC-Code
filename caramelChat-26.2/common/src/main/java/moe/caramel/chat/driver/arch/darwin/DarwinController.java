@@ -13,24 +13,24 @@ import net.minecraft.client.gui.screens.Screen;
 import java.util.Locale;
 
 /**
- * Darwin Controller
+ * Darwin 컨트롤러
  */
 public final class DarwinController implements IController {
 
     private final Driver_Darwin driver;
 
     /**
-     * Create Darwin Controller
+     * Darwin 컨트롤러를 만든다
      */
     public DarwinController() {
         ModLogger.log("[Native] Load the Darwin Controller.");
         this.driver = Native.load(Main.copyLibrary("libdarwincocoainput.dylib"), Driver_Darwin.class);
         this.driver.initialize(
-            // Info
+            // 정보
             (log) -> ModLogger.log("[Native|C] " + log),
-            // Error
+            // 오류
             (log) -> ModLogger.error("[Native|C] " + log),
-            // Debug
+            // 디버그
             (log) -> ModLogger.debug("[Native|C] " + log)
         );
     }
@@ -54,9 +54,9 @@ public final class DarwinController implements IController {
     }
 
     /**
-     * Gets the Driver
+     * 드라이버를 가져온다
      *
-     * @return driver
+     * @return 드라이버
      */
     public Driver_Darwin getDriver() {
         return driver;

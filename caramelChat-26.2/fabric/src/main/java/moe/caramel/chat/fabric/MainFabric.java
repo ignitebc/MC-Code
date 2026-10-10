@@ -7,7 +7,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 
 /**
- * Fabric platform initializer
+ * Fabric 플랫폼 초기화 클래스
  */
 public final class MainFabric implements ClientModInitializer {
 

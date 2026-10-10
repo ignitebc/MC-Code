@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Chat screen Mixin
+ * 채팅 화면 Mixin
  */
 @Mixin(ChatScreen.class)
 public abstract class MixinChatScreen {
@@ -67,15 +67,15 @@ public abstract class MixinChatScreen {
         final WrapperEditBox wrapper = EditBoxController.getWrapper(this.input);
         final KeyboardStatus status = wrapper.getIme().getController().getKeyboardStatus();
         if (status == null) {
-            return; // Unsupported OS or Not yet initialized
+            return; // 지원하지 않는 OS이거나 아직 초기화되지 않음
         }
 
-        /* Render Debug information */
+        /* 디버그 정보 렌더링 */
         if (Main.DEBUG) {
             helper.text(screen.font, status.toString(), 10, 10, 0xFFFFFFFF, true);
         }
 
-        /* Check Render condition */
+        /* 렌더링 조건 확인 */
         final long currentTime = System.currentTimeMillis();
         if (this.caramelChat$lastLanguage != status.language()) {
             this.caramelChat$lastLanguage = status.language();
@@ -87,7 +87,7 @@ public abstract class MixinChatScreen {
             return;
         }
 
-        /* Calculate Position */
+        /* 위치 계산 */
         final CommandSuggestions suggestions = this.commandSuggestions;
         final Component display = Component.literal(status.display()).withStyle(style -> style.withFont(UNIFORM_RESOURCE));
 
@@ -104,7 +104,7 @@ public abstract class MixinChatScreen {
         final int borderEndY = (screen.height - 14 - usageHeight - 2);
         final int borderStartY = (borderEndY - screen.font.lineHeight - 2);
 
-        /* Render */
+        /* 렌더링 */
         final int backColor = this.caramelChat$color(Minecraft.getInstance().options.getBackgroundColor(Integer.MIN_VALUE), elapsed);
         final int textColor = this.caramelChat$color(0xFFFFFFFF, elapsed);
         helper.fill(borderStartX, borderStartY, borderEndX, borderEndY, backColor);
@@ -113,12 +113,12 @@ public abstract class MixinChatScreen {
 
     @Unique
     private int caramelChat$color(final int color, final int elapsed) {
-        // Fade time hasn't started yet.
+        // 사라지는 시간이 아직 시작되지 않았다.
         if (elapsed < FADE_TIME) {
             return color;
         }
 
-        // Calculate alpha value
+        // 알파 값 계산
         final int initialAlpha = ( (color >> 24) & 0xFF );
         final float progress = ((float) (TOOLTIP_TIME - elapsed) / FADE_TIME);
         final int alpha = (int) (progress * initialAlpha);

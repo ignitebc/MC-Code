@@ -3,17 +3,17 @@ package moe.caramel.chat;
 import moe.caramel.chat.util.ModLogger;
 
 /**
- * Platform Provider Interface
+ * 플랫폼 제공자 인터페이스
  */
 public abstract class PlatformProvider {
 
     /**
-     * Mod id.
+     * 모드 id.
      */
     public static final String MOD_ID = "caramelchat";
 
     /**
-     * Default Provider.
+     * 기본 제공자.
      */
     public static final PlatformProvider DEFAULT = new PlatformProvider() {
         @Override
@@ -32,18 +32,18 @@ public abstract class PlatformProvider {
     private static PlatformProvider provider = PlatformProvider.DEFAULT;
 
     /**
-     * Gets the Platform provider.
+     * 플랫폼 제공자를 가져온다.
      *
-     * @return provider
+     * @return 제공자
      */
     public static PlatformProvider getProvider() {
         return provider;
     }
 
     /**
-     * Sets the Platform provider.
+     * 플랫폼 제공자를 설정한다.
      *
-     * @param provider provider
+     * @param provider 제공자
      */
     public static void setProvider(final PlatformProvider provider) {
         if (PlatformProvider.provider == PlatformProvider.DEFAULT) {
@@ -57,16 +57,16 @@ public abstract class PlatformProvider {
     // ================================
 
     /**
-     * Gets the current mod version.
+     * 현재 모드 버전을 가져온다.
      *
-     * @return mod version
+     * @return 모드 버전
      */
     public abstract String getVersion();
 
     /**
-     * Gets the current platform name.
+     * 현재 플랫폼 이름을 가져온다.
      *
-     * @return platform name
+     * @return 플랫폼 이름
      */
     public abstract String getPlatformName();
 

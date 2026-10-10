@@ -6,7 +6,7 @@ import moe.caramel.chat.util.ModLogger;
 import moe.caramel.chat.wrapper.AbstractIMEWrapper;
 
 /**
- * X11 IME Operator
+ * X11 IME 오퍼레이터
  */
 public final class X11Operator implements IOperator {
 
@@ -20,9 +20,9 @@ public final class X11Operator implements IOperator {
     }
 
     /**
-     * Gets the IME wrapper.
+     * IME 래퍼를 가져온다.
      *
-     * @return IME wrapper
+     * @return IME 래퍼
      */
     public AbstractIMEWrapper getWrapper() {
         return wrapper;

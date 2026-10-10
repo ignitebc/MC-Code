@@ -4,24 +4,24 @@ import moe.caramel.chat.wrapper.WrapperEditBox;
 import net.minecraft.client.gui.components.EditBox;
 
 /**
- * EditBox Controller
+ * EditBox 컨트롤러
  */
 public interface EditBoxController {
 
     /**
-     * Gets the EditBox Wrapper.
+     * EditBox 래퍼를 가져온다.
      *
-     * @param box EditBox object
-     * @return Wrapper object
+     * @param box EditBox 객체
+     * @return 래퍼 객체
      */
     static WrapperEditBox getWrapper(final EditBox box) {
         return ((EditBoxController) box).caramelChat$wrapper();
     }
 
     /**
-     * Gets the EditBox Wrapper.
+     * EditBox 래퍼를 가져온다.
      *
-     * @return Wrapper object
+     * @return 래퍼 객체
      */
     WrapperEditBox caramelChat$wrapper();
 }

@@ -10,7 +10,7 @@ architectury {
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
 
-    // for Debug
+    // 디버그용
     runs {
         client {
             vmArgs "-Dmixin.debug.export=true"
@@ -20,7 +20,7 @@ loom {
 
 configurations {
     common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    shadowCommon // IDEA가 이것을 색인하지 않게 하려고 shadow 플러그인의 shadow를 쓰지 않는다.
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentFabric.extendsFrom common

@@ -15,7 +15,7 @@ import java.nio.file.Files;
 import java.net.URL;
 
 /**
- * caramelChat Main
+ * caramelChat 메인
  */
 public final class Main {
 
@@ -34,37 +34,37 @@ public final class Main {
     }
 
     /**
-     * Gets the Main instance.
+     * Main 인스턴스를 가져온다.
      *
-     * @return instance
+     * @return 인스턴스
      */
     public static Main getInstance() {
         return instance;
     }
 
     /**
-     * Gets the current controller.
+     * 현재 컨트롤러를 가져온다.
      *
-     * @return controller
+     * @return 컨트롤러
      */
     public static IController getController() {
         return Main.getInstance().controller;
     }
 
     /**
-     * Sets the current screen.
+     * 현재 화면을 설정한다.
      *
-     * @param screen current screen
+     * @param screen 현재 화면
      */
     public static void setScreen(final Screen screen) {
         Main.getController().changeFocusedScreen(screen);
     }
 
     /**
-     * Copy the library to a temp directory.
+     * 라이브러리를 임시 디렉터리에 복사한다.
      *
-     * @param name library name
-     * @return copied library path
+     * @param name 라이브러리 이름
+     * @return 복사한 라이브러리 경로
      */
     public static String copyLibrary(final String name) {
         try {

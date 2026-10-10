@@ -15,7 +15,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWNativeX11;
 
 /**
- * X11 Controller
+ * X11 컨트롤러
  */
 public final class X11Controller implements IController {
 
@@ -57,7 +57,7 @@ public final class X11Controller implements IController {
     };
 
     /**
-     * Create X11 Controller
+     * X11 컨트롤러를 만든다
      */
     public X11Controller() {
         X11Controller.setupKeyboardEvent();
@@ -67,19 +67,19 @@ public final class X11Controller implements IController {
 
         final long windowId = Minecraft.getInstance().getWindow().handle();
         this.driver.initialize(
-            // Windows Id
+            // 창 Id
             windowId,
-            // X11 Windows Id
+            // X11 창 Id
             GLFWNativeX11.glfwGetX11Window(windowId),
-            // Draw Callback
+            // 그리기 콜백
             this.drawCallback,
-            // Done Callback
+            // 완료 콜백
             this.doneCallback,
-            // Info
+            // 정보
             (log) -> ModLogger.log("[Native|C] " + log),
-            // Error
+            // 오류
             (log) -> ModLogger.error("[Native|C] " + log),
-            // Debug
+            // 디버그
             (log) -> ModLogger.debug("[Native|C] " + log)
         );
 

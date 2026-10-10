@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Compatibility data registry
+ * 호환성 데이터 등록부
  */
 public final class Compatibilities {
 
@@ -28,10 +28,10 @@ public final class Compatibilities {
     // ================================
 
     /**
-     * Gets the compatibility data.
+     * 호환성 데이터를 가져온다.
      *
-     * @param mixinClass Mixin class name
-     * @return Compatibility data
+     * @param mixinClass Mixin 클래스 이름
+     * @return 호환성 데이터
      */
     @Nullable
     public static Data getData(final String mixinClass) {
@@ -39,20 +39,20 @@ public final class Compatibilities {
     }
 
     /**
-     * Compatibility data.
+     * 호환성 데이터.
      *
-     * @param name Mod name
-     * @param targetClassName Detect target class name
-     * @param classes Mixin classes
+     * @param name 모드 이름
+     * @param targetClassName 감지할 대상 클래스 이름
+     * @param classes Mixin 클래스
      */
     public record Data(String name, String targetClassName, Set<String> classes) {}
 
     /**
-     * Register compatibility data.
+     * 호환성 데이터를 등록한다.
      *
-     * @param name Mod name
-     * @param targetClassName Detect target class name
-     * @param classes Mixin classes
+     * @param name 모드 이름
+     * @param targetClassName 감지할 대상 클래스 이름
+     * @param classes Mixin 클래스
      */
     private static Data register(final String name, final String targetClassName, final Set<String> classes) {
         final Data data = new Data(name, targetClassName, classes);

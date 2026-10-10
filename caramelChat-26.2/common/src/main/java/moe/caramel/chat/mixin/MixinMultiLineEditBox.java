@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import java.util.function.Consumer;
 
 /**
- * MultiLineEditBox Component Mixin
+ * MultiLineEditBox 구성 요소 Mixin
  */
 @Mixin(MultiLineEditBox.class)
 public final class MixinMultiLineEditBox {
@@ -37,7 +37,7 @@ public final class MixinMultiLineEditBox {
         this.caramelChat$replaceValueListener(this.textField.valueListener);
     }
 
-    // ================================ (Formatter)
+    // ================================ (서식 지정기)
 
     @ModifyArgs(
         method = "extractContents",
@@ -85,13 +85,13 @@ public final class MixinMultiLineEditBox {
         )
     )
     private void renderCaretEnd(final GuiGraphicsExtractor instance, final Font font, final String text, final int x, final int y, final int color, final boolean dropShadow, final Operation<Void> original) {
-        // Check IME Status
+        // IME 상태 확인
         if (text.isEmpty() || caramelChat$wrapper.getStatus() == AbstractIMEWrapper.InputStatus.NONE) {
             original.call(instance, font, text, x, y, color, dropShadow);
             return;
         }
 
-        // Render Caret
+        // 커서 렌더링
         final int firstEnd = caramelChat$wrapper.getFirstEndPos();
         final int secondStart = caramelChat$wrapper.getSecondStartPos();
 
@@ -113,7 +113,7 @@ public final class MixinMultiLineEditBox {
             return;
         }
 
-        // No need to render caret
+        // 커서를 그릴 필요가 없다
         original.call(instance, font, text, x, y, color, dropShadow);
     }
 

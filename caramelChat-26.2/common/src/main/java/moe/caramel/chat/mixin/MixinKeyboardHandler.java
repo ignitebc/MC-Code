@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Opens the chat screen with Enter while no other screen is open.
+ * 다른 화면이 열려 있지 않을 때 Enter로 채팅 화면을 연다.
  */
 @Mixin(KeyboardHandler.class)
 public final class MixinKeyboardHandler {

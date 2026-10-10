@@ -5,37 +5,37 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Logging Utility
+ * 로그 도구
  */
 public final class ModLogger {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("caramelChat");
 
     /**
-     * Prints a log message.
+     * 로그 메시지를 출력한다.
      *
-     * @param msg log format
-     * @param data other data
+     * @param msg 로그 형식
+     * @param data 기타 데이터
      */
     public static void log(final String msg, final Object... data) {
         LOGGER.info(msg, data);
     }
 
     /**
-     * Prints a error message.
+     * 오류 메시지를 출력한다.
      *
-     * @param msg log format
-     * @param data other data
+     * @param msg 로그 형식
+     * @param data 기타 데이터
      */
     public static void error(final String msg, final Object... data) {
         LOGGER.error(msg, data);
     }
 
     /**
-     * Prints a debug message.
+     * 디버그 메시지를 출력한다.
      *
-     * @param msg log format
-     * @param args other data
+     * @param msg 로그 형식
+     * @param args 기타 데이터
      */
     public static void debug(final String msg, final Object... args) {
         if (Main.DEBUG) {

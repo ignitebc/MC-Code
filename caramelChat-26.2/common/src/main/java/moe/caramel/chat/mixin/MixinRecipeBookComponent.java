@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * RecipeBook Component Mixin
+ * 레시피 책 구성 요소 Mixin
  */
 @Mixin(RecipeBookComponent.class)
 public abstract class MixinRecipeBookComponent {

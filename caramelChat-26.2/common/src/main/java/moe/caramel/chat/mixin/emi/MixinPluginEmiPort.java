@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * (EMI Mixin) Fix crash in PREVIEW mode.
+ * (EMI Mixin) PREVIEW 모드의 충돌을 고친다.
  */
 @Mixin(targets = "dev.emi.emi.EmiPort", remap = false)
 public final class MixinPluginEmiPort {

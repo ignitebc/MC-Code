@@ -5,7 +5,7 @@ import net.minecraft.client.gui.components.MultiLineEditBox;
 import net.minecraft.client.gui.components.MultilineTextField.StringView;
 
 /**
- * MultiLineEditBox Component Wrapper
+ * MultiLineEditBox 구성 요소 래퍼
  */
 public final class WrapperMultilineEditBox extends AbstractIMEWrapper {
 
@@ -53,12 +53,12 @@ public final class WrapperMultilineEditBox extends AbstractIMEWrapper {
 
     @Override
     public Rect getRect() {
-        // Ignore
+        // 무시
         if (this.getStatus() == InputStatus.NONE) {
             return Rect.EMPTY;
         }
 
-        // Calculate rect position
+        // 사각형 위치 계산
         final int editEndPos = this.getSecondStartPos();
 
         int index;

@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * (Xaero's Minimap Mixin) Fix IME.
+ * (Xaero's Minimap Mixin) IME를 고친다.
  */
 @Mixin(targets = "xaero.common.gui.GuiAddWaypoint", remap = false)
 public abstract class MixinPluginXaeroMapWayPoint {

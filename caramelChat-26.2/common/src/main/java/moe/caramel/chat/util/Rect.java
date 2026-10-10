@@ -1,24 +1,24 @@
 package moe.caramel.chat.util;
 
 /**
- * Rect Square Constructor
+ * 사각형 생성자
  *
- * @param x x-coordinate of rect square
- * @param y y-coordinate of rect squares
- * @param width width of rect squares
- * @param height height of rect squares
+ * @param x 사각형의 x 좌표
+ * @param y 사각형의 y 좌표
+ * @param width 사각형의 너비
+ * @param height 사각형의 높이
  */
 public record Rect(float x, float y, float width, float height) {
 
     /**
-     * Empty Rect
+     * 빈 사각형
      */
     public static final Rect EMPTY = new Rect(0, 0, 0, 0);
 
     /**
-     * Copy to the float array.
+     * float 배열로 복사한다.
      *
-     * @return float array
+     * @return float 배열
      */
     public float[] copy() {
         return new float[] { x, y, width, height };

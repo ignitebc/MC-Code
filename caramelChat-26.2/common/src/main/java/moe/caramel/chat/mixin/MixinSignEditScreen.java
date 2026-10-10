@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.function.Consumer;
 
 /**
- * SignEdit Screen Mixin
+ * 표지판 편집 화면 Mixin
  */
 @Mixin(value = AbstractSignEditScreen.class, priority = 0)
 public final class MixinSignEditScreen implements ScreenController {
@@ -43,7 +43,7 @@ public final class MixinSignEditScreen implements ScreenController {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void lazyInit(final CallbackInfo ci) {
-        // Stendhal mod creates a new signField... :scream:
+        // Stendhal 모드가 새 signField를 만든다... :scream:
         if (!caramelChat$lazyInit && signField != null) {
             this.caramelChat$lazyInit = true;
 
@@ -91,7 +91,7 @@ public final class MixinSignEditScreen implements ScreenController {
         )
     )
     private String temporaryFixOverflow(final String value, final int beginIndex, final int endIndex) {
-        // TODO What's wrong with this? (Fixes #34)
+        // TODO 이게 왜 문제인지 확인 필요(#34 수정)
         return value.substring(beginIndex, Math.min(value.length(), endIndex));
     }
 
@@ -106,29 +106,29 @@ public final class MixinSignEditScreen implements ScreenController {
     private void renderCaret(final GuiGraphicsExtractor instance, final Font font, final String text, final int x, final int y, final int color, final boolean dropShadow, final Operation<Void> original) {
         this.caramelChat$currentRenderLine++;
 
-        // Check IME Status
+        // IME 상태 확인
         if (text.isEmpty() || caramelChat$wrapper.getStatus() == AbstractIMEWrapper.InputStatus.NONE) {
             original.call(instance, font, text, x, y, color, dropShadow);
             return;
         }
 
-        // Skip caret render
+        // 커서 렌더링 건너뛰기
         if (
-            this.caramelChat$currentRenderLine != this.line || // Line Check
-            this.caramelChat$wrapper.getSecondStartPos() > text.length() // TODO What's wrong with this? (Fixes #34)
+            this.caramelChat$currentRenderLine != this.line || // 줄 확인
+            this.caramelChat$wrapper.getSecondStartPos() > text.length() // TODO 이게 왜 문제인지 확인 필요(#34 수정)
         ) {
             original.call(instance, font, text, x, y, color, dropShadow);
             return;
         }
 
-        // Render Caret
+        // 커서 렌더링
         final int firstEndPos = caramelChat$wrapper.getFirstEndPos();
         final int secondStartPos = caramelChat$wrapper.getSecondStartPos();
 
         final String first = text.substring(0, firstEndPos);
         final String input = text.substring(firstEndPos, secondStartPos);
         final String second = text.substring(secondStartPos);
-        final String result = (first + ChatFormatting.UNDERLINE + input + ChatFormatting.RESET + second); // OMG..
+        final String result = (first + ChatFormatting.UNDERLINE + input + ChatFormatting.RESET + second); // 이런..
         original.call(instance, font, result, x, y, color, dropShadow);
     }
 }

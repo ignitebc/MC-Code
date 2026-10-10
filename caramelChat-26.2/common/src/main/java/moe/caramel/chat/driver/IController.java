@@ -12,36 +12,36 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * Controller Interface
+ * 컨트롤러 인터페이스
  */
 public interface IController {
 
     /**
-     * Create the IME Operator.
+     * IME 오퍼레이터를 만든다.
      *
-     * @param wrapper IME Wrapper
-     * @return IME Operator
+     * @param wrapper IME 래퍼
+     * @return IME 오퍼레이터
      */
     IOperator createOperator(final AbstractIMEWrapper wrapper);
 
     /**
-     * Replace to current focused screen.
+     * 현재 포커스된 화면으로 바꾼다.
      *
-     * @param screen focused screen
+     * @param screen 포커스된 화면
      */
     void changeFocusedScreen(final Screen screen);
 
     /**
-     * Set whether to focus or not. (Driver)
+     * 포커스 여부를 설정한다. (드라이버)
      *
-     * @param focus focus
+     * @param focus 포커스
      */
     void setFocus(final boolean focus);
 
     /**
-     * Gets the current keyboard status.
+     * 현재 키보드 상태를 가져온다.
      *
-     * @return keyboard status (if {@code null}, OS isn't supported)
+     * @return 키보드 상태({@code null}이면 지원하지 않는 OS)
      */
     @Nullable
     default KeyboardStatus getKeyboardStatus() {
@@ -49,9 +49,9 @@ public interface IController {
     }
 
     /**
-     * Gets the controller.
+     * 컨트롤러를 가져온다.
      *
-     * @return controller
+     * @return 컨트롤러
      */
     static IController getController() {
         try {
@@ -64,7 +64,7 @@ public interface IController {
                 case GLFW.GLFW_PLATFORM_X11 -> new X11Controller();
                 // Linux (Wayland)
                 case GLFW.GLFW_PLATFORM_WAYLAND -> new WaylandController();
-                // What?
+                // 알 수 없는 OS
                 default -> throw new UnsupportedOperationException();
             };
         } catch (final UnsupportedOperationException ignored) {

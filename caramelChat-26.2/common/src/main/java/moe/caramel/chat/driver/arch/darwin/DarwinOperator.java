@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import java.util.UUID;
 
 /**
- * Darwin IME Operator
+ * Darwin IME 오퍼레이터
  */
 public class DarwinOperator implements IOperator {
 
@@ -27,17 +27,17 @@ public class DarwinOperator implements IOperator {
         this.controller.getDriver().addInstance(
             // UUID
             this.uuid,
-            // Insert Text
+            // 글자 삽입
             (str, position, length) -> {
                 ModLogger.debug("[Native|Java] Textfield (" + uuid + ") received inserted text.");
                 this.wrapper.insertText(str);
             },
-            // Set Marked Text
+            // 조합 중 글자 설정
             (str, position1, length1, position2, length2) -> {
                 ModLogger.debug("[Native|Java] MarkedText changed at (" + uuid + ").");
                 this.wrapper.appendPreviewText(str);
             },
-            // Rect Range
+            // 사각형 범위
             (pointer) -> {
                 ModLogger.debug("[Native|Java] Called to determine where to draw.");
                 final float[] buff = this.wrapper.getRect().copy();

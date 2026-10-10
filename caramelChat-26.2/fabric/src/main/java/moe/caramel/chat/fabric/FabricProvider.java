@@ -4,7 +4,7 @@ import moe.caramel.chat.PlatformProvider;
 import net.fabricmc.loader.api.Version;
 
 /**
- * Fabric Provider
+ * Fabric 제공자
  */
 public final class FabricProvider extends PlatformProvider {
 

@@ -6,7 +6,7 @@ import moe.caramel.chat.util.ModLogger;
 import moe.caramel.chat.util.Rect;
 
 /**
- * Abstract IME Wrapper
+ * 추상 IME 래퍼
  */
 public abstract class AbstractIMEWrapper {
 
@@ -25,9 +25,9 @@ public abstract class AbstractIMEWrapper {
     }
 
     /**
-     * Gets the IME Operator.
+     * IME 오퍼레이터를 가져온다.
      *
-     * @return IME Operator
+     * @return IME 오퍼레이터
      */
     public IOperator getIme() {
         return ime;
@@ -36,24 +36,24 @@ public abstract class AbstractIMEWrapper {
     // ================================
 
     /**
-     * Input Status
+     * 입력 상태
      */
     public enum InputStatus {
-        NONE, // Done
-        PREVIEW // Preview
+        NONE, // 완료
+        PREVIEW // 미리보기
     }
 
     /**
-     * Gets the current input status.
+     * 현재 입력 상태를 가져온다.
      *
-     * @return current input status
+     * @return 현재 입력 상태
      */
     public final InputStatus getStatus() {
         return status;
     }
 
     /**
-     * Sets the current input status to none.
+     * 현재 입력 상태를 없음으로 설정한다.
      */
     public final void setToNoneStatus() {
         this.status = InputStatus.NONE;
@@ -61,18 +61,18 @@ public abstract class AbstractIMEWrapper {
     }
 
     /**
-     * Gets the end position of the first text.
+     * 첫 번째 글자 부분의 끝 위치를 가져온다.
      *
-     * @return end position of the first text
+     * @return 첫 번째 글자 부분의 끝 위치
      */
     public final int getFirstEndPos() {
         return firstEndPos;
     }
 
     /**
-     * Gets the start position of the second text.
+     * 두 번째 글자 부분의 시작 위치를 가져온다.
      *
-     * @return start position of the second text
+     * @return 두 번째 글자 부분의 시작 위치
      */
     public final int getSecondStartPos() {
         return secondStartPos;
@@ -81,34 +81,34 @@ public abstract class AbstractIMEWrapper {
     // ================================
 
     /**
-     * Change whether IME is enabled or disabled.
+     * IME를 켤지 끌지 바꾼다.
      *
-     * @param focused whether IME is enabled or not
+     * @param focused IME를 켤지 여부
      */
     public final void setFocused(final boolean focused) {
         this.ime.setFocused(focused);
     }
 
     /**
-     * Gets the current final input value.
+     * 현재 최종 입력값을 가져온다.
      *
-     * @return current final input value
+     * @return 현재 최종 입력값
      */
     public final String getOrigin() {
         return origin;
     }
 
     /**
-     * Save the current input value with preview.
+     * 현재 입력값을 미리보기와 함께 저장한다.
      */
     public final void setOrigin() {
         this.setOrigin(this.getTextWithPreview());
     }
 
     /**
-     * Changes the current final input value.
+     * 현재 최종 입력값을 바꾼다.
      *
-     * @param value input value
+     * @param value 입력값
      */
     public final void setOrigin(final String value) {
         this.origin = value;
@@ -117,9 +117,9 @@ public abstract class AbstractIMEWrapper {
     // ================================
 
     /**
-     * (1) Appends preview text to the current input value.
+     * (1) 현재 입력값에 미리보기 글자를 붙인다.
      *
-     * @param typing preview text
+     * @param typing 미리보기 글자
      */
     public final void appendPreviewText(final String typing) {
         if (!this.editable()) {
@@ -134,7 +134,7 @@ public abstract class AbstractIMEWrapper {
         final boolean samePos = (start == end);
         final int lastPos = origin.length();
 
-        // Other Pos
+        // 다른 위치
         if (lastPos != end && samePos) {
             final String first = this.origin.substring(0, end);
             final String second = this.origin.substring(end, lastPos);
@@ -142,26 +142,25 @@ public abstract class AbstractIMEWrapper {
             this.secondStartPos = (this.firstEndPos + typing.length());
             this.setPreviewText(first + typing + second);
         }
-        // Last Pos
+        // 마지막 위치
         else if (samePos) {
             final String result = (this.origin + typing);
             this.firstEndPos = this.origin.length();
             this.secondStartPos = result.length();
             this.setPreviewText(result);
         }
-        // Selected
+        // 선택됨
         else {
-            //this.setPreviewText(new StringBuilder(this.origin).replace(start, end, typing).toString()); // strange..
 
-            // Cache
+            // 캐시
             final String first = this.origin.substring(0, start);
             final String second = this.origin.substring(end, lastPos);
 
-            // Delete Selected section & Force Update
+            // 선택 부분 지우기 & 강제 갱신
             this.insert("");
             this.origin = this.getTextWithPreview();
 
-            // Add Preview
+            // 미리보기 추가
             this.firstEndPos = first.length();
             this.secondStartPos = (this.firstEndPos + typing.length());
             this.setPreviewText(first + typing + second);
@@ -169,9 +168,9 @@ public abstract class AbstractIMEWrapper {
     }
 
     /**
-     * (2) Put the completed text in the final input value.
+     * (2) 완성된 글자를 최종 입력값에 넣는다.
      *
-     * @param input completed text
+     * @param input 완성된 글자
      */
     public final void insertText(final String input) {
         if (this.blockTyping() || !this.editable()) {
@@ -189,62 +188,62 @@ public abstract class AbstractIMEWrapper {
     }
 
     /**
-     * (2-1) Insert text value into the input component.
+     * (2-1) 입력 구성 요소에 글자 값을 넣는다.
      *
-     * @param text text value
+     * @param text 글자 값
      */
     protected abstract void insert(final String text);
 
     // ================================
 
     /**
-     * Gets the position of the cursor.
+     * 커서 위치를 가져온다.
      *
-     * @return cursor position
+     * @return 커서 위치
      */
     protected abstract int getCursorPos();
 
     /**
-     * Gets the position of the highlight cursor.
+     * 강조 커서 위치를 가져온다.
      *
-     * @return highlight cursor position
+     * @return 강조 커서 위치
      */
     protected abstract int getHighlightPos();
 
     /**
-     * Gets whether to editable.
+     * 편집할 수 있는지 가져온다.
      *
-     * @return editable
+     * @return 편집 가능 여부
      */
     public boolean editable() {
         return true;
     }
 
     /**
-     * Gets whether to block typing.
+     * 입력을 막을지 가져온다.
      *
-     * @return block typing
+     * @return 입력 차단 여부
      */
     public abstract boolean blockTyping();
 
     /**
-     * Gets the current input value, including the preview.
+     * 미리보기를 포함한 현재 입력값을 가져온다.
      *
-     * @return current input value
+     * @return 현재 입력값
      */
     protected abstract String getTextWithPreview();
 
     /**
-     * Sets the current input value, including the preview.
+     * 미리보기를 포함한 현재 입력값을 설정한다.
      *
-     * @param text current input value
+     * @param text 현재 입력값
      */
     protected abstract void setPreviewText(final String text);
 
     /**
-     * Gets the rect square structure.
+     * 사각형 구조를 가져온다.
      *
-     * @return rect square structure
+     * @return 사각형 구조
      */
     public abstract Rect getRect();
 }

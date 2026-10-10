@@ -7,7 +7,7 @@ import moe.caramel.chat.wrapper.AbstractIMEWrapper;
 import net.minecraft.client.gui.screens.Screen;
 
 /**
- * Unknown Controller
+ * 알 수 없는 OS용 컨트롤러
  */
 public final class UnknownController implements IController {
 

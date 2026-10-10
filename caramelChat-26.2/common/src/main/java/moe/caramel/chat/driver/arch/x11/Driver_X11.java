@@ -6,20 +6,20 @@ import com.sun.jna.Pointer;
 import com.sun.jna.WString;
 
 /**
- * CocoaInput X11 Driver
+ * CocoaInput X11 드라이버
  */
 public interface Driver_X11 extends Library {
 
     /**
-     * Initialize CocoaInput X11 Driver.
+     * CocoaInput X11 드라이버를 초기화한다.
      *
-     * @param windowId Window Id
-     * @param xWindowId X11 Window Id
-     * @param draw Draw Callback
-     * @param done Done Callback
-     * @param log Log Info Callback
-     * @param error Log Error Callback
-     * @param debug Log Debug Callback
+     * @param windowId 창 Id
+     * @param xWindowId X11 창 Id
+     * @param draw 그리기 콜백
+     * @param done 완료 콜백
+     * @param log 정보 로그 콜백
+     * @param error 오류 로그 콜백
+     * @param debug 디버그 로그 콜백
      */
     void initialize(
         final long windowId,
@@ -32,9 +32,9 @@ public interface Driver_X11 extends Library {
     );
 
     /**
-     * Set whether to focus or not.
+     * 포커스 여부를 설정한다.
      *
-     * @param flag focus
+     * @param flag 포커스
      */
     void set_focus(final int flag);
 
