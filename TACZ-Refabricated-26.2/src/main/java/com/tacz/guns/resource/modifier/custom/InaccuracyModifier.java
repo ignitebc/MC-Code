@@ -19,7 +19,6 @@ import com.tacz.guns.resource.pojo.data.gun.GunFireModeAdjustData;
 import com.tacz.guns.resource.pojo.data.gun.InaccuracyType;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;

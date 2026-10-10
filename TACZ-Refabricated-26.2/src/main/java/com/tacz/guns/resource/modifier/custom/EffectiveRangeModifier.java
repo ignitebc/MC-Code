@@ -14,7 +14,6 @@ import com.tacz.guns.resource.pojo.data.gun.ExtraDamage.DistanceDamagePair;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;

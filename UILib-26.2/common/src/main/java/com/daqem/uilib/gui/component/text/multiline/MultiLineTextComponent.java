@@ -2,7 +2,6 @@ package com.daqem.uilib.gui.component.text.multiline;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
 
 public class MultiLineTextComponent extends AbstractMultiLineTextComponent{
 

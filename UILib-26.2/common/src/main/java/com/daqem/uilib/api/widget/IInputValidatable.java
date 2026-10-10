@@ -2,8 +2,6 @@ package com.daqem.uilib.api.widget;
 
 import com.daqem.uilib.UILib;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 

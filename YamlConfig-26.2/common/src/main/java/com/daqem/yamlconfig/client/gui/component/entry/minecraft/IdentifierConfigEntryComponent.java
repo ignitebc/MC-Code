@@ -2,11 +2,9 @@ package com.daqem.yamlconfig.client.gui.component.entry.minecraft;
 
 import com.daqem.uilib.gui.widget.EditBoxWidget;
 import com.daqem.uilib.util.ValidationErrors;
-import com.daqem.yamlconfig.YamlConfig;
 import com.daqem.yamlconfig.client.gui.component.entry.BaseConfigEntryComponent;
 import com.daqem.yamlconfig.impl.config.entry.minecraft.IdentifierConfigEntry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 

@@ -1,7 +1,6 @@
 package com.daqem.yamlconfig.client.gui.component.entry.map.numeric;
 
 import com.daqem.uilib.util.ValidationErrors;
-import com.daqem.yamlconfig.YamlConfig;
 import com.daqem.yamlconfig.client.gui.component.entry.map.BaseMapConfigEntryComponent;
 import com.daqem.yamlconfig.impl.config.entry.map.numeric.DoubleMapConfigEntry;
 import net.minecraft.network.chat.Component;

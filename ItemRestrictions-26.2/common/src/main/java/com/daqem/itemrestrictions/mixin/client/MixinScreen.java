@@ -1,6 +1,5 @@
 package com.daqem.itemrestrictions.mixin.client;
 
-import com.daqem.itemrestrictions.ItemRestrictions;
 import com.daqem.itemrestrictions.client.screen.ItemRestrictionsScreen;
 import com.daqem.itemrestrictions.data.RestrictionType;
 import net.minecraft.client.gui.Font;

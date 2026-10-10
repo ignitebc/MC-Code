@@ -6,7 +6,6 @@ import com.daqem.arc.event.triggers.PlayerEvents;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.level.Level;

@@ -9,7 +9,6 @@ import com.autovw.advancednetherite.core.util.ModTags;
 import com.autovw.advancednetherite.core.util.ModTooltips;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ToolMaterial;
@@ -17,7 +16,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 /**

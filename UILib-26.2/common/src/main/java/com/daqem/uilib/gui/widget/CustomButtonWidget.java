@@ -1,7 +1,5 @@
 package com.daqem.uilib.gui.widget;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.renderer.RenderPipelines;

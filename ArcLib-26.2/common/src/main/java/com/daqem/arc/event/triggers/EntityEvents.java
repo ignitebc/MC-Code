@@ -1,6 +1,5 @@
 package com.daqem.arc.event.triggers;
 
-import com.daqem.arc.Arc;
 import com.daqem.arc.api.action.result.ActionResult;
 import com.daqem.arc.api.action.type.ActionType;
 import com.daqem.arc.api.player.ArcServerPlayer;
@@ -12,7 +11,6 @@ import dev.architectury.event.events.common.InteractionEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.animal.Animal;
 
-import javax.sound.midi.MidiFileFormat;
 
 public class EntityEvents {
 

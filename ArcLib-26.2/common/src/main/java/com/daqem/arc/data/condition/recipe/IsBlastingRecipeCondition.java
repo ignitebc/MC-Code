@@ -11,7 +11,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.SmeltingRecipe;
 
 public class IsBlastingRecipeCondition extends IsRecipeCondition<BlastingRecipe> {
 

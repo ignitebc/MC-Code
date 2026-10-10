@@ -1,6 +1,5 @@
 package com.daqem.arc.mixin;
 
-import com.daqem.arc.Arc;
 import com.daqem.arc.api.action.result.ActionResult;
 import com.daqem.arc.api.action.type.ActionType;
 import com.daqem.arc.event.triggers.BlockEvents;

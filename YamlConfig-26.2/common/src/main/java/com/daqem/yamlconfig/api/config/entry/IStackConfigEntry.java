@@ -1,6 +1,5 @@
 package com.daqem.yamlconfig.api.config.entry;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

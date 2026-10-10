@@ -8,8 +8,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.profiling.ProfilerFiller;
 
 import java.util.ArrayList;
 import java.util.List;

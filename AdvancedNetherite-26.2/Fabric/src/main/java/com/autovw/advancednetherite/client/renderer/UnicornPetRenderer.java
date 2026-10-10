@@ -2,7 +2,6 @@ package com.autovw.advancednetherite.client.renderer;
 
 import com.autovw.advancednetherite.AdvancedNetherite;
 import com.autovw.advancednetherite.client.model.UnicornPetModel;
-import com.autovw.advancednetherite.common.entity.DialgaPetEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;

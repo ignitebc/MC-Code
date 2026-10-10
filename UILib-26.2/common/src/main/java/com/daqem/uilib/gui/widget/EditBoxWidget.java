@@ -1,6 +1,5 @@
 package com.daqem.uilib.gui.widget;
 
-import com.daqem.uilib.UILib;
 import com.daqem.uilib.api.widget.IEditBoxWidget;
 import com.daqem.uilib.api.widget.IInputValidatable;
 import com.daqem.uilib.api.widget.IWidget;
@@ -12,7 +11,6 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.tooltip.BelowOrAboveWidgetTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.MenuTooltipPositioner;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;

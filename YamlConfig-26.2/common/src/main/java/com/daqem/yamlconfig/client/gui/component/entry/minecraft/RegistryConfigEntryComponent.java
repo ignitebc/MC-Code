@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class RegistryConfigEntryComponent<T> extends BaseConfigEntryComponent<RegistryConfigEntry<T>> {

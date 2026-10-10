@@ -1,7 +1,6 @@
 package com.autovw.advancednetherite;
 
 import com.autovw.advancednetherite.api.annotation.Internal;
-import com.autovw.advancednetherite.common.item.AdvancedItem;
 import com.autovw.advancednetherite.core.ModItems;
 import com.autovw.advancednetherite.core.ModRewardCouponItems;
 import com.autovw.advancednetherite.core.ModBackpackItems;
@@ -13,7 +12,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 
 /**
  * @author Autovw

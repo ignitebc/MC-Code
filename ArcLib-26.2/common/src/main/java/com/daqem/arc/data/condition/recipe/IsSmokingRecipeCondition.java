@@ -10,7 +10,6 @@ import com.google.gson.*;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 
 public class IsSmokingRecipeCondition extends IsRecipeCondition<SmokingRecipe> {

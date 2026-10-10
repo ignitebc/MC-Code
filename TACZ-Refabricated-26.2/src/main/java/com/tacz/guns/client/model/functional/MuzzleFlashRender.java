@@ -14,7 +14,6 @@ import com.tacz.guns.client.resource.GunDisplayInstance;
 import com.tacz.guns.client.resource.pojo.display.gun.MuzzleFlash;
 import com.tacz.guns.resource.modifier.custom.SilenceModifier;
 import it.unimi.dsi.fastutil.Pair;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;

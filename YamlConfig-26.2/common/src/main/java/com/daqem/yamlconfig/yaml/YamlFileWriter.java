@@ -4,7 +4,6 @@ import com.daqem.yamlconfig.api.config.IConfig;
 import org.snakeyaml.engine.v2.api.YamlOutputStreamWriter;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class YamlFileWriter extends YamlOutputStreamWriter {

@@ -1,7 +1,6 @@
 package com.daqem.yamlconfig.client.gui.component;
 
 import com.daqem.uilib.gui.component.AbstractComponent;
-import com.daqem.yamlconfig.api.config.entry.IConfigEntry;
 import com.daqem.yamlconfig.api.config.entry.IStackConfigEntry;
 import com.daqem.yamlconfig.api.gui.component.IConfigEntryComponent;
 import com.daqem.yamlconfig.client.gui.component.entry.BaseConfigEntryComponent;

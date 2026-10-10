@@ -5,7 +5,6 @@ import com.daqem.yamlconfig.api.config.ConfigType;
 import com.daqem.yamlconfig.api.config.IConfig;
 import com.daqem.yamlconfig.api.config.serializer.IConfigSerializer;
 import com.daqem.yamlconfig.networking.YamlConfigNetworking;
-import com.daqem.yamlconfig.networking.s2c.ClientboundOpenConfigScreenPacket;
 import com.daqem.yamlconfig.networking.s2c.ClientboundSyncConfigPacket;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.network.RegistryFriendlyByteBuf;

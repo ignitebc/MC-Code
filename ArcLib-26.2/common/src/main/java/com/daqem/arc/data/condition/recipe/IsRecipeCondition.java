@@ -6,7 +6,6 @@ import com.daqem.arc.api.action.data.ActionData;
 import com.daqem.arc.api.condition.AbstractCondition;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 
 import java.util.List;

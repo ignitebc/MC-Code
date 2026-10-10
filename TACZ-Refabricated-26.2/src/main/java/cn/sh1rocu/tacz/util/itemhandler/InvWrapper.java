@@ -3,7 +3,6 @@ package cn.sh1rocu.tacz.util.itemhandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 

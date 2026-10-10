@@ -3,7 +3,6 @@ package com.tacz.guns.client.renderer.item;
 import cn.sh1rocu.simplebedrockmodel.api.event.ViewportEvent;
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.client.animation.statemachine.LuaAnimationStateMachine;

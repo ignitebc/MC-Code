@@ -1,12 +1,7 @@
 package com.daqem.itemrestrictions.networking.clientbound;
 
 import com.daqem.itemrestrictions.data.ItemRestriction;
-import com.daqem.itemrestrictions.data.ItemRestrictionManager;
 import com.daqem.itemrestrictions.networking.ItemRestrictionsNetworking;
-import dev.architectury.networking.NetworkManager;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

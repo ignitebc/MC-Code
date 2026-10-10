@@ -3,12 +3,10 @@ package com.tacz.guns.config;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.tacz.guns.GunMod;
 import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
-import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.fml.config.ModConfig;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * 26.2 重构版 PreLoadConfig

@@ -11,7 +11,6 @@ import com.daqem.jobsplus.integration.arc.condition.type.JobsPlusConditionType;
 import com.daqem.jobsplus.player.JobsServerPlayer;
 import com.daqem.jobsplus.player.job.Job;
 import com.google.gson.*;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;

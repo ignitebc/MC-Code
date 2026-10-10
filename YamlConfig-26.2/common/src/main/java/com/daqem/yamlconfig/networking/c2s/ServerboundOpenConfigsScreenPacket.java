@@ -4,7 +4,6 @@ import com.daqem.yamlconfig.YamlConfig;
 import com.daqem.yamlconfig.api.config.IConfig;
 import com.daqem.yamlconfig.networking.YamlConfigNetworking;
 import com.daqem.yamlconfig.networking.s2c.ClientboundOpenConfigsScreenPacket;
-import com.google.common.graph.Network;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;

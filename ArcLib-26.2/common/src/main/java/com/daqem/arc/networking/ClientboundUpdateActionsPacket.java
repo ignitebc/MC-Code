@@ -1,12 +1,7 @@
 package com.daqem.arc.networking;
 
 import com.daqem.arc.api.action.IAction;
-import com.daqem.arc.api.action.holder.ActionHolderManager;
 import com.daqem.arc.api.action.serializer.IActionSerializer;
-import dev.architectury.networking.NetworkManager;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

@@ -15,7 +15,6 @@ import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;

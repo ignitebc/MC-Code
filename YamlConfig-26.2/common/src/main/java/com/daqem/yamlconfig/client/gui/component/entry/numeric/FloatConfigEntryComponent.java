@@ -1,7 +1,6 @@
 package com.daqem.yamlconfig.client.gui.component.entry.numeric;
 
 import com.daqem.uilib.util.ValidationErrors;
-import com.daqem.yamlconfig.YamlConfig;
 import com.daqem.yamlconfig.impl.config.entry.numeric.FloatConfigEntry;
 import net.minecraft.network.chat.Component;
 

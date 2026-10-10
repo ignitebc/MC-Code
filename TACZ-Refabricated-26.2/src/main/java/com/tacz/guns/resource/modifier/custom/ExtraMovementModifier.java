@@ -9,7 +9,6 @@ import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.modifier.ModifierText;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.resource.pojo.data.gun.MoveSpeed;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 

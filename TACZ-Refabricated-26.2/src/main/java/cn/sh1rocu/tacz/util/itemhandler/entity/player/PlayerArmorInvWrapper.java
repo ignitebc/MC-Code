@@ -3,7 +3,6 @@ package cn.sh1rocu.tacz.util.itemhandler.entity.player;
 import cn.sh1rocu.tacz.util.itemhandler.InvWrapper;
 import cn.sh1rocu.tacz.util.itemhandler.RangedWrapper;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;

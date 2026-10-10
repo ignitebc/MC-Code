@@ -11,7 +11,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 
 public class ItemHandlerHelper {
     public static @NotNull ItemStack insertItem(IItemHandler dest, @NotNull ItemStack stack, boolean simulate) {

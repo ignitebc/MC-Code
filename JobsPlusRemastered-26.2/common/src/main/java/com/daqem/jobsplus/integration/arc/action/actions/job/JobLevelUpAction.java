@@ -8,7 +8,6 @@ import com.daqem.arc.api.condition.ICondition;
 import com.daqem.arc.api.reward.IReward;
 import com.daqem.jobsplus.integration.arc.action.type.JobsPlusActionType;
 import com.google.gson.*;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 
