@@ -211,13 +211,14 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
             }
             TimelessAPI.getCommonAmmoIndex(ammoId).ifPresent(ammoIndex -> {
                 int stackSize = ammoIndex.getStackSize();
-                int tmpAmmoCount = ammoCount;
-                int roundCount = tmpAmmoCount / (stackSize + 1);
-                for (int i = 0; i <= roundCount; i++) {
-                    int count = Math.min(tmpAmmoCount, stackSize);
+                int remainingAmmo = ammoCount;
+                // 묶음 수를 미리 나눠 계산하면 한 묶음보다 조금 많은 탄(예: 121발, 한 칸 60발)의 나머지를 빠뜨린다.
+                // 남은 탄이 없어질 때까지 한 칸씩 돌려준다.
+                while (remainingAmmo > 0) {
+                    int count = Math.min(remainingAmmo, stackSize);
                     ItemStack ammoItem = AmmoItemBuilder.create().setId(ammoId).setCount(count).build();
                     ItemHandlerHelper.giveItemToPlayer(player, ammoItem);
-                    tmpAmmoCount -= stackSize;
+                    remainingAmmo -= count;
                 }
                 setCurrentAmmoCount(gunItem, 0);
             });
