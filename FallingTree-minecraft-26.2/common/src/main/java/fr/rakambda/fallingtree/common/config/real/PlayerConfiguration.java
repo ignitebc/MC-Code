@@ -15,7 +15,7 @@ public class PlayerConfiguration implements IPlayerConfiguration, IResettable{
 	@NonNull
 	private List<String> allowedTags = new ArrayList<>();
 	
-	//Cache
+	//캐시
 	private List<String> allowedTagsCache;
 	
 	@Override

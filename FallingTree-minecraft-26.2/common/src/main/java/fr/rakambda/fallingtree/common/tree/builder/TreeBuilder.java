@@ -100,7 +100,7 @@ public class TreeBuilder{
 			// 도구가 중간에 부서져 잎 없이 공중에 남은 나무는 건축물이 아니므로 조건을 면제해
 			// 새 도구로 다시 일괄 벌목할 수 있게 한다.
 			if(leavesAround < aroundRequired && !isFloatingTree(level, tree)){
-				// TODO Set it back as info, see #845
+				// TODO 다시 info 수준으로 되돌리기, #845 참고
 				log.debug("Tree at {} doesn't have enough leaves around top most log", originPos);
 				return empty();
 			}

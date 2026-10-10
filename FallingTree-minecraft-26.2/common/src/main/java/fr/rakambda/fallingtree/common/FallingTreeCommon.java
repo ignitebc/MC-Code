@@ -62,16 +62,16 @@ public abstract class FallingTreeCommon<D extends Enum<D>>{
 	}
 	
 	/**
-	 * Checks if a player is allowed to break a block.
+	 * 플레이어가 블록을 부술 수 있는지 확인한다.
 	 * <br>
-	 * These conditions must be met in order, otherwise player is denied :
+	 * 아래 조건을 순서대로 확인하며, 어느 것에도 해당하지 않으면 거부한다:
 	 * <ul>
-	 *     <li>If {@link IToolConfiguration#isForceToolUsage()} is set to false, player is allowed</li>
-	 *     <li>If block is not a whitelisted one, player is allowed</li>
-	 *     <li>If tool is valid, player is allowed</li>
+	 *     <li>{@link IToolConfiguration#isForceToolUsage()}가 false면 허용</li>
+	 *     <li>허용 목록에 있는 블록이 아니면 허용</li>
+	 *     <li>올바른 도구면 허용</li>
 	 * </ul>
 	 *
-	 * @return true if the player is allowed to break that block, false otherwise.
+	 * @return 플레이어가 그 블록을 부술 수 있으면 true, 아니면 false
 	 */
 	public boolean checkForceToolUsage(@NonNull IPlayer player, @NonNull ILevel level, @NonNull IBlockPos blockPos){
 		if(!getConfiguration().getTools().isForceToolUsage()){

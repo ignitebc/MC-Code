@@ -12,7 +12,7 @@ public class BoundedList<T> extends LinkedList<T> {
 	@Override
 	public boolean add(T element) {
 		while (size() > maxSize) {
-			super.removeFirst(); // Evict the oldest element
+			super.removeFirst(); // 가장 오래된 요소를 내보낸다
 		}
 		return super.add(element);
 	}
@@ -20,7 +20,7 @@ public class BoundedList<T> extends LinkedList<T> {
 	@Override
 	public void add(int index, T element) {
 		while (size() > maxSize) {
-			super.removeFirst(); // Still evict from the beginning to maintain "oldest"
+			super.removeFirst(); // "가장 오래된" 순서를 지키기 위해 여전히 앞에서부터 내보낸다
 		}
 		super.add(index, element);
 	}

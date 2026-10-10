@@ -8,13 +8,13 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum DurabilityMode{
-	// Never break the tool
+	// 도구를 절대 부수지 않는다
 	ABORT(true, (breakCount, breakableCount) -> breakCount <= breakableCount ? -1 : breakCount, (durability) -> durability <= 1),
-	// Let the tool with 1 durability
+	// 도구 내구도를 1 남긴다
 	SAVE(true, (breakCount, breakableCount) -> breakCount <= breakableCount ? breakCount - 1 : breakCount, (durability) -> durability <= 1),
-	// Break as many blocks as possible
+	// 가능한 만큼 블록을 부순다
 	NORMAL(true, (breakCount, breakableCount) -> breakCount, (durability) -> false),
-	// Break all the blocks even if it requires more durability
+	// 내구도가 더 필요해도 모든 블록을 부순다
 	BYPASS(false, (breakCount, breakableCount) -> breakableCount, (durability) -> false);
 	
 	private final boolean allowAbort;

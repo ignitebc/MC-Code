@@ -81,7 +81,7 @@ public class ShiftDownTreeBreakingHandler implements ITreeBreakingHandler{
 			tool.damage(damage, player);
 		}
 		
-		if(breakCount == 0){ // Last block of the tree
+		if(breakCount == 0){ // 나무의 마지막 블록
 			if(player.isCreative() && mod.getConfiguration().isLootInCreative()){
 				tree.getStart().ifPresent(part -> part.blockState().getBlock().playerDestroy(level, player, tree.getHitPos(), part.blockState(), part.blockEntity(), tool, true));
 			}

@@ -12,7 +12,7 @@ public class LootHandler{
 	}
 	
 	/**
-	 * @return true if loot should be dropped, false otherwise
+	 * @return 전리품을 떨어뜨려야 하면 true, 아니면 false
 	 */
 	public boolean breakNewTrunk(){
 		return currentlyBroken.accumulateAndGet(1, Integer::sum) <= maxDropping;

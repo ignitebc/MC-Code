@@ -19,26 +19,26 @@
 @if "%DEBUG%"=="" @echo off
 @rem ##########################################################################
 @rem
-@rem  gradlew startup script for Windows
+@rem  Windows용 gradlew 시작 스크립트
 @rem
 @rem ##########################################################################
 
-@rem Set local scope for the variables, and ensure extensions are enabled
+@rem 변수 범위를 지역으로 설정하고 확장 기능을 켠다
 setlocal EnableExtensions
 
 set DIRNAME=%~dp0
 if "%DIRNAME%"=="" set DIRNAME=.
-@rem This is normally unused
+@rem 보통은 쓰지 않는다
 set APP_BASE_NAME=%~n0
 set APP_HOME=%DIRNAME%
 
-@rem Resolve any "." and ".." in APP_HOME to make it shorter.
+@rem APP_HOME의 "."과 ".."을 풀어 경로를 짧게 만든다.
 for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
 
-@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+@rem 기본 JVM 옵션은 여기에 추가한다. JAVA_OPTS와 GRADLE_OPTS로도 이 스크립트에 JVM 옵션을 넘길 수 있다.
 set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
 
-@rem Find java.exe
+@rem java.exe 찾기
 if defined JAVA_HOME goto findJavaFromJavaHome
 
 set JAVA_EXE=java.exe
@@ -68,15 +68,15 @@ echo location of your Java installation. 1>&2
 "%COMSPEC%" /c exit 1
 
 :execute
-@rem Setup the command line
+@rem 명령줄 구성
 
 
 
-@rem Execute gradlew
-@rem endlocal doesn't take effect until after the line is parsed and variables are expanded
-@rem which allows us to clear the local environment before executing the java command
+@rem gradlew 실행
+@rem endlocal은 줄을 해석하고 변수를 펼친 뒤에야 적용되므로
+@rem java 명령을 실행하기 전에 지역 환경을 비울 수 있다
 endlocal & "%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %* & call :exitWithErrorLevel
 
 :exitWithErrorLevel
-@rem Use "%COMSPEC%" /c exit to allow operators to work properly in scripts
+@rem 스크립트 안에서 연산자가 제대로 동작하도록 "%COMSPEC%" /c exit 를 쓴다
 "%COMSPEC%" /c exit %ERRORLEVEL%

@@ -40,7 +40,7 @@ public class BlockWrapper implements IBlock{
 		var entity = blockEntity == null ? null : (BlockEntity) blockEntity.getRaw();
 		var realPlayer = (Player) player.getRaw();
 		
-		// See Block.playerDestroy
+		// Block.playerDestroy 참고
 		realPlayer.awardStat(Stats.BLOCK_MINED.get(raw));
 		realPlayer.causeFoodExhaustion(0.005F);
 		if(dropResources){

@@ -90,7 +90,7 @@ public class TreeConfiguration implements ITreeConfiguration, IResettable{
 	@Expose
 	private float trunkLootPercentage = 1f;
 	
-	//Cache
+	//캐시
 	private Set<IBlock> deniedLeavesCache;
 	private Set<IBlock> deniedLogsCache;
 	private Set<IBlock> allowedLeavesCache;

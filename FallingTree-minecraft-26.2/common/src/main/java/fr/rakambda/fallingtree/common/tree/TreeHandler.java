@@ -105,7 +105,6 @@ public class TreeHandler{
 			return AbortedResult.TREE_TOO_BIG_SCAN;
 		}
 		catch(BreakTreeTooSmallException e){
-			// mod.notifyPlayer(player, mod.translate("chat.fallingtree.break_tree_too_small", mod.getConfiguration().getTrees().getMinSize()));
 			return AbortedResult.TREE_TOO_SMALL_BREAK;
 		}
 		catch(BreakTreeTooBigException e){

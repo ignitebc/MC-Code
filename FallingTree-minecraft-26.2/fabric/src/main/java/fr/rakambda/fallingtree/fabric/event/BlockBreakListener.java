@@ -25,7 +25,7 @@ public class BlockBreakListener implements PlayerBlockBreakEvents.Before, Player
 	private final FallingTreeCommon<?> mod;
 	
 	/**
-	 * @return true if event is handled successful (not cancelling it), false otherwise (cancelling event)
+	 * @return 이벤트를 정상 처리했으면 true(취소하지 않음), 아니면 false(이벤트 취소)
 	 */
 	@Override
 	public boolean beforeBlockBreak(Level level, Player player, BlockPos blockPos, BlockState blockState, BlockEntity blockEntity){

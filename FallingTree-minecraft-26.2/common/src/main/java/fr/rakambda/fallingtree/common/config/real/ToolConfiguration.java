@@ -39,7 +39,7 @@ public class ToolConfiguration implements IToolConfiguration, IResettable{
 	@Expose
 	private boolean forceToolUsage = false;
 	
-	//Cache
+	//캐시
 	private Set<IItem> deniedCache;
 	private Set<IItem> allowedCache;
 	
