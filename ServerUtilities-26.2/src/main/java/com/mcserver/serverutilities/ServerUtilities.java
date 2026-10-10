@@ -113,6 +113,7 @@ public final class ServerUtilities implements ModInitializer {
                                     + ", 사망 손실=" + settings.deathPenalty() + ", 보존권=" + settings.deathProtection()
                                     + ", 유품 상자=" + settings.deathChest()
                                     + " (만료 " + settings.deathChestExpireSeconds() + "초, 회수 후 " + settings.deathChestEmptySeconds() + "초)"
+                                    + ", 엔드 공허 사망=" + settings.deathEndVoid()
                                     + ", 시작 위치 분산=" + settings.spawnScatter()
                                     + " ±" + settings.spawnScatterRadius()
                                     + " (기준=" + describeAnchor() + ")"
