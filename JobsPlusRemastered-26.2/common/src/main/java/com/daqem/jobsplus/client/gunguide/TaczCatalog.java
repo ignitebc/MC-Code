@@ -257,7 +257,7 @@ public final class TaczCatalog {
             case "STOCK" -> "개머리판";
             case "LASER" -> "레이저";
             case "EXTENDED_MAG" -> "탄창 · 특수탄";
-            default -> type.toString();
+            default -> "기타 파츠";
         };
     }
 }

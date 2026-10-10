@@ -10,10 +10,15 @@ import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.network.chat.Component;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.effect.MobEffect;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 /** Formats loaded pack values without evaluating scripts or changing weapon properties. */
 final class TaczStats {
@@ -36,7 +41,8 @@ final class TaczStats {
             Map.entry("distance", "거리(m)"), Map.entry("range_angle", "공격 각도"), Map.entry("cooldown", "재사용 대기(초)"),
             Map.entry("prep", "준비 시간(초)"), Map.entry("effects", "상태 효과"), Map.entry("duration", "지속 시간"),
             Map.entry("amplifier", "효과 단계"), Map.entry("probability", "확률"), Map.entry("effect", "효과"),
-            Map.entry("id", "효과 ID"), Map.entry("default", "기본 공격"), Map.entry("type", "방식"),
+            Map.entry("id", "효과"), Map.entry("default", "기본 공격"), Map.entry("type", "방식"),
+            Map.entry("entity", "대상"), Map.entry("block", "블록"),
             Map.entry("max", "최대 열량"), Map.entry("per_shot", "발당 열량"),
             Map.entry("cooling_multiplier", "냉각 배율"), Map.entry("cooling_delay", "냉각 대기(ms)"),
             Map.entry("over_heat_time", "과열 지속(ms)"), Map.entry("min_inaccuracy", "최소 탄퍼짐 배율"),
@@ -49,6 +55,13 @@ final class TaczStats {
             Map.entry("other_inaccuracy", "비조준 탄퍼짐"), Map.entry("animation_type", "공격 동작"),
             Map.entry("fire_multiplier", "일반 총성 배율"), Map.entry("silence_multiplier", "소음기 총성 배율"), Map.entry("time", "지속 시간(초)"),
             Map.entry("hide_particles", "효과 입자 숨김"));
+    /** 팩 데이터에 문자열로 들어오는 값. 근접 공격 동작과 충전 방식이 여기에 든다. */
+    private static final Map<String, String> VALUES = Map.ofEntries(
+            Map.entry("melee_push", "밀치기"), Map.entry("melee_stock", "개머리판 치기"),
+            Map.entry("melee_bayonet", "총검 찌르기"),
+            Map.entry("auto", "누르고 있으면 충전, 가득 차면 자동 발사"),
+            Map.entry("hold", "누르고 있으면 충전, 떼면 발사"),
+            Map.entry("delay", "한 번 누르면 끝까지 충전 후 발사"));
 
     private TaczStats() { }
 
@@ -212,7 +225,7 @@ final class TaczStats {
             case "AUTO" -> "자동";
             case "SEMI" -> "반자동";
             case "BURST" -> "점사";
-            default -> mode;
+            default -> "기타";
         };
     }
 
@@ -290,8 +303,25 @@ final class TaczStats {
                 lines.add(title + ": " + format(amount));
             }
         } else {
-            lines.add(title + ": " + value.getAsString());
+            lines.add(title + ": " + displayValue(value.getAsString()));
         }
+    }
+
+    /** 팩의 문자열 값과 상태 효과 ID를 화면에 보일 한국어 이름으로 바꾼다. */
+    private static String displayValue(String value) {
+        String known = VALUES.get(value.toLowerCase(Locale.ROOT));
+        if (known != null) {
+            return known;
+        }
+        Identifier id = value.contains(":") ? Identifier.tryParse(value) : null;
+        if (id == null) {
+            return value;
+        }
+        Optional<MobEffect> effect = BuiltInRegistries.MOB_EFFECT.getOptional(id);
+        if (effect.isPresent()) {
+            return effect.get().getDisplayName().getString();
+        }
+        return value;
     }
 
     private static String label(String key) {
