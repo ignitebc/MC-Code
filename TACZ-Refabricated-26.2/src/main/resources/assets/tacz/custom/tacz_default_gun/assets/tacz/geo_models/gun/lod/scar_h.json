@@ -3,7 +3,7 @@
 	"minecraft:geometry": [
 		{
 			"description": {
-				"identifier": "geometry.scar_h - 副本",
+				"identifier": "geometry.scar_h_lod",
 				"texture_width": 64,
 				"texture_height": 64,
 				"visible_bounds_width": 4,
