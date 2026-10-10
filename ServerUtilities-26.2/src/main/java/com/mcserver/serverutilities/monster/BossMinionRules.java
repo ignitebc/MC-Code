@@ -133,8 +133,8 @@ public final class BossMinionRules {
         return null;
     }
 
-    /** 보스에서 {@link #SPAWN_RADIUS} 안의, 발밑이 단단하고 몸이 들어갈 빈 자리. 없으면 null */
-    private static BlockPos findSpawnPosition(ServerLevel level, BlockPos center, EntityType<?> type) {
+    /** 중심(보스·플레이어)에서 {@link #SPAWN_RADIUS} 안의, 발밑이 단단하고 몸이 들어갈 빈 자리. 없으면 null */
+    static BlockPos findSpawnPosition(ServerLevel level, BlockPos center, EntityType<?> type) {
         RandomSource random = level.getRandom();
         for (int attempt = 0; attempt < SPAWN_ATTEMPTS; attempt++) {
             int offsetX = random.nextIntBetweenInclusive(-SPAWN_RADIUS, SPAWN_RADIUS);

@@ -4,6 +4,7 @@ import com.mcserver.serverutilities.combat.CombatRules;
 import com.mcserver.serverutilities.boss.BossHealthRules;
 import com.mcserver.serverutilities.boss.WardenBossBars;
 import com.mcserver.serverutilities.monster.BossMinionRules;
+import com.mcserver.serverutilities.monster.DragonEndermanRules;
 import com.mcserver.serverutilities.monster.CreeperGunpowderDrops;
 import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
 import com.mcserver.serverutilities.monster.MonsterEquipmentRules;
@@ -73,6 +74,7 @@ public final class ServerUtilities implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             SpawnScatterRules.shutdown();
             BossMinionRules.shutdown();
+            DragonEndermanRules.shutdown();
             config = UtilitiesConfig.DEFAULT;
         });
         ServerPlayerEvents.JOIN.register(SpawnScatterRules::onJoin);
@@ -92,6 +94,7 @@ public final class ServerUtilities implements ModInitializer {
                 SpawnScatterRules.tick(player);
             }
             BossMinionRules.tick(server);
+            DragonEndermanRules.tick(server);
         });
         CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) ->
                 dispatcher.register(Commands.literal("serverutilities")
