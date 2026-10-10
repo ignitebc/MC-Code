@@ -307,6 +307,7 @@ S+~F 등급과 +1~+10 강화에 더해, 도구 한 개마다 별도의 누적 EX
 | `balance.creeper.enabled` | `true` | `true` / `false` | 크리퍼 레벨 배율을 폭발 피해·블록 파괴 범위와 화약 드롭에 적용. 끄면 모두 바닐라 |
 | `balance.vex_collision.enabled` | `true` | `true` / `false` | 벡스·항복한 자가 블록을 통과하지 않고 비행 길찾기로 뚫린 길만 따라 쫓아옴. 끄면 바닐라처럼 벽을 통과 |
 | `balance.illager_health.enabled` | `true` | `true` / `false` | 바닐라 약탈자 계열과 illagerinvasion 몹의 기본 최대 체력 상향. 끄면 다음 로드부터 등록된 기본값으로 복귀 |
+| `balance.structure_chests.enabled` | `true` | `true` / `false` | 새로 생성되는 illagerinvasion 구조물의 보상 상자 옆에 같은 상자를 확률로 추가(미궁 상급 30%, 그 외 25%). 끄면 새 구조물에 추가 상자를 놓지 않음 |
 | `balance.hunger.enabled` | `true` | `true` / `false` | 행동으로 발생하는 피로도 보정 |
 | `balance.hunger.multiplier` | `1.5` | 0~100, 유한수 | 행동 피로도 배율. 자연 회복이 직접 추가하는 피로도에는 미적용 |
 | `balance.armor.enabled` | `true` | `true` / `false` | 방어도 소수점 사용과 유효 방어도 20 초과 구간의 피해 감소 곡선 |
@@ -544,6 +545,27 @@ S+~F 등급과 +1~+10 강화에 더해, 도구 한 개마다 별도의 누적 EX
 - 구조물 몹처럼 생성 이유 `STRUCTURE`로 만들고 사라지지 않게 합니다. 구조물은 청크가 처음 생성될 때만 배치되므로 이미 생성된 미궁은 바뀌지 않습니다.
 - 구현: `LabyrinthInvokers`, `LabyrinthInvokerMixin`(`StructureStart.placeInChunk` 끝). illagerinvasion이 없으면 미궁이 생기지 않아 아무 일도 하지 않습니다.
 
+## 구조물 보상 상향
+
+illagerinvasion 구조물(미궁·일리저요새·환영술사탑·주술사오두막·화염술사오두막)의 보상 열쇠·강화 조각·강화 원석 확률, 보상 상자 수, 몹 수를 조금씩 올립니다. 확률·몹·처치 보상은 illagerinvasion 데이터를, 상자 수는 이 모듈 코드를 바꿉니다.
+
+| 상자 등급 | 전리품 표 (`illagerinvasion:chests/…`) | 열쇠 I | 열쇠 II | 열쇠 III | 열쇠 IV | 강화 조각 | 강화 원석 |
+|---|---|---|---|---|---|---|---|
+| 미궁 상급 | `labyrinth`, `labyrinth_map` | 25 → 30% | 14 → 17% | 8 → 10% | 5 → 6% | 55 → 60% (2~5개) | 20 → 24% |
+| 미궁 일반 | `labyrinth_common` | 5 → 8% | - | - | - | 15 → 20% (1개) | - |
+| 구조물 상층 | `illager_fort_tower`, `illusioner_tower_stairs` | 20 → 24% | 10 → 12% | 5 → 6% | 3 → 4% | 45 → 50% (1~3개) | 12 → 14% |
+| 구조물 하층 | `illager_fort_ground`, `illusioner_tower_entrance`, `sorcerer_hut`, `firecaller_hut` | 20 → 24% | 10 → 12% | 5 → 6% | 3 → 4% | 40 → 45% (1~2개) | 8 → 10% |
+
+- 전리품은 상자를 처음 열 때 정해지므로, 확률 변경은 이미 생성됐지만 아직 열지 않은 상자에도 적용됩니다.
+- **추가 상자**: 구조물이 청크에 배치된 직후 보상 상자 옆에 같은 전리품 표의 상자를 확률로 하나 더 놓습니다. 미궁 상급 상자 30%, 그 외 구조물 상자 25%이고, 미궁 일반 상자는 방마다 가장 많아 개수 대신 확률만 올렸습니다.
+- 추가 상자 자리는 원래 상자의 좌우 칸(무작위 순서)을 먼저 보고, 둘 다 안 되면 원래 상자 말고도 벽에 붙은 앞뒤 칸을 봅니다. 이 청크 안의 공기 칸이고, 바닥에 충돌면이 있고, 위 블록이 상자 뚜껑을 막지 않아야 합니다(바닐라 상자 열림 판정과 같은 `isRedstoneConductor` 기준). 자리가 없으면 놓지 않습니다.
+- 템플릿 기준으로 미궁 지도 상자(`room_9`)와 환영술사탑 계단의 책장 사이 상자(탑마다 1개)는 둘레가 막혀 추가 상자가 생기지 않습니다. 미궁 탑의 상급 상자 2개는 좌우가 막혀 있어 벽감 안쪽 앞 칸에 놓입니다.
+- 추가 상자는 원래 상자와 같은 방향의 단일 상자라 이중 상자로 합쳐지지 않습니다. 추첨·자리·전리품 시드는 월드 시드와 상자 좌표로 정합니다.
+- **몹**: 미궁 방 엘리트(`mobs/labyrinth_elite`, 환술사·심문관·주술사·화염술사 중 1마리)의 빈 칸 가중치를 4 → 2로 줄여 방마다 출현 확률을 50% → 67%로 올렸습니다. 다섯 구조물이 함께 쓰는 강령술사 무리(`mobs/necromancer_group`)는 1마리 묶음을 빼 1~4마리(평균 2.5) → 2~4마리(평균 3.0)로 바꿨습니다.
+- **찬란한 기원자 처치 보상**(`entities/invoker`): 강화 조각 1개 → 2~4개, 강화 원석 20%를 추가했습니다. 둘 다 플레이어가 처치했을 때만 나옵니다.
+- 추가 상자와 몹 변경은 청크가 처음 생성될 때만 배치되므로 이미 생성된 구조물은 바뀌지 않습니다. 설정 `balance.structure_chests.enabled`를 끄면 추가 상자만 멈추고, 확률·몹·처치 보상은 illagerinvasion 데이터라 그대로입니다.
+- 구현: `StructureBonusChests`, `StructureBonusChestMixin`(`StructureStart.placeInChunk` 끝). illagerinvasion이 없으면 해당 구조물이 생기지 않아 아무 일도 하지 않습니다.
+
 ## 시작 위치 분산
 
 최초 접속자가 선 자리를 기준 좌표로 월드 폴더의 `serverutilities-spawn.properties`에 저장하고, 이후 신규 접속자는 기준 좌표에서 X·Z를 각각 `±spawn.scatter.radius`(기본 5000) 안에서 균등하게 뽑은 지점에 배치합니다. Y는 뽑지 않고 바닐라 탐색이 지면 높이로 정합니다.
@@ -631,6 +653,8 @@ Java 25 환경에서 모듈 폴더 안에서 실행합니다.
 | 미궁 기원자 | `LabyrinthInvokers`, `LabyrinthInvokerMixin`. 함께 되돌릴 illagerinvasion `mobs/invoker_group` 풀 |
 | 벡스·항복한 자 비행 | `VexFlightMixin`, `VexVanillaMoveGoalMixin`, `VexPathChaseGoal`, `VexPathWanderGoal`, `VexFlightRules`, 설정 1개 |
 | 일리저 계열 체력 | `IllagerHealthRules`, 서버 시작 등록, `BossHealthRules.applyHealth` 공개 범위, 설정 1개 |
+| 구조물 추가 상자 | `StructureBonusChests`, `StructureBonusChestMixin`과 Mixin 등록, 상태 출력, 설정 1개 |
+| 구조물 보상·몹 데이터 | illagerinvasion 상자 전리품 표 9개, `entities/invoker` 처치 보상, `mobs/labyrinth_elite`·`mobs/necromancer_group` 풀 |
 | 거래 횟수 제한 해제 | `MerchantOffer` 거래 횟수 Mixin과 Mixin 등록, 이 문서의 해당 절 |
 | 몬스터 레벨 표시 | `monster`의 레벨 계산·동기화, 클라이언트 렌더러 Mixin 2개와 등록, TACZ의 총기 등급표·등급 연결 Mixin, 이 문서의 해당 절 |
 | 네더 몬스터 장비 | `MonsterEquipmentRules`의 네더 추첨·레벨·드롭 규칙, `MonsterEquipmentMixin`의 지급 칸 교체 방지, TACZ의 네더 총기 추첨 Mixin, Jobs+ 사용자 가이드의 무장 몬스터 안내, 이 문서의 해당 절 |
