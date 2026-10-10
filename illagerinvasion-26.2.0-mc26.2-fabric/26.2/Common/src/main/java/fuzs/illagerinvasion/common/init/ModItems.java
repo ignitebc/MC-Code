@@ -76,6 +76,6 @@ public class ModItems {
     public static final Holder.Reference<Item> ILLUSIONER_SPAWN_EGG_ITEM = ModRegistry.REGISTRIES.registerSpawnEggItem((Holder<? extends EntityType<? extends Mob>>) (Holder<?>) EntityTypes.ILLUSIONER.builtInRegistryHolder());
 
     public static void bootstrap() {
-        // NO-OP
+        // 아무것도 하지 않음
     }
 }

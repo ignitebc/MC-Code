@@ -84,7 +84,7 @@ public class Surrendered extends Vex {
 
     @Override
     protected void populateDefaultEquipmentSlots(RandomSource randomSource, DifficultyInstance difficulty) {
-        // NO-OP
+        // 아무것도 하지 않음
     }
 
     @Override

@@ -39,7 +39,7 @@ public class SkullBolt extends WitherSkull {
 
     @Override
     public float getBlockExplosionResistance(Explosion explosion, BlockGetter level, BlockPos pos, BlockState blockState, FluidState fluidState, float explosionPower) {
-        // this should not cause explosions
+        // 폭발을 일으키면 안 된다
         return SharedConstants.MAXIMUM_BLOCK_EXPLOSION_RESISTANCE;
     }
 

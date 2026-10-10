@@ -40,7 +40,7 @@ public class NecromancerRenderer extends IllagerRenderer<Necromancer, Necromance
     }
 
     /**
-     * Copied from {@link IllagerModel#createBodyLayer()} to allow for a custom {@link CubeDeformation}.
+     * 사용자 정의 {@link CubeDeformation}을 쓸 수 있도록 {@link IllagerModel#createBodyLayer()}에서 복사했다.
      */
     public static LayerDefinition createBodyLayer(CubeDeformation cubeDeformation) {
         MeshDefinition meshDefinition = new MeshDefinition();

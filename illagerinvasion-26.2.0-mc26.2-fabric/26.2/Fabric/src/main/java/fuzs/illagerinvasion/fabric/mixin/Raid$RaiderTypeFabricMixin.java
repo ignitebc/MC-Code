@@ -28,6 +28,6 @@ enum Raid$RaiderTypeFabricMixin {
 
     @Shadow
     Raid$RaiderTypeFabricMixin(final EntityType<? extends Raider> entityType, final int[] spawnsPerWaveBeforeBonus) {
-        // NO-OP
+        // 아무것도 하지 않음
     }
 }

@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This allows for adding data marker structure blocks for spawning entities and chests into already existing structure
- * templates.
+ * 이미 있는 구조물 템플릿에 엔티티와 상자를 생성하는 데이터 마커 구조물 블록을
+ * 넣을 수 있게 한다.
  */
 public class DataMarkerStructureProcessor implements StructureProcessor {
     public static final MapCodec<DataMarkerStructureProcessor> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(

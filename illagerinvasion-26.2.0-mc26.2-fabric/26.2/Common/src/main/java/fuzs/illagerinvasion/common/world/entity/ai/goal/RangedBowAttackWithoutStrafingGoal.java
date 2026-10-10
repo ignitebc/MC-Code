@@ -7,7 +7,7 @@ import net.minecraft.world.entity.monster.RangedAttackMob;
 
 public class RangedBowAttackWithoutStrafingGoal<T extends Monster & RangedAttackMob> extends RangedBowAttackGoal<T> {
     /**
-     * Do not use access widener for this, NeoForge changes the generic type on the class.
+     * NeoForge가 이 클래스의 제네릭 타입을 바꾸므로 access widener를 쓰지 않는다.
      */
     private final T mob;
     private int attackIntervalBase;
@@ -26,9 +26,9 @@ public class RangedBowAttackWithoutStrafingGoal<T extends Monster & RangedAttack
 
     @Override
     public void tick() {
-        // disable strafing behavior
+        // 옆걸음 동작 끄기
         this.strafingTime = Integer.MIN_VALUE;
-        // make mob shoot faster the closer the target is, this was removed when strafing was introduced
+        // 대상이 가까울수록 몹이 더 빨리 쏘게 한다. 옆걸음이 생기면서 사라졌던 동작이다
         LivingEntity livingEntity = this.mob.getTarget();
         if (livingEntity != null) {
             double distanceToTargetSqr = this.mob.distanceToSqr(livingEntity);

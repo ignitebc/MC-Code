@@ -26,7 +26,7 @@ public class CustomIllagerModel<T extends IllagerRenderState> extends IllagerMod
     @Override
     public void setupAnim(T renderState) {
         super.setupAnim(renderState);
-        // rework arm swing for other arm when attacking with a melee weapon to take walking animation into account
+        // 근접 무기로 공격할 때 반대쪽 팔의 휘두르기를 걷기 애니메이션까지 고려하도록 다시 만든다
         if (renderState.armPose == AbstractIllager.IllagerArmPose.ATTACKING) {
             if (!renderState.getMainHandItemState().isEmpty()) {
                 if (renderState.mainArm == HumanoidArm.RIGHT) {
@@ -42,7 +42,7 @@ public class CustomIllagerModel<T extends IllagerRenderState> extends IllagerMod
                 }
             }
         }
-        // fix illager model not supporting left-handed bow
+        // 일리저 모델이 왼손 활을 지원하지 않던 문제를 고친다
         if (renderState.armPose == AbstractIllager.IllagerArmPose.BOW_AND_ARROW) {
             if (renderState.mainArm == HumanoidArm.LEFT) {
                 this.leftArm.yRot = 0.1F + this.head.yRot;
@@ -53,7 +53,7 @@ public class CustomIllagerModel<T extends IllagerRenderState> extends IllagerMod
                 this.rightArm.zRot = -Mth.HALF_PI;
             }
         }
-        // fix neutral pose lacking any arm bobbing, making arms appear completely static
+        // 기본 자세에 팔 흔들림이 전혀 없어 팔이 완전히 굳어 보이던 문제를 고친다
         if (renderState.armPose == AbstractIllager.IllagerArmPose.NEUTRAL) {
             AnimationUtils.bobArms(this.rightArm, this.leftArm, renderState.ageInTicks);
         }

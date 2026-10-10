@@ -12,51 +12,6 @@ public class RaidWavesConfigHelper {
     public static final int[] ALCHEMIST_RAID_WAVES = getAlchemistRaidWaves();
     public static final int[] INVOKER_RAID_WAVES = getInvokerRaidWaves();
     public static final int[] FIRECALLER_RAID_WAVES = getFirecallerRaidWaves();
-    
-    // public static int[] getEmptyRaidWaves() {
-    //     return new int[]{0, 0, 0, 0, 0, 0, 0, 0};
-    // }
-    
-    // //전선 붕괴 탱커
-    // public static int[] getBasherRaidWaves() {
-    //     return new int[]{0, 1, 2, 1, 2, 3, 2, 3};
-    // }
-    // //위치·어그로 교란
-    // public static int[] getProvokerRaidWaves() {
-    //     return new int[]{0, 1, 1, 0, 2, 1, 3, 2};
-    // }
-    // //소환 / 장기전 유발
-    // public static int[] getNecromancerRaidWaves() {
-    //     return new int[]{0, 0, 0, 0, 1, 1, 1, 1};
-    // }
-    // //범위 마법 딜러
-    // public static int[] getSorcererRaidWaves() {
-    //     return new int[]{0, 0, 0, 0, 0, 1, 1, 1};
-    // }
-    // //혼란 / 시야 교란
-    // public static int[] getIllusionerRaidWaves() {
-    //     return new int[]{0, 0, 0, 1, 0, 1, 0, 1};
-    // }
-    // //버프·난이도 증폭
-    // public static int[] getArchivistRaidWaves() {
-    //     return new int[]{0, 1, 0, 1, 2, 1, 2, 3};
-    // }
-    // //고화력 돌격
-    // public static int[] getMarauderRaidWaves() {
-    //     return new int[]{0, 1, 1, 1, 2, 2, 3, 3};
-    // }
-    // //플레이어 제압
-    // public static int[] getInquisitorRaidWaves() {
-    //     return new int[]{0, 0, 0, 1, 0, 1, 0, 2};
-    // }
-    // //상태이상 폭격
-    // public static int[] getAlchemistRaidWaves() {
-    //     return new int[]{0, 0, 0, 1, 2, 1, 2, 2};
-    // }
-    // //보스급 압박
-    // public static int[] getInvokerRaidWaves() {
-    //     return new int[]{0, 0, 0, 0, 0, 1, 0, 1};
-    // }
 
     public static int[] getEmptyRaidWaves() 
     {

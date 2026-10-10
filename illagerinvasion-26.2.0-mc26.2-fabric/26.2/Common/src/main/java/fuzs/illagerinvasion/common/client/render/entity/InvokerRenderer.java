@@ -51,7 +51,7 @@ public class InvokerRenderer extends IllagerRenderer<Invoker, InvokerRenderState
         reusedState.isPowered = entity.isPowered();
         if (!reusedState.isRiding) {
             reusedState.floatAnimationSpeed = reusedState.walkAnimationSpeed;
-            // this is enough from the walking animation not to play for the legs
+            // 다리에 걷기 애니메이션이 재생되지 않게 하는 데는 이것으로 충분하다
             reusedState.walkAnimationSpeed = reusedState.walkAnimationPos = 0.0F;
         }
     }

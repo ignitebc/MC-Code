@@ -75,6 +75,6 @@ public class ModEntityTypes {
             () -> EntityType.Builder.<FlyingMagma>of(FlyingMagma::new, MobCategory.MISC).sized(0.95F, 1.05F));
 
     public static void bootstrap() {
-        // NO-OP
+        // 아무것도 하지 않음
     }
 }

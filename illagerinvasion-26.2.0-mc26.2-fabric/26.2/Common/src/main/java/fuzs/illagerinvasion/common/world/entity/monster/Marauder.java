@@ -172,7 +172,7 @@ public class Marauder extends AbstractIllager implements RangedAttackMob {
 
     @Override
     public void applyRaidBuffs(ServerLevel level, int wave, boolean unused) {
-        // NO-OP
+        // 아무것도 하지 않음
     }
 
     @Override

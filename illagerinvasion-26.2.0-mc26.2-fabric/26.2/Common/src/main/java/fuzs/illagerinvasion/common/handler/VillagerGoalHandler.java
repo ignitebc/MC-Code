@@ -38,7 +38,7 @@ public class VillagerGoalHandler {
     }
 
     public static void onEntityLoad(Entity entity, ServerLevel serverLevel, boolean isLoadedFromDisk, @Nullable EntitySpawnReason entitySpawnReason) {
-        // do not do this for generic abstract villager, villagers that use the brain system instead of the goals seem to try to run both and flee much slower than they should
+        // 일반 추상 주민에게는 하지 않는다. 목표(goal) 대신 brain 시스템을 쓰는 주민은 둘 다 돌리려 해서 원래보다 훨씬 느리게 도망치는 것으로 보인다
         if (entity.is(EntityTypeIds.WANDERING_TRADER)) {
             for (VillagerEnemy<?> villagerEnemy : VILLAGER_ENEMIES) {
                 villagerEnemy.addGoal((AbstractVillager) entity);

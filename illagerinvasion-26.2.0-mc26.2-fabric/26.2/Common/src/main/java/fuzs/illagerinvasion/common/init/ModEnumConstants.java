@@ -24,7 +24,7 @@ public class ModEnumConstants {
     public static final Raid.RaiderType INVOKER_RAIDER_TYPE = getRaiderType(ModEntityTypes.INVOKER_ENTITY_TYPE);
 
     public static void bootstrap() {
-        // NO-OP
+        // 아무것도 하지 않음
     }
 
     static Raid.RaiderType getRaiderType(Holder<?> holder) {

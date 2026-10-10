@@ -19,7 +19,7 @@ public class InvokerFangs extends EvokerFangs {
 
     public InvokerFangs(Level level, double x, double y, double z, float yRot, int warmupDelay, LivingEntity owner) {
         this(ModEntityTypes.INVOKER_FANGS_ENTITY_TYPE.value(), level);
-        // copied from super, only changing yRot value
+        // 상위 클래스에서 복사했으며 yRot 값만 바꿨다
         this.warmupDelayTicks = warmupDelay;
         this.setOwner(owner);
         this.setYRot(yRot * 57.295776F);
@@ -30,7 +30,7 @@ public class InvokerFangs extends EvokerFangs {
     public void dealDamageTo(LivingEntity target) {
         LivingEntity owner = this.getOwner();
         if (target.isAlive() && !target.isInvulnerable() && target != owner) {
-            // copied from super with increased damage and push effect
+            // 상위 클래스에서 복사했으며 피해를 늘리고 밀치기 효과를 더했다
             if (owner == null) {
                 target.hurt(this.damageSources().magic(), 10.0F);
                 target.push(0.0, 1.7, 0.0);
@@ -52,7 +52,7 @@ public class InvokerFangs extends EvokerFangs {
         if (id == EntityEvent.START_ATTACKING) {
             this.clientSideAttackStarted = true;
             if (!this.isSilent()) {
-                // copied from super with custom sound event
+                // 상위 클래스에서 복사했으며 사용자 정의 효과음 이벤트를 쓴다
                 this.level()
                         .playLocalSound(this.getX(),
                                 this.getY(),

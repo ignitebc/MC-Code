@@ -19,6 +19,6 @@ public class ModTags {
     public static final TagKey<Block> ORES_BLOCK_TAG = TagFactory.COMMON.registerBlockTag("ores");
 
     public static void bootstrap() {
-        // NO-OP
+        // 아무것도 하지 않음
     }
 }

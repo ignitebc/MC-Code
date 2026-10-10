@@ -60,7 +60,7 @@ public class IllagerInvasion implements ModConstructor {
 
     @Override
     public void onRegisterEntityAttributes(EntityAttributesContext context) {
-        // Max health of every mob is twice the upstream value (server balance).
+        // 모든 몹의 최대 체력은 원본 값의 두 배다(서버 밸런스).
         context.registerAttributes(ModEntityTypes.ALCHEMIST_ENTITY_TYPE.value(),
                 Monster.createMonsterAttributes()
                         .add(Attributes.MAX_HEALTH, 48.0)

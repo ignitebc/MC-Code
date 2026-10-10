@@ -44,7 +44,7 @@ public class ModLootTables {
             .orElseThrow());
 
     public static void bootstrap() {
-        // NO-OP
+        // 아무것도 하지 않음
     }
 
     static ResourceKey<LootTable> registerLootTableInjection(ResourceKey<LootTable> resourceKey) {

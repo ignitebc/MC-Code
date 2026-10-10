@@ -68,6 +68,6 @@ public class ModSoundEvents {
     }
 
     public static void bootstrap() {
-        // NO-OP
+        // 아무것도 하지 않음
     }
 }
