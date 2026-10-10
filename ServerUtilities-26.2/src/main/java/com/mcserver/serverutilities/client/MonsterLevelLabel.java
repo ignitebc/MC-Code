@@ -28,8 +28,11 @@ import net.minecraft.world.phys.Vec3;
  * 바닐라 이름표나 점수 줄이 있으면 그 위 줄에 놓는다.
  */
 public final class MonsterLevelLabel {
-    /** 레벨을 보여 주는 최대 거리(블록) */
-    private static final double MAX_DISTANCE = 32.0D;
+    /**
+     * 레벨을 보여 주는 최대 거리(블록).
+     * 몬스터 자체가 그려지는 거리는 바닐라 엔티티 거리 설정을 따르므로, 그보다 먼 몬스터는 레벨도 보이지 않는다.
+     */
+    private static final double MAX_DISTANCE = 80.0D;
     /** 이름표 한 줄의 높이(월드 단위). 바닐라가 점수 줄 위로 이름을 올릴 때 쓰는 값과 같다. */
     private static final float LINE_HEIGHT = 9.0F * 1.15F * 0.025F;
     /** 바닐라 이름표와 같은 글자 크기와 기준점 높이 */
