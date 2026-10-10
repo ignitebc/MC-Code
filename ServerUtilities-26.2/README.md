@@ -26,8 +26,29 @@
 - 위더의 소환 준비 중 회복량만 최대 체력에 비례해 늘려 정상 소환 완료 시 600 HP가 됩니다. 전투 중 자연 회복과 기존 소환수·탈출 규칙은 유지합니다.
 - 워든을 추적하는 플레이어에게 파란색 바닐라 보스바를 표시합니다. 체력·이름을 갱신하고, 땅속으로 퇴장할 때 숨기며 사망·언로드·추적 종료·접속 종료 시 정리합니다.
 - 엔더 드래곤은 기존 화염구 발사 타이밍에 중앙 1발, 좌우 각 12도·상하 각 8도로 퍼지는 4발을 함께 발사합니다. 속도·가속도·발사 주기와 이후 행동 전환은 유지하며, 각 탄환은 바닐라 브레스 장판을 생성합니다.
-- `minecraft:max_health`의 허용 상한을 1,024 → 2,048로 확장합니다. 허용 상한은 모든 생명체에 공통이며 실제 기본 체력 변경은 위 세 보스에 한정합니다. 서버·클라이언트에 같은 버전을 설치하고 재시작해야 합니다.
+- `minecraft:max_health`의 허용 상한을 1,024 → 2,048로 확장합니다. 허용 상한은 모든 생명체에 공통이며 실제 기본 체력 변경은 위 세 보스와 [일리저 계열](#일리저-계열-체력)에 한정합니다. 서버·클라이언트에 같은 버전을 설치하고 재시작해야 합니다.
 - Jobs+의 드래곤 업적 기여도 5% 조건은 100 피해가 됩니다. 마지막일격 칭호는 기존 마지막 타격 판정을 사용합니다. HP 증가만으로 솔로 공략 불가능이 보장되는 것은 아니므로 실제 장비로 난이도를 확인해야 합니다.
+
+## 일리저 계열 체력
+
+총기 도입에 맞춰 바닐라 약탈자 계열과 illagerinvasion 몹의 기본 최대 체력을 올립니다. 일리저 계열은 좀비·스켈레톤처럼 방어구를 추첨하지 않아 체력이 유일한 방어 수단입니다. 기본 총기의 초당 피해 중앙값(몸통 명중, 재장전 제외)이 약 25로 다이아몬드 검(약 11)의 두 배를 넘어, 바닐라 체력으로는 1초 안팎에 쓰러졌습니다.
+
+| 출처 | 몹 (ID) | 이전 | 변경 |
+|---|---|--:|--:|
+| 바닐라 | 약탈자 (`pillager`), 변명자 (`vindicator`), 소환사 (`evoker`) | 24 | 36 |
+| 바닐라 | 환술사 (`illusioner`) | 32 | 48 |
+| 바닐라 | 마녀 (`witch`) | 26 | 40 |
+| 바닐라 | 파괴수 (`ravager`) | 100 | 200 |
+| illagerinvasion | 연금술사 (`alchemist`), 기록관 (`archivist`), 약탈자 (`marauder`), 도발자 (`provoker`) | 48 | 60 |
+| illagerinvasion | 파쇄병 (`basher`), 화염술사 (`firecaller`), 주술사 (`sorcerer`), 강령술사 (`necromancer`) | 64 | 80 |
+| illagerinvasion | 심문관 (`inquisitor`) | 160 | 200 |
+| illagerinvasion | 찬란한 기원자 (`invoker`) | 500 | 800 |
+
+- 바닐라 몹은 1.5배, 이미 원본의 2배인 illagerinvasion 몹은 1.25배를 기준으로 하고 파괴수(2배)와 찬란한 기원자(1.6배)는 따로 정했습니다. 마녀는 습격 외의 자연 생성 마녀에도 적용됩니다.
+- 벡스(14)와 항복한 자(28)는 여럿이 소환되고 벽을 통과하지 못하게 바꿨으므로 그대로 둡니다.
+- [보스 체력](#보스-체력과-공격)과 같이 월드에 들어올 때 기본값을 고정합니다. 구조물에 배치된 몹이나 습격 중인 몹처럼 이미 있던 개체는 남은 체력 비율을 유지하며, 재로드해도 배율이 누적되지 않습니다.
+- 몹 ID로 찾으므로 illagerinvasion 소스는 바꾸지 않았고, 없으면 바닐라 몹에만 적용합니다. 설정 `balance.illager_health.enabled`를 끄면 다음 로드부터 바닐라·모드가 등록한 기본값으로 돌아갑니다.
+- 구현: `IllagerHealthRules`(체력 비율 유지는 `BossHealthRules.applyHealth`를 함께 씀)
 
 ## 자석석 설치 제한
 
@@ -285,6 +306,7 @@ S+~F 등급과 +1~+10 강화에 더해, 도구 한 개마다 별도의 누적 EX
 | `combat.range` | `80.0` | 1~128 | 위더 탐색·철골렘 제거 범위. 플레이어 경계 상자를 각 축으로 확장하는 AABB |
 | `balance.creeper.enabled` | `true` | `true` / `false` | 크리퍼 레벨 배율을 폭발 피해·블록 파괴 범위와 화약 드롭에 적용. 끄면 모두 바닐라 |
 | `balance.vex_collision.enabled` | `true` | `true` / `false` | 벡스·항복한 자가 블록을 통과하지 않고 비행 길찾기로 뚫린 길만 따라 쫓아옴. 끄면 바닐라처럼 벽을 통과 |
+| `balance.illager_health.enabled` | `true` | `true` / `false` | 바닐라 약탈자 계열과 illagerinvasion 몹의 기본 최대 체력 상향. 끄면 다음 로드부터 등록된 기본값으로 복귀 |
 | `balance.hunger.enabled` | `true` | `true` / `false` | 행동으로 발생하는 피로도 보정 |
 | `balance.hunger.multiplier` | `1.5` | 0~100, 유한수 | 행동 피로도 배율. 자연 회복이 직접 추가하는 피로도에는 미적용 |
 | `balance.armor.enabled` | `true` | `true` / `false` | 방어도 소수점 사용과 유효 방어도 20 초과 구간의 피해 감소 곡선 |
@@ -608,6 +630,7 @@ Java 25 환경에서 모듈 폴더 안에서 실행합니다.
 | 드래곤 지역 엔더맨 습격 | `DragonEndermanRules`, 서버 틱·종료 연결, `BossMinionRules.findSpawnPosition` 공개 범위 |
 | 미궁 기원자 | `LabyrinthInvokers`, `LabyrinthInvokerMixin`. 함께 되돌릴 illagerinvasion `mobs/invoker_group` 풀 |
 | 벡스·항복한 자 비행 | `VexFlightMixin`, `VexVanillaMoveGoalMixin`, `VexPathChaseGoal`, `VexPathWanderGoal`, `VexFlightRules`, 설정 1개 |
+| 일리저 계열 체력 | `IllagerHealthRules`, 서버 시작 등록, `BossHealthRules.applyHealth` 공개 범위, 설정 1개 |
 | 거래 횟수 제한 해제 | `MerchantOffer` 거래 횟수 Mixin과 Mixin 등록, 이 문서의 해당 절 |
 | 몬스터 레벨 표시 | `monster`의 레벨 계산·동기화, 클라이언트 렌더러 Mixin 2개와 등록, TACZ의 총기 등급표·등급 연결 Mixin, 이 문서의 해당 절 |
 | 네더 몬스터 장비 | `MonsterEquipmentRules`의 네더 추첨·레벨·드롭 규칙, `MonsterEquipmentMixin`의 지급 칸 교체 방지, TACZ의 네더 총기 추첨 Mixin, Jobs+ 사용자 가이드의 무장 몬스터 안내, 이 문서의 해당 절 |
