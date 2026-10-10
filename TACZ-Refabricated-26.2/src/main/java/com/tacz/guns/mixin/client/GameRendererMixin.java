@@ -1,6 +1,7 @@
 package com.tacz.guns.mixin.client;
 
 import cn.sh1rocu.simplebedrockmodel.api.event.RenderTickEvent;
+import cn.sh1rocu.tacz.compat.iris.IrisHandPass;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.tacz.guns.api.client.event.RenderItemInHandBobEvent;
 import com.tacz.guns.api.client.event.RenderLevelBobEvent;
@@ -59,7 +60,7 @@ public abstract class GameRendererMixin {
             }
         }
 
-        if (this.tacz$renderingItemInHand) {
+        if (this.tacz$isHandPass()) {
             RenderItemInHandBobEvent.BobHurt event = new RenderItemInHandBobEvent.BobHurt();
             RenderItemInHandBobEvent.HURT.invoker().post(event);
             if (event.isCanceled()) {
@@ -76,7 +77,7 @@ public abstract class GameRendererMixin {
 
     @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
     private void tacz$bobView(CameraRenderState cameraState, PoseStack poseStack, CallbackInfo ci) {
-        if (this.tacz$renderingItemInHand) {
+        if (this.tacz$isHandPass()) {
             RenderItemInHandBobEvent.BobView event = new RenderItemInHandBobEvent.BobView();
             RenderItemInHandBobEvent.VIEW.invoker().post(event);
             if (event.isCanceled()) {
@@ -89,6 +90,13 @@ public abstract class GameRendererMixin {
                 ci.cancel();
             }
         }
+    }
+
+    @Unique
+    private boolean tacz$isHandPass() {
+        // Iris 셰이더팩은 손을 HandRenderer에서 따로 그리면서 bobHurt/bobView를 직접 호출한다.
+        // 이를 월드 흔들림으로 보면 총기 손 흔들림 취소가 빠져 조준 중 총이 출렁인다.
+        return this.tacz$renderingItemInHand || IrisHandPass.isActive();
     }
 
     @Inject(method = "render", at = @At("HEAD"))

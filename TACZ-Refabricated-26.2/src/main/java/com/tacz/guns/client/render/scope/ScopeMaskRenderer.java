@@ -1,5 +1,6 @@
 package com.tacz.guns.client.render.scope;
 
+import cn.sh1rocu.tacz.compat.iris.IrisHandPass;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
@@ -172,7 +173,17 @@ public final class ScopeMaskRenderer {
     }
 
     /**
-     * 在阶段边界把当帧登记的目镜几何画进掩码 target。
+     * Iris 셰이더팩을 쓰면 손은 Iris의 HandRenderer가 월드 렌더링 도중에 따로 그린다.
+     * 접안렌즈 형상 등록과 스코프 몸체 그리기가 모두 그 패스에서 일어나므로, 마스크도 같은 패스에서 그려야
+     * 같은 투영·모델뷰 행렬을 쓰고 몸체보다 먼저 준비된다. 바닐라 패스에서 그리면 행렬이 달라
+     * 위치가 어긋나고 한 프레임 늦어져, 렌즈가 뚫리지 않고 검게 막힌다.
+     */
+    private static boolean isHandPass() {
+        return inHandPass || IrisHandPass.isActive();
+    }
+
+    /**
+     * 단계 경계에서 이번 프레임에 등록된 접안렌즈 형상을 마스크 target에 그린다.
      *
      * <p>无论成败，末尾都会清空当帧清单 —— 见 {@code finally}。
      */
@@ -186,7 +197,7 @@ public final class ScopeMaskRenderer {
             GunMod.LOGGER.warn("[TACZ Scope] Mask enabled but no ocular geometry was registered this frame. "
                     + "Either no scope is equipped/aimed, or ocular collection is broken.");
         }
-        if (!inHandPass) {
+        if (!isHandPass()) {
             // 世界渲染那次直接跳过，且【不清空】清单 ——
             // 目镜是在手持渲染的 submit 阶段登记的，而手持渲染发生在世界之后，
             // 所以此刻清单本就是空的；真要清反而会误伤（万一顺序变了）。
