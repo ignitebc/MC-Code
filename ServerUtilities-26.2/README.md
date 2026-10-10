@@ -498,6 +498,16 @@ S+~F 등급과 +1~+10 강화에 더해, 도구 한 개마다 별도의 누적 EX
 - 64블록 안의 생존·모험 모드 플레이어 중 가장 가까운 플레이어를 고릅니다. 등 뒤 3·4·2블록 순서로, 높이를 0·1·2블록 올려 가며 위더 몸이 들어가는 빈자리를 찾습니다. 빈자리가 없으면 다음 검사 때 다시 시도합니다.
 - 자유롭게 싸우는 위더는 대상 가까이 다가가 맴돌므로 이 조건에 걸리지 않습니다.
 
+## 미궁 찬란한 기원자
+
+새로 생성되는 illagerinvasion 미궁(`illagerinvasion:labyrinth`)마다 찬란한 기원자(`illagerinvasion:invoker`)를 1~5마리 놓습니다. 마릿수마다 20%로 같은 확률이며 평균 3마리입니다.
+
+- 미궁 전체의 방 가운데 마릿수만큼 방을 골라 한 방에 한 마리씩 흩어 놓습니다. 방이 마릿수보다 적으면 앞의 방부터 한 마리씩 더 넣어 전체 마릿수를 지킵니다. 자리는 방 바닥의 엘리트 몹 연결점(생성 후 조약돌 바닥) 바로 위입니다.
+- 미궁 방은 저마다 몹을 따로 추첨해 데이터만으로는 미궁 전체의 마릿수를 맞출 수 없어, 구조물이 청크에 배치될 때 직접 고릅니다. 고르는 일은 월드 시드와 미궁 시작 청크로 정해 여러 청크에 걸친 미궁도 같은 방을 고르고, 각 기원자는 그 바닥이 들어 있는 청크가 생성될 때 한 번만 놓입니다.
+- 기존에 탑 꼭대기에 놓이던 기원자 묶음(1마리 50%·2마리 33%·3마리 17%)은 illagerinvasion의 `mobs/invoker_group` 풀을 빈 칸으로 바꿔 없앴습니다.
+- 구조물 몹처럼 생성 이유 `STRUCTURE`로 만들고 사라지지 않게 합니다. 구조물은 청크가 처음 생성될 때만 배치되므로 이미 생성된 미궁은 바뀌지 않습니다.
+- 구현: `LabyrinthInvokers`, `LabyrinthInvokerMixin`(`StructureStart.placeInChunk` 끝). illagerinvasion이 없으면 미궁이 생기지 않아 아무 일도 하지 않습니다.
+
 ## 시작 위치 분산
 
 최초 접속자가 선 자리를 기준 좌표로 월드 폴더의 `serverutilities-spawn.properties`에 저장하고, 이후 신규 접속자는 기준 좌표에서 X·Z를 각각 `±spawn.scatter.radius`(기본 5000) 안에서 균등하게 뽑은 지점에 배치합니다. Y는 뽑지 않고 바닐라 탐색이 지면 높이로 정합니다.
@@ -582,6 +592,7 @@ Java 25 환경에서 모듈 폴더 안에서 실행합니다.
 | 엔드 공허 사망 | `EndVoidDeath`, `DeathRules`의 분기·인자 추가, `ServerPlayerDeathMixin` 호출부, 설정 1개 |
 | 토템 인벤토리 발동 | `InventoryTotemMixin`, `InventoryTotems` |
 | 드래곤 지역 엔더맨 습격 | `DragonEndermanRules`, 서버 틱·종료 연결, `BossMinionRules.findSpawnPosition` 공개 범위 |
+| 미궁 기원자 | `LabyrinthInvokers`, `LabyrinthInvokerMixin`. 함께 되돌릴 illagerinvasion `mobs/invoker_group` 풀 |
 | 거래 횟수 제한 해제 | `MerchantOffer` 거래 횟수 Mixin과 Mixin 등록, 이 문서의 해당 절 |
 | 몬스터 레벨 표시 | `monster`의 레벨 계산·동기화, 클라이언트 렌더러 Mixin 2개와 등록, TACZ의 총기 등급표·등급 연결 Mixin, 이 문서의 해당 절 |
 | 네더 몬스터 장비 | `MonsterEquipmentRules`의 네더 추첨·레벨·드롭 규칙, `MonsterEquipmentMixin`의 지급 칸 교체 방지, TACZ의 네더 총기 추첨 Mixin, Jobs+ 사용자 가이드의 무장 몬스터 안내, 이 문서의 해당 절 |
