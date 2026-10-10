@@ -19,6 +19,7 @@
     "HealthAttributeLimitMixin",
     "HungerExhaustionMixin",
     "InventoryTotemMixin",
+    "LabyrinthInvokerMixin",
     "LodestonePlacementMixin",
     "LodestonePistonMixin",
     "MerchantTradeLimitMixin",
