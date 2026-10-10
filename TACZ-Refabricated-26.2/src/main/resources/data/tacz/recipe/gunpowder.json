@@ -8,8 +8,8 @@
     "minecraft:flint",
     "minecraft:sugar",
     "minecraft:sugar",
-    "minecraft:charcoal",
-    "minecraft:charcoal",
-    "minecraft:charcoal"
+    "#minecraft:coals",
+    "#minecraft:coals",
+    "#minecraft:coals"
   ]
 }
