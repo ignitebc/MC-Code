@@ -14,9 +14,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 
 /**
- * Wrapper condition used to express "tool-related" conditions.
+ * "도구 관련" 조건을 표현하는 감싸기 조건.
  *
- * <p>Historically some datapacks use a structure like:</p>
+ * <p>예전부터 일부 데이터팩은 다음과 같은 구조를 쓴다:</p>
  * <pre>
  * {
  *   "type": "arc:tool",
@@ -27,9 +27,9 @@ import net.minecraft.util.GsonHelper;
  * }
  * </pre>
  *
- * <p>This condition simply delegates to the nested condition. The nested condition is expected to
- * inspect the correct tool from {@link com.daqem.arc.api.action.data.type.ActionDataType#ITEM_STACK}
- * or fallback to the player's main hand.</p>
+ * <p>이 조건은 안쪽 조건에 그대로 넘긴다. 안쪽 조건은
+ * {@link com.daqem.arc.api.action.data.type.ActionDataType#ITEM_STACK}에서 올바른 도구를 읽거나,
+ * 없으면 플레이어의 주 손을 확인해야 한다.</p>
  */
 public class ToolCondition extends AbstractCondition {
 
@@ -83,12 +83,12 @@ public class ToolCondition extends AbstractCondition {
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, ToolCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             if (type.toolCondition == null) {
-                // Encode a dummy NOT condition with zero children would require a registered serializer;
-                // instead, we encode the actual nested condition only when present.
-                // Null should not normally occur in valid datapacks.
+                // 자식이 없는 가짜 NOT 조건을 인코딩하려면 등록된 직렬화기가 필요하므로,
+                // 실제 안쪽 조건이 있을 때만 그것을 인코딩한다.
+                // 올바른 데이터팩에서는 null이 나오지 않는다.
                 throw new IllegalStateException("ToolCondition.toolCondition is null");
             }
-            // For nested conditions, Arc uses the condition type id as the "location" discriminator.
+            // 안쪽 조건은 조건 종류 ID를 "location" 구분자로 쓴다.
             IConditionSerializer.toNetwork(type.toolCondition, friendlyByteBuf, type.toolCondition.getType().getLocation());
         }
     }

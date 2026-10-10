@@ -33,11 +33,11 @@ public class ScrollItemComponent extends SpriteComponent {
         this.addComponent(descriptionText);
 
         this.setHeight(
-                PADDING + // Top padding
-                lineHeight + // Name height
-                TEXT_SPACING + // Spacing between name and description
-                descriptionText.getLines().size() * lineHeight + // Description height
-                PADDING // Bottom padding
+                PADDING + // 위쪽 여백
+                lineHeight + // 이름 높이
+                TEXT_SPACING + // 이름과 설명 사이 간격
+                descriptionText.getLines().size() * lineHeight + // 설명 높이
+                PADDING // 아래쪽 여백
         );
     }
 

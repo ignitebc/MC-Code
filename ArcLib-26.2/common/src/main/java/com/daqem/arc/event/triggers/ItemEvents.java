@@ -25,10 +25,10 @@ public class ItemEvents {
     }
 
     /**
-     * Called when a player uses an item.
+     * 플레이어가 아이템을 사용할 때 호출된다.
      *
-     * @param player   - The player that used the item.
-     * @param usedItem - The item that was used.
+     * @param player   - 아이템을 사용한 플레이어
+     * @param usedItem - 사용한 아이템
      */
     public static void onUseItem(ArcServerPlayer player, Item usedItem) {
         new ActionDataBuilder(player, ActionType.USE_ITEM)

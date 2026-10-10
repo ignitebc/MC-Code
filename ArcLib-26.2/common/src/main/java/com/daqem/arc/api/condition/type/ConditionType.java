@@ -52,7 +52,7 @@ public interface ConditionType<T extends ICondition> extends IConditionType<T> {
     ConditionType<ItemCondition> ITEM = register(Arc.getId("item"), new ItemCondition.Serializer());
     ConditionType<ItemsCondition> ITEMS = register(Arc.getId("items"), new ItemsCondition.Serializer());
 
-    // Tool / enchantment related
+    // 도구·마법 부여 관련
     ConditionType<EnchantmentsCondition> ENCHANTMENTS = register(Arc.getId("enchantments"), new EnchantmentsCondition.Serializer());
     ConditionType<ToolCondition> TOOL = register(Arc.getId("tool"), new ToolCondition.Serializer());
 

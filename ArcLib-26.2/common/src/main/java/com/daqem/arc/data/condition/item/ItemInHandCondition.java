@@ -37,12 +37,12 @@ public class ItemInHandCondition extends AbstractCondition {
         Item targetItem = getItemStack().getItem();
 
         if (hand == null) {
-            // Check both hands when no specific hand is defined
+            // 손을 지정하지 않았으면 양손을 모두 확인한다
             return player.getMainHandItem().getItem() == targetItem
                     || player.getOffhandItem().getItem() == targetItem;
         }
 
-        // Check only the specified hand
+        // 지정한 손만 확인한다
         return player.getItemInHand(hand).getItem() == targetItem;
     }
 

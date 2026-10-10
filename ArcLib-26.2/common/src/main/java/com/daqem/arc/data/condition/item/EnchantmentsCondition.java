@@ -27,9 +27,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Checks whether the tool used for an action has the required enchantments.
+ * 액션에 쓴 도구에 필요한 마법 부여가 있는지 확인한다.
  *
- * JSON format example:
+ * JSON 형식 예:
  * {
  *   "type": "arc:enchantments",
  *   "enchantments": {
@@ -37,13 +37,13 @@ import java.util.Optional;
  *   }
  * }
  *
- * ArcLib 26.2 target notes:
- * - Do NOT use RegistryAccess#registry(...) / registryOrThrow(...): not available here.
- * - Use RegistryAccess#lookupOrThrow(...) (already used in BlocksCondition / ItemsCondition in ArcLib).
+ * ArcLib 26.2 대상 참고:
+ * - RegistryAccess#registry(...) / registryOrThrow(...)는 여기서 쓸 수 없으므로 쓰지 않는다.
+ * - RegistryAccess#lookupOrThrow(...)를 쓴다(ArcLib의 BlocksCondition / ItemsCondition도 이미 쓰고 있다).
  */
 public class EnchantmentsCondition extends AbstractCondition {
 
-    /** key=enchantment id, value=range */
+    /** 키=마법 부여 ID, 값=범위 */
     private final Map<Identifier, IntRange> enchantments;
 
     public EnchantmentsCondition(boolean inverted, Map<Identifier, IntRange> enchantments) {
@@ -57,7 +57,7 @@ public class EnchantmentsCondition extends AbstractCondition {
             return true;
         }
 
-        // Prefer explicit ITEM_STACK (trigger should provide it). Fallback to player's main hand.
+        // 명시된 ITEM_STACK을 우선한다(트리거가 넘겨줘야 한다). 없으면 플레이어의 주 손을 쓴다.
         ItemStack stack = actionData.getData(ActionDataType.ITEM_STACK);
         if (stack == null) {
             stack = actionData.getPlayer().arc$getPlayer().getMainHandItem();
@@ -66,10 +66,10 @@ public class EnchantmentsCondition extends AbstractCondition {
             return false;
         }
 
-        // World is stored in ActionData as ActionDataType.WORLD (there is no actionData.getWorld()).
+        // 월드는 ActionData에 ActionDataType.WORLD로 들어 있다(actionData.getWorld()는 없다).
         Level world = actionData.getData(ActionDataType.WORLD);
         if (world == null) {
-            // Fallback: player's current world
+            // 없으면 플레이어가 있는 월드를 쓴다
             world = actionData.getPlayer().arc$getPlayer().level();
         }
         if (world == null) {
@@ -85,7 +85,7 @@ public class EnchantmentsCondition extends AbstractCondition {
 
             ResourceKey<Enchantment> enchKey = ResourceKey.create(Registries.ENCHANTMENT, enchId);
 
-            // HolderLookup#get(ResourceKey) -> Optional<Holder.Reference<Enchantment>> in this mapping
+            // 이 매핑에서 HolderLookup#get(ResourceKey)는 Optional<Holder.Reference<Enchantment>>를 돌려준다
             Optional<Holder.Reference<Enchantment>> holderOpt = enchantLookup.get(enchKey);
             if (holderOpt.isEmpty()) {
                 return false;

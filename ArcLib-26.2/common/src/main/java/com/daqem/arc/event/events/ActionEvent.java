@@ -36,29 +36,29 @@ public interface ActionEvent {
 
     interface BeforeAction {
         /**
-         * Invoked before an action is sent.
+         * 액션을 보내기 전에 호출된다.
          *
-         * @return The event result.
+         * @return 이벤트 결과
          */
         EventResult registerBeforeAction(ActionData actionData);
     }
 
     interface BeforeRewards {
         /**
-         * Invoked before rewards are given.
+         * 보상을 주기 전에 호출된다.
          *
-         * @param actionData The action data.
-         * @return The event result.
+         * @param actionData 액션 데이터
+         * @return 이벤트 결과
          */
         EventResult registerBeforeRewards(ActionData actionData);
     }
 
     interface BeforeConditions {
         /**
-         * Invoked before conditions are checked.
+         * 조건을 확인하기 전에 호출된다.
          *
-         * @param actionData The action data.
-         * @return The event result.
+         * @param actionData 액션 데이터
+         * @return 이벤트 결과
          */
         EventResult registerBeforeConditions(ActionData actionData);
     }

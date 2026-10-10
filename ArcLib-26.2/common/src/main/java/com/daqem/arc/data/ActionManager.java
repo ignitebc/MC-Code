@@ -70,12 +70,12 @@ public class ActionManager extends SimplePreparableReloadListener<List<IAction>>
     }
 
     /**
-     * Parses a JSON object and returns the corresponding IAction instance.
+     * JSON 객체를 해석해 해당하는 IAction 인스턴스를 돌려준다.
      *
-     * @param location the resource location of the IAction
-     * @param jsonObject the JSON object representing the IAction
-     * @return the parsed IAction instance
-     * @throws JsonSyntaxException if the JSON object is invalid or if the action type is unsupported
+     * @param location IAction의 리소스 위치
+     * @param jsonObject IAction을 나타내는 JSON 객체
+     * @return 해석한 IAction 인스턴스
+     * @throws JsonSyntaxException JSON 객체가 잘못되었거나 지원하지 않는 액션 종류일 때
      */
     public static IAction fromJson(Identifier location, JsonObject jsonObject) {
         String type = GsonHelper.getAsString(jsonObject, "type");

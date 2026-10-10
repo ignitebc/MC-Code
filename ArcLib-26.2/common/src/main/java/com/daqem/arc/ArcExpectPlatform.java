@@ -9,13 +9,13 @@ public class ArcExpectPlatform {
 
     @ExpectPlatform
     public static Path getConfigDirectory() {
-        // Just throw an error, the content should get replaced at runtime.
+        // 오류만 던진다. 실행 시 실제 구현으로 바뀐다.
         throw new AssertionError();
     }
 
     @ExpectPlatform
     public static ActionManager getActionManager() {
-        // Just throw an error, the content should get replaced at runtime.
+        // 오류만 던진다. 실행 시 실제 구현으로 바뀐다.
         throw new AssertionError();
     }
 }

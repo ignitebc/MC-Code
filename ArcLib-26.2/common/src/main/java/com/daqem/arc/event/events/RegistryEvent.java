@@ -4,7 +4,7 @@ import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 
 /**
- * The RegistryEvent interface defines a set of events related to registering different types within a registry.
+ * 레지스트리에 여러 종류를 등록할 때 쓰는 이벤트 모음.
  */
 public interface RegistryEvent {
 
@@ -27,28 +27,28 @@ public interface RegistryEvent {
 
     interface RegisterActionType {
         /**
-         * Invoked when registering an action type.
+         * 액션 종류를 등록할 때 호출된다.
          */
         void registerActionType();
     }
 
     interface RegisterRewardType {
         /**
-         * Invoked when registering a reward type.
+         * 보상 종류를 등록할 때 호출된다.
          */
         void registerRewardType();
     }
 
     interface RegisterConditionType {
         /**
-         * Invoked when registering a condition type.
+         * 조건 종류를 등록할 때 호출된다.
          */
         void registerConditionType();
     }
 
     interface RegisterActionHolderType {
         /**
-         * Invoked when registering an action holder type.
+         * 액션 홀더 종류를 등록할 때 호출된다.
          */
         void registerActionHolderType();
     }

@@ -53,8 +53,8 @@ public class ElementConverter<T> {
             return type;
         }
 
-        // If not found in the registry, it will return the default value for the type.
-        // This checks if the element is actually in the registry.
+        // 레지스트리에 없으면 그 종류의 기본값을 돌려준다.
+        // 요소가 실제로 레지스트리에 있는지 확인한다.
         else if (type == registry.get(Identifier.parse("x")) || type == null) {
             throw new IllegalArgumentException(element + " could not be found in registry " + registry.key().identifier());
         }

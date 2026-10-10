@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 public class ArcExpectPlatformImpl {
     /**
-     * This is our actual method to {@link ArcExpectPlatform#getConfigDirectory()}.
+     * {@link ArcExpectPlatform#getConfigDirectory()}의 실제 구현.
      */
     public static Path getConfigDirectory() {
         return FabricLoader.getInstance().getConfigDir();

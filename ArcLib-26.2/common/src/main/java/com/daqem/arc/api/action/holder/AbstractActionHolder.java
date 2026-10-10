@@ -12,7 +12,7 @@ import java.util.Map;
 public abstract class AbstractActionHolder implements IActionHolder {
 
     protected final Identifier location;
-    // Made this a maps, so we don't get duplicate actions.
+    // 같은 액션이 중복되지 않도록 맵으로 만들었다.
     protected final Map<Identifier, IAction> actions = new HashMap<>();
 
     public AbstractActionHolder(Identifier location) {

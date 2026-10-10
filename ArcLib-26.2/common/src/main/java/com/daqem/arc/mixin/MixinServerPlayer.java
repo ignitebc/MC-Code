@@ -631,8 +631,8 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
             this.arc$blockPosCache = arcServerPlayer.arc$getBlockPosCache();
             this.arc$skillNotificationsEnabled = arcServerPlayer.arc$isSkillNotificationsEnabled();
 
-            // A respawned player has a new movement counter. Keeping the old baseline makes
-            // walking stop until the new counter catches up and can add negative sprint distance.
+            // 부활한 플레이어는 이동 카운터가 새로 시작된다. 예전 기준값을 그대로 두면
+            // 새 카운터가 따라잡을 때까지 걷기 기록이 멈추고 달리기 거리가 음수로 더해질 수 있다.
             this.arc$isSwimming = false;
             this.arc$isWalking = false;
             this.arc$walkingDistance = this.moveDist;
