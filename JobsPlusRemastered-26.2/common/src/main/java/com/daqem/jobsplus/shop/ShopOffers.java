@@ -87,6 +87,9 @@ public final class ShopOffers
         offers.add(new ShopOffer(Identifier.parse("minecraft:granite"), 128, Identifier.parse("minecraft:emerald"), 1));
         offers.add(new ShopOffer(Identifier.parse("minecraft:diorite"), 128, Identifier.parse("minecraft:emerald"), 1));
         offers.add(new ShopOffer(Identifier.parse("minecraft:andesite"), 128, Identifier.parse("minecraft:emerald"), 1));
+
+        // 에메랄드가 아닌 자원으로 바꾸는 교환
+        offers.add(new ShopOffer(Identifier.parse("minecraft:smooth_stone"), 500, Identifier.parse("minecraft:copper_ingot"), 64));
         return offers;
     }
 }
