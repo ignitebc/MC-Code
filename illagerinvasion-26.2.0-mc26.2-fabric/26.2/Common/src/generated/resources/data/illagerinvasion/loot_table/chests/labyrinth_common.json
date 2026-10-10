@@ -152,7 +152,7 @@
           "type": "minecraft:loot_table",
           "conditions": [
             {
-              "chance": 0.15,
+              "chance": 0.2,
               "condition": "minecraft:random_chance"
             }
           ],
@@ -173,7 +173,7 @@
           "type": "minecraft:loot_table",
           "conditions": [
             {
-              "chance": 0.05,
+              "chance": 0.08,
               "condition": "minecraft:random_chance"
             }
           ],

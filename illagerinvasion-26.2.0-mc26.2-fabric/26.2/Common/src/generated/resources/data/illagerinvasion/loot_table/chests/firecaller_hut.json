@@ -138,7 +138,7 @@
           "type": "minecraft:loot_table",
           "conditions": [
             {
-              "chance": 0.4,
+              "chance": 0.45,
               "condition": "minecraft:random_chance"
             }
           ],
@@ -163,7 +163,7 @@
           "type": "minecraft:loot_table",
           "conditions": [
             {
-              "chance": 0.08,
+              "chance": 0.1,
               "condition": "minecraft:random_chance"
             }
           ],
@@ -184,7 +184,7 @@
           "type": "minecraft:loot_table",
           "conditions": [
             {
-              "chance": 0.2,
+              "chance": 0.24,
               "condition": "minecraft:random_chance"
             }
           ],
@@ -205,7 +205,7 @@
           "type": "minecraft:loot_table",
           "conditions": [
             {
-              "chance": 0.1,
+              "chance": 0.12,
               "condition": "minecraft:random_chance"
             }
           ],
@@ -226,7 +226,7 @@
           "type": "minecraft:loot_table",
           "conditions": [
             {
-              "chance": 0.05,
+              "chance": 0.06,
               "condition": "minecraft:random_chance"
             }
           ],
@@ -247,7 +247,7 @@
           "type": "minecraft:loot_table",
           "conditions": [
             {
-              "chance": 0.03,
+              "chance": 0.04,
               "condition": "minecraft:random_chance"
             }
           ],
