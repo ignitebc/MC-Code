@@ -1,11 +1,11 @@
--- 脚本的位置是 "{命名空间}:{路径}"，那么 require 的格式为 "{命名空间}_{路径}"
--- 注意！require 取得的内容不应该被修改，应仅调用
+-- 스크립트 위치가 "{네임스페이스}:{경로}"이면 require 형식은 "{네임스페이스}_{경로}"다
+-- 주의! require로 얻은 내용은 고치지 말고 호출만 해야 한다
 local default = require("tacz_default_state_machine")
 local GUN_KICK_TRACK_LINE = default.GUN_KICK_TRACK_LINE
 
 local function isEaster()
     local flag = math.random(1, 1000)
-    -- 改下面一行的数字决定概率，概率是千分之 x
+    -- 아래 줄의 숫자를 바꿔 확률을 정한다. 확률은 천분의 x다
     if (flag <= 100) then
         return true,
         print('eastertrue')
@@ -41,14 +41,14 @@ function handle_state.update(this, context)
 end
 
 
--- 用元表的方式继承默认状态机的属性
+-- 메타테이블 방식으로 기본 상태 기계의 속성을 상속한다
 local M = setmetatable({
     handle_state = handle_state
 }, {__index = default})
 function M:initialize(context)
     default.initialize(self, context)
 end
--- 继承默认状态机需要重新初始化状态
+-- 기본 상태 기계를 상속하면 상태를 다시 초기화해야 한다
 function M:states()
     return {
         self.handle_state,
@@ -62,5 +62,5 @@ function M:states()
         self.slide_states.normal
     }
 end
--- 导出状态机
+-- 상태 기계 내보내기
 return M

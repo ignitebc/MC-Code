@@ -1,20 +1,20 @@
--- 定义逻辑机，定式
+-- 논리 기계 정의. 정해진 형식
 local M = {}
 
--- 当开始换弹的时候会调用一次
+-- 재장전을 시작할 때 한 번 호출된다
 function M.start_reload(api)
     return true
 end
 
--- 这是个 lua 函数，用来从枪 data 文件里获取装弹相关的动画时间点，由于 lua 内的时间是毫秒，所以要和 1000 做乘算
+-- 총 data 파일에서 장전 관련 애니메이션 시점을 가져오는 lua 함수다. lua 안의 시간은 밀리초라서 1000을 곱해야 한다
 local function getReloadTimingFromParam(param)
     local reload_feed = {param.reload_feed, param.reload_xmag_1_feed, param.reload_xmag_2_feed, param.reload_xmag_3_feed}
     local reload_cooldown = {param.reload_cooldown, param.reload_xmag_1_cooldown, param.reload_xmag_2_cooldown, param.reload_xmag_3_cooldown}
     local empty_feed = {param.empty_feed, param.empty_xmag_1_feed, param.empty_xmag_2_feed, param.empty_xmag_3_feed}
     local empty_cooldown = {param.empty_cooldown, param.empty_xmag_1_cooldown, param.empty_xmag_2_cooldown, param.empty_xmag_3_cooldown}
     for i = 1, 4 do
-        -- 将 param 中的时间点转换为毫秒
-        -- 如果有nil直接返回nil
+        -- param의 시점을 밀리초로 바꾼다
+        -- nil이 있으면 바로 nil을 돌려준다
         if (reload_feed[i] == nil or reload_cooldown[i] == nil or empty_feed[i] == nil or empty_cooldown[i] == nil) then
             return nil, nil, nil, nil
         end
@@ -24,26 +24,26 @@ local function getReloadTimingFromParam(param)
         empty_cooldown[i] = empty_cooldown[i] * 1000
     end
 
-    -- 顺序返回获取到的这 4 个数组
+    -- 가져온 배열 4개를 차례로 돌려준다
     return reload_feed, reload_cooldown, empty_feed, empty_cooldown
 end
 
--- 判断这个状态是否是空仓换弹过程中的其中一个阶段。包括空仓换弹的收尾阶段
+-- 이 상태가 빈 탄창 재장전 과정의 한 단계인지 판단한다. 빈 탄창 재장전의 마무리 단계도 포함한다
 local function isReloadingEmpty(stateType)
     return stateType == EMPTY_RELOAD_FEEDING or stateType == EMPTY_RELOAD_FINISHING
 end
 
--- 判断这个状态是否是战术换弹过程中的其中一个阶段。包括战术换弹的收尾阶段
+-- 이 상태가 전술 재장전 과정의 한 단계인지 판단한다. 전술 재장전의 마무리 단계도 포함한다
 local function isReloadingTactical(stateType)
     return stateType == TACTICAL_RELOAD_FEEDING or stateType == TACTICAL_RELOAD_FINISHING
 end
 
--- 判断这个状态是否是任意换弹过程中的其中一个阶段。包括任意换弹的收尾阶段
+-- 이 상태가 어떤 재장전 과정의 한 단계인지 판단한다. 모든 재장전의 마무리 단계도 포함한다
 local function isReloading(stateType)
     return isReloadingEmpty(stateType) or isReloadingTactical(stateType)
 end
 
--- 判断这个状态是否是任意换弹过程中的的收尾阶段
+-- 이 상태가 어떤 재장전 과정의 마무리 단계인지 판단한다
 local function isReloadFinishing(stateType)
     return stateType == EMPTY_RELOAD_FINISHING or stateType == TACTICAL_RELOAD_FINISHING
 end
@@ -51,10 +51,10 @@ end
 local function finishReload(api, is_tactical)
     local needAmmoCount = api:getNeededAmmoAmount();
     if (api:isReloadingNeedConsumeAmmo()) then
-        -- 需要消耗弹药（生存或冒险）的话就消耗换弹所需的弹药并将消耗的数量装填进弹匣
+        -- 탄약을 소모해야 하면(서바이벌이나 모험) 재장전에 필요한 탄약을 소모하고 소모한 수만큼 탄창에 채운다
         api:putAmmoInMagazine(api:consumeAmmoFromPlayer(needAmmoCount))
     else
-        -- 不需要消耗弹药（创造）的话就直接把弹匣塞满
+        -- 탄약을 소모하지 않아도 되면(크리에이티브) 탄창을 바로 가득 채운다
         api:putAmmoInMagazine(needAmmoCount)
     end
     if not is_tactical then
@@ -66,23 +66,23 @@ local function finishReload(api, is_tactical)
 end
 
 function M.tick_reload(api)
-    -- 从枪 data 文件中获取所有需要传入逻辑机的参数，注意此时的 param 是个列表，还不能直接拿来用
+    -- 총 data 파일에서 논리 기계에 넘길 매개변수를 모두 가져온다. 이때 param은 목록이라 아직 바로 쓸 수 없다
     local param = api:getScriptParams();
-    -- 调用刚才的 lua 函数，把 param 里包含的八个参数依次赋值给我们新定义的变量
+    -- 방금 만든 lua 함수를 호출해 param에 든 매개변수 여덟 개를 새로 정의한 변수에 차례로 넣는다
     local reload_feed, reload_cooldown, empty_feed, empty_cooldown = getReloadTimingFromParam(param)
-    -- 照例检查是否有参数缺失
+    -- 늘 하던 대로 빠진 매개변수가 있는지 확인한다
     if (reload_feed == nil or reload_cooldown == nil or empty_feed == nil or empty_cooldown == nil) then
         return NOT_RELOADING, -1
     end
 
-    -- 获取当前弹匣等级，我们假设最多 3 级
+    -- 현재 탄창 등급을 가져온다. 최대 3등급이라고 가정한다
     local mag_level = math.min(api:getMagExtentLevel(), 3) + 1
 
     local countDown = -1
     local stateType = NOT_RELOADING
     local oldStateType = api:getReloadStateType()
 
-    -- 获取换弹时间，在玩家按下 R 的一瞬间作为零点，单位是毫秒。假设玩家在一秒前按下了 R ，那么此时这个时间就是 1000
+    -- 재장전 시간을 가져온다. 플레이어가 R을 누른 순간이 0이며 단위는 밀리초다. 플레이어가 1초 전에 R을 눌렀다면 지금 이 시간은 1000이다
     local progressTime = api:getReloadTime()
 
     if isReloadingEmpty(oldStateType) then
@@ -127,5 +127,5 @@ function M.tick_reload(api)
     return stateType, countDown
 end
 
--- 向模组返回整个逻辑机，定式
+-- 모드에 논리 기계 전체를 돌려준다. 정해진 형식
 return M

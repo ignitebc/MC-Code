@@ -1,5 +1,5 @@
--- 脚本的位置是 "{命名空间}:{路径}"，那么 require 的格式为 "{命名空间}_{路径}"
--- 注意！require 取得的内容不应该被修改，应仅调用
+-- 스크립트 위치가 "{네임스페이스}:{경로}"이면 require 형식은 "{네임스페이스}_{경로}"다
+-- 주의! require로 얻은 내용은 고치지 말고 호출만 해야 한다
 local default = require("tacz_default_state_machine")
 local STATIC_TRACK_LINE = default.STATIC_TRACK_LINE
 local MAIN_TRACK = default.MAIN_TRACK
@@ -10,7 +10,7 @@ local inspect_state = setmetatable({}, {__index = main_track_states.inspect})
 local idle_state = setmetatable({}, {__index = main_track_states.idle})
 
 
--- 相当于 obj.value++
+-- obj.value++와 같다
 local function increment(obj)
     obj.value = obj.value + 1
     return obj.value - 1
@@ -19,19 +19,19 @@ end
 local FIRE_MODE_TRACK = increment(static_track_top)
 local SWITCH_MODE_TRACK = increment(static_track_top)
 
--- 检查当前是否还有弹药
+-- 지금 탄약이 남아 있는지 확인한다
 local function isNoAmmo(context)
-    -- 这里同时检查了枪管和弹匣
+    -- 여기서 총열과 탄창을 함께 확인했다
     return (not context:hasBulletInBarrel()) and (context:getAmmoCount() <= 0)
 end
 
 local function runReloadAnimation(context)
-    -- 此处获取的轨道是位于主轨道行上的主轨道
+    -- 여기서 얻는 트랙은 주 트랙 줄에 있는 주 트랙이다
     local track = context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)
     local ext = context:getMagExtentLevel()
-    -- 根据当前整枪内是否还有弹药决定是播放战术换弹还是空枪换弹
+    -- 지금 총 전체에 탄약이 남아 있는지에 따라 전술 재장전을 재생할지 빈 탄창 재장전을 재생할지 정한다
     if (isNoAmmo(context)) then
-        -- "ext"表示扩容插件等级,"0"代表不装扩容插件
+        -- "ext"는 확장 부품 등급이며, "0"은 확장 부품을 달지 않았다는 뜻이다
         if (ext == 0) then
             context:runAnimation("reload_empty", track, false, PLAY_ONCE_STOP, 0.2)
         elseif (ext == 1) then
@@ -59,12 +59,12 @@ local function runReloadAnimation(context)
 end
 
 local function runInspectAnimation(context)
-    -- 此处获取的轨道是位于主轨道行上的主轨道
+    -- 여기서 얻는 트랙은 주 트랙 줄에 있는 주 트랙이다
     local track = context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)
     local ext = context:getMagExtentLevel()
-    -- 根据当前整枪内是否还有弹药决定是播放普通检视还是空枪检视
+    -- 지금 총 전체에 탄약이 남아 있는지에 따라 일반 점검을 재생할지 빈 탄창 점검을 재생할지 정한다
     if (isNoAmmo(context)) then
-        -- "ext"表示扩容插件等级,"0"代表不装扩容插件
+        -- "ext"는 확장 부품 등급이며, "0"은 확장 부품을 달지 않았다는 뜻이다
         if (ext == 0) then
             context:runAnimation("inspect_empty", track, false, PLAY_ONCE_STOP, 0.2)
         elseif (ext == 1) then
@@ -98,15 +98,15 @@ function idle_state.transition(this, context, input)
     end
     if (input == INPUT_PUT_AWAY) then
         local put_away_time = context:getPutAwayTime()
-        -- 此处获取的轨道是位于主轨道行上的主轨道
+        -- 여기서 얻는 트랙은 주 트랙 줄에 있는 주 트랙이다
         local track = context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)
-        -- 停下切换模式动画
+        -- 모드 전환 애니메이션을 멈춘다
         context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, SWITCH_MODE_TRACK))
-        -- 播放 put_away 动画,并且将其过渡时长设为从上下文里传入的 put_away_time * 0.75
+        -- put_away 애니메이션을 재생하고, 전환 시간을 문맥에서 넘어온 put_away_time * 0.75로 둔다
         context:runAnimation("put_away", track, false, PLAY_ONCE_HOLD, put_away_time * 0.75)
-        -- 设定动画进度为最后一帧
+        -- 애니메이션 진행도를 마지막 프레임으로 둔다
         context:setAnimationProgress(track, 1, true)
-        -- 将动画进度向前拨动 {put_away_time}
+        -- 애니메이션 진행도를 {put_away_time}만큼 앞으로 돌린다
         context:adjustAnimationProgress(track, -put_away_time, false)
         return this.main_track_states.final
     end
@@ -117,16 +117,16 @@ function idle_state.transition(this, context, input)
     return main_track_states.idle.transition(this, context, input)
 end
 
--- 此处为开火模式轨道的状态,专门为快慢机动画服务,兼容其他动作,可按需求添加三种射击模式(semi、burst、auto)
+-- 여기는 발사 방식 트랙의 상태이며 조정간 애니메이션 전용이다. 다른 동작과 호환되며 필요하면 세 가지 사격 방식(semi, burst, auto)을 넣을 수 있다
 local fire_mode_state = {
-    -- 半自动状态
+    -- 반자동 상태
     semi = {},
-    -- 全自动状态
+    -- 자동 상태
     auto = {},
-    -- 掏枪状态
+    -- 총 꺼내기 상태
     draw = {}
 }
--- 这一块专门用来检测枪械在掏枪(播放draw)时枪械处于什么射击模式,并切换到对应模式的idle
+-- 이 부분은 총을 꺼낼 때(draw 재생) 총이 어떤 사격 방식인지 확인해 그 방식의 idle로 바꾸는 데만 쓴다
 function fire_mode_state.draw.update(this, context)
     context:trigger(this.INPUT_MODE_DRAW)
 end
@@ -142,25 +142,25 @@ function fire_mode_state.draw.transition(this, context,input)
         end
     end
 end
--- 注意!后面关于每个开火模式对应状态之间的切换,需要按照data里填写的顺序进行转换
+-- 주의! 뒤에 나오는 발사 방식별 상태 사이의 전환은 data에 적은 순서대로 해야 한다
 function fire_mode_state.semi.update(this, context)
-    -- 当进入特定开火模式的状态时,挂起动画
+    -- 특정 발사 방식 상태에 들어가면 애니메이션을 걸어 둔다
     local track = context:getTrack(STATIC_TRACK_LINE, FIRE_MODE_TRACK)
     if (context:isHolding(track)) then
         context:runAnimation("static_semi", track, true, PLAY_ONCE_HOLD, 0)
     end
-    -- 为特定开火模式定义输入状态
+    -- 특정 발사 방식의 입력 상태를 정의한다
     if (context:getFireMode() == AUTO) then
         context:trigger(this.INPUT_MODE_AUTO)
     end
 end
--- 当检测到对应输入状态时播放对应快慢机动画
+-- 해당 입력 상태를 감지하면 해당 조정간 애니메이션을 재생한다
 function fire_mode_state.semi.transition(this, context,input)
     if(input == this.INPUT_MODE_AUTO)then
         context:runAnimation("switch_auto", context:getTrack(STATIC_TRACK_LINE, SWITCH_MODE_TRACK), false, PLAY_ONCE_STOP, 0)
         return fire_mode_state.auto
     end
--- 检测到开火输入,换弹输入,检视输入时后停止播放动画,不然会出现两个动画在不同的轨道播放,从而出现动画衔接问题
+-- 발사 입력, 재장전 입력, 점검 입력을 감지하면 애니메이션 재생을 멈춘다. 아니면 두 애니메이션이 서로 다른 트랙에서 재생되어 애니메이션 이음 문제가 생긴다
     if(input == INPUT_SHOOT)then
         context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, SWITCH_MODE_TRACK))
     end
@@ -171,7 +171,7 @@ function fire_mode_state.semi.transition(this, context,input)
         context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, SWITCH_MODE_TRACK))
     end
 end
--- 和上面同理
+-- 위와 같은 이유다
 function fire_mode_state.auto.update(this, context)
     local track = context:getTrack(STATIC_TRACK_LINE, FIRE_MODE_TRACK)
     if (context:isHolding(track)) then
@@ -199,7 +199,7 @@ function fire_mode_state.auto.transition(this, context,input)
     end
 end
 
--- 当检测到开火模式切换输入时应该直接停止动画并返回闲置态
+-- 발사 방식 전환 입력을 감지하면 바로 애니메이션을 멈추고 대기 상태로 돌아가야 한다
 function inspect_state.transition(this, context, input)
     if (input == INPUT_FIRE_SELECT) then
         context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))
@@ -209,7 +209,7 @@ function inspect_state.transition(this, context, input)
 end
 
 
--- 用元表的方式继承默认状态机的属性
+-- 메타테이블 방식으로 기본 상태 기계의 속성을 상속한다
 local M = setmetatable({
     main_track_states = setmetatable({
         idle = idle_state,
@@ -226,7 +226,7 @@ local M = setmetatable({
 function M:initialize(context)
     default.initialize(self, context)
 end
--- 继承默认状态机需要重新初始化状态
+-- 기본 상태 기계를 상속하면 상태를 다시 초기화해야 한다
 function M:states()
     return {
         self.base_track_state,
@@ -239,5 +239,5 @@ function M:states()
         self.fire_mode_state.draw
     }
 end
--- 导出状态机
+-- 상태 기계 내보내기
 return M

@@ -1,5 +1,5 @@
--- 脚本的位置是 "{命名空间}:{路径}"，那么 require 的格式为 "{命名空间}_{路径}"
--- 注意！require 取得的内容不应该被修改，应仅调用
+-- 스크립트 위치가 "{네임스페이스}:{경로}"이면 require 형식은 "{네임스페이스}_{경로}"다
+-- 주의! require로 얻은 내용은 고치지 말고 호출만 해야 한다
 local default = require("tacz_default_state_machine")
 local STATIC_TRACK_LINE = default.STATIC_TRACK_LINE
 local BLENDING_TRACK_LINE = default.BLENDING_TRACK_LINE
@@ -15,37 +15,37 @@ local normal_state = setmetatable({}, {__index = bolt_caught_states.normal})
 
 local function isEaster()
     local flag = math.random(1, 1000)
-    -- 改下面一行的数字决定概率，概率是千分之 x
+    -- 아래 줄의 숫자를 바꿔 확률을 정한다. 확률은 천분의 x다
     if (flag <= 20) then
         return true
     end
     return false
 end
 
--- 播放丢枪动画的方法
+-- 총 버리기 애니메이션 재생 메서드
 local function runPutAwayAnimation(context)
     local put_away_time = context:getPutAwayTime()
-    -- 此处获取的轨道是位于主轨道行上的主轨道
+    -- 여기서 얻는 트랙은 주 트랙 줄에 있는 주 트랙이다
     local track = context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)
-    -- 播放 put_away 动画,并且将其过渡时长设为从上下文里传入的 put_away_time * 0.75
+    -- put_away 애니메이션을 재생하고, 전환 시간을 문맥에서 넘어온 put_away_time * 0.75로 둔다
     context:runAnimation("put_away", track, false, PLAY_ONCE_HOLD, put_away_time * 0.75)
-    -- 设定动画进度为最后一帧
+    -- 애니메이션 진행도를 마지막 프레임으로 둔다
     context:setAnimationProgress(track, 1, true)
-    -- 将动画进度向前拨动 {put_away_time}
+    -- 애니메이션 진행도를 {put_away_time}만큼 앞으로 돌린다
     context:adjustAnimationProgress(track, -put_away_time, false)
 end
 
--- 检查当前是否还有弹药
+-- 지금 탄약이 남아 있는지 확인한다
 local function isNoAmmo(context)
-    -- 这里同时检查了枪管和弹匣
+    -- 여기서 총열과 탄창을 함께 확인했다
     return (not context:hasBulletInBarrel()) and (context:getAmmoCount() <= 0)
 end
 
--- 播放检视动画的方法
+-- 점검 애니메이션 재생 메서드
 local function runInspectAnimation(context)
-    -- 此处获取的轨道是位于主轨道行上的主轨道
+    -- 여기서 얻는 트랙은 주 트랙 줄에 있는 주 트랙이다
     local track = context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)
-    -- 根据当前整枪内是否还有弹药决定是播放普通检视还是空枪检视
+    -- 지금 총 전체에 탄약이 남아 있는지에 따라 일반 점검을 재생할지 빈 탄창 점검을 재생할지 정한다
     if (isNoAmmo(context)) then
         context:runAnimation("inspect_empty", track, false, PLAY_ONCE_STOP, 0.2)
     else
@@ -53,11 +53,11 @@ local function runInspectAnimation(context)
     end
 end
 
--- 播放换弹动画的方法
+-- 재장전 애니메이션 재생 메서드
 local function runReloadAnimation(context)
-    -- 此处获取的轨道是位于主轨道行上的主轨道
+    -- 여기서 얻는 트랙은 주 트랙 줄에 있는 주 트랙이다
     local track = context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)
-    -- 根据当前整枪内是否还有弹药决定是播放战术换弹还是空枪换弹
+    -- 지금 총 전체에 탄약이 남아 있는지에 따라 전술 재장전을 재생할지 빈 탄창 재장전을 재생할지 정한다
     if (isNoAmmo(context)) then
         if (isEaster()) then
             context:runAnimation("reload_empty_easter", track, false, PLAY_ONCE_STOP, 0.2)
@@ -73,9 +73,9 @@ local function runReloadAnimation(context)
     end
 end
 
--- 更新"不空挂"状态
+-- "고정 안 함" 상태 갱신
 function normal_state.update(this, context)
-    -- 如果弹药数量是 0 了,那么立刻手动触发一次转到"空挂"状态的输入
+    -- 탄약 수가 0이 되면 곧바로 "고정" 상태로 가는 입력을 한 번 직접 일으킨다
     if (isNoAmmo(context)) then
         context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, BOLT_CAUGHT_TRACK))
         context:trigger(this.INPUT_BOLT_CAUGHT)
@@ -100,7 +100,7 @@ function sight_state.update(this, context)
     end
 end
 
--- 进入"不空挂"状态
+-- "고정 안 함" 상태 진입
 function normal_state.entry(this, context)
     context:runAnimation("static_ammo_display", context:getTrack(STATIC_TRACK_LINE, BOLT_CAUGHT_TRACK), false, PLAY_ONCE_STOP, 0)
     this.bolt_caught_states.normal.update(this, context)
@@ -114,39 +114,39 @@ local crawl_states = {
 }
 
 function crawl_states.normal.transition(this, context, input)
-    -- 趴下时切到趴下状态
+    -- 엎드리면 엎드린 상태로 바꾼다
     if (context:isCrawl()) then
         return this.crawl_states.crawl
     end
 end
 
 function crawl_states.crawl.entry(this, context)
-    -- 重置主轨道动画标志位
+    -- 주 트랙 애니메이션 표시 초기화
     crawl_states.played_animation = 0
 end
 
 function crawl_states.crawl.update(this, context)
-    -- 主轨道正在播放动画 且 趴下轨道无动画 时播放脚架单独展开
+    -- 주 트랙이 애니메이션을 재생 중이고 엎드리기 트랙에 애니메이션이 없으면 양각대만 펼치는 애니메이션을 재생한다
     if ((not context:isStopped(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))) and context:isStopped(context:getTrack(BLENDING_TRACK_LINE, SLIDE_TRACK))) then
         context:runAnimation("crawl_bipod", context:getTrack(BLENDING_TRACK_LINE, SLIDE_TRACK), true, PLAY_ONCE_HOLD, 0.5)
         crawl_states.played_animation = 1
     end
-    -- 主轨道无动画 且 趴下轨道无动画 时播放趴下的起手式
+    -- 주 트랙에 애니메이션이 없고 엎드리기 트랙에도 애니메이션이 없으면 엎드리기 시작 동작을 재생한다
     if (context:isStopped(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)) and context:isStopped(context:getTrack(BLENDING_TRACK_LINE, SLIDE_TRACK))) then
         context:runAnimation("crawl_start", context:getTrack(BLENDING_TRACK_LINE, SLIDE_TRACK), true, PLAY_ONCE_HOLD, 0.5)
     end
-    -- 主轨道无动画 且 趴下轨道被挂起（其实就是起手式播放完了） 时播放趴下的持续动作
+    -- 주 트랙에 애니메이션이 없고 엎드리기 트랙이 걸려 있으면(사실상 시작 동작 재생이 끝난 것) 엎드린 채 유지 동작을 재생한다
     if (context:isStopped(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)) and context:isHolding(context:getTrack(BLENDING_TRACK_LINE, SLIDE_TRACK))) then
-        -- 主轨道没有播放过动画 持续播放趴下动作
+        -- 주 트랙이 애니메이션을 재생한 적이 없으면 엎드린 동작을 계속 재생한다
         if (crawl_states.played_animation == 0) then
             context:runAnimation("crawl", context:getTrack(BLENDING_TRACK_LINE, SLIDE_TRACK), true, PLAY_ONCE_HOLD, 0.4)
-        --主轨道播放过动画 用单独的手臂归为动画回到趴下状态并重置标志位
+        -- 주 트랙이 애니메이션을 재생한 적이 있으면 따로 된 팔 복귀 애니메이션으로 엎드린 상태로 돌아가고 표시를 초기화한다
         elseif (crawl_states.played_animation == 1) then
             context:runAnimation("crawl_handup", context:getTrack(BLENDING_TRACK_LINE, SLIDE_TRACK), true, PLAY_ONCE_HOLD, 0.4)
             crawl_states.played_animation = 0
         end
     end
-    -- 主轨道正在播放动画 且 趴下轨道被挂起 时将趴下的叠加层清除掉并将标志位置1
+    -- 주 트랙이 애니메이션을 재생 중이고 엎드리기 트랙이 걸려 있으면 엎드리기 겹침 층을 지우고 표시를 1로 둔다
     if ((not context:isStopped(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))) and context:isHolding(context:getTrack(BLENDING_TRACK_LINE, SLIDE_TRACK))) then
         if (crawl_states.played_animation == 0) then
             context:runAnimation("crawl_handdown", context:getTrack(BLENDING_TRACK_LINE, SLIDE_TRACK), true, PLAY_ONCE_HOLD, 0.4)
@@ -167,63 +167,63 @@ function crawl_states.crawl.transition(this, context, input)
     end
 end
 
--- 转出闲置态
+-- 대기 상태에서 빠져나감
 function main_states.transition(this, context, input)
-    -- 玩家从枪切到其他物品的时候会自动输入丢枪的信号,不用手动触发,只要检测就好了
+    -- 플레이어가 총에서 다른 아이템으로 바꾸면 총 버리기 신호가 자동으로 들어오므로 직접 일으킬 필요 없이 감지만 하면 된다
     if (input == INPUT_PUT_AWAY) then
         runPutAwayAnimation(context)
         this.main_track_states.final.isfinal = 1
-        -- 丢枪后转到最终态
+        -- 총을 버린 뒤 최종 상태로 간다
         return this.main_track_states.final
     end
-    -- 玩家拿着枪按下 R (或者别的什么自己绑定的换弹键)时会自动输入换弹信号
+    -- 플레이어가 총을 들고 R(또는 직접 지정한 재장전 키)을 누르면 재장전 신호가 자동으로 들어온다
     if (input == INPUT_RELOAD) then
         runReloadAnimation(context)
-        -- 换弹动画播放完后返回闲置态(也就是返回自己)
+        -- 재장전 애니메이션이 끝나면 대기 상태로 돌아간다(곧 자기 자신으로 돌아간다)
         return this.main_track_states.idle
     end
-    -- 玩家在射击时会自动输入 shoot 信号
+    -- 플레이어가 사격하면 shoot 신호가 자동으로 들어온다
     if (input == INPUT_SHOOT) then
-        context:popShellFrom(0) -- 默认射击抛壳
-        -- 返回闲置态(也就是返回自己),这里不播放射击动画是因为射击动画应该在 gun_kick 状态里播
+        context:popShellFrom(0) -- 기본으로 사격하면 탄피를 배출한다
+        -- 대기 상태로 돌아간다(곧 자기 자신으로 돌아간다). 여기서 사격 애니메이션을 재생하지 않는 것은 사격 애니메이션을 gun_kick 상태에서 재생해야 하기 때문이다
         return this.main_track_states.idle
     end
-    -- 玩家在使用栓动武器射击完成后拉栓会自动输入 bolt 信号
+    -- 플레이어가 볼트 액션 무기로 사격한 뒤 노리쇠를 당기면 bolt 신호가 자동으로 들어온다
     if (input == INPUT_BOLT) then
         context:runAnimation("bolt", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
-        -- 拉栓动画播放完后返回闲置态
+        -- 노리쇠 당기기 애니메이션이 끝나면 대기 상태로 돌아간다
         return this.main_track_states.idle
     end
-    -- 玩家按下检视键后会输入检视信号
+    -- 플레이어가 점검 키를 누르면 점검 신호가 들어온다
     if (input == INPUT_INSPECT and context:getAimingProgress() < 1) then
         runInspectAnimation(context)
-        -- 检视需要转到检视态,因为检视过程中屏幕中央准星是隐藏的,因此需要一个检视态来调控准星
+        -- 점검은 점검 상태로 가야 한다. 점검 중에는 화면 가운데 조준점이 숨겨지므로 조준점을 조절할 점검 상태가 필요하다
         return this.main_track_states.inspect
     end
-    -- 玩家使用近战武器时输入的近战信号,分为近战配件、枪托、推击这三种情况
-    -- 近战配件可以使用多种近战动画,而枪托和推击则是在枪配置文件里写的"无近战配件时的近战攻击",只能使用一个动画
+    -- 플레이어가 근접 무기를 쓸 때 들어오는 근접 신호. 근접 부착물, 개머리판, 밀치기 세 경우로 나뉜다
+    -- 근접 부착물은 여러 근접 애니메이션을 쓸 수 있지만, 개머리판과 밀치기는 총 설정 파일에 적힌 "근접 부착물이 없을 때의 근접 공격"이라 애니메이션 하나만 쓸 수 있다
     if (input == INPUT_BAYONET_MUZZLE) then
-        -- 这里是一个顺序播放动画的方法,通过存储在状态里的 counter 决定当前播放的是第几个近战动画, animationName 是一个组合起来的字符串
-        -- 这样写法会使依次运行 "melee_bayonet_1" "melee_bayonet_2" "melee_bayonet_3" 这三个动画, 3 运行完后再近战则会返回 1
+        -- 여기는 애니메이션을 차례로 재생하는 메서드다. 상태에 저장한 counter로 지금 몇 번째 근접 애니메이션을 재생할지 정하며, animationName은 조합한 문자열이다
+        -- 이렇게 쓰면 "melee_bayonet_1" "melee_bayonet_2" "melee_bayonet_3" 세 애니메이션을 차례로 실행하고, 3이 끝난 뒤 다시 근접 공격하면 1로 돌아간다
         local counter = this.main_track_states.bayonet_counter
         local animationName = "melee_bayonet_" .. tostring(counter + 1)
         this.main_track_states.bayonet_counter = (counter + 1) % 3
         context:runAnimation(animationName, context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
         return this.main_track_states.idle
     end
-    -- 枪托肘完之后返回闲置态
+    -- 개머리판 치기를 마치면 대기 상태로 돌아간다
     if (input == INPUT_BAYONET_STOCK) then
         context:runAnimation("melee_stock", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
         return this.main_track_states.idle
     end
-    -- 推击完之后返回闲置态
+    -- 밀치기를 마치면 대기 상태로 돌아간다
     if (input == INPUT_BAYONET_PUSH) then
         context:runAnimation("melee_push", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
         return this.main_track_states.idle
     end
 end
 
--- 用元表的方式继承默认状态机的属性
+-- 메타테이블 방식으로 기본 상태 기계의 속성을 상속한다
 local M = setmetatable({
     bolt_caught_states = setmetatable({
         normal = normal_state,
@@ -237,7 +237,7 @@ local M = setmetatable({
 function M:initialize(context)
     default.initialize(self, context)
 end
--- 继承默认状态机需要重新初始化状态
+-- 기본 상태 기계를 상속하면 상태를 다시 초기화해야 한다
 function M:states()
     return {
         self.sight_state,
@@ -252,5 +252,5 @@ function M:states()
         self.crawl_states.normal
     }
 end
--- 导出状态机
+-- 상태 기계 내보내기
 return M

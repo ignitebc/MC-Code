@@ -1,15 +1,15 @@
--- 脚本的位置是 "{命名空间}:{路径}"，那么 require 的格式为 "{命名空间}_{路径}"
--- 注意！require 取得的内容不应该被修改，应仅调用
+-- 스크립트 위치가 "{네임스페이스}:{경로}"이면 require 형식은 "{네임스페이스}_{경로}"다
+-- 주의! require로 얻은 내용은 고치지 말고 호출만 해야 한다
 local default = require("tacz_manual_action_state_machine")
 local STATIC_TRACK_LINE = default.STATIC_TRACK_LINE
 local GUN_KICK_TRACK_LINE = default.GUN_KICK_TRACK_LINE
 local MAIN_TRACK = default.MAIN_TRACK
 local main_track_states = default.main_track_states
--- main_track_states.idle 是我们要重写的状态。
+-- main_track_states.idle은 우리가 다시 쓸 상태다.
 local idle_state = setmetatable({}, {__index = main_track_states.idle})
 
 local gun_kick_state = setmetatable({}, {__index = default.gun_kick_state})
--- reload_state、bolt_state 是定义的新状态，用于执行单发装填
+-- reload_state, bolt_state는 한 발씩 장전하려고 정의한 새 상태다
 local reload_state = {
     need_ammo = 0,
     loaded_ammo = 0
@@ -24,9 +24,9 @@ local function get_ejection_time(context)
     return ejection_time
 end
 
--- 检查当前是否还有弹药
+-- 지금 탄약이 남아 있는지 확인한다
 local function isNoAmmo(context)
-    -- 这里同时检查了枪管和弹匣
+    -- 여기서 총열과 탄창을 함께 확인했다
     return (not context:hasBulletInBarrel()) and (context:getAmmoCount() <= 0)
 end
 
@@ -42,7 +42,7 @@ function gun_kick_state.transition(this, context, input)
     return nil
 end
 
--- 重写 idle 状态的 transition 函数，将输入 INPUT_RELOAD 重定向到新定义的 reload_state 状态
+-- idle 상태의 transition 함수를 다시 써서 INPUT_RELOAD 입력을 새로 정의한 reload_state 상태로 돌린다
 function idle_state.transition(this, context, input)
     if (input == INPUT_RELOAD) then
         if (context:getAttachment("SCOPE") == "tacz:empty" and isNoAmmo(context)) then
@@ -73,8 +73,8 @@ function idle_state.update(this, context)
     end
 end
 
--- 在 entry 函数里，我们根据情况选择播放 'reload_intro_empty' 或 'reload_intro' 动画，
--- 并初始化 需要的弹药数、已装填的弹药数。这决定了后续的 'loop' 动画进行几次循环。
+-- entry 함수에서는 상황에 따라 'reload_intro_empty'나 'reload_intro' 애니메이션을 골라 재생하고,
+-- 필요한 탄약 수와 장전한 탄약 수를 초기화한다. 이것이 이후 'loop' 애니메이션의 반복 횟수를 정한다.
 function reload_state.entry(this, context, input)
     local state = this.main_track_states.reload
 
@@ -90,7 +90,7 @@ function reload_state.entry(this, context, input)
         context:runAnimation("reload_intro", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_HOLD, 0.2)
     end
 end
--- 在 update 函数里，循环播放 loop，让 loaded_ammo 变量自增。
+-- update 함수에서는 loop를 반복 재생하며 loaded_ammo 변수를 1씩 늘린다.
 function reload_state.update(this, context)
     local state = this.main_track_states.reload
     if (state.loaded_ammo > state.need_ammo or not context:hasAmmoToConsume()) then
@@ -109,7 +109,7 @@ function reload_state.update(this, context)
         end
     end
 end
--- 如果 loop 循环结束或者换弹被打断，退出到 idle 状态。否则由 idle 的 transition 函数决定下一个状态。
+-- loop 반복이 끝나거나 재장전이 끊기면 idle 상태로 나간다. 아니면 idle의 transition 함수가 다음 상태를 정한다.
 function reload_state.transition(this, context, input)
     if (input == this.INPUT_RELOAD_RETREAT or input == INPUT_CANCEL_RELOAD) then
         context:runAnimation("reload_end", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
@@ -117,21 +117,21 @@ function reload_state.transition(this, context, input)
     end
     return this.main_track_states.idle.transition(this, context, input)
 end
--- 用元表的方式继承默认状态机的属性
+-- 메타테이블 방식으로 기본 상태 기계의 속성을 상속한다
 local M = setmetatable({
     main_track_states = setmetatable({
-        -- 自定义的 idle 状态需要覆盖掉父级状态机的对应状态，新建的 reload 状态也要加进来
+        -- 사용자 정의 idle 상태는 부모 상태 기계의 해당 상태를 덮어써야 하며, 새로 만든 reload 상태도 넣어야 한다
         idle = idle_state,
         reload = reload_state
     }, {__index = main_track_states}),
     INPUT_RELOAD_RETREAT = "reload_retreat",
     gun_kick_state = gun_kick_state
 }, {__index = default})
--- 先调用父级状态机的初始化函数，然后进行自己的初始化
+-- 먼저 부모 상태 기계의 초기화 함수를 호출한 뒤 자신의 초기화를 한다
 function M:initialize(context)
     default.initialize(self, context)
     self.main_track_states.reload.need_ammo = 0
     self.main_track_states.reload.loaded_ammo = 0
 end
--- 导出状态机
+-- 상태 기계 내보내기
 return M

@@ -38,12 +38,12 @@
   },
   "reload": {
     "type": "magazine",
-    // 在 m870 的脚本逻辑中：
-    // feed.empty 表示 reload_intro_empty 的时长
-    // feed.tactical 表示 reload_intro 的时长
-    // cooldown.empty 表示 reload_loop 的时长
-    // cooldown.tactical 表示 reload_end 的时长
-    // M870读取的是Script中的内容，reload弃用
+    // m870 스크립트 로직에서:
+    // feed.empty는 reload_intro_empty의 시간이다
+    // feed.tactical은 reload_intro의 시간이다
+    // cooldown.empty는 reload_loop의 시간이다
+    // cooldown.tactical은 reload_end의 시간이다
+    // M870은 Script의 내용을 읽으므로 reload는 쓰지 않는다
     "feed": {
       "empty": 2.13,
       "tactical": 0.67

@@ -31,7 +31,7 @@
         {"distance": 18, "damage": 3.6},
         {"distance": 36, "damage": 3.3},
         {"distance": 55, "damage": 2.7},
-        // 如果你忘记写这个无穷，那么超过上述距离，我就认为是 0
+        // 이 무한대를 빠뜨리면 위 거리를 넘은 경우 0으로 본다
         {"distance": "infinite", "damage": 2.1}
       ]
     },

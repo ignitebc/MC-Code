@@ -1,5 +1,5 @@
--- 脚本的位置是 "{命名空间}:{路径}"，那么 require 的格式为 "{命名空间}_{路径}"
--- 注意！require 取得的内容不应该被修改，应仅调用
+-- 스크립트 위치가 "{네임스페이스}:{경로}"이면 require 형식은 "{네임스페이스}_{경로}"다
+-- 주의! require로 얻은 내용은 고치지 말고 호출만 해야 한다
 local default = require("tacz_default_state_machine")
 local STATIC_TRACK_LINE = default.STATIC_TRACK_LINE
 local BOLT_CAUGHT_TRACK = default.BOLT_CAUGHT_TRACK
@@ -8,15 +8,15 @@ local bolt_caught_states = default.bolt_caught_states
 local normal_state = setmetatable({}, {__index = bolt_caught_states.normal})
 
 
--- 检查当前是否还有弹药
+-- 지금 탄약이 남아 있는지 확인한다
 local function isNoAmmo(context)
-    -- 这里同时检查了枪管和弹匣
+    -- 여기서 총열과 탄창을 함께 확인했다
     return (not context:hasBulletInBarrel()) and (context:getAmmoCount() <= 0)
 end
 
--- 更新"不空挂"状态
+-- "고정 안 함" 상태 갱신
 function normal_state.update(this, context)
-    -- 如果弹药数量是 0 了,那么立刻手动触发一次转到"空挂"状态的输入
+    -- 탄약 수가 0이 되면 곧바로 "고정" 상태로 가는 입력을 한 번 직접 일으킨다
     if (isNoAmmo(context)) then
         context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, BOLT_CAUGHT_TRACK))
         context:trigger(this.INPUT_BOLT_CAUGHT)
@@ -30,14 +30,14 @@ function normal_state.update(this, context)
     end
 end
 
--- 进入"不空挂"状态
+-- "고정 안 함" 상태 진입
 function normal_state.entry(this, context)
     context:runAnimation("static_ammo_display", context:getTrack(STATIC_TRACK_LINE, BOLT_CAUGHT_TRACK), false, PLAY_ONCE_STOP, 0)
     this.bolt_caught_states.normal.update(this, context)
 end
 
 
--- 用元表的方式继承默认状态机的属性
+-- 메타테이블 방식으로 기본 상태 기계의 속성을 상속한다
 local M = setmetatable({
     bolt_caught_states = setmetatable({
         normal = normal_state,
@@ -46,7 +46,7 @@ local M = setmetatable({
 function M:initialize(context)
     default.initialize(self, context)
 end
--- 继承默认状态机需要重新初始化状态
+-- 기본 상태 기계를 상속하면 상태를 다시 초기화해야 한다
 function M:states()
     return {
         self.base_track_state,
@@ -59,5 +59,5 @@ function M:states()
         self.slide_states.normal
     }
 end
--- 导出状态机
+-- 상태 기계 내보내기
 return M

@@ -1,14 +1,14 @@
 {
-  // 方块的显示名称，支持本地化
+  // 블록의 표시 이름. 현지화를 지원한다
   "name": "tacz.block.gun_smith_table.name",
-  // 方块效果文件
+  // 블록 효과 파일
   "display": "tacz:gun_smith_table",
-  // 方块参数文件
+  // 블록 매개변수 파일
   "data": "tacz:gun_smith_table",
   // 블록 id. 작업대는 총기 작업대 하나뿐이라 tacz:gun_smith_table 만 쓸 수 있다.
   // 기본 작업대의 id 는 프로그램 안에서 tacz:gun_smith_table 로 고정돼 있다.
   "id": "tacz:gun_smith_table",
-  // 排序数，决定了在创造模式标签页中的顺序
-  // 数字越小，优先级越高
+  // 정렬 번호. 크리에이티브 모드 탭에서의 순서를 정한다
+  // 숫자가 작을수록 우선한다
   "sort": 1
 }

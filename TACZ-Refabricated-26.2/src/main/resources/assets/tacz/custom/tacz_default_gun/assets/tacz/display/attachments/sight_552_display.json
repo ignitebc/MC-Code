@@ -1,11 +1,11 @@
 {
   "slot": "tacz:attachment/slot/sight_552",
-  // 配件的默认模型，不可为空
+  // 부착물의 기본 모델. 비울 수 없다
   "model": "tacz:attachment/sight_552_geo",
-  // 配件默认模型使用的材质，不可为空
+  // 부착물 기본 모델이 쓰는 텍스처. 비울 수 없다
   "texture": "tacz:attachment/uv/sight_552",
-  // 只有 瞄具 配件需要设置这个属性，表示瞄具的放大倍率。
-  // 玩家可以在数组设置的几个倍率之间切换
+  // 조준경 부착물만 이 속성을 설정하며, 조준경의 확대 배율을 뜻한다.
+  // 플레이어는 배열에 설정한 몇 가지 배율 사이를 바꿀 수 있다
   "lod": {
     "model": "tacz:attachment/lod/sight_552",
     "texture": "tacz:attachment/lod/sight_552"
@@ -13,12 +13,12 @@
   "zoom": [
     2
   ],
-  // 如果配件是瞄具，且为筒状放大瞄具，此选项应为true
+  // 부착물이 조준경이고 원통형 확대 조준경이면 이 옵션은 true여야 한다
   "scope": false,
-  // 如果配件是瞄具，且为红点或全息瞄具，此选项应为true
+  // 부착물이 조준경이고 도트나 홀로그램 조준경이면 이 옵션은 true여야 한다
   "sight": true,
-  // 只有 瞄具 配件需要设置这个属性，表示开镜后，枪身和瞄具渲染的fov。
-  // 默认情况下，mc 渲染手部模型的 fov 为 70。
+  // 조준경 부착물만 이 속성을 설정하며, 조준했을 때 총몸과 조준경을 그리는 fov를 뜻한다.
+  // 기본으로 mc가 손 모델을 그리는 fov는 70이다.
   "fov": 35.0,
   "sounds": {
     "install": "tacz:attachments/scope_general_c",

@@ -6,29 +6,29 @@
     "texture": "tacz:shell/40mm_shell"
   },
   "slot": "tacz:ammo/slot/40mm",
-  // 子弹实体
+  // 탄환 엔티티
   "entity": {
-    // 模型
+    // 모델
     "model": "tacz:ammo_entity/40mm_grenade",
-    // 材质
+    // 텍스처
     "texture": "tacz:ammo_entity/40mm_grenade"
   },
-  // 粒子效果，部分参数和原版指令完全一致，具体可参考 wiki：https://minecraft.fandom.com/zh/wiki/%E5%91%BD%E4%BB%A4/particle
-  // 没有此字段时，不生成粒子
+  // 입자 효과. 일부 매개변수는 바닐라 명령어와 완전히 같다. 자세한 내용은 wiki 참고: https://minecraft.fandom.com/zh/wiki/%E5%91%BD%E4%BB%A4/particle
+  // 이 필드가 없으면 입자를 만들지 않는다
   "particle": {
-    // 名称，具体可选粒子可参考 wiki：https://minecraft.fandom.com/zh/wiki/%E7%B2%92%E5%AD%90
+    // 이름. 고를 수 있는 입자는 wiki 참고: https://minecraft.fandom.com/zh/wiki/%E7%B2%92%E5%AD%90
     "name": "smoke",
-    // 生成的区域，默认为 0 0 0
+    // 생성 영역. 기본값은 0 0 0
     "delta": [
       0,
       0,
       0
     ],
-    // 速度，默认为0，必须至少为 0
+    // 속도. 기본값은 0이며 최소 0이어야 한다
     "speed": 0,
-    // 粒子存在时间，单位 tick，默认为 20 tick
+    // 입자 지속 시간(tick). 기본값은 20 tick
     "life_time": 50,
-    // 粒子数量，当子弹速度过快时，可以增大此数量，能够填满子弹路径的空隙
+    // 입자 수. 탄환이 너무 빠르면 이 수를 늘려 탄환 경로의 빈틈을 채울 수 있다
     "count": 5
   }
 }

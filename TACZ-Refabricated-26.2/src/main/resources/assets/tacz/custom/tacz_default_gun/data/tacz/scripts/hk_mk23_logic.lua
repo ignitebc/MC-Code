@@ -1,5 +1,5 @@
 local M = {}
--- =========================================================== ↓ 换弹 ↓ =============
+-- =========================================================== ↓ 재장전 ↓ =============
 function M.start_reload(api)
     local cache = {
         cooldown = 0,
@@ -9,7 +9,7 @@ function M.start_reload(api)
     }
     cache.loaded = false
     local param = api:getScriptParams();
-    -- 空枪
+    -- 빈 탄창
     if (api:getAmmoAmount() == 0 and not api:hasAmmoInBarrel()) then
         cache.load_flag = "EMPTY"
         -- pump
@@ -43,7 +43,7 @@ function M.start_reload(api)
                 cache.feed = param.empty_xmag_2_feed * 1000
             end
         end
-    -- 战术
+    -- 전술
     else
         cache.load_flag = "TACTICAL"
         -- tactical lv 0

@@ -1,45 +1,45 @@
--- 这些栈顶指针在分配新的轨道行和轨道时起作用
--- 轨道行 栈顶指针
+-- 이 스택 꼭대기 포인터들은 새 트랙 줄과 트랙을 할당할 때 쓰인다
+-- 트랙 줄 스택 꼭대기 포인터
 local track_line_top = {value = 0}
--- 主轨道行 的 轨道 栈顶指针
+-- 주 트랙 줄의 트랙 스택 꼭대기 포인터
 local static_track_top = {value = 0}
--- 混合轨道行 的 轨道 栈顶指针
+-- 혼합 트랙 줄의 트랙 스택 꼭대기 포인터
 local blending_track_top = {value = 0}
--- 栈顶指针自增函数，用于分配新的轨道行或者轨道
+-- 스택 꼭대기 포인터 증가 함수. 새 트랙 줄이나 트랙을 할당하는 데 쓴다
 local function increment(obj)
     obj.value = obj.value + 1
     return obj.value - 1
 end
 
--- 主轨道行 和 其中的轨道
+-- 주 트랙 줄과 그 안의 트랙
 local STATIC_TRACK_LINE = increment(track_line_top)
 
--- 五条低轨道，会被主轨道行中的其他高级轨道覆盖
+-- 낮은 트랙 다섯 개. 주 트랙 줄의 다른 상위 트랙에 덮인다
 local PRE_PARALLEL_TRACK_1 = increment(static_track_top)
 local PRE_PARALLEL_TRACK_2 = increment(static_track_top)
 local PRE_PARALLEL_TRACK_3 = increment(static_track_top)
 local PRE_PARALLEL_TRACK_4 = increment(static_track_top)
 local PRE_PARALLEL_TRACK_5 = increment(static_track_top)
 
--- 主轨道行上的高级轨道
+-- 주 트랙 줄 위의 상위 트랙
 local BASE_TRACK = increment(static_track_top)
 local BOLT_CAUGHT_TRACK = increment(static_track_top)
-local SAFETY_TRACK = increment(static_track_top) -- 待实现
+local SAFETY_TRACK = increment(static_track_top) -- 구현 예정
 local ADS_TRACK = increment(static_track_top)
 local MAIN_TRACK = increment(static_track_top)
 local SPRINT_TRACK = increment(static_track_top)
 
--- 五条顶级轨道，会覆盖主轨道行中的其他轨道
+-- 최상위 트랙 다섯 개. 주 트랙 줄의 다른 트랙을 덮는다
 local PARALLEL_TRACK_1 = increment(static_track_top)
 local PARALLEL_TRACK_2 = increment(static_track_top)
 local PARALLEL_TRACK_3 = increment(static_track_top)
 local PARALLEL_TRACK_4 = increment(static_track_top)
 local PARALLEL_TRACK_5 = increment(static_track_top)
 
--- 开火的轨道行
+-- 발사 트랙 줄
 local GUN_KICK_TRACK_LINE = increment(track_line_top)
 
--- 混合轨道行 和 其中的轨道，用于叠加动画，如跑步走路跳跃过热
+-- 혼합 트랙 줄과 그 안의 트랙. 달리기, 걷기, 점프, 과열 같은 애니메이션을 겹치는 데 쓴다
 local BLENDING_TRACK_LINE = increment(track_line_top)
 
 local MOVEMENT_TRACK = increment(blending_track_top)
@@ -48,33 +48,33 @@ local OVER_HEAT_TRACK = increment(blending_track_top)
 local OVER_HEATING_TRACK = increment(blending_track_top)
 local LOOP_TRACK = increment(blending_track_top)
 
--- 五条混合轨道，应叠加到其他轨道上
+-- 혼합 트랙 다섯 개. 다른 트랙 위에 겹쳐야 한다
 local BLEND_TRACK_1 = increment(blending_track_top)
 local BLEND_TRACK_2 = increment(blending_track_top)
 local BLEND_TRACK_3 = increment(blending_track_top)
 local BLEND_TRACK_4 = increment(blending_track_top)
 local BLEND_TRACK_5 = increment(blending_track_top)
 
--- 播放丢枪动画的方法
+-- 총 버리기 애니메이션 재생 메서드
 local function runPutAwayAnimation(context)
     local put_away_time = context:getPutAwayTime()
-    -- 此处获取的轨道是位于主轨道行上的主轨道
+    -- 여기서 얻는 트랙은 주 트랙 줄에 있는 주 트랙이다
     local track = context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)
-    -- 播放 put_away 动画,并且将其过渡时长设为从上下文里传入的 put_away_time * 0.75
+    -- put_away 애니메이션을 재생하고, 전환 시간을 문맥에서 넘어온 put_away_time * 0.75로 둔다
     context:runAnimation("put_away", track, false, PLAY_ONCE_HOLD, put_away_time * 0.75)
-    -- 设定动画进度为最后一帧
+    -- 애니메이션 진행도를 마지막 프레임으로 둔다
     context:setAnimationProgress(track, 1, true)
-    -- 将动画进度向前拨动 {put_away_time}
+    -- 애니메이션 진행도를 {put_away_time}만큼 앞으로 돌린다
     context:adjustAnimationProgress(track, -put_away_time, false)
 end
 
--- 检查当前是否还有弹药
+-- 지금 탄약이 남아 있는지 확인한다
 local function isNoAmmo(context)
-    -- 这里同时检查了枪管和弹匣
+    -- 여기서 총열과 탄창을 함께 확인했다
     return (not context:hasBulletInBarrel()) and (context:getAmmoCount() <= 0)
 end
 
--- 播放换弹动画的方法
+-- 재장전 애니메이션 재생 메서드
 local function runReloadAnimation(context)
     local track = context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)
     if (isNoAmmo(context)) then
@@ -106,11 +106,11 @@ local function runReloadAnimation(context)
     end
 end
 
--- 播放检视动画的方法
+-- 점검 애니메이션 재생 메서드
 local function runInspectAnimation(context)
-    -- 此处获取的轨道是位于主轨道行上的主轨道
+    -- 여기서 얻는 트랙은 주 트랙 줄에 있는 주 트랙이다
     local track = context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)
-    -- 根据当前整枪内是否还有弹药决定是播放普通检视还是空枪检视
+    -- 지금 총 전체에 탄약이 남아 있는지에 따라 일반 점검을 재생할지 빈 탄창 점검을 재생할지 정한다
     if (isNoAmmo(context)) then
         if (context:getFireMode() == SEMI) then
             context:runAnimation("inspect_empty_pump", track, false, PLAY_ONCE_STOP, 0.2)
@@ -124,12 +124,12 @@ local function runInspectAnimation(context)
     end
 end
 
--- 检查当前是否处于过热状态
+-- 지금 과열 상태인지 확인한다
 local function isOverHeat(context)
     return context:isOverHeat()
 end
 
--- ===================================================================================== ↓ 基态 & 空挂 ↓ ============
+-- ===================================================================================== ↓ 기본 상태 & 노리쇠 후퇴 고정 ↓ ============
 local base_track_state = {
     mode = 0
 }
@@ -154,7 +154,7 @@ end
 
 function base_track_state.update(this, context)
     local track = context:getTrack(STATIC_TRACK_LINE, BASE_TRACK)
-    -- 处理泵动模式下的击锤
+    -- 펌프 방식의 공이치기 처리
     if (context:getFireMode() == SEMI) then
         if (not context:hasBulletInBarrel()) then
             context:runAnimation("shoot_pump_hammer", context:getTrack(STATIC_TRACK_LINE, PRE_PARALLEL_TRACK_1), false, LOOP, 0)
@@ -162,7 +162,7 @@ function base_track_state.update(this, context)
             context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, PRE_PARALLEL_TRACK_1))
         end
     end
-    -- 处理切换模式的动画
+    -- 모드 전환 애니메이션 처리
     if (context:isHolding(track)) then
         if (context:getFireMode() == SEMI) then
             if (base_track_state.mode == 1) then
@@ -197,139 +197,139 @@ function base_track_state.update(this, context)
         end
     end
 end
--- ===================================================================================== ↓ 主轨道 ↓ ============
+-- ===================================================================================== ↓ 주 트랙 ↓ ============
 local main_track_states = {
-    -- 起始
+    -- 시작
     start = {},
-    -- 闲置,当玩家把枪拿在手里站定并什么也不做的时候就是这种情况
+    -- 대기. 플레이어가 총을 손에 들고 가만히 서서 아무것도 하지 않을 때가 이 경우다
     idle = {},
-    -- 检视
+    -- 점검
     inspect = {},
-    -- 结束
+    -- 끝
     final = {
         isfinal = -1
     },
-    -- 刺刀攻击的计数器
+    -- 총검 공격 카운터
     bayonet_counter = 0
 }
 
--- 转出 start (其实就是掏枪)
+-- start에서 빠져나감(실제로는 총 꺼내기)
 function main_track_states.start.transition(this, context, input)
-    -- 玩家手里拿到枪的那一瞬间会自动输入一个 draw 的信号,不用手动触发
+    -- 플레이어가 총을 손에 드는 순간 draw 신호가 자동으로 들어오므로 직접 일으킬 필요가 없다
     if (input == INPUT_DRAW) then
-        -- 收到 draw 信号后在主轨道行的主轨道上播放掏枪动画,然后转到闲置态
+        -- draw 신호를 받으면 주 트랙 줄의 주 트랙에서 총 꺼내기 애니메이션을 재생하고 대기 상태로 간다
         this.main_track_states.final.isfinal = -1
         context:runAnimation("draw", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0)
         return this.main_track_states.idle
     end
 end
 
--- 转出闲置态
+-- 대기 상태에서 빠져나감
 function main_track_states.idle.transition(this, context, input)
-    -- 玩家从枪切到其他物品的时候会自动输入丢枪的信号,不用手动触发,只要检测就好了
+    -- 플레이어가 총에서 다른 아이템으로 바꾸면 총 버리기 신호가 자동으로 들어오므로 직접 일으킬 필요 없이 감지만 하면 된다
     if (input == INPUT_PUT_AWAY) then
         runPutAwayAnimation(context)
         this.main_track_states.final.isfinal = 1
-        -- 丢枪后转到最终态
+        -- 총을 버린 뒤 최종 상태로 간다
         return this.main_track_states.final
     end
-    -- 玩家拿着枪按下 R (或者别的什么自己绑定的换弹键)时会自动输入换弹信号
+    -- 플레이어가 총을 들고 R(또는 직접 지정한 재장전 키)을 누르면 재장전 신호가 자동으로 들어온다
     if (input == INPUT_RELOAD) then
         runReloadAnimation(context)
-        -- 换弹动画播放完后返回闲置态(也就是返回自己)
+        -- 재장전 애니메이션이 끝나면 대기 상태로 돌아간다(곧 자기 자신으로 돌아간다)
         return this.main_track_states.idle
     end
-    -- 玩家在射击时会自动输入 shoot 信号
+    -- 플레이어가 사격하면 shoot 신호가 자동으로 들어온다
     if (input == INPUT_SHOOT) then
         if (context:getFireMode() == BURST) then
-            context:popShellFrom(0) -- 默认射击抛壳
+            context:popShellFrom(0) -- 기본으로 사격하면 탄피를 배출한다
         end
-        -- 返回闲置态(也就是返回自己),这里不播放射击动画是因为射击动画应该在 gun_kick 状态里播
+        -- 대기 상태로 돌아간다(곧 자기 자신으로 돌아간다). 여기서 사격 애니메이션을 재생하지 않는 것은 사격 애니메이션을 gun_kick 상태에서 재생해야 하기 때문이다
         return this.main_track_states.idle
     end
-    -- 玩家在使用栓动武器射击完成后拉栓会自动输入 bolt 信号
+    -- 플레이어가 볼트 액션 무기로 사격한 뒤 노리쇠를 당기면 bolt 신호가 자동으로 들어온다
     if (input == INPUT_BOLT) then
-        -- 仅在栓动模式下才播放动画
+        -- 볼트 액션 방식일 때만 애니메이션을 재생한다
         if (context:getFireMode() == SEMI) then
             context:runAnimation("bolt", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
             context:runAnimation("bolt_hammer", context:getTrack(STATIC_TRACK_LINE, PRE_PARALLEL_TRACK_2), false, PLAY_ONCE_STOP, 0.2)
         end
-        -- 拉栓动画播放完后返回闲置态
+        -- 노리쇠 당기기 애니메이션이 끝나면 대기 상태로 돌아간다
         return this.main_track_states.idle
     end
-    -- 玩家按下检视键后会输入检视信号
+    -- 플레이어가 점검 키를 누르면 점검 신호가 들어온다
     if (input == INPUT_INSPECT and context:getAimingProgress() < 1) then
         runInspectAnimation(context)
-        -- 检视需要转到检视态,因为检视过程中屏幕中央准星是隐藏的,因此需要一个检视态来调控准星
+        -- 점검은 점검 상태로 가야 한다. 점검 중에는 화면 가운데 조준점이 숨겨지므로 조준점을 조절할 점검 상태가 필요하다
         return this.main_track_states.inspect
     end
-    -- 玩家使用近战武器时输入的近战信号,分为近战配件、枪托、推击这三种情况
-    -- 近战配件可以使用多种近战动画,而枪托和推击则是在枪配置文件里写的"无近战配件时的近战攻击",只能使用一个动画
+    -- 플레이어가 근접 무기를 쓸 때 들어오는 근접 신호. 근접 부착물, 개머리판, 밀치기 세 경우로 나뉜다
+    -- 근접 부착물은 여러 근접 애니메이션을 쓸 수 있지만, 개머리판과 밀치기는 총 설정 파일에 적힌 "근접 부착물이 없을 때의 근접 공격"이라 애니메이션 하나만 쓸 수 있다
     if (input == INPUT_BAYONET_MUZZLE) then
-        -- 这里是一个顺序播放动画的方法,通过存储在状态里的 counter 决定当前播放的是第几个近战动画, animationName 是一个组合起来的字符串
-        -- 这样写法会使依次运行 "melee_bayonet_1" "melee_bayonet_2" "melee_bayonet_3" 这三个动画, 3 运行完后再近战则会返回 1
+        -- 여기는 애니메이션을 차례로 재생하는 메서드다. 상태에 저장한 counter로 지금 몇 번째 근접 애니메이션을 재생할지 정하며, animationName은 조합한 문자열이다
+        -- 이렇게 쓰면 "melee_bayonet_1" "melee_bayonet_2" "melee_bayonet_3" 세 애니메이션을 차례로 실행하고, 3이 끝난 뒤 다시 근접 공격하면 1로 돌아간다
         local counter = this.main_track_states.bayonet_counter
         local animationName = "melee_bayonet_" .. tostring(counter + 1)
         this.main_track_states.bayonet_counter = (counter + 1) % 3
         context:runAnimation(animationName, context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
         return this.main_track_states.idle
     end
-    -- 枪托肘完之后返回闲置态
+    -- 개머리판 치기를 마치면 대기 상태로 돌아간다
     if (input == INPUT_BAYONET_STOCK) then
         context:runAnimation("melee_stock", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
         return this.main_track_states.idle
     end
-    -- 推击完之后返回闲置态
+    -- 밀치기를 마치면 대기 상태로 돌아간다
     if (input == INPUT_BAYONET_PUSH) then
         context:runAnimation("melee_push", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
         return this.main_track_states.idle
     end
 end
 
--- 进入检视态
+-- 점검 상태 진입
 function main_track_states.inspect.entry(this, context)
-    -- 检视是需要隐藏屏幕中央准星
+    -- 점검할 때는 화면 가운데 조준점을 숨겨야 한다
     context:setShouldHideCrossHair(true)
 end
 
--- 退出检视态
+-- 점검 상태에서 나감
 function main_track_states.inspect.exit(this, context)
     context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))
-    -- 退出后恢复屏幕中央准星
+    -- 나간 뒤 화면 가운데 조준점을 되살린다
     context:setShouldHideCrossHair(false)
 end
 
--- 更新检视态
+-- 점검 상태 갱신
 function main_track_states.inspect.update(this, context)
-    -- 当检测到动画停止了(播完了)时手动触发一次退出信号
+    -- 애니메이션이 멈춘(재생이 끝난) 것을 감지하면 나가기 신호를 한 번 직접 일으킨다
     if (context:isStopped(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))) then
         context:trigger(this.INPUT_INSPECT_RETREAT)
     end
 end
 
--- 转出检视态
+-- 점검 상태에서 빠져나감
 function main_track_states.inspect.transition(this, context, input)
-    -- 当收到来自 update 的退出信号时返回到闲置态,此时不需要停止动画是因为在 update 里是动画已经停止了才发出的退出信号
+    -- update에서 온 나가기 신호를 받으면 대기 상태로 돌아간다. 이때 애니메이션을 멈출 필요가 없는 것은 update가 애니메이션이 이미 멈춘 뒤에야 나가기 신호를 보내기 때문이다
     if (input == this.INPUT_INSPECT_RETREAT) then
         return this.main_track_states.idle
     end
-    -- 特殊地,射击与瞄准应当打断检视,当检测到射击输入或瞄准进度不为0时应该直接停止动画并返回闲置态
+    -- 특별히 사격과 조준은 점검을 끊어야 한다. 사격 입력을 감지하거나 조준 진행도가 0이 아니면 바로 애니메이션을 멈추고 대기 상태로 돌아가야 한다
     if (input == INPUT_SHOOT or context:getAimingProgress() > 0) then
         context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))
         return this.main_track_states.idle
     end
     return this.main_track_states.idle.transition(this, context, input)
 end
--- 结束主状态部分
+-- 주 상태 부분 끝
 
--- 射击态,没什么需要调控的
+-- 사격 상태. 조절할 것이 없다
 local gun_kick_state = {}
 
 function gun_kick_state.transition(this, context, input)
-    -- 玩家按下开火键时需要在射击轨道行里寻找空闲轨道去播放射击动画(如果没有空闲会分配新的),需要注意的是射击动画要向下混合
+    -- 플레이어가 발사 키를 누르면 사격 트랙 줄에서 빈 트랙을 찾아 사격 애니메이션을 재생해야 한다(빈 트랙이 없으면 새로 할당한다). 사격 애니메이션은 아래로 혼합해야 한다는 점에 주의한다
     if (input == INPUT_SHOOT) then
         local track = context:findIdleTrack(GUN_KICK_TRACK_LINE, false)
-        -- 这里是混合动画，一般是可叠加的 gun kick
+        -- 여기는 혼합 애니메이션이며 보통 겹칠 수 있는 gun kick이다
         if ((context:getAmmoCount() == 0) and (context:getFireMode() == BURST)) then
             context:runAnimation("shoot_last", track, true, PLAY_ONCE_STOP, 0)
         else
@@ -343,184 +343,184 @@ function gun_kick_state.transition(this, context, input)
     return nil
 end
 
--- 移动轨道的状态,这部分到 450 行结束
+-- 이동 트랙의 상태. 이 부분은 450번째 줄에서 끝난다
 local movement_track_states = {
-    -- 静止不动(或者在天上)
+    -- 가만히 있음(또는 공중에 있음)
     idle = {},
-    -- 奔跑, -1 是没有奔跑, 0 是在奔跑中
+    -- 달리기. -1은 달리지 않음, 0은 달리는 중
     run = {
         mode = -1,
         time = 0
     },
-    -- 行走, -1 是没有行走, 0 是在空中, 1 是正在瞄准, 2 是在向前走, 3 是向后退, 4 是向侧面走
+    -- 걷기. -1은 걷지 않음, 0은 공중, 1은 조준 중, 2는 앞으로 걷기, 3은 뒤로 물러나기, 4는 옆으로 걷기
     walk = {
         mode = -1
     },
-    -- 战术冲刺
+    -- 전술 질주
     sprint = {
         mode = -1
     }
 }
 
--- 更新静止态
+-- 정지 상태 갱신
 function movement_track_states.idle.update(this, context)
-    -- 此处获取的是混合轨道行的移动轨道
+    -- 여기서 얻는 것은 혼합 트랙 줄의 이동 트랙이다
     local track = context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK)
-    -- 如果轨道空闲，则播放 idle 动画
-    -- 注意此处没有写成是在 entry 播放 idle 动画是因为要实时检测轨道是否空闲
+    -- 트랙이 비어 있으면 idle 애니메이션을 재생한다
+    -- 여기서 idle 애니메이션을 entry에서 재생하도록 쓰지 않은 것은 트랙이 비었는지 실시간으로 확인해야 하기 때문이다
     if (context:isStopped(track) or context:isHolding(track)) then
         context:runAnimation("idle", track, true, LOOP, 0)
     end
 end
 
--- 转出静止态
+-- 정지 상태에서 빠져나감
 function movement_track_states.idle.transition(this, context, input)
-    -- 如果玩家在奔跑则转去奔跑态
+    -- 플레이어가 달리면 달리기 상태로 간다
     if (input == INPUT_RUN) then
         if (context:isStopped(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))) then
             return this.movement_track_states.run
         else
             return this.movement_track_states.walk
         end
-    -- 如果玩家在行走则转去行走态
+    -- 플레이어가 걸으면 걷기 상태로 간다
     elseif (input == INPUT_WALK) then
         return this.movement_track_states.walk
     end
 end
 
--- 进入奔跑态
+-- 달리기 상태 진입
 function movement_track_states.run.entry(this, context)
     this.movement_track_states.run.mode = -1
     this.movement_track_states.run.time = context:getCurrentTimestamp()
-    -- 此处播放的轨道是混合轨道行的移动轨道,播放的动画是奔跑的起手式,播放结束后是挂起动画而不是停止
+    -- 여기서 재생하는 트랙은 혼합 트랙 줄의 이동 트랙이고, 재생하는 애니메이션은 달리기 시작 동작이다. 재생이 끝나면 멈추지 않고 애니메이션을 걸어 둔다
     context:runAnimation("run_start", context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK), true, PLAY_ONCE_HOLD, 0.2)
 end
 
--- 退出奔跑态
+-- 달리기 상태에서 나감
 function movement_track_states.run.exit(this, context)
-    -- 此时播放的动画是奔跑结束回到 idle 的动画,同理播放完后挂起
+    -- 이때 재생하는 애니메이션은 달리기를 마치고 idle로 돌아가는 애니메이션이며, 마찬가지로 재생 후 걸어 둔다
     context:runAnimation("run_end", context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK), true, PLAY_ONCE_HOLD, 0.3)
 end
 
--- 更新奔跑态
+-- 달리기 상태 갱신
 function movement_track_states.run.update(this, context)
     local track = context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK)
     local state = this.movement_track_states.run;
-    -- 等待 run_start 结束,然后循环播放 run ,此处的判断准则是轨道是否挂起,也就是为什么 entry 里播放动画要选 PLAY_ONCE_HOLD 模式
+    -- run_start가 끝나길 기다린 뒤 run을 반복 재생한다. 여기서 판단 기준은 트랙이 걸려 있는지이며, 그래서 entry에서 애니메이션을 PLAY_ONCE_HOLD 방식으로 재생한다
     if (context:isHolding(track)) then
         context:runAnimation("run", track, true, LOOP, 0.2)
-        -- 检测是否奔跑的标志位 0
+        -- 달리는지 확인하는 표시 0
         state.mode = 0
-        context:anchorWalkDist() -- 打 walkDist 锚点，确保 run 动画的起点一致
+        context:anchorWalkDist() -- walkDist 기준점을 찍어 run 애니메이션의 시작점을 일정하게 한다
     end
     if (state.mode ~= -1) then
         if (not context:isOnGround()) then
-            -- 如果玩家在空中，则播放 run_hold 动画以稳定枪身
+            -- 플레이어가 공중에 있으면 run_hold 애니메이션을 재생해 총몸을 안정시킨다
             if (state.mode ~= 1) then
                 state.mode = 1
                 context:runAnimation("run_hold", track, true, LOOP, 0.6)
             end
         else
-            -- 如果玩家在地面，则切换回 run 动画
+            -- 플레이어가 땅에 있으면 run 애니메이션으로 돌아간다
             if (state.mode ~= 0) then
                 state.mode = 0
                 context:runAnimation("run", track, true, LOOP, 0.2)
             end
-            -- 根据 walkDist 设置 run 动画的进度
+            -- walkDist에 따라 run 애니메이션의 진행도를 설정한다
             context:setAnimationProgress(track, (context:getWalkDist() % 2.0) / 2.0, true)
         end
     end
 end
 
--- 转出奔跑态
+-- 달리기 상태에서 빠져나감
 function movement_track_states.run.transition(this, context, input)
-    -- 收到闲置输入则转去闲置态
+    -- 대기 입력을 받으면 대기 상태로 간다
     if (input == INPUT_IDLE) then
         return this.movement_track_states.idle
-    -- 收到行走输入则转去行走态
+    -- 걷기 입력을 받으면 걷기 상태로 간다
     elseif (input == INPUT_WALK or not context:isStopped(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))) then
         return this.movement_track_states.walk
     end
 end
 
 
--- 进入行走态
+-- 걷기 상태 진입
 function movement_track_states.walk.entry(this, context)
-    -- 此时给标志位置为 -1 相当于一个初始化
+    -- 이때 표시를 -1로 두는 것은 초기화와 같다
     this.movement_track_states.walk.mode = -1
 end
 
--- 退出行走态
+-- 걷기 상태에서 나감
 function movement_track_states.walk.exit(this, context)
-    -- 手动播放一次 idle 动画以打断 walk 动画的循环
+    -- idle 애니메이션을 한 번 직접 재생해 walk 애니메이션의 반복을 끊는다
     context:runAnimation("idle", context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK), true, PLAY_ONCE_HOLD, 0.4)
 end
 
--- 更新行走态
+-- 걷기 상태 갱신
 function movement_track_states.walk.update(this, context)
-    -- 此处获取的是混合轨道行的移动轨道
+    -- 여기서 얻는 것은 혼합 트랙 줄의 이동 트랙이다
     local track = context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK)
-    -- 这里的 state 代指自身,相当于一个简化写法
+    -- 여기서 state는 자기 자신을 가리키며 줄여 쓴 것이다
     local state = this.movement_track_states.walk
     if (context:getShootCoolDown() > 0) then
-        -- 如果刚刚开火，则播放 idle 动画以稳定枪身
+        -- 방금 발사했으면 idle 애니메이션을 재생해 총몸을 안정시킨다
         if (state.mode ~= 0) then
             state.mode = 0
             context:runAnimation("idle", track, true, LOOP, 0.3)
         end
     elseif (not context:isOnGround()) then
-        -- 如果玩家在空中，则播放 idle 动画以稳定枪身
+        -- 플레이어가 공중에 있으면 idle 애니메이션을 재생해 총몸을 안정시킨다
         if (state.mode ~= 0) then
             state.mode = 0
             context:runAnimation("idle", track, true, LOOP, 0.6)
         end
     elseif (context:getAimingProgress() > 0.5) then
-        -- 如果正在喵准，则需要播放 walk_aiming 动画
+        -- 조준 중이면 walk_aiming 애니메이션을 재생해야 한다
         if (state.mode ~= 1) then
             state.mode = 1
             context:runAnimation("walk_aiming", track, true, LOOP, 0.3)
         end
     elseif (context:isInputUp()) then
-        -- 如果正在向前走，则需要播放 walk_forward 动画
+        -- 앞으로 걷는 중이면 walk_forward 애니메이션을 재생해야 한다
         if (state.mode ~= 2) then
             state.mode = 2
             context:runAnimation("walk_forward", track, true, LOOP, 0.4)
-            context:anchorWalkDist() -- 打 walkDist 锚点，确保行走动画的起点一致
+            context:anchorWalkDist() -- walkDist 기준점을 찍어 걷기 애니메이션의 시작점을 일정하게 한다
         end
     elseif (context:isInputDown()) then
-        -- 如果正在向后退，则需要播放 walk_backward 动画
+        -- 뒤로 물러나는 중이면 walk_backward 애니메이션을 재생해야 한다
         if (state.mode ~= 3) then
             state.mode = 3
             context:runAnimation("walk_backward", track, true, LOOP, 0.4)
-            context:anchorWalkDist() -- 打 walkDist 锚点，确保行走动画的起点一致
+            context:anchorWalkDist() -- walkDist 기준점을 찍어 걷기 애니메이션의 시작점을 일정하게 한다
         end
     elseif (context:isInputLeft() or context:isInputRight()) then
-        -- 如果正在向侧面，则需要播放 walk_sideway 动画
+        -- 옆으로 걷는 중이면 walk_sideway 애니메이션을 재생해야 한다
         if (state.mode ~= 4) then
             state.mode = 4
             context:runAnimation("walk_sideway", track, true, LOOP, 0.4)
-            context:anchorWalkDist() -- 打 walkDist 锚点，确保行走动画的起点一致
+            context:anchorWalkDist() -- walkDist 기준점을 찍어 걷기 애니메이션의 시작점을 일정하게 한다
         end
     end
-    -- 根据 walkDist 设置行走动画的进度
+    -- walkDist에 따라 걷기 애니메이션의 진행도를 설정한다
     if (state.mode >= 1 and state.mode <= 4) then
         context:setAnimationProgress(track, (context:getWalkDist() % 2.0) / 2.0, true)
     end
 end
 
--- 转出行走态,这部分和转出奔跑态是一样的
+-- 걷기 상태에서 빠져나감. 이 부분은 달리기 상태에서 빠져나가는 것과 같다
 function movement_track_states.walk.transition(this, context, input)
-    -- 收到闲置信号则转到闲置态
+    -- 대기 신호를 받으면 대기 상태로 간다
     if (input == INPUT_IDLE) then
         return this.movement_track_states.idle
-    -- 收到奔跑信号则转到奔跑态
+    -- 달리기 신호를 받으면 달리기 상태로 간다
     elseif (input == INPUT_RUN) then
         if (context:isStopped(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))) then
             return this.movement_track_states.run
         end
     end
 end
--- 结束移动轨道的状态
+-- 이동 트랙 상태 끝
 
 local slide_states = {
     normal = {},
@@ -553,121 +553,121 @@ function slide_states.slide.exit(this, context)
     context:runAnimation("slide_back", context:getTrack(BLENDING_TRACK_LINE, SLIDE_TRACK), true, PLAY_ONCE_HOLD, 0.2)
 end
 
--- 过热部分,该部分到 505 行结束
--- 过热部分的内容完全参照空挂部分
+-- 과열 부분. 이 부분은 505번째 줄에서 끝난다
+-- 과열 부분 내용은 노리쇠 후퇴 고정 부분을 그대로 따른다
 
 local over_heat_states = {
-    -- normal 是不过热的正常状态
+    -- normal은 과열되지 않은 일반 상태다
     normal = {},
-    -- over_heat 是过热时的状态
+    -- over_heat는 과열 상태다
     over_heat = {}
 }
 
--- 进入"不过热"状态
+-- "과열 아님" 상태 진입
 function over_heat_states.normal.entry(this, context)
     this.over_heat_states.normal.update(this, context)
 end
 
--- 更新"不过热"状态
+-- "과열 아님" 상태 갱신
 function over_heat_states.normal.update(this, context)
     if (isOverHeat(context)) then
         context:trigger(this.INPUT_OVER_HEAT)
     end
 end
 
--- 转出"不过热"状态
+-- "과열 아님" 상태에서 빠져나감
 function over_heat_states.normal.transition(this, context, input)
     if (input == this.INPUT_OVER_HEAT) then
         return this.over_heat_states.over_heat
     end
 end
 
--- 进入"过热"状态
+-- "과열" 상태 진입
 function over_heat_states.over_heat.entry(this, context)
-    -- 仅播放一次的过热时触发的动画,比如大量冒烟和警报声
+    -- 과열될 때 한 번만 재생하는 애니메이션. 예: 많은 연기와 경보음
     context:runAnimation("over_heat", context:getTrack(BLENDING_TRACK_LINE, OVER_HEAT_TRACK), true, PLAY_ONCE_STOP, 0.2)
-    -- 一直循环执行的过热触发动画,比如缓慢的冒烟
+    -- 과열될 때 계속 반복 실행하는 애니메이션. 예: 천천히 피어오르는 연기
     context:runAnimation("static_over_heating", context:getTrack(BLENDING_TRACK_LINE, OVER_HEATING_TRACK), true, LOOP, 0)
 end
 
--- 更新"过热"状态
+-- "과열" 상태 갱신
 function over_heat_states.over_heat.update(this, context)
     if (not isOverHeat(context)) then
         context:trigger(this.INPUT_COOLING_HEAT)
     end
 end
 
--- 转出"过热"状态
+-- "과열" 상태에서 빠져나감
 function over_heat_states.over_heat.transition(this, context, input)
-    -- 如果收到了来自上文 update 方法的输入,则转到"不过热"状态
+    -- 위의 update 메서드에서 입력을 받으면 "과열 아님" 상태로 간다
     if (input == this.INPUT_COOLING_HEAT) then
-        -- 由于并没有一个"不过热"的动画,因此必须在这里把过热动画停止了才能转到"不过热"状态
+        -- "과열 아님" 애니메이션이 따로 없으므로 여기서 과열 애니메이션을 멈춰야 "과열 아님" 상태로 갈 수 있다
         context:stopAnimation(context:getTrack(BLENDING_TRACK_LINE, OVER_HEATING_TRACK))
         return this.over_heat_states.normal
     end
 end
--- 结束过热部分
+-- 과열 부분 끝
 
 local ADS_states = {
-    aiming_progress = 0,-- 记录瞄准进度
-    normal = {},-- 不瞄准状态
-    aiming = {}-- 瞄准状态
+    aiming_progress = 0,-- 조준 진행도 기록
+    normal = {},-- 조준하지 않는 상태
+    aiming = {}-- 조준 상태
 }
 
--- 进入不瞄准状态
+-- 조준하지 않는 상태 진입
 function ADS_states.normal.entry(this, context)
     this.ADS_states.normal.update(this, context)
 end
 
--- 更新不瞄准状态
+-- 조준하지 않는 상태 갱신
 function ADS_states.normal.update(this, context)
-    -- 当瞄准进度正在增加时转到瞄准状态
+    -- 조준 진행도가 늘고 있으면 조준 상태로 간다
     if ((context:getAimingProgress() > this.ADS_states.aiming_progress or context:getAimingProgress() == 1) and context:isStopped(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))) then
         context:trigger(this.INPUT_AIM)
     else
-        -- 如果没有增加，则记录当前的瞄准进度
+        -- 늘지 않았으면 현재 조준 진행도를 기록한다
         this.ADS_states.aiming_progress = context:getAimingProgress()
     end
 end
 
--- 转出不瞄准状态
+-- 조준하지 않는 상태에서 빠져나감
 function ADS_states.normal.transition(this, context, input)
-    -- 接收到上文 update 方法的输入，则转到瞄准状态
+    -- 위의 update 메서드에서 입력을 받으면 조준 상태로 간다
     if (input == this.INPUT_AIM) then
         return this.ADS_states.aiming
     end
 end
 
--- 进入瞄准状态
+-- 조준 상태 진입
 function ADS_states.aiming.entry(this, context)
-    -- 开始瞄准时播放瞄准动画，并且将其挂起
+    -- 조준을 시작하면 조준 애니메이션을 재생하고 걸어 둔다
     local track = context:getTrack(STATIC_TRACK_LINE, ADS_TRACK)
     context:runAnimation("aim_start", track, false, PLAY_ONCE_HOLD, 0.2)
-    -- 打断检视动画
+    -- 점검 애니메이션 끊기
     context:trigger(this.INPUT_INSPECT_RETREAT)
 end
 
--- 更新瞄准状态
+-- 조준 상태 갱신
 function ADS_states.aiming.update(this, context)
     local track = context:getTrack(STATIC_TRACK_LINE, ADS_TRACK)
     if (context:isHolding(track)) then
-        -- 循环播放瞄准时的动画
+        -- 조준 중 애니메이션을 반복 재생한다
         context:runAnimation("aim", track, false, PLAY_ONCE_HOLD, 0.2)
     end
-    -- 当瞄准进度正在减小时转到不瞄准状态，也即取消瞄准
+    -- 조준 진행도가 줄고 있으면 조준하지 않는 상태로 간다. 곧 조준을 푸는 것이다
     if (context:getAimingProgress() < this.ADS_states.aiming_progress or not context:isStopped(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))) then
         context:trigger(this.INPUT_AIM_RETREAT)
     else
-        -- 如果没有减小，则记录当前瞄准进度
+        -- 줄지 않았으면 현재 조준 진행도를 기록한다
         this.ADS_states.aiming_progress = context:getAimingProgress()
     end
 end
 
--- 转出瞄准状态
+-- 조준 상태에서 빠져나감
 function ADS_states.aiming.transition(this, context, input)
     local track = context:getTrack(STATIC_TRACK_LINE, ADS_TRACK)
     if (input == this.INPUT_AIM_RETREAT) then
-        --播放瞄准结束动画，并调整动画进度使开镜动画与当前的开镜进度相对应
+        -- 조준 종료 애니메이션을 재생하고, 조준 애니메이션이 현재 조준 진행도와 맞도록 애니메이션 진행도를 조정한다
         context:runAnimation("aim_end", track, false, PLAY_ONCE_STOP, 0.2)
         context:setAnimationProgress(track, 1 - context:getAimingProgress(), true)
         return this.ADS_states.normal
@@ -675,12 +675,12 @@ function ADS_states.aiming.transition(this, context, input)
 end
 
 local M = {
-    -- 轨道行
+    -- 트랙 줄
     track_line_top = track_line_top,
     STATIC_TRACK_LINE = STATIC_TRACK_LINE,
     GUN_KICK_TRACK_LINE = GUN_KICK_TRACK_LINE,
     BLENDING_TRACK_LINE = BLENDING_TRACK_LINE,
-    -- 静态轨道
+    -- 정적 트랙
     static_track_top = static_track_top,
     BASE_TRACK = BASE_TRACK,
     BOLT_CAUGHT_TRACK = BOLT_CAUGHT_TRACK,
@@ -688,32 +688,32 @@ local M = {
     ADS_TRACK = ADS_TRACK,
     MAIN_TRACK = MAIN_TRACK,
     SPRINT_TRACK = SPRINT_TRACK,
-    -- 混合轨道
+    -- 혼합 트랙
     blending_track_top = blending_track_top,
     MOVEMENT_TRACK = MOVEMENT_TRACK,
     SLIDE_TRACK = SLIDE_TRACK,
     OVER_HEAT_TRACK = OVER_HEAT_TRACK,
     OVER_HEATING_TRACK = OVER_HEATING_TRACK,
     LOOP_TRACK = LOOP_TRACK,
-    -- 低级并行轨道
+    -- 하위 병렬 트랙
     PRE_PARALLEL_TRACK_1 = PRE_PARALLEL_TRACK_1,
     PRE_PARALLEL_TRACK_2 = PRE_PARALLEL_TRACK_2,
     PRE_PARALLEL_TRACK_3 = PRE_PARALLEL_TRACK_3,
     PRE_PARALLEL_TRACK_4 = PRE_PARALLEL_TRACK_4,
     PRE_PARALLEL_TRACK_5 = PRE_PARALLEL_TRACK_5,
-    -- 顶级并行轨道
+    -- 최상위 병렬 트랙
     PARALLEL_TRACK_1 = PARALLEL_TRACK_1,
     PARALLEL_TRACK_2 = PARALLEL_TRACK_2,
     PARALLEL_TRACK_3 = PARALLEL_TRACK_3,
     PARALLEL_TRACK_4 = PARALLEL_TRACK_4,
     PARALLEL_TRACK_5 = PARALLEL_TRACK_5,
-    -- 混合轨道
+    -- 혼합 트랙
     BLEND_TRACK_1 = BLEND_TRACK_1,
     BLEND_TRACK_2 = BLEND_TRACK_2,
     BLEND_TRACK_3 = BLEND_TRACK_3,
     BLEND_TRACK_4 = BLEND_TRACK_4,
     BLEND_TRACK_5 = BLEND_TRACK_5,
-    -- 状态
+    -- 상태
     base_track_state = base_track_state,
     over_heat_states = over_heat_states,
     main_track_states = main_track_states,
@@ -721,7 +721,7 @@ local M = {
     movement_track_states = movement_track_states,
     ADS_states = ADS_states,
     slide_states = slide_states,
-    -- 输入
+    -- 입력
     INPUT_BOLT_CAUGHT = "bolt_caught",
     INPUT_BOLT_NORMAL = "bolt_normal",
     INPUT_OVER_HEAT = "over_heat",
@@ -731,7 +731,7 @@ local M = {
     INPUT_AIM_RETREAT = "aim_retreat"
 }
 
--- 状态机初始化函数，在切枪的时候调用
+-- 상태 기계 초기화 함수. 총을 바꿀 때 호출한다
 function M:initialize(context)
     context:ensureTrackLineSize(track_line_top.value)
     context:ensureTracksAmount(STATIC_TRACK_LINE, static_track_top.value)
@@ -740,9 +740,9 @@ function M:initialize(context)
     self.movement_track_states.walk.mode = -1
 end
 
--- 状态机退出函数，在收枪的时候调用
+-- 상태 기계 종료 함수. 총을 집어넣을 때 호출한다
 function M:exit(context)
-    -- do some cleaning up things
+    -- 정리 작업을 한다
 end
 
 function M:states()

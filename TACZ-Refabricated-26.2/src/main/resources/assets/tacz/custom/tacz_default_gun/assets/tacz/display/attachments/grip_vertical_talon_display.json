@@ -1,8 +1,8 @@
 {
   "slot": "tacz:attachment/slot/grip_vertical_talon",
-  // 配件的默认模型，不可为空
+  // 부착물의 기본 모델. 비울 수 없다
   "model": "tacz:attachment/grip_vertical_talon_geo",
-  // 配件默认模型使用的材质，不可为空
+  // 부착물 기본 모델이 쓰는 텍스처. 비울 수 없다
   "texture": "tacz:attachment/uv/grip_vertical_talon",
   "sounds": {
     "install": "tacz:attachments/attachment_general_b",

@@ -2,7 +2,7 @@
   "name": "tacz.ammo.762x39.name",
   "tooltip": "tacz.ammo.762x39.desc",
   "display": "tacz:762x39_display",
-  // 堆叠数量
+  // 겹치기 수량
   "stack_size": 60,
   "sort": 10
 }

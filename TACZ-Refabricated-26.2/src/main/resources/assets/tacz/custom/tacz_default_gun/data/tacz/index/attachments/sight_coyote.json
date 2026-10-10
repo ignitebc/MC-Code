@@ -1,13 +1,13 @@
 {
-  // 配件的的显示名称和工具提示，支持本地化
+  // 부착물의 표시 이름과 툴팁. 현지화를 지원한다
   "name": "tacz.attachment.sight_coyote.name",
   "tooltip": "tacz.attachment.sight_coyote.desc",
-  // 配件的客户端数据
+  // 부착물의 클라이언트 데이터
   "display": "tacz:sight_coyote_display",
-  // 配件的属性
+  // 부착물의 속성
   "data": "tacz:sight_coyote_data",
-  // 配件的类型。scope、grip、muzzle、stock、laser、extended_mag
-  // 枪械配件槽位能从中选择可以安装的类型
+  // 부착물 종류. scope, grip, muzzle, stock, laser, extended_mag
+  // 총기 부착물 칸은 여기서 달 수 있는 종류를 고른다
   "type": "scope",
   "sort": 10
 }

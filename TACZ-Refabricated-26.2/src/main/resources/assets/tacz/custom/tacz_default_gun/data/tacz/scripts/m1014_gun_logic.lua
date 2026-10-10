@@ -1,7 +1,7 @@
 local M = {}
 
 function M.start_reload(api)
-    -- 初始化缓存里会用到的参数
+    -- 캐시에서 쓸 매개변수를 초기화한다
     local cache = {
         reloaded_count = 0,
         needed_count = api:getNeededAmmoAmount(),
@@ -9,12 +9,12 @@ function M.start_reload(api)
         interrupted_time = -1,
     }
     api:cacheScriptData(cache)
-    -- 返回 true 开始 tick
+    -- true를 돌려줘 tick을 시작한다
     return true
 end
 
 local function getReloadTimingFromParam(param)
-    -- 将时间转化为毫秒制
+    -- 시간을 밀리초 단위로 바꾼다
     local intro_empty = param.intro_empty * 1000
     local intro = param.intro * 1000
     local loop = param.loop * 1000
@@ -23,28 +23,28 @@ local function getReloadTimingFromParam(param)
     local intro_empty_feed = param.intro_empty_feed * 1000
     local loop_feed = param.loop_feed * 1000
     local loop_feed_2 = param.loop_feed_2 * 1000
-    -- 检查是否任意时间为空值
+    -- 시간 값 중 비어 있는 것이 있는지 확인한다
     if (intro_empty == nil or intro == nil or loop == nil or loop_2 == nil or ending == nil or intro_empty_feed == nil or loop_feed == nil or loop_feed_2 == nil) then
         return nil
     end
-    -- 依次返回时间
+    -- 시간을 차례로 돌려준다
     return intro_empty, intro, loop, loop_2, ending, intro_empty_feed, loop_feed, loop_feed_2
 end
 
 function M.tick_reload(api)
-    -- 从枪的 data 文件里获取所有脚本需要的参数值
+    -- 총의 data 파일에서 스크립트에 필요한 매개변수 값을 모두 가져온다
     local param = api:getScriptParams();
     local intro_empty, intro, loop, loop_2, ending, intro_empty_feed, loop_feed, loop_feed_2 = getReloadTimingFromParam(param)
-    -- 象征性的检查一下时间有没有空值
+    -- 시간에 빈 값이 있는지 형식상 한 번 확인한다
     if (intro_empty == nil) then
         return NOT_RELOADING, -1
     end
-    -- 获取换弹时间（从按下 R 到当前）
+    -- 재장전 시간(R을 누른 때부터 지금까지)을 가져온다
     local reload_time = api:getReloadTime()
-    -- 获取预先缓存的参数
+    -- 미리 캐시한 매개변수를 가져온다
     local cache = api:getCachedScriptData()
     local interrupted_time = cache.interrupted_time
-    -- 打断换弹
+    -- 재장전 끊기
     if (interrupted_time ~= -1) then
         local int_time = reload_time - interrupted_time
         if (int_time >= ending) then
@@ -57,12 +57,12 @@ function M.tick_reload(api)
             end
         end
     else
-        -- 如果玩家背包里已经没有可以消耗的弹药也打断换弹
+        -- 플레이어 인벤토리에 소모할 탄약이 더 없으면 재장전을 끊는다
         if (not api:hasAmmoToConsume()) then
             interrupted_time = api:getReloadTime()
         end
     end
-    -- 空仓换弹往枪管里塞 1 颗
+    -- 빈 탄창 재장전이면 총열에 1발 넣는다
     local reloaded_count = cache.reloaded_count;
     if (reloaded_count == 0) then
         if (not cache.is_tactical) then
@@ -75,48 +75,48 @@ function M.tick_reload(api)
             reloaded_count = reloaded_count + 1
         end
     end
-    -- 循环换弹
+    -- 반복 재장전
     if (reloaded_count > 0) then
         local base_time = 0
-        -- 如果需要的弹药量为 1 则只唤起一次 loop
+        -- 필요한 탄약 수가 1이면 loop를 한 번만 부른다
         if (cache.needed_count == 1) then
             base_time = 0 + loop_feed
-        -- 如果需要的弹药量大于 1 则需要唤起 x 次 loop_2 和 0/1 次 loop
+        -- 필요한 탄약 수가 1보다 크면 loop_2를 x번, loop를 0/1번 불러야 한다
         elseif (cache.needed_count > 1) then
-            -- 根据装弹数量分别计算两种情况下的下一次 feed 距离换弹起始点的时长（偶数为 x-1 次 loop_2 循环，奇数为 y 次 loop_2 和 1 次 loop 的时长）
+            -- 장전 수에 따라 두 경우의 다음 feed까지 재장전 시작점부터의 시간을 따로 계산한다(짝수는 loop_2 x-1회, 홀수는 loop_2 y회와 loop 1회의 시간)
             if (reloaded_count % 2 == 0) then
                 base_time = ((reloaded_count - 2) / 2) * loop_2 + loop_feed_2
             else
                 base_time = ((reloaded_count - 1) / 2) * loop_2 + loop_feed
             end
         end
-        -- 在距离下一次 feed 的时长基础上添加起始时间
+        -- 다음 feed까지의 시간에 시작 시간을 더한다
         if (not cache.is_tactical) then
             base_time = base_time + intro_empty
         else
             base_time = base_time + intro
         end
-        -- 换弹时间达到了下一次 feed 时
+        -- 재장전 시간이 다음 feed 시점에 이르렀을 때
         while (base_time < reload_time) do
-            -- 如果换弹需求已满足则退出循环
+            -- 재장전 필요량을 채웠으면 반복을 끝낸다
             if (reloaded_count > cache.needed_count) then
                 break
             end
-            -- 如果需求量大于等于 2 ，则双发装填
+            -- 필요량이 2 이상이면 두 발씩 장전한다
             if (cache.needed_count - reloaded_count >= 1) then
                 reloaded_count = reloaded_count + 2
                 base_time = base_time + loop_2
-                -- 判断玩家所处的游戏模式
+                -- 플레이어의 게임 모드를 판단한다
                 if (api:isReloadingNeedConsumeAmmo()) then
                     api:putAmmoInMagazine(api:consumeAmmoFromPlayer(2))
                 else
                     api:putAmmoInMagazine(2)
                 end
-            -- 如果需求量等于 1 ，则单发装填
+            -- 필요량이 1이면 한 발 장전한다
             elseif (cache.needed_count - reloaded_count < 1) then
                 reloaded_count = reloaded_count + 1
                 base_time = base_time + loop
-                -- 判断玩家所处的游戏模式
+                -- 플레이어의 게임 모드를 판단한다
                 if (api:isReloadingNeedConsumeAmmo()) then
                     api:putAmmoInMagazine(api:consumeAmmoFromPlayer(1))
                 else
@@ -126,14 +126,14 @@ function M.tick_reload(api)
         end
     end
 
-    -- 将数据写回缓存
+    -- 데이터를 캐시에 다시 쓴다
     if (reloaded_count > cache.needed_count) then
         interrupted_time = api:getReloadTime() - loop_feed + loop
     end
     cache.interrupted_time = interrupted_time
     cache.reloaded_count = reloaded_count
     api:cacheScriptData(cache)
-    -- 返回换弹状态，这里的 total_time 是任意状态下换弹的总时长（不包含 ending 的时间）
+    -- 재장전 상태를 돌려준다. 여기서 total_time은 어떤 상태에서든 재장전 총시간이다(ending 시간 제외)
     local total_time = ((cache.needed_count - (cache.needed_count % 2)) / 2) * loop_2 + (cache.needed_count % 2) * loop
     if (not cache.is_tactical) then
         total_time = total_time + intro_empty

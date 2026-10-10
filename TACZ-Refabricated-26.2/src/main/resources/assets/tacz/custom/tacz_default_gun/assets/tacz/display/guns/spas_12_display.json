@@ -7,9 +7,9 @@
   },
   "hud": "tacz:gun/hud/spas_12",
   "slot": "tacz:gun/slot/spas_12",
-  // 弹药计量样式，可选值：”normal“(显示实际值)、”percent“(显示百分比)，默认为”normal“
+  // 탄약 표시 방식. 고를 수 있는 값: "normal"(실제 값 표시), "percent"(백분율 표시). 기본은 "normal"
   "ammo_count_style": "normal",
-  // tooltip的伤害显示样式，可选值：”total“(总伤害)、”per_projectile“(单发弹丸伤害x弹丸数量)，默认为”per_projectile“
+  // tooltip 피해 표시 방식. 고를 수 있는 값: "total"(총피해), "per_projectile"(산탄 한 발 피해 x 산탄 수). 기본은 "per_projectile"
   "damage_style": "per_projectile",
   "animation": "tacz:spas_12",
   "state_machine": "tacz:spas_12_state_machine",
@@ -51,7 +51,7 @@
     "melee_stock": "tacz:melee_stock/melee_stock_03"
     
   },
-  // 副手枪械显示
+  // 보조 손 총기 표시
   "offhand_show": {
     "pos": [1, 20, 3.5],
     "rotate": [0, 0, 60],

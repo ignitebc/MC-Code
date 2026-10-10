@@ -7,11 +7,11 @@
     "uninstall": "tacz:attachments/attachment_general_uninstall"
   },
   "laser": {
-    // 默认的镭射颜色
+    // 기본 레이저 색
     "default_color": "0x00ff00",
-    // 是否允许在改装界面自定义该镭射的颜色
+    // 개조 화면에서 이 레이저 색을 바꿀 수 있는지 여부
     "can_edit": true,
-    // 激光的长度（因为是渐变，末端可能实际完全看不见）
+    // 레이저 길이(그러데이션이라 끝부분은 실제로 전혀 보이지 않을 수 있다)
     "length": 75
   }
 }
