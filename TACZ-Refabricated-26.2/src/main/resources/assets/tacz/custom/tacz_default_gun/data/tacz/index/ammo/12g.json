@@ -2,7 +2,7 @@
   "name": "tacz.ammo.12g.name",
   "tooltip": "tacz.ammo.12g.desc",
   "display": "tacz:12g_display",
-  "stack_size": 36,
+  "stack_size": 64,
   "sort": 24
 }
     

@@ -2,6 +2,6 @@
   "name": "tacz.ammo.50ae.name",
   "tooltip": "tacz.ammo.50ae.desc",
   "display": "tacz:50ae_display",
-  "stack_size": 48,
+  "stack_size": 64,
   "sort": 16
 }

@@ -2,6 +2,6 @@
   "name": "tacz.ammo.40mm.name",
   "tooltip": "tacz.ammo.40mm.desc",
   "display": "tacz:40mm_display",
-  "stack_size": 6,
+  "stack_size": 8,
   "sort": 22
 }

@@ -2,7 +2,7 @@
   "name": "tacz.ammo.9mm.name",
   "tooltip": "tacz.ammo.9mm.desc",
   "display": "tacz:9mm_display",
-  "stack_size": 60,
+  "stack_size": 64,
   "sort": 2
 }
     

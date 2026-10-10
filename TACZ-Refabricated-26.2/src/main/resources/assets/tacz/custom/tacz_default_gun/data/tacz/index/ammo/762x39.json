@@ -3,6 +3,6 @@
   "tooltip": "tacz.ammo.762x39.desc",
   "display": "tacz:762x39_display",
   // 겹치기 수량
-  "stack_size": 60,
+  "stack_size": 64,
   "sort": 10
 }
