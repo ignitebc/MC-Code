@@ -3,8 +3,8 @@
   "ammo_amount": 5,
   "extended_mag_ammo_amount": [
     6,
-    7,
-    8
+    8,
+    10
   ],
   "bolt": "manual_action",
   "rpm": 200,

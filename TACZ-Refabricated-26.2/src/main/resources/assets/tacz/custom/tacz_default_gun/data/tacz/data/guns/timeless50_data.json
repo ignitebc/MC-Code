@@ -50,9 +50,9 @@
   },
   "ammo_amount": 8,
   "extended_mag_ammo_amount": [
-    9,
-    11,
-    13
+    10,
+    13,
+    16
   ],
   "bolt": "closed_bolt",
   "reload": {

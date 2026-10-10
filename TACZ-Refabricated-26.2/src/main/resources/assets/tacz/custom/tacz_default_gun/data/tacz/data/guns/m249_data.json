@@ -2,8 +2,8 @@
   "ammo": "tacz:556x45",
   "ammo_amount": 75,
   "extended_mag_ammo_amount": [
-    100,
-    150,
+    116,
+    158,
     200
   ],
   "can_slide": false,

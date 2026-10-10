@@ -5,9 +5,9 @@
   "ammo_amount": 40,
   // 확장 탄창 탄약 총수
   "extended_mag_ammo_amount": [
-    50,
-    60,
-    75
+    53,
+    67,
+    80
   ],
   // 노리쇠 종류: 개방 노리쇠 대기(open_bolt), 폐쇄 노리쇠 대기(closed_bolt), 수동 장전(manual_action)
   "bolt": "closed_bolt",

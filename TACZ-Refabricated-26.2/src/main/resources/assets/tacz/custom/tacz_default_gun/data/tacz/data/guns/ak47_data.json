@@ -5,9 +5,9 @@
   "ammo_amount": 30,
   // 확장 탄창 탄약 총수
   "extended_mag_ammo_amount": [
-    34,
-    37,
-    40
+    40,
+    50,
+    60
   ],
   // 논리 기계와 관련 수치 변경 지정
   "script": "tacz:xmag_reload_logic",

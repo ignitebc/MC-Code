@@ -143,9 +143,9 @@
     "laser"
   ],
   "extended_mag_ammo_amount": [
-    30,
-    30,
-    35
+    33,
+    42,
+    50
   ],
   "burst_data": {
     "continuous_shoot": false,

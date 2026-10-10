@@ -142,8 +142,8 @@
     "laser"
   ],
   "extended_mag_ammo_amount": [
-    35,
     40,
-    45
+    50,
+    60
   ]
 }

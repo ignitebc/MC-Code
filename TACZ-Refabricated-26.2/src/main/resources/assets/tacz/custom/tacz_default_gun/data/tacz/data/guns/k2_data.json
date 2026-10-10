@@ -144,8 +144,8 @@
   ],
   "extended_mag_ammo_amount": [
     40,
-    40,
-    40
+    50,
+    60
   ],
   "burst_data": {
     "continuous_shoot": false,
