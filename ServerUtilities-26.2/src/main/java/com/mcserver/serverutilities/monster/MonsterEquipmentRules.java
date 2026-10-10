@@ -171,7 +171,7 @@ public final class MonsterEquipmentRules {
         return false;
     }
 
-    /** 크리퍼는 장비가 없으므로 LV1~LV7을 같은 확률로 뽑는다. 레벨이 폭발 피해와 블록 파괴 범위를 정한다. */
+    /** 크리퍼는 장비가 없으므로 LV1~LV10을 같은 확률로 뽑는다. 레벨이 폭발 피해·블록 파괴 범위와 화약 드롭 배수를 정한다. */
     private static int rollCreeperLevel(Mob mob) {
         return CreeperLevel.fromRoll(mob.getRandom().nextInt(CreeperLevel.LEVEL_COUNT));
     }

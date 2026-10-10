@@ -44,7 +44,7 @@ public final class MonsterLevelLabel {
     private static final int NO_OUTLINE = 0;
     /**
      * 위험 단계 1~7의 글자 색. 가장 강한 7단계가 빨강이다.
-     * 장비 몬스터는 레벨 구간으로, 크리퍼는 레벨 그대로 단계를 정한다({@link MonsterLevel#stage}).
+     * 장비 몬스터는 레벨 구간으로, 크리퍼는 크리퍼 레벨 표로 단계를 정한다({@link MonsterLevel#stage}).
      */
     private static final ChatFormatting[] STAGE_COLORS = {
             ChatFormatting.WHITE, ChatFormatting.GREEN, ChatFormatting.AQUA, ChatFormatting.BLUE,

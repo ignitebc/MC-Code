@@ -8,7 +8,7 @@ package com.mcserver.serverutilities.monster;
  * 합이 0이어도 LV1로 표시한다.
  *
  * <p>위험 단계는 머리 위 글자 색, 경험치 구슬 배율, 재료 보상, 업적에 쓰는 1~7단계다. 장비 몬스터는
- * 레벨 구간으로 정하고, LV1~LV7만 뽑는 크리퍼는 레벨을 그대로 단계로 쓴다.
+ * 레벨 구간으로 정하고, LV1~LV10을 뽑는 크리퍼는 {@link CreeperLevel#dangerStage}의 표를 쓴다.
  * 마인크래프트 클래스에 의존하지 않아 회귀 검사에서 바로 확인할 수 있다.
  */
 public final class MonsterLevel {
@@ -43,15 +43,11 @@ public final class MonsterLevel {
     /**
      * 레벨의 위험 단계.
      *
-     * @param creeper 크리퍼인지. 크리퍼는 LV1~LV7을 뽑으므로 레벨이 곧 단계다.
+     * @param creeper 크리퍼인지. 크리퍼는 레벨 구간 대신 크리퍼 레벨 표로 단계를 정한다.
      * @return 1~7단계. 레벨이 없거나 범위를 벗어나면 {@link #NONE}
      */
     public static int stage(int level, boolean creeper) {
-        if (creeper) {
-            boolean creeperStage = level >= MIN_STAGE && level <= MAX_STAGE;
-            if (!creeperStage) return NONE;
-            return level;
-        }
+        if (creeper) return CreeperLevel.dangerStage(level);
         if (!isVisible(level)) return NONE;
 
         for (int index = 0; index < STAGE_LAST_LEVELS.length; index++) {

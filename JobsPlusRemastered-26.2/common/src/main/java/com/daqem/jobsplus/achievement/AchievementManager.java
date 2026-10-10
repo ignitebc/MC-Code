@@ -59,7 +59,7 @@ public final class AchievementManager
     /** TACZ 탄환 피해. TACZ에 의존하지 않도록 태그 ID로만 확인한다. */
     private static final TagKey<DamageType> GUN_BULLETS =
             TagKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath("tacz", "bullets"));
-    /** 강적 처치 업적(G13)이 세는 최소 위험 단계. 장비 몬스터 LV12 이상, 크리퍼 LV6 이상이다. */
+    /** 강적 처치 업적(G13)이 세는 최소 위험 단계. 장비 몬스터 LV12 이상, 크리퍼 LV8 이상이다. */
     private static final int STRONG_MONSTER_STAGE = 6;
     private static final Map<UUID, Integer> LAST_REQUESTS = new HashMap<>();
     private static final Map<UUID, Integer> LAST_CLAIMS = new HashMap<>();
@@ -262,7 +262,7 @@ public final class AchievementManager
             add(player, "gun_kills", 1);
         }
         // Server Utilities가 정한 머리 위 레벨의 위험 단계. 장비를 추첨하지 않은 몬스터는 레벨이 없다.
-        // 장비 몬스터는 레벨 구간, 크리퍼는 레벨 그대로 단계가 되므로 크리퍼도 같은 기준으로 집계된다.
+        // 장비 몬스터는 레벨 구간, 크리퍼는 크리퍼 레벨 표로 단계가 되므로 크리퍼도 같은 기준으로 집계된다.
         // 이미 쌓인 처치 수를 이어 쓰도록 기록 이름은 예전 기준(LV5 이상, LV7)의 이름을 그대로 둔다.
         if (victim instanceof MonsterEquipmentAccess monster)
         {

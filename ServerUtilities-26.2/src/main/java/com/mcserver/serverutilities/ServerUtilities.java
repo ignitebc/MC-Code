@@ -4,6 +4,7 @@ import com.mcserver.serverutilities.combat.CombatRules;
 import com.mcserver.serverutilities.boss.BossHealthRules;
 import com.mcserver.serverutilities.boss.WardenBossBars;
 import com.mcserver.serverutilities.monster.BossMinionRules;
+import com.mcserver.serverutilities.monster.CreeperGunpowderDrops;
 import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
 import com.mcserver.serverutilities.monster.MonsterEquipmentRules;
 import com.mcserver.serverutilities.monster.MonsterLevelSync;
@@ -57,6 +58,7 @@ public final class ServerUtilities implements ModInitializer {
             return true;
         });
         MonsterLevelSync.register();
+        CreeperGunpowderDrops.register();
         BossHealthRules.register();
         WardenBossBars.register();
         rejectLegacyModule("jobsplus", "com/daqem/jobsplus/event/player/EventDeleteRandomItemOnDeath.class");

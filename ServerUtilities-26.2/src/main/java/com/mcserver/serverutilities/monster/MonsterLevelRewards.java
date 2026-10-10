@@ -14,7 +14,7 @@ import java.util.List;
  * 몬스터 위험 단계에 따라 처치 보상 재료를 지급한다.
  *
  * <p>장비 몬스터는 단계마다 정한 개수만큼 재료를 따로 뽑으므로 같은 재료가 겹칠 수 있다.
- * 크리퍼는 이전 규칙 그대로 LV3~LV7에서 재료 1개를 준다.
+ * 크리퍼는 LV3 이상(LV3~LV10)에서 재료 1개를 준다.
  */
 public final class MonsterLevelRewards {
     /** 장비 몬스터의 1~7단계 재료 개수 */
@@ -51,7 +51,7 @@ public final class MonsterLevelRewards {
     /**
      * 처치 한 번에 떨어뜨리는 재료 수.
      *
-     * @param creeper 크리퍼인지. 크리퍼는 단계표 대신 이전 규칙(LV3~LV7에서 1개)을 쓴다.
+     * @param creeper 크리퍼인지. 크리퍼는 단계표 대신 LV3~LV10에서 1개를 준다.
      */
     public static int rewardCount(int monsterLevel, boolean creeper) {
         if (creeper) {
