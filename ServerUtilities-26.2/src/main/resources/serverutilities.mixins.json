@@ -40,6 +40,8 @@
     "ToolMiningExperienceMixin",
     "ToolRepairRecipeMixin",
     "ToolSmithingMixin",
+    "VexFlightMixin",
+    "VexVanillaMoveGoalMixin",
     "WitherSpawnHealthMixin"
   ],
   "client": [

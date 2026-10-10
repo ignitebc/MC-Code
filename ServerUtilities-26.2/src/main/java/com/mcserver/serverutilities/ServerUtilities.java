@@ -107,6 +107,7 @@ public final class ServerUtilities implements ModInitializer {
                                     + ", 겉날개=" + settings.combatElytra() + ", 철골렘=" + settings.combatGolems()
                                     + ", 전투 범위=" + settings.combatRange()
                                     + ", 크리퍼 레벨 배율=" + settings.creeperLevels()
+                                    + ", 벡스 벽 통과 금지=" + settings.vexCollision()
                                     + ", 피로도=" + settings.hunger() + " ×" + settings.hungerMultiplier()
                                     + ", 방어도 곡선=" + settings.armorCurve()
                                     + ", 장비 등급=" + settings.equipmentTiers()
