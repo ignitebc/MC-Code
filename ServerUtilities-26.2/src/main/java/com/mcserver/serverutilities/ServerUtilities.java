@@ -111,6 +111,7 @@ public final class ServerUtilities implements ModInitializer {
                                     + ", 크리퍼 레벨 배율=" + settings.creeperLevels()
                                     + ", 벡스 벽 통과 금지=" + settings.vexCollision()
                                     + ", 일리저 체력 상향=" + settings.illagerHealth()
+                                    + ", 구조물 추가 상자=" + settings.structureChests()
                                     + ", 피로도=" + settings.hunger() + " ×" + settings.hungerMultiplier()
                                     + ", 방어도 곡선=" + settings.armorCurve()
                                     + ", 장비 등급=" + settings.equipmentTiers()
