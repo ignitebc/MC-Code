@@ -6,9 +6,9 @@ import net.minecraft.resources.Identifier;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-/** Resolves saved identifiers from before the five PUBG gun renames. */
+/** PUBG 총 다섯 정의 이름이 바뀌기 전에 저장된 식별자를 해석한다. */
 public final class GunIdAliases {
-    // Legacy names belong only here: current resources and newly set IDs use the new names.
+    // 예전 이름은 여기에만 둔다: 현재 자원과 새로 지정하는 ID는 새 이름을 쓴다.
     private static final Map<String, String> LEGACY_PATHS = Map.of(
             "hk416d", "m416",
             "glock_17", "p18c",

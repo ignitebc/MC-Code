@@ -10,7 +10,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * 26.2 heat bar implementation using GuiGraphicsExtractor primitives.
+ * GuiGraphicsExtractor 기본 도형으로 그리는 26.2 과열 막대 구현.
  */
 public class HeatBarOverlay {
     public static void render(GuiGraphicsExtractor graphics, float partialTick) {

@@ -40,7 +40,7 @@ public class SilenceModifier implements IAttachmentModifier<Pair<Modifier, Boole
             return new SilenceJsonProperty(Pair.of(new Modifier(), false));
         }
         Modifier distance = silence.getDistance();
-        // 兼容旧版本
+        // 예전 버전 호환
         if (distance == null) {
             distance = new Modifier();
             distance.setAddend(silence.getDistanceAddend());

@@ -19,7 +19,7 @@ public class ExplosionData {
     private boolean destroyBlock;
 
     /**
-     * 无论是否触碰实体或者方块，默认延迟 30 秒就爆炸
+     * 엔티티나 블록에 닿았는지와 관계없이 기본으로 30초 뒤 폭발한다
      */
     @SerializedName("delay")
     private float delay;

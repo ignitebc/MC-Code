@@ -42,7 +42,7 @@ import java.util.Optional;
 @Environment(EnvType.CLIENT)
 public class CameraSetupEvent {
     /**
-     * 用于平滑 FOV 变化
+     * FOV 변화를 부드럽게 하는 데 쓴다
      */
     public static final SecondOrderDynamics WORLD_FOV_DYNAMICS = new SecondOrderDynamics(0.5f, 1.2f, 0.5f, 0);
     public static final SecondOrderDynamics ITEM_MODEL_FOV_DYNAMICS = new SecondOrderDynamics(0.5f, 1.2f, 0.5f, 0);
@@ -61,7 +61,7 @@ public class CameraSetupEvent {
             return;
         }
         ItemStack stack = KeepingItemRenderer.getRenderer().getCurrentItem();
-        // 尝试调用物品的自定义相机动画
+        // 아이템의 사용자 정의 카메라 애니메이션을 호출해 본다
         if (BuiltinItemRendererRegistry.INSTANCE.get(stack.getItem()) instanceof AnimateGeoItemRenderer<?, ?> renderer) {
             renderer.applyLevelCameraAnimation(event, stack, player);
         }
@@ -77,7 +77,7 @@ public class CameraSetupEvent {
             return;
         }
         ItemStack stack = KeepingItemRenderer.getRenderer().getCurrentItem();
-        // 尝试调用物品的自定义相机动画
+        // 아이템의 사용자 정의 카메라 애니메이션을 호출해 본다
         if (BuiltinItemRendererRegistry.INSTANCE.get(stack.getItem()) instanceof AnimateGeoItemRenderer<?, ?> renderer) {
             renderer.applyItemInHandCameraAnimation(event, stack, player);
         }
@@ -85,7 +85,7 @@ public class CameraSetupEvent {
 
     public static void applyScopeMagnification(ViewportEvent.ComputeFov event) {
         if (!event.usedConfiguredFov()) {
-            return; // 只修改世界渲染的 fov，因此如果是手部渲染 fov 事件，则返回
+            return; // 월드 렌더링의 fov만 바꾸므로, 손 렌더링 fov 이벤트면 돌아간다
         }
         Entity entity = event.getCamera().entity();
         if (entity instanceof LivingEntity livingEntity) {
@@ -112,7 +112,7 @@ public class CameraSetupEvent {
 
     public static void applyGunModelFovModifying(ViewportEvent.ComputeFov event) {
         if (event.usedConfiguredFov()) {
-            return; // 只修改手部物品的 fov，因此如果是世界渲染 fov 事件，则返回
+            return; // 손에 든 아이템의 fov만 바꾸므로, 월드 렌더링 fov 이벤트면 돌아간다
         }
         Entity entity = event.getCamera().entity();
         if (entity instanceof LivingEntity livingEntity) {
@@ -128,7 +128,7 @@ public class CameraSetupEvent {
             }
             CompoundTag scopeTag = iGun.getAttachmentTag(stack, AttachmentType.SCOPE);
             int zoomNumber = AttachmentItemDataAccessor.getZoomNumberFromTag(scopeTag);
-            // 尝试使用配件fov修改，若无则尝试使用枪械本身fov修改，否则维持不变
+            // 부착물 fov 수정을 먼저 쓰고, 없으면 총기 자체 fov 수정을 쓰며, 둘 다 없으면 그대로 둔다
             float modifiedFov = TimelessAPI.getClientAttachmentIndex(scopeItemId)
                     .map(index -> {
                         float[] viewsFov = index.getViewsFov();
@@ -175,14 +175,14 @@ public class CameraSetupEvent {
             }
             ClientGunIndex gunIndex = gunIndexOptional.get();
             GunData gunData = gunIndex.getGunData();
-            // 获取所有配件对摄像机后坐力的修改
+            // 모든 부착물이 카메라 반동에 주는 보정을 얻는다
             ParameterizedCachePair<Float, Float> attachmentRecoilModifier = cacheProperty.getCache(RecoilModifier.ID);
             IClientPlayerGunOperator clientPlayerGunOperator = IClientPlayerGunOperator.fromLocalPlayer(player);
             float partialTicks = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
             float aimingProgress = clientPlayerGunOperator.getClientAimingProgress(partialTicks);
             float zoom = iGun.getAimingZoom(mainHandItem);
             float aimingRecoilModifier = 1 - aimingProgress + aimingProgress / (float) Math.min(Math.sqrt(zoom), 1.5);
-            // 如果是趴下，那么后坐力按 data 设计减少（默认为降低一半）
+            // 엎드려 있으면 data 설정에 따라 반동을 줄인다(기본은 절반)
             if (!player.isSwimming() && player.getPose() == Pose.SWIMMING) {
                 aimingRecoilModifier = aimingRecoilModifier * gunData.getCrawlRecoilMultiplier();
             }

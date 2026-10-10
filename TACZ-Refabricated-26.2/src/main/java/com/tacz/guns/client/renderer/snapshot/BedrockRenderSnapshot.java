@@ -18,13 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Immutable per-submit snapshot of a mutable BedrockModel.
+ * 변할 수 있는 BedrockModel의 제출마다 만드는 변하지 않는 스냅숏.
  *
- * <p>The old renderer could mutate a shared model and immediately upload its vertices. In 26.2
- * geometry is consumed after extraction, so retaining BedrockPart references would allow later
- * cleanAnimationTransform() calls or another entity submission to overwrite this frame's pose.
- * This class resolves every part matrix during extraction and retains only immutable matrices and
- * static cube geometry for the delayed custom-geometry callback.</p>
+ * <p>예전 렌더러는 공유 모델을 바꾸고 곧바로 정점을 올릴 수 있었다. 26.2에서는
+ * 형상을 추출한 뒤에 소비하므로, BedrockPart 참조를 붙잡아 두면 나중의
+ * cleanAnimationTransform() 호출이나 다른 엔티티 제출이 이번 프레임의 자세를 덮어쓸 수 있다.
+ * 이 클래스는 추출하는 동안 모든 부품 행렬을 계산하고, 지연된 사용자 정의 형상 콜백을 위해
+ * 변하지 않는 행렬과 고정된 cube 형상만 남긴다.</p>
  */
 public final class BedrockRenderSnapshot {
     private final List<DrawCommand> drawCommands;
@@ -57,13 +57,13 @@ public final class BedrockRenderSnapshot {
     }
 
     /**
-     * 以单个节点为根做一次几何快照（不遍历整个模型的 shouldRender 列表）。
+     * 노드 하나를 루트로 형상 스냅숏을 한 번 만든다(모델 전체의 shouldRender 목록을 훑지 않는다).
      *
-     * <p>用于瞄具的 ocular / division / scope_body 等<b>不在主渲染列表里</b>、
-     * 需要单独按顺序绘制的部件（见 {@code BedrockAttachmentModel#submitTempPart}）。</p>
+     * <p>조준경의 ocular / division / scope_body처럼 <b>주 렌더링 목록에 없고</b>
+     * 순서대로 따로 그려야 하는 부품에 쓴다({@code BedrockAttachmentModel#submitTempPart} 참고).</p>
      *
-     * <p>注意：{@code rootPose} 应当<b>已经</b>套用了该节点自身及其父级链的变换，
-     * 因此这里不再对根节点重复套用，只在递归子节点时套用。</p>
+     * <p>주의: {@code rootPose}에는 이 노드 자신과 부모 사슬의 변환이 <b>이미</b> 적용되어 있어야 하므로,
+     * 여기서는 루트 노드에 다시 적용하지 않고 자식 노드로 재귀할 때만 적용한다.</p>
      */
     public static BedrockRenderSnapshot captureSubtree(BedrockPart root,
                                                        PoseStack rootPose,
@@ -84,7 +84,7 @@ public final class BedrockRenderSnapshot {
         return this.drawCommands.isEmpty();
     }
 
-    /** Number of old functional nodes intentionally deferred to the A3 collector migration. */
+    /** A3 collector 이전으로 일부러 미룬 예전 기능 노드 수. */
     public int skippedFunctionalNodeCount() {
         return this.skippedFunctionalNodeCount;
     }
@@ -157,9 +157,9 @@ public final class BedrockRenderSnapshot {
         }
 
         /**
-         * 在<b>当前矩阵</b>下采集 part 自身与其子树的几何。
-         * 与 capturePart 的区别：不对 part 自身再套一次 translateAndRotateAndScale
-         * （调用点已经套过），仅对子节点递归时套用。
+         * <b>현재 행렬</b> 아래에서 part 자신과 하위 트리의 형상을 모은다.
+         * capturePart와의 차이: part 자신에게 translateAndRotateAndScale을 다시 적용하지 않고
+         * (호출 지점에서 이미 적용함) 자식 노드로 재귀할 때만 적용한다.
          */
         private void captureGeometry(BedrockPart part, PoseStack poseStack, int inheritedLight) {
             if (!part.visible) {
@@ -180,9 +180,9 @@ public final class BedrockRenderSnapshot {
         private void capturePart(BedrockPart part, PoseStack poseStack, int inheritedLight) {
             int partLight = part.illuminated ? 15728880 : inheritedLight;
 
-            // FunctionalBedrockPart always evaluates its provider, even if visible is false. Providers
-            // returning null are visibility/state hooks and can be snapshotted normally. Providers
-            // returning a renderer need a collector-aware A3 implementation and are not executed here.
+            // FunctionalBedrockPart는 visible이 false여도 provider를 항상 평가한다.
+            // null을 돌려주는 provider는 표시/상태 훅이라 평소처럼 스냅숏할 수 있다.
+            // renderer를 돌려주는 provider는 collector 대응 A3 구현이 필요해 여기서는 실행하지 않는다.
             IFunctionalRenderer legacyFunctionalRenderer = null;
             if (part instanceof FunctionalBedrockPart functional && functional.functionalRenderer != null) {
                 legacyFunctionalRenderer = functional.functionalRenderer.apply(part);
@@ -203,9 +203,9 @@ public final class BedrockRenderSnapshot {
                     poseStack.popPose();
                     return;
                 } else if (legacyFunctionalRenderer instanceof IMirrorGeometry mirror) {
-                    // 在本节点的变换下，先画自己（含子树），再把被镜像的节点也画一遍。
-                    // 用于 additional_magazine：枪身上那一个弹匣与跟手的那一个共用同一份网格。
-                    // 走这条路径可与枪身共用 RenderType / DrawCommand 批次，保证材质与顺序正确。
+                    // 이 노드의 변환 아래에서 먼저 자신(하위 트리 포함)을 그리고, 거울로 지정한 노드도 한 번 더 그린다.
+                    // additional_magazine에 쓴다: 총몸의 탄창과 손을 따라가는 탄창이 같은 메시를 함께 쓴다.
+                    // 이 경로를 타면 총몸과 같은 RenderType / DrawCommand 묶음을 써서 재질과 순서가 맞는다.
                     if (part.visible) {
                         captureGeometry(part, poseStack, partLight);
                         BedrockPart mirrored = mirror.getMirroredPart();

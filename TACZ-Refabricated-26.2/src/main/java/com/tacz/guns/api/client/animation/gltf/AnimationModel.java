@@ -7,8 +7,8 @@ import java.util.Objects;
 
 public class AnimationModel {
     /**
-     * The {@link Channel} instances
-     * of this animation
+     * 이 애니메이션의
+     * {@link Channel} 인스턴스들
      */
     private final List<Channel> channels = new ArrayList<>();
     private String name;
@@ -22,9 +22,9 @@ public class AnimationModel {
     }
 
     /**
-     * Add the given {@link Channel}
+     * 주어진 {@link Channel}을 추가한다
      *
-     * @param channel The {@link Channel}
+     * @param channel {@link Channel}
      */
     public void addChannel(Channel channel) {
         Objects.requireNonNull(channel, "The channel may not be null");
@@ -37,34 +37,34 @@ public class AnimationModel {
 
     public enum Interpolation {
         /**
-         * Stepwise interpolation
+         * 계단식 보간
          */
         STEP,
 
         /**
-         * Linear interpolation
+         * 선형 보간
          */
         LINEAR,
 
         /**
-         * Spline interpolation
+         * 스플라인 보간
          */
         SPLINE
     }
 
 
     /**
-     * @param input         The input data
-     * @param interpolation The interpolation method
-     * @param output        The output data
+     * @param input         입력 데이터
+     * @param interpolation 보간 방식
+     * @param output        출력 데이터
      */
     public record Sampler(AccessorModel input, Interpolation interpolation, AccessorModel output) {
         /**
-         * Default constructor
+         * 기본 생성자
          *
-         * @param input         The input
-         * @param interpolation The interpolation
-         * @param output        The output
+         * @param input         입력
+         * @param interpolation 보간
+         * @param output        출력
          */
         public Sampler(
                 AccessorModel input,
@@ -80,18 +80,18 @@ public class AnimationModel {
     }
 
     /**
-     * @param sampler   The sampler
-     * @param nodeModel The node model
-     * @param path      The path
+     * @param sampler   샘플러
+     * @param nodeModel 노드 모델
+     * @param path      경로
      */
     public record Channel(Sampler sampler, NodeModel nodeModel, String path) {
 
         /**
-         * Default constructor
+         * 기본 생성자
          *
-         * @param sampler   The sampler
-         * @param nodeModel The node model
-         * @param path      The path
+         * @param sampler   샘플러
+         * @param nodeModel 노드 모델
+         * @param path      경로
          */
         public Channel(
                 Sampler sampler,

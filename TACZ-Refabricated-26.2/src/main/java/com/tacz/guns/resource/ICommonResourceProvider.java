@@ -49,16 +49,16 @@ public interface ICommonResourceProvider {
     Set<String> getAllowAttachmentTags(Identifier registryName);
 
     /**
-     * 枪械工作台配方。
+     * 총기 작업대 레시피.
      *
-     * <p><b>为什么需要它（第 12 轮）</b>：26.2 的客户端<b>没有</b>完整配方表 ——
-     * {@code ClientLevel#recipeAccess()} 返回的 {@code RecipeAccess} 只有
-     * {@code propertySet(...)} 与 {@code stonecutterRecipes()}，
-     * 原版只下发配方书需要的那部分。上游 1.21.1 用的
-     * {@code recipeManager.getAllRecipesFor(...)} 在 26.2 客户端已不可用。</p>
+     * <p><b>필요한 이유(12차)</b>: 26.2 클라이언트에는 완전한 레시피 표가 <b>없다</b> —
+     * {@code ClientLevel#recipeAccess()}가 돌려주는 {@code RecipeAccess}에는
+     * {@code propertySet(...)}과 {@code stonecutterRecipes()}만 있고,
+     * 바닐라는 레시피 책에 필요한 부분만 내려보낸다. 원본 1.21.1이 쓴
+     * {@code recipeManager.getAllRecipesFor(...)}는 26.2 클라이언트에서 더는 쓸 수 없다.</p>
      *
-     * <p>因此工作台界面所需的配方必须由 mod 自己同步过来，
-     * 走既有的 {@code DataType.RECIPES} 通道（该枚举此前被声明但从未接线）。</p>
+     * <p>그래서 작업대 화면에 필요한 레시피는 mod가 직접 동기화해야 하며,
+     * 기존 {@code DataType.RECIPES} 경로를 탄다(이 열거값은 예전부터 선언만 되고 연결된 적이 없었다).</p>
      */
     @Nullable TableRecipe getTableRecipe(Identifier recipeId);
 

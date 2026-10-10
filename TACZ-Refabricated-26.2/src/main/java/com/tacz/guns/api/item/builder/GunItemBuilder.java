@@ -70,8 +70,8 @@ public final class GunItemBuilder {
     }
 
     /**
-     * 强行以默认的枪支Item构建一个物品，不进行index检查<br/>
-     * 可能会返回功能不完整的物品
+     * index 검사 없이 기본 총기 Item으로 아이템을 강제로 만든다<br/>
+     * 기능이 완전하지 않은 아이템을 돌려줄 수 있다
      */
     public ItemStack forceBuild() {
         ItemStack gun = new ItemStack(ModItems.MODERN_KINETIC_GUN, this.count);

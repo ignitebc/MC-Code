@@ -1,29 +1,29 @@
 package cn.sh1rocu.tacz.api.extension;
 
 /**
- * 为实体补回 26.2 中被移除的 {@code walkDistO}（上一 tick 的行走距离）。
+ * 26.2에서 제거된 {@code walkDistO}(직전 틱의 걷기 거리)를 엔티티에 되살린다.
  *
- * <p><b>为什么需要它</b></p>
+ * <p><b>필요한 이유</b></p>
  *
- * <p>上游 1.21.1 的持枪行走动画驱动量是<b>插值后</b>的行走距离：</p>
+ * <p>원본 1.21.1의 총 들고 걷는 애니메이션은 <b>보간한</b> 걷기 거리로 움직인다:</p>
  * <pre>
  * entity.walkDist + (entity.walkDist - entity.walkDistO) * partialTicks
  * </pre>
  *
- * <p>26.2 把 {@code walkDist} 更名为 {@code moveDist}，但<b>没有</b>保留配套的
- * {@code walkDistO}（javap 确认：{@code Entity} 只有 {@code public float moveDist}）。
- * 第 6 轮为修正"动画快 6.7 倍"改用了 {@code moveDist}，量纲正确了，
- * 但它每游戏刻（20Hz）才更新一次、又无法插值 —— 渲染是按帧跑的（60~144Hz），
- * 于是动画呈现明显的阶梯感，看起来像<b>掉帧 / 被抽帧</b>。</p>
+ * <p>26.2는 {@code walkDist}를 {@code moveDist}로 이름을 바꾸면서 짝이 되는
+ * {@code walkDistO}를 <b>남기지 않았다</b>(javap 확인: {@code Entity}에는 {@code public float moveDist}만 있다).
+ * 6차에서 "애니메이션이 6.7배 빠른" 문제를 고치려고 {@code moveDist}로 바꿔 단위는 맞췄지만,
+ * 값이 게임 틱(20Hz)마다 한 번만 바뀌고 보간도 할 수 없다 — 렌더링은 프레임(60~144Hz)마다 돌기 때문에
+ * 애니메이션이 계단처럼 끊겨 <b>프레임이 떨어진 것처럼</b> 보였다.</p>
  *
- * <p>本接口由 {@code EntityMixin} 实现：在每个 {@code Entity#tick()} 的 HEAD
- * 把上一 tick 的 {@code moveDist} 存下来，从而重建出与上游等价的
- * {@code walkDistO}，让 {@code GunAnimationStateContext#getWalkDist()}
- * 能做与 1.21.1 完全一致的线性插值。</p>
+ * <p>이 인터페이스는 {@code EntityMixin}이 구현한다. 매 {@code Entity#tick()}의 HEAD에서
+ * 직전 틱의 {@code moveDist}를 저장해 원본과 같은
+ * {@code walkDistO}를 다시 만들고, {@code GunAnimationStateContext#getWalkDist()}가
+ * 1.21.1과 똑같이 선형 보간할 수 있게 한다.</p>
  */
 public interface IMoveDistTracker {
     /**
-     * @return 上一游戏刻结束时的 {@code moveDist}。首次调用时与当前值相同（增量为 0）。
+     * @return 직전 게임 틱이 끝났을 때의 {@code moveDist}. 처음 호출하면 현재 값과 같다(증가량 0).
      */
     float tacz$getMoveDistO();
 }

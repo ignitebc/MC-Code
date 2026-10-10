@@ -4,17 +4,17 @@ import com.google.gson.annotations.SerializedName;
 
 public enum Bolt {
     /**
-     * 开膛待击
+     * 개방 노리쇠 대기
      */
     @SerializedName("open_bolt")
     OPEN_BOLT,
     /**
-     * 闭膛待击
+     * 폐쇄 노리쇠 대기
      */
     @SerializedName("closed_bolt")
     CLOSED_BOLT,
     /**
-     * 手动上膛
+     * 수동 장전
      */
     @SerializedName("manual_action")
     MANUAL_ACTION

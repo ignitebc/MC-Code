@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 /**
- * 当第一人称视角触发摇晃时，世界背景的摇晃
+ * 1인칭 시점이 흔들릴 때의 월드 배경 흔들림
  */
 public class RenderLevelBobEvent extends BaseEvent {
     public static final Event<HurtCallback> HURT = EventFactory.createArrayBacked(HurtCallback.class, callbacks -> event -> {

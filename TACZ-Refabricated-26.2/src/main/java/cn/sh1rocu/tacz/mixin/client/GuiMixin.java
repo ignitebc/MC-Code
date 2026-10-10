@@ -26,7 +26,7 @@ public class GuiMixin {
         }
     }
 
-    // 需要渲染枪械准心时取消原版渲染
+    // 총기 조준선을 그려야 할 때는 바닐라 조준선을 그리지 않는다
     @Inject(method = "extractCrosshair", at = @At("HEAD"), cancellable = true)
     private void tacz$renderCrosshair(GuiGraphicsExtractor context, DeltaTracker deltaTracker, CallbackInfo ci) {
         LocalPlayer player = Minecraft.getInstance().player;

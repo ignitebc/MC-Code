@@ -1,12 +1,12 @@
 #version 330
 
-// 瞄具镜身顶点着色器。
+// 조준경 몸체 정점 셰이더.
 //
-// 与 26.2 的 assets/minecraft/shaders/core/entity.vsh 【逐字节相同】,
-// 仅因 26.2 要求 vsh/fsh 同名配对而单独存在一份。
-// 所有裁剪逻辑都在 scope_body.fsh 里, 本文件不含任何自定义改动。
+// 26.2의 assets/minecraft/shaders/core/entity.vsh와 [바이트 단위로 같으며],
+// 26.2가 vsh/fsh를 같은 이름으로 짝지어야 해서 따로 한 벌 둘 뿐이다.
+// 모든 잘라내기 로직은 scope_body.fsh에 있으며, 이 파일에는 사용자 정의 변경이 전혀 없다.
 //
-// 若将来 vanilla 改了 entity.vsh, 直接原样覆盖本文件即可。
+// 나중에 바닐라가 entity.vsh를 바꾸면 이 파일을 그대로 덮어쓰면 된다.
 
 #if defined(PER_FACE_LIGHTING) || !defined(NO_CARDINAL_LIGHTING)
 #moj_import <minecraft:light.glsl>

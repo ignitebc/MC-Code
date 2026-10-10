@@ -9,9 +9,9 @@ public class LuaAnimationStateMachine<T extends AnimationStateContext> extends A
     Consumer<T> exitFunc;
 
     /**
-     * 此方法不应该被直接调用，而是应该通过工厂生成实例
+     * 직접 호출하지 말고 팩토리로 인스턴스를 만든다
      *
-     * @param animationController 动画状态机控制的动画控制器
+     * @param animationController 애니메이션 상태 기계가 조종하는 애니메이션 컨트롤러
      * @see LuaStateMachineFactory
      */
     LuaAnimationStateMachine(AnimationController animationController) {

@@ -12,14 +12,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Environment(EnvType.CLIENT)
 public class PreventsHotbarEvent {
     public static void onRenderHotbarEvent(AtomicBoolean cancelled) {
-        // todo 需要测试行为
+        // TODO 동작 확인 필요
         Screen screen = Minecraft.getInstance().gui.screen();
-        // 枪械合成台界面关闭背景
+        // 총기 제작대 화면은 배경을 끈다
         if (screen instanceof GunSmithTableScreen) {
             cancelled.set(true);
             return;
         }
-        // 枪械改装界面关闭背景
+        // 총기 개조 화면은 배경을 끈다
         if (screen instanceof GunRefitScreen) {
             cancelled.set(true);
         }

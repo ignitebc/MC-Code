@@ -29,10 +29,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * 通用数据管理器，采用懒加载策略<br>
- * 从资源包/数据包中读取json文件并解析为数据
+ * 지연 로드 방식을 쓰는 범용 데이터 관리자<br>
+ * 리소스 팩/데이터 팩에서 json 파일을 읽어 데이터로 해석한다
  *
- * @param <T> 数据类型
+ * @param <T> 데이터 종류
  */
 public class LazyJsonDataManager<T> extends SimplePreparableReloadListener<LazyJsonDataManager.PreparedResult<T>> implements IdentifiableResourceReloadListener {
 
@@ -72,7 +72,7 @@ public class LazyJsonDataManager<T> extends SimplePreparableReloadListener<LazyJ
         for (Map.Entry<Identifier, Identifier> entry : scannedResources.entrySet()) {
             Identifier id = entry.getKey();
             Identifier resourcePath = entry.getValue();
-            // 给默认包的东西直接加载好
+            // 기본 팩의 것은 바로 로드해 둔다
             if (shouldEagerLoad(id)) {
                 JsonElement sourceElement = readResourceElement(pResourceManager, resourcePath);
                 if (sourceElement == null) {

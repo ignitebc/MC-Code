@@ -14,10 +14,10 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import java.util.Map;
 
 /**
- * 通用数据管理器<br>
- * 从资源包/数据包中读取json文件并解析为数据
+ * 범용 데이터 관리자<br>
+ * 리소스 팩/데이터 팩에서 json 파일을 읽어 데이터로 해석한다
  *
- * @param <T> 数据类型
+ * @param <T> 데이터 종류
  */
 public class DisplayManager<T extends IDisplay> extends JsonDataManager<T> {
 

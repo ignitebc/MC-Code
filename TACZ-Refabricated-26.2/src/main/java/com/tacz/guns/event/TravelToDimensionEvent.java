@@ -7,7 +7,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 /**
- * 修正跨纬度时，枪械数据不刷新的问题，这是服务端的刷新
+ * 차원을 넘을 때 총기 데이터가 새로 고쳐지지 않는 문제를 고친다. 서버 쪽 새로 고침이다
  */
 public class TravelToDimensionEvent {
     public static void onTravelToDimension(Entity originalEntity, Entity newEntity, ServerLevel origin, ServerLevel destination) {

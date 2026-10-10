@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * 生物射击时触发的事件。与 {@link GunFireEvent}不同的是，扣动一次扳机只会触发一次这个事件，但可能多次触发 {@link GunFireEvent}（如枪械处于 Burst 模式）
+ * 생물이 사격할 때 발생하는 이벤트. {@link GunFireEvent}와 달리 방아쇠를 한 번 당기면 한 번만 발생하지만, {@link GunFireEvent}는 여러 번 발생할 수 있다(예: 총기가 Burst 모드일 때)
  */
 public class GunShootEvent extends BaseEvent implements ICancellableEvent {
     private final LivingEntity shooter;

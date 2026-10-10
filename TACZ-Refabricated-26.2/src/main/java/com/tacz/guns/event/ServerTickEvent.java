@@ -5,7 +5,7 @@ import net.minecraft.server.MinecraftServer;
 
 public class ServerTickEvent {
     public static void onServerTick(MinecraftServer server) {
-        // 更新 CycleTaskHelper 中的任务
+        // CycleTaskHelper의 작업 갱신
         CycleTaskHelper.tick();
     }
 }

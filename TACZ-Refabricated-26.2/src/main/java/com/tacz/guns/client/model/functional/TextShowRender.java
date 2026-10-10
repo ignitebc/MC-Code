@@ -70,8 +70,8 @@ public class TextShowRender implements IFunctionalSubmitter {
         if (StringUtils.isBlank(text)) {
             return;
         }
-        // 26.2: Font.drawInBatch and MultiBufferSource removed.
-        // Text rendering on gun models needs re-implementation with new rendering API.
-        // TODO: Re-implement text rendering using SubmitNodeCollector.submitCustomGeometry or Font.prepareText
+        // 26.2: Font.drawInBatch와 MultiBufferSource는 제거되었다.
+        // 총기 모델 위 글자 렌더링은 새 렌더링 API로 다시 구현해야 한다.
+        // TODO: SubmitNodeCollector.submitCustomGeometry나 Font.prepareText로 글자 렌더링을 다시 구현한다
     }
 }

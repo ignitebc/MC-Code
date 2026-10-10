@@ -20,14 +20,14 @@ import java.util.Map;
 
 public class ResourceScanner {
     /**
-     * 扫描指定目录下的所有json文件<br>
-     * 与原版的scanDirectory方法的区别在于，查询结果是作为返回值返回的，而且允许注释
-     * 对于相同的文件路径，只读取优先级最高的文件
+     * 지정한 디렉터리 아래 모든 json 파일을 훑는다<br>
+     * 바닐라 scanDirectory 메서드와 다른 점은 조회 결과를 반환값으로 돌려주고 주석을 허용한다는 것이다
+     * 같은 파일 경로이면 우선순위가 가장 높은 파일만 읽는다
      *
-     * @param pResourceManager 资源管理器
-     * @param pName            目录名
-     * @param pGson            Gson实例
-     * @return 扫描到的json文件
+     * @param pResourceManager 자원 관리자
+     * @param pName            디렉터리 이름
+     * @param pGson            Gson 인스턴스
+     * @return 찾은 json 파일
      */
     public static Map<Identifier, JsonElement> scanDirectory(ResourceManager pResourceManager, String pName, Gson pGson) {
         return scanDirectory(pResourceManager, FileToIdConverter.json(pName), pGson);
@@ -66,13 +66,13 @@ public class ResourceScanner {
     }
 
     /**
-     * 扫描指定目录下的所有json文件<br/>
-     * 与{@link #scanDirectory(ResourceManager, String, Gson)}不同的是，该方法会读取所有json文件作为列表返回
+     * 지정한 디렉터리 아래 모든 json 파일을 훑는다<br/>
+     * {@link #scanDirectory(ResourceManager, String, Gson)}와 달리 모든 json 파일을 읽어 목록으로 돌려준다
      *
-     * @param pResourceManager  资源管理器
-     * @param filetoidconverter 文件路径和id的映射
-     * @param pGson             Gson实例
-     * @return 扫描到的json文件
+     * @param pResourceManager  자원 관리자
+     * @param filetoidconverter 파일 경로와 id의 매핑
+     * @param pGson             Gson 인스턴스
+     * @return 찾은 json 파일
      */
     public static Map<Identifier, List<JsonElement>> scanDirectoryAll(ResourceManager pResourceManager, FileToIdConverter filetoidconverter, Gson pGson) {
         Map<Identifier, List<JsonElement>> output = Maps.newHashMap();

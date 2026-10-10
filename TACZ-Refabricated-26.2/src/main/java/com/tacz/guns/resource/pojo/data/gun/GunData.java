@@ -165,7 +165,7 @@ public class GunData {
         if (fireModeAdjustData != null) {
             rpm += fireModeAdjustData.getRoundsPerMinute();
         }
-        // 为避免非法运算，随意返回一个默认值。
+        // 잘못된 연산을 피하려고 아무 기본값이나 돌려준다.
         if (rpm <= 0) {
             return 300;
         }
@@ -297,7 +297,7 @@ public class GunData {
     }
 
     /**
-     * @return 枪械开火的间隔，单位为 ms 。
+     * @return 총기 발사 간격. 단위는 ms다.
      */
     public long getShootInterval(LivingEntity shooter, FireMode fireMode, ItemStack gunStack) {
         int rpm = this.getRoundsPerMinute(fireMode);
@@ -313,10 +313,10 @@ public class GunData {
     }
 
     /**
-     * @return 枪械开火的间隔，单位为 ms 。
+     * @return 총기 발사 간격. 단위는 ms다.
      */
     public long getBurstShootInterval() {
-        // 为避免非法运算，随意返回一个默认值。
+        // 잘못된 연산을 피하려고 아무 기본값이나 돌려준다.
         if (burstData == null || burstData.getBpm() <= 0) {
             return 300;
         }

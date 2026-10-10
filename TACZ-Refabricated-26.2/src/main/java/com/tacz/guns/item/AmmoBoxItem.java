@@ -45,19 +45,19 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
 
     @Override
     public boolean overrideStackedOnOther(ItemStack ammoBox, Slot slot, ClickAction action, Player player) {
-        // 右击
+        // 우클릭
         if (action == ClickAction.SECONDARY) {
-            // 点击的格子
+            // 클릭한 칸
             ItemStack slotItem = slot.getItem();
             Identifier boxAmmoId = this.getAmmoId(ammoBox);
 
-            // 格子为空，那就是取出物品
+            // 칸이 비었으면 아이템을 꺼내는 것이다
             if (slotItem.isEmpty()) {
-                // 啥也没有，不能取出
+                // 아무것도 없으면 꺼낼 수 없다
                 if (boxAmmoId.equals(DefaultAssets.EMPTY_AMMO_ID)) {
                     return false;
                 }
-                // 数量不对，不能取出
+                // 수량이 맞지 않으면 꺼낼 수 없다
                 int boxAmmoCount = this.getAmmoCount(ammoBox);
                 if (boxAmmoCount <= 0) {
                     return false;
@@ -81,14 +81,14 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
                 }).orElse(false);
             }
 
-            // 如果是子弹
+            // 탄환이면
             if (slotItem.getItem() instanceof IAmmo iAmmo) {
                 Identifier slotAmmoId = iAmmo.getAmmoId(slotItem);
-                // 格子里的子弹 ID 不对，不能放
+                // 칸 안 탄환 ID가 맞지 않으면 넣을 수 없다
                 if (slotAmmoId.equals(DefaultAssets.EMPTY_AMMO_ID)) {
                     return false;
                 }
-                // 如果盒子的子弹 ID 为空，变成当前点击的类型
+                // 상자의 탄환 ID가 비었으면 지금 클릭한 종류로 바꾼다
                 if (boxAmmoId.equals(DefaultAssets.EMPTY_AMMO_ID)) {
                     this.setAmmoId(ammoBox, slotAmmoId);
                 } else if (!slotAmmoId.equals(boxAmmoId)) {
@@ -102,7 +102,7 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
                     ItemStack takeItem = slot.safeTake(slotItem.getCount(), needCount, player);
                     this.setAmmoCount(ammoBox, boxAmmoCount + takeItem.getCount());
                 });
-                // 播放取出声音
+                // 꺼내는 소리 재생
                 this.playInsertSound(player);
                 return true;
             }
@@ -159,7 +159,7 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
     public static void fillItemCategory(CreativeModeTab.Output output) {
         ItemStack ammoBox = ModItems.AMMO_BOX.getDefaultInstance();
         if (ammoBox.getItem() instanceof IAmmoBox iAmmoBox) {
-            // 添加普通版本的弹药盒
+            // 일반판 탄약 상자 추가
             output.accept(iAmmoBox.setAmmoLevel(ammoBox.copy(), IRON_LEVEL));
             output.accept(iAmmoBox.setAmmoLevel(ammoBox.copy(), GOLD_LEVEL));
             output.accept(iAmmoBox.setAmmoLevel(ammoBox.copy(), DIAMOND_LEVEL));
@@ -184,18 +184,18 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
     }
 
     /**
-     * 弹药盒<b>不使用</b>自定义渲染器 —— 它走原版模型渲染。
+     * 탄약 상자는 사용자 정의 렌더러를 <b>쓰지 않는다</b> — 바닐라 모델 렌더링을 탄다.
      *
-     * <p>外观变体由 {@code assets/tacz/items/ammo_box.json} 里的
-     * {@code minecraft:select} + {@code tacz:ammo_statue} 属性
-     * （见 {@code AmmoBoxStatueProperty}）在 6 个
-     * {@code models/item/ammo_box/*.json} 之间切换，染色由模型里的
-     * {@code minecraft:dye} tint 完成。这与上游 1.21.1 的做法一致 ——
-     * 上游同样没有弹药盒渲染器，只有 {@code ItemProperties.register} + overrides。
+     * <p>외형 변형은 {@code assets/tacz/items/ammo_box.json}의
+     * {@code minecraft:select} + {@code tacz:ammo_statue} 속성
+     * ({@code AmmoBoxStatueProperty} 참고)이 6개의
+     * {@code models/item/ammo_box/*.json} 사이에서 바꾸며, 염색은 모델의
+     * {@code minecraft:dye} tint가 맡는다. 이는 원본 1.21.1의 방식과 같다 —
+     * 원본에도 탄약 상자 렌더러는 없고 {@code ItemProperties.register} + overrides만 있다.
      *
-     * <p>此前这里返回过 {@code AmmoBoxItemRenderer}，它把 128×128 的
-     * <b>3D 模型 UV 展开图</b>当平面图标贴在 16×16 四边形上，
-     * 导致物品栏与模型贴图全是错乱色块。该类已随本次修改删除。
+     * <p>이전에는 여기서 {@code AmmoBoxItemRenderer}를 돌려줬는데, 그것은 128×128
+     * <b>3D 모델 UV 전개도</b>를 평면 아이콘으로 16×16 사각형에 붙여
+     * 인벤토리와 모델 텍스처가 모두 뒤죽박죽 색 덩어리가 되었다. 그 클래스는 이번 수정에서 지웠다.
      */
     @Override
     @Environment(EnvType.CLIENT)

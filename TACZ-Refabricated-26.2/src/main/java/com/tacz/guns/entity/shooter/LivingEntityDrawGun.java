@@ -25,10 +25,10 @@ public class LivingEntityDrawGun {
     }
 
     public void draw(Supplier<ItemStack> gunItemSupplier) {
-        // 重置各个状态
+        // 각 상태 초기화
         data.initialData();
 
-        // 更新切枪时间戳
+        // 총기 교체 시각 갱신
         if (data.drawTimestamp == -1) {
             data.drawTimestamp = System.currentTimeMillis();
         }
@@ -37,12 +37,12 @@ public class LivingEntityDrawGun {
         }
         long drawTime = System.currentTimeMillis() - data.drawTimestamp;
         if (drawTime >= 0) {
-            // 如果不处于收枪状态，则需要计算收枪时长
+            // 총을 집어넣는 상태가 아니면 집어넣기 시간을 계산해야 한다
             if (drawTime < data.currentPutAwayTimeS * 1000) {
-                // 从开始切枪到现在，抬枪的时间小于收枪需要的时间，则按抬枪时间计算。
+                // 총 바꾸기 시작부터 지금까지 총을 든 시간이 집어넣기에 필요한 시간보다 짧으면 든 시간으로 계산한다.
                 data.drawTimestamp = System.currentTimeMillis() + drawTime;
             } else {
-                // 从开始切枪到现在，抬枪的时间大于收枪需要的时间，则按收枪时间计算。
+                // 총 바꾸기 시작부터 지금까지 총을 든 시간이 집어넣기에 필요한 시간보다 길면 집어넣기 시간으로 계산한다.
                 data.drawTimestamp = System.currentTimeMillis() + (long) (data.currentPutAwayTimeS * 1000);
             }
         }
@@ -50,7 +50,7 @@ public class LivingEntityDrawGun {
         GunDrawEvent.CALLBACK.invoker().post(new GunDrawEvent(shooter, lastItem, gunItemSupplier.get(), LogicalSide.SERVER));
         NetworkHandler.sendToTrackingEntity(new ServerMessageGunDraw(shooter.getId(), lastItem, gunItemSupplier.get()), shooter);
         data.currentGunItem = gunItemSupplier;
-        // 刷新配件数据
+        // 부착물 데이터 새로 고침
         AttachmentPropertyManager.postChangeEvent(shooter, gunItemSupplier.get());
         updatePutAwayTime();
     }
@@ -67,7 +67,7 @@ public class LivingEntityDrawGun {
         Optional<CommonGunIndex> gunIndex = TimelessAPI.getCommonGunIndex(gunId);
         return gunIndex.map(index -> {
             long coolDown = (long) (index.getGunData().getDrawTime() * 1000) - (System.currentTimeMillis() - data.drawTimestamp);
-            // 给 5 ms 的窗口时间，以平衡延迟
+            // 지연을 상쇄하려고 5 ms 여유 시간을 준다
             coolDown = coolDown - 5;
             if (coolDown < 0) {
                 return 0L;

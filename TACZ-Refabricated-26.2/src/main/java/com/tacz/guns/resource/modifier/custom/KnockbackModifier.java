@@ -41,14 +41,14 @@ public class KnockbackModifier implements IAttachmentModifier<Modifier, Float> {
 
     @Override
     public CacheValue<Float> initCache(ItemStack gunItem, GunData gunData) {
-        // 必要数据获取
+        // 필요한 데이터 가져오기
         IGun iGun = Objects.requireNonNull(IGun.getIGunOrNull(gunItem));
         FireMode fireMode = iGun.getFireMode(gunItem);
         BulletData bulletData = gunData.getBulletData();
         GunFireModeAdjustData fireModeAdjustData = gunData.getFireModeAdjustData(fireMode);
 
-        // 开火模式调整
-        // 最终的 base
+        // 발사 방식 조정
+        // 최종 base
         float finalBase = bulletData.getKnockback();
         finalBase = fireModeAdjustData != null ? finalBase + fireModeAdjustData.getKnockback() : finalBase;
         return new CacheValue<>(finalBase);
@@ -63,14 +63,14 @@ public class KnockbackModifier implements IAttachmentModifier<Modifier, Float> {
     @Override
     @Environment(EnvType.CLIENT)
     public List<DiagramsData> getPropertyDiagramsData(ItemStack gunItem, GunData gunData, AttachmentCacheProperty cacheProperty) {
-        // 必要数据获取
+        // 필요한 데이터 가져오기
         IGun iGun = Objects.requireNonNull(IGun.getIGunOrNull(gunItem));
         FireMode fireMode = iGun.getFireMode(gunItem);
         BulletData bulletData = gunData.getBulletData();
         GunFireModeAdjustData fireModeAdjustData = gunData.getFireModeAdjustData(fireMode);
 
-        // 开火模式调整
-        // 最终的 base
+        // 발사 방식 조정
+        // 최종 base
         float finalBase = bulletData.getKnockback();
         finalBase = fireModeAdjustData != null ? finalBase + fireModeAdjustData.getKnockback() : finalBase;
 

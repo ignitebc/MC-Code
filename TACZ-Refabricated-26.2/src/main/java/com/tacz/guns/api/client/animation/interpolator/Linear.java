@@ -12,7 +12,7 @@ public class Linear implements Interpolator {
 
     @Override
     public float[] interpolate(int indexFrom, int indexTo, float alpha) {
-        // 如果动画值有 6 个，后三个为 Post 数值，用于插值起点
+        // 애니메이션 값이 6개면 뒤의 3개는 Post 값이며 보간 시작점으로 쓴다
         int offset = content.values[indexFrom].length == 6 ? 3 : 0;
         float[] result = new float[3];
         for (int i = 0; i < 3; i++) {

@@ -15,28 +15,28 @@ public class AnimationStateContext {
     private final DiscreteTrackArray trackArray = new DiscreteTrackArray();
 
     /**
-     * 状态机脚本不要调用此方法。
+     * 상태 기계 스크립트에서 호출하지 않는다.
      *
-     * @return 上下文绑定的状态机。
+     * @return 문맥에 묶인 상태 기계
      */
     public @Nullable AnimationStateMachine<?> getStateMachine() {
         return stateMachine;
     }
 
     /**
-     * 状态机脚本不要调用此方法。
+     * 상태 기계 스크립트에서 호출하지 않는다.
      *
-     * @return 上下文的离散轨道序列。
+     * @return 문맥의 개별 트랙 배열
      */
     public DiscreteTrackArray getTrackArray() {
         return trackArray;
     }
 
     /**
-     * 分配一个新的轨道行，返回新的轨道行下标。
+     * 새 트랙 줄을 할당하고 그 인덱스를 돌려준다.
      *
-     * @return 新的轨道行下标
-     * @throws TrackArrayMismatchException 当状态机对应的 track array 不是当前 context 指定的实例，抛出此异常。
+     * @return 새 트랙 줄 인덱스
+     * @throws TrackArrayMismatchException 상태 기계의 track array가 이 context가 지정한 인스턴스가 아닐 때
      */
     public int addTrackLine() {
         checkTrackArray();
@@ -44,10 +44,10 @@ public class AnimationStateContext {
     }
 
     /**
-     * 确保轨道行的数量
+     * 트랙 줄 수를 확보한다
      *
-     * @param size 需要确保的轨道行数量。
-     * @throws TrackArrayMismatchException 当状态机对应的 track array 不是当前 context 指定的实例，抛出此异常。
+     * @param size 확보할 트랙 줄 수
+     * @throws TrackArrayMismatchException 상태 기계의 track array가 이 context가 지정한 인스턴스가 아닐 때
      */
     public void ensureTrackLineSize(int size) {
         checkTrackArray();
@@ -55,10 +55,10 @@ public class AnimationStateContext {
     }
 
     /**
-     * 获取轨道行的数量
+     * 트랙 줄 수를 얻는다
      *
-     * @return 轨道行的数量
-     * @throws TrackArrayMismatchException 当状态机对应的 track array 不是当前 context 指定的实例，抛出此异常。
+     * @return 트랙 줄 수
+     * @throws TrackArrayMismatchException 상태 기계의 track array가 이 context가 지정한 인스턴스가 아닐 때
      */
     public int getTrackLineSize() {
         checkTrackArray();
@@ -66,11 +66,11 @@ public class AnimationStateContext {
     }
 
     /**
-     * 为指定轨道行分配一个新的轨道，返回新的轨道的下标
+     * 지정한 트랙 줄에 새 트랙을 할당하고 그 인덱스를 돌려준다
      *
-     * @param index 轨道行的下标
-     * @return 新的轨道下标
-     * @throws TrackArrayMismatchException 当状态机对应的 track array 不是当前 context 指定的实例，抛出此异常。
+     * @param index 트랙 줄 인덱스
+     * @return 새 트랙 인덱스
+     * @throws TrackArrayMismatchException 상태 기계의 track array가 이 context가 지정한 인스턴스가 아닐 때
      */
     public int assignNewTrack(int index) {
         checkTrackArray();
@@ -78,12 +78,12 @@ public class AnimationStateContext {
     }
 
     /**
-     * 优先返回轨道行中的空闲轨道，如果没有空闲轨道则会开辟一个新的轨道
+     * 트랙 줄에서 비어 있는 트랙을 먼저 돌려주고, 없으면 새 트랙을 연다
      *
-     * @param index            轨道行的下标
-     * @param interruptHolding 是否将处于 holding 状态的轨道视为空闲轨道
-     * @return 轨道在控制器中的指针
-     * @throws TrackArrayMismatchException 当状态机对应的 track array 不是当前 context 指定的实例，抛出此异常。
+     * @param index            트랙 줄 인덱스
+     * @param interruptHolding holding 상태의 트랙도 빈 트랙으로 볼지
+     * @return 컨트롤러 안의 트랙 포인터
+     * @throws TrackArrayMismatchException 상태 기계의 track array가 이 context가 지정한 인스턴스가 아닐 때
      * @see AnimationStateContext#assignNewTrack(int)
      */
     public int findIdleTrack(int index, boolean interruptHolding) {
@@ -102,10 +102,10 @@ public class AnimationStateContext {
     }
 
     /**
-     * 保证指定的轨道行有足够的轨道数量
+     * 지정한 트랙 줄에 트랙이 충분히 있도록 보장한다
      *
-     * @param index  轨道行下标
-     * @param amount 需要的轨道数量
+     * @param index  트랙 줄 인덱스
+     * @param amount 필요한 트랙 수
      */
     public void ensureTracksAmount(int index, int amount) {
         checkTrackArray();
@@ -113,11 +113,11 @@ public class AnimationStateContext {
     }
 
     /**
-     * 获取轨道指针
+     * 트랙 포인터를 얻는다
      *
-     * @param trackLineIndex 轨道行的下标
-     * @param trackIndex     轨道的下标
-     * @return 轨道在控制器中的指针，或者 -1 当轨道不存在
+     * @param trackLineIndex 트랙 줄 인덱스
+     * @param trackIndex     트랙 인덱스
+     * @return 컨트롤러 안의 트랙 포인터. 트랙이 없으면 -1
      */
     public int getTrack(int trackLineIndex, int trackIndex) {
         checkTrackArray();
@@ -133,12 +133,12 @@ public class AnimationStateContext {
     }
 
     /**
-     * 用于只需要一个轨道的轨道行，如果目标轨道行没有轨道，则会分配一个轨道，
-     * 如果已经有多个轨道，多余的轨道不会舍弃，会返回其中的第一个轨道。
+     * 트랙이 하나만 필요한 트랙 줄에 쓴다. 대상 트랙 줄에 트랙이 없으면 하나를 할당하고,
+     * 이미 여러 개 있으면 남는 트랙은 버리지 않고 첫 번째 트랙을 돌려준다.
      *
-     * @param index 轨道行的下标
-     * @return 轨道的下标
-     * @throws TrackArrayMismatchException 当状态机对应的 track array 不是当前 context 指定的实例，抛出此异常。
+     * @param index 트랙 줄 인덱스
+     * @return 트랙 인덱스
+     * @throws TrackArrayMismatchException 상태 기계의 track array가 이 context가 지정한 인스턴스가 아닐 때
      */
     public int getAsSingletonTrack(int index) {
         checkTrackArray();
@@ -152,14 +152,14 @@ public class AnimationStateContext {
     }
 
     /**
-     * 在指定轨道上运行动画。如果轨道已经有动画在运行，将会打断，并根据输入的过渡时间开始过渡。
-     * 新动画在播放的瞬间就开始运行，并不会因为过渡而停止。旧动画则在播放开始的瞬间停止。
+     * 지정한 트랙에서 애니메이션을 실행한다. 트랙에 이미 실행 중인 애니메이션이 있으면 중단하고, 입력한 전환 시간에 따라 전환한다.
+     * 새 애니메이션은 재생 즉시 실행되며 전환 때문에 멈추지 않는다. 예전 애니메이션은 재생이 시작되는 순간 멈춘다.
      *
-     * @param name           动画的名称
-     * @param track          轨道在控制器中的指针
-     * @param blending       动画是否向下混合
-     * @param playType       动画的播放状态，为枚举的 ordinal 值。
-     * @param transitionTime 过渡时长
+     * @param name           애니메이션 이름
+     * @param track          컨트롤러 안의 트랙 포인터
+     * @param blending       애니메이션을 아래로 섞을지
+     * @param playType       애니메이션 재생 상태(열거형의 ordinal 값)
+     * @param transitionTime 전환 시간
      * @see AnimationConstant
      */
     public void runAnimation(String name, int track, boolean blending, int playType, float transitionTime) {
@@ -170,9 +170,9 @@ public class AnimationStateContext {
     }
 
     /**
-     * 将动画停止。停止后的动画关键帧不会再影响模型。
+     * 애니메이션을 멈춘다. 멈춘 애니메이션의 키프레임은 더 이상 모델에 영향을 주지 않는다.
      *
-     * @param track 轨道在控制器中的指针
+     * @param track 컨트롤러 안의 트랙 포인터
      */
     public void stopAnimation(int track) {
         var stateMachine = checkStateMachine();
@@ -183,9 +183,9 @@ public class AnimationStateContext {
     }
 
     /**
-     * 将动画进度拖至动画末尾并挂起。挂起的动画将定格在动画的最后一帧。
+     * 애니메이션 진행을 끝까지 옮기고 걸어 둔다. 걸어 둔 애니메이션은 마지막 프레임에 고정된다.
      *
-     * @param track 轨道在控制器中的指针
+     * @param track 컨트롤러 안의 트랙 포인터
      */
     public void holdAnimation(int track) {
         var stateMachine = checkStateMachine();
@@ -196,9 +196,9 @@ public class AnimationStateContext {
     }
 
     /**
-     * 暂停动画。动画将会定格，关键帧仍然影响模型。
+     * 애니메이션을 일시 정지한다. 애니메이션은 고정되지만 키프레임은 계속 모델에 영향을 준다.
      *
-     * @param track 轨道在控制器中的指针
+     * @param track 컨트롤러 안의 트랙 포인터
      */
     public void pauseAnimation(int track) {
         var stateMachine = checkStateMachine();
@@ -209,9 +209,9 @@ public class AnimationStateContext {
     }
 
     /**
-     * 恢复动画运行。如果动画已经在运行，则什么都不会发生
+     * 애니메이션 실행을 재개한다. 이미 실행 중이면 아무 일도 일어나지 않는다
      *
-     * @param track 轨道在控制器中的指针
+     * @param track 컨트롤러 안의 트랙 포인터
      */
     public void resumeAnimation(int track) {
         var stateMachine = checkStateMachine();
@@ -222,13 +222,13 @@ public class AnimationStateContext {
     }
 
     /**
-     * 设置动画播放的绝对进度。
-     * 如果启用归一化 (normalization 设为 true)，则 progress 可取值 0 ~ 1，0 代表动画开头，1 代表动画结尾。
-     * 否则，progress 代表时长，单位：秒
+     * 애니메이션 재생의 절대 진행도를 설정한다.
+     * 정규화(normalization을 true로)하면 progress는 0~1이며 0은 시작, 1은 끝이다.
+     * 그렇지 않으면 progress는 시간(초)이다
      *
-     * @param track         轨道在控制器中的指针
-     * @param progress      动画的绝对进度，如果 normalization 为 true，则可取值 0 ~ 1，0 代表动画开头，1 代表动画结尾。否则代表时长，单位为秒
-     * @param normalization 是否启用归一化
+     * @param track         컨트롤러 안의 트랙 포인터
+     * @param progress      절대 진행도. normalization이 true면 0~1(0은 시작, 1은 끝), 아니면 시간(초)
+     * @param normalization 정규화 여부
      */
     public void setAnimationProgress(int track, float progress, boolean normalization) {
         var stateMachine = checkStateMachine();
@@ -252,14 +252,14 @@ public class AnimationStateContext {
     }
 
     /**
-     * 在当前动画进度的基础上移动一段进度，比如前进 10s、后退 10s。
-     * 如果启用归一化 (normalization 设为 true)，则 progress 可取值 -1 ~ 1，-1 代表后退动画全长，1 代表前进动画全长。
-     * 否则，progress 代表时长，单位：秒
+     * 현재 진행도에서 일정량을 옮긴다. 예: 10초 앞으로, 10초 뒤로.
+     * 정규화(normalization을 true로)하면 progress는 -1~1이며 -1은 전체 길이만큼 뒤로, 1은 전체 길이만큼 앞으로다.
+     * 그렇지 않으면 progress는 시간(초)이다
      *
-     * @param track         轨道在控制器中的指针
-     * @param progress      相对进度，可为负值。如果 normalization 为 true，则可取值 -1 ~ 1，-1 代表后退动画全长，1 代表前进动画全长。
-     *                      否则代表时长，单位为秒。
-     * @param normalization 是否启用归一化
+     * @param track         컨트롤러 안의 트랙 포인터
+     * @param progress      상대 진행도(음수 가능). normalization이 true면 -1~1(-1은 전체 길이만큼 뒤로, 1은 앞으로).
+     *                      아니면 시간(초).
+     * @param normalization 정규화 여부
      */
     public void adjustAnimationProgress(int track, float progress, boolean normalization) {
         var stateMachine = checkStateMachine();
@@ -283,9 +283,9 @@ public class AnimationStateContext {
     }
 
     /**
-     * 获取指定轨道是否被挂起
+     * 지정한 트랙이 걸려 있는지 얻는다
      *
-     * @return 返回对应轨道的动画是否挂起。轨道为空时此方法返回 false，因为轨道没有动画的时候视为轨道停止，而非挂起。
+     * @return 트랙 애니메이션이 걸려 있는지. 트랙이 비어 있으면 false다. 애니메이션이 없는 트랙은 걸림이 아니라 정지로 보기 때문이다.
      */
     public boolean isHolding(int track) {
         var stateMachine = checkStateMachine();
@@ -298,9 +298,9 @@ public class AnimationStateContext {
     }
 
     /**
-     * 获取指定轨道是否停止
+     * 지정한 트랙이 정지했는지 얻는다
      *
-     * @return 返回对应轨道的动画是否停止。轨道为空时此方法返回 true，因为轨道没有动画的时候视为轨道停止。
+     * @return 트랙 애니메이션이 정지했는지. 트랙이 비어 있으면 true다. 애니메이션이 없는 트랙은 정지로 보기 때문이다.
      */
     public boolean isStopped(int track) {
         var stateMachine = checkStateMachine();
@@ -313,9 +313,9 @@ public class AnimationStateContext {
     }
 
     /**
-     * 获取指定轨道是否暂停
+     * 지정한 트랙이 일시 정지했는지 얻는다
      *
-     * @return 返回对应轨道的动画是否暂停。轨道为空时此方法返回 false，因为轨道没有动画的时候视为轨道停止，而非暂停。
+     * @return 트랙 애니메이션이 일시 정지했는지. 트랙이 비어 있으면 false다. 애니메이션이 없는 트랙은 일시 정지가 아니라 정지로 보기 때문이다.
      */
     public boolean isPause(int track) {
         var stateMachine = checkStateMachine();
@@ -328,10 +328,10 @@ public class AnimationStateContext {
     }
 
     /**
-     * 获取动画文件中是否存在某个动画
+     * 애니메이션 파일에 해당 애니메이션이 있는지 얻는다
      *
-     * @param name 动画名称
-     * @return 动画是否存在
+     * @param name 애니메이션 이름
+     * @return 애니메이션이 있는지
      */
     public boolean hasAnimationPrototype(String name) {
         var stateMachine = checkStateMachine();
@@ -340,9 +340,9 @@ public class AnimationStateContext {
     }
 
     /**
-     * 手动触发一次状态转移
+     * 상태 전이를 직접 한 번 일으킨다
      *
-     * @param input 状态转移的输入
+     * @param input 상태 전이 입력
      */
     public void trigger(String input) {
         var stateMachine = checkStateMachine();
@@ -350,18 +350,18 @@ public class AnimationStateContext {
     }
 
     /**
-     * 动画有时会有剧烈的视角运动，因此可能需要隐藏准心减少眩晕感。
+     * 애니메이션에 시점이 크게 움직이는 구간이 있으면 어지럼을 줄이려고 조준선을 숨겨야 할 수 있다.
      *
-     * @return 渲染时是否需要隐藏准心
+     * @return 렌더링할 때 조준선을 숨겨야 하는지
      */
     public boolean shouldHideCrossHair() {
         return shouldHideCrossHair;
     }
 
     /**
-     * 动画有时会有剧烈的视角运动，因此可能需要隐藏准心减少眩晕感。
+     * 애니메이션에 시점이 크게 움직이는 구간이 있으면 어지럼을 줄이려고 조준선을 숨겨야 할 수 있다.
      *
-     * @param shouldHideCrossHair 渲染时是否需要隐藏准心
+     * @param shouldHideCrossHair 렌더링할 때 조준선을 숨겨야 하는지
      */
     public void setShouldHideCrossHair(boolean shouldHideCrossHair) {
         this.shouldHideCrossHair = shouldHideCrossHair;

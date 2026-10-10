@@ -64,7 +64,6 @@ public class ClientAttachmentIndex {
         checkData(indexPOJO, index);
         checkName(indexPOJO, index);
         checkSlotTexture(display, index);
-//        checkSkins(registryName, index);
         checkSounds(display, index);
         if (!ResourceConfig.ENABLE_LAZY_CLIENT_ASSET_LOAD.get()) {
             index.ensureModelsLoaded();
@@ -139,7 +138,7 @@ public class ClientAttachmentIndex {
         Preconditions.checkArgument(dataId != null, "index object missing pojoData field");
         AttachmentData data = CommonAssetsManager.get().getAttachmentData(dataId);
         Preconditions.checkArgument(data != null, "there is no corresponding data file");
-        // 剩下的不需要校验了，Common的读取逻辑中已经校验过了
+        // 나머지는 검증할 필요가 없다. Common 읽기 로직에서 이미 검증했다
         index.data = data;
     }
 
@@ -155,7 +154,7 @@ public class ClientAttachmentIndex {
     }
 
     private static void checkTextureAndModel(AttachmentDisplay display, ClientAttachmentIndex index) {
-        // 不检查模型/材质是否为 null，模型/材质可以为 null
+        // 모델/텍스처가 null인지 확인하지 않는다. 모델/텍스처는 null이어도 된다
         index.attachmentModel = getOrLoadAttachmentModel(display.getModel());
         if (index.attachmentModel != null) {
             index.attachmentModel.setIsScope(display.isScope());
@@ -249,11 +248,11 @@ public class ClientAttachmentIndex {
     @Nullable
     public static BedrockAttachmentModel getAttachmentModel(BedrockModelPOJO modelPOJO) {
         BedrockAttachmentModel attachmentModel = null;
-        // 先判断是不是 1.10.0 版本基岩版模型文件
+        // 먼저 1.10.0 버전 베드락 모델 파일인지 판단한다
         if (BedrockVersion.isLegacyVersion(modelPOJO) && modelPOJO.getGeometryModelLegacy() != null) {
             attachmentModel = new BedrockAttachmentModel(modelPOJO, BedrockVersion.LEGACY);
         }
-        // 判定是不是 1.12.0 版本基岩版模型文件
+        // 1.12.0 버전 베드락 모델 파일인지 판단한다
         if (BedrockVersion.isNewVersion(modelPOJO) && modelPOJO.getGeometryModelNew() != null) {
             attachmentModel = new BedrockAttachmentModel(modelPOJO, BedrockVersion.NEW);
         }
@@ -274,12 +273,12 @@ public class ClientAttachmentIndex {
             if (modelPOJO == null) {
                 return;
             }
-            // 先判断是不是 1.10.0 版本基岩版模型文件
+            // 먼저 1.10.0 버전 베드락 모델 파일인지 판단한다
             if (BedrockVersion.isLegacyVersion(modelPOJO) && modelPOJO.getGeometryModelLegacy() != null) {
                 BedrockAttachmentModel model = new BedrockAttachmentModel(modelPOJO, BedrockVersion.LEGACY);
                 index.lodModel = Pair.of(model, texture);
             }
-            // 判定是不是 1.12.0 版本基岩版模型文件
+            // 1.12.0 버전 베드락 모델 파일인지 판단한다
             if (BedrockVersion.isNewVersion(modelPOJO) && modelPOJO.getGeometryModelNew() != null) {
                 BedrockAttachmentModel model = new BedrockAttachmentModel(modelPOJO, BedrockVersion.NEW);
                 index.lodModel = Pair.of(model, texture);

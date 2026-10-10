@@ -1,5 +1,5 @@
 {
-  "_comment": "26.2 alignment: upstream 1.21.1 used \"parent\": \"builtin/entity\", which carries NO display transforms. 26.2 removed builtin/entity, and porting it to minecraft:item/generated silently inherited that model's firstperson_righthand transform (rotation [0,-90,25], translation [1.13,3.2,1.13], scale 0.68). ItemStackRenderState.LayerRenderState#applyTransform applies itemTransform BEFORE the special renderer runs, so those vanilla offsets were stacked on top of TACZ's own first-person camera transform -> the held gun was rotated/offset away from the camera. A parentless model reproduces builtin/entity's identity transforms.",
+  "_comment": "26.2 맞춤: 원본 1.21.1은 display 변환이 전혀 없는 \"parent\": \"builtin/entity\"를 썼다. 26.2에서 builtin/entity가 제거되어 minecraft:item/generated로 옮기자 그 모델의 firstperson_righthand 변환(rotation [0,-90,25], translation [1.13,3.2,1.13], scale 0.68)을 몰래 물려받았다. ItemStackRenderState.LayerRenderState#applyTransform은 특수 렌더러가 돌기 전에 itemTransform을 적용하므로, 그 바닐라 오프셋이 TACZ 자체 1인칭 카메라 변환 위에 겹쳐 손에 든 총이 카메라에서 돌아가거나 어긋났다. parent가 없는 모델은 builtin/entity의 항등 변환을 그대로 재현한다.",
   "gui_light": "front",
   "textures": {
     "particle": "minecraft:item/barrier"

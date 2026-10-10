@@ -13,13 +13,13 @@ import java.util.LinkedList;
 import java.util.WeakHashMap;
 
 public final class HitboxHelper {
-    // 玩家位置缓存表
+    // 플레이어 위치 캐시 표
     private static final WeakHashMap<Player, LinkedList<Vec3>> PLAYER_POSITION = new WeakHashMap<>();
-    // 玩家命中箱缓存表
+    // 플레이어 판정 상자 캐시 표
     private static final WeakHashMap<Player, LinkedList<AABB>> PLAYER_HITBOXES = new WeakHashMap<>();
-    // 玩家速度缓存表
+    // 플레이어 속도 캐시 표
     private static final WeakHashMap<Player, LinkedList<Vec3>> PLAYER_VELOCITY = new WeakHashMap<>();
-    // 命中箱缓存 Tick 上限
+    // 판정 상자 캐시 Tick 한도
     private static final int SAVE_TICK = Mth.floor(OtherConfig.SERVER_HITBOX_LATENCY_MAX_SAVE_MS.get() / 1000 * 20 + 0.5);
     /**
      * 되감기의 기준 틱.
@@ -45,11 +45,11 @@ public final class HitboxHelper {
         positions.addFirst(player.position());
         boxes.addFirst(player.getBoundingBox());
         velocities.addFirst(getPlayerVelocity(player));
-        // Position 用于速度计算，所以只需要缓存 2 个位置
+        // Position은 속도 계산에 쓰므로 위치 2개만 캐시하면 된다
         if (positions.size() > 2) {
             positions.removeLast();
         }
-        // 命中箱和速度缓存数量限制
+        // 판정 상자와 속도 캐시 수 제한
         if (boxes.size() > SAVE_TICK) {
             boxes.removeLast();
             velocities.removeLast();
@@ -105,7 +105,7 @@ public final class HitboxHelper {
         AABB boundingBox = entity.getBoundingBox();
         Vec3 velocity = new Vec3(entity.getX() - entity.xOld, entity.getY() - entity.yOld, entity.getZ() - entity.zOld);
         int pingTick = getPingTick(owner);
-        // hitbox 延迟补偿。只有射击者是玩家（且被击中者也是玩家）才进行此类延迟补偿计算
+        // hitbox 지연 보정. 사수가 플레이어이고 (맞은 쪽도 플레이어일 때)만 이 지연 보정 계산을 한다
         // 과거 히트박스를 직접 꺼내 쓴 경우에는 핑만큼의 되감기가 이미 끝난 상태이므로 아래에서 핑을 다시 더하지 않는다.
         boolean rewoundByHistory = false;
         if (OtherConfig.SERVER_HITBOX_LATENCY_FIX.get() && entity instanceof ServerPlayer player && owner instanceof ServerPlayer) {
@@ -113,10 +113,10 @@ public final class HitboxHelper {
             velocity = getVelocity(player, pingTick);
             rewoundByHistory = true;
         }
-        // 应用蹲伏导致的 hitbox 变形
+        // 웅크리기로 생기는 hitbox 변형을 적용한다
         double expandHeight = entity instanceof Player && !entity.isCrouching() ? 0.0625 : 0.0;
         boundingBox = boundingBox.expandTowards(0, expandHeight, 0);
-        // 根据速度一定程度地扩展 hitbox
+        // 속도에 따라 hitbox를 어느 정도 넓힌다
         boundingBox = boundingBox.expandTowards(velocity.x, velocity.y, velocity.z);
         // 되감기량 계산.
         // 종전에는 앞으로 밀어 주는 보정이 플레이어에게만 적용되어, 몬스터만 5틱치를 그대로 뒤집어썼다.

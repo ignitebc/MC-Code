@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * 配件数据工具类，用于离线计算物品属性<br>
- * 不应该频繁调用，应尽可能调用实体缓存<br>
- * 参见 {@link AttachmentCacheProperty}
+ * 부착물 데이터 도구 클래스. 아이템 속성을 오프라인으로 계산하는 데 쓴다<br>
+ * 자주 호출하지 말고 가능하면 엔티티 캐시를 호출한다<br>
+ * {@link AttachmentCacheProperty} 참고
  */
 public final class AttachmentDataUtils {
     public static void getAllAttachmentData(ItemStack gunItem, GunData gunData, Consumer<AttachmentData> dataConsumer) {
@@ -166,10 +166,10 @@ public final class AttachmentDataUtils {
         FireMode fireMode = iGun.getFireMode(gunItem);
         BulletData bulletData = gunData.getBulletData();
         GunFireModeAdjustData fireModeAdjustData = gunData.getFireModeAdjustData(fireMode);
-        // 额外伤害
+        // 추가 피해
         ExtraDamage extraDamage = bulletData.getExtraDamage();
-        // 开火模式调整
-        // 最终的 base
+        // 발사 방식 조정
+        // 최종 base
         float finalBase = extraDamage != null ? extraDamage.getArmorIgnore() : 0f;
         finalBase = fireModeAdjustData != null ? finalBase + fireModeAdjustData.getArmorIgnore() : finalBase;
         finalBase *= SyncConfig.ARMOR_IGNORE_BASE_MULTIPLIER.get();
@@ -186,10 +186,10 @@ public final class AttachmentDataUtils {
         FireMode fireMode = iGun.getFireMode(gunItem);
         BulletData bulletData = gunData.getBulletData();
         GunFireModeAdjustData fireModeAdjustData = gunData.getFireModeAdjustData(fireMode);
-        // 额外伤害
+        // 추가 피해
         ExtraDamage extraDamage = bulletData.getExtraDamage();
-        // 开火模式调整
-        // 最终的 base
+        // 발사 방식 조정
+        // 최종 base
         float finalBase = extraDamage != null ? extraDamage.getHeadShotMultiplier() : 0f;
         finalBase = fireModeAdjustData != null ? finalBase + fireModeAdjustData.getHeadShotMultiplier() : finalBase;
         finalBase *= SyncConfig.HEAD_SHOT_BASE_MULTIPLIER.get();
@@ -206,11 +206,11 @@ public final class AttachmentDataUtils {
         FireMode fireMode = iGun.getFireMode(gunItem);
         BulletData bulletData = gunData.getBulletData();
         GunFireModeAdjustData fireModeAdjustData = gunData.getFireModeAdjustData(fireMode);
-        // 额外伤害
+        // 추가 피해
         ExtraDamage extraDamage = bulletData.getExtraDamage();
         float rawDamage = bulletData.getDamageAmount();
-        // 开火模式调整
-        // 最终的 base 伤害
+        // 발사 방식 조정
+        // 최종 base 피해
         float finalBase = fireModeAdjustData != null ? fireModeAdjustData.getDamageAmount() : 0f;
         if (extraDamage != null && extraDamage.getDamageAdjust() != null) {
             finalBase += extraDamage.getDamageAdjust().get(0).getDamage();
@@ -225,7 +225,7 @@ public final class AttachmentDataUtils {
     }
 
     /**
-     * 以指定id获取枪械物品的modifier列表
+     * 지정한 id로 총기 아이템의 modifier 목록을 가져온다
      *
      * @param gunItem
      * @param gunData
@@ -263,15 +263,15 @@ public final class AttachmentDataUtils {
     }
 
     /**
-     * 计算布尔值，取或
+     * 불리언 값을 계산한다. 논리합을 취한다
      *
-     * @param gunItem  枪械物品
-     * @param gunData  枪械原始数据
+     * @param gunItem  총기 아이템
+     * @param gunData  총기 원본 데이터
      * @param id       modifier id
-     * @param clazz    data数据结构类
-     * @param resolver 获取布尔值的方法
-     * @param <T>      data数据结构泛型
-     * @return 计算结果
+     * @param clazz    data 데이터 구조 클래스
+     * @param resolver 불리언 값을 얻는 메서드
+     * @param <T>      data 데이터 구조 제네릭
+     * @return 계산 결과
      */
     private static <T> boolean calcBooleanValue(ItemStack gunItem, GunData gunData, String id, Class<T> clazz, BooleanResolver<T> resolver) {
         IGun iGun = IGun.getIGunOrNull(gunItem);

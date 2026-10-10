@@ -45,7 +45,7 @@ import java.util.concurrent.CompletionException;
 import java.util.function.BiFunction;
 
 /**
- * 经过处理和校验的枪械显示数据
+ * 처리와 검증을 거친 총기 표시 데이터
  */
 @Environment(EnvType.CLIENT)
 public class GunDisplayInstance {
@@ -53,17 +53,17 @@ public class GunDisplayInstance {
     private final GunDisplay display;
     private final Object loadLock = new Object();
 
-    // 加载标志位
+    // 로드 완료 표시
     private volatile boolean modelLoaded = false;
     private volatile boolean lodLoaded = false;
     private volatile boolean animationLoaded = false;
 
-    // 错误标志位
+    // 오류 표시
     private volatile boolean modelLoadFailed = false;
     private volatile boolean lodLoadFailed = false;
     private volatile boolean animationLoadFailed = false;
 
-    // 异步加载任务
+    // 비동기 로드 작업
     private volatile CompletableFuture<Void> modelWarmUpTask = null;
     private volatile CompletableFuture<Void> lodWarmUpTask = null;
     private volatile CompletableFuture<Void> animationWarmUpTask = null;
@@ -112,7 +112,7 @@ public class GunDisplayInstance {
         return new GunDisplayInstance(displayId, display);
     }
 
-    // 后台预热
+    // 백그라운드 예열
     public void warmUpModel() {
         if (!ResourceConfig.ENABLE_LAZY_CLIENT_ASSET_LOAD.get()) {
             ensureModelLoaded();
@@ -166,7 +166,7 @@ public class GunDisplayInstance {
         }
     }
 
-    // 确保所需资源完成，没完成阻塞一下
+    // 필요한 자원이 준비되었는지 확인하고, 아니면 잠시 막고 기다린다
     private void ensureModelLoaded() {
         if (modelLoaded || modelLoadFailed) {
             return;
@@ -232,7 +232,7 @@ public class GunDisplayInstance {
         }
     }
 
-    // 加载任务
+    // 로드 작업
     private void loadModelIfNecessary() {
         if (modelLoaded) {
             return;
@@ -280,7 +280,7 @@ public class GunDisplayInstance {
             return CompletableFuture.completedFuture(null);
         }
         if (animationWarmUpTask == null) {
-            // 动画任务尝试挂到模型加载后面
+            // 애니메이션 작업은 모델 로드 뒤에 이어 붙여 본다
             CompletableFuture<Void> modelTask = scheduleModelWarmUpLocked();
             animationWarmUpTask = modelTask.thenRunAsync(this::loadAnimationAfterModelReady, ClientAssetLoadDispatcher.executor());
             animationWarmUpTask.whenComplete((unused, throwable) -> {
@@ -350,7 +350,7 @@ public class GunDisplayInstance {
         }
     }
 
-    // 基础数据直接读
+    // 기본 데이터는 바로 읽는다
     private void initBase(GunDisplay display) {
         checkSlotTexture(display);
         checkHUDTexture(display);
@@ -397,15 +397,15 @@ public class GunDisplayInstance {
     }
 
     private void checkTextureAndModel(GunDisplay display) {
-        //获取模型类型
+        // 모델 종류 가져오기
         String modelType = display.getModelType();
         BiFunction<BedrockModelPOJO, BedrockVersion, ? extends BedrockGunModel> constructor = GunModelTypeManager.getModelInstanceConstructor(modelType);
-        // 检查模型
+        // 모델 확인
         Identifier modelLocation = display.getModelLocation();
         Preconditions.checkArgument(modelLocation != null, "display object missing model field");
         BedrockModelPOJO modelPOJO = ClientAssetsManager.INSTANCE.getBedrockModelPOJO(modelLocation);
 
-        // FALLBACK: 如果高模不存在，尝试加载 LOD 模型作为替代
+        // 대체 처리: 고해상도 모델이 없으면 LOD 모델을 대신 로드해 본다
         if (modelPOJO == null) {
             GunLod gunLod = display.getGunLod();
             if (gunLod != null && gunLod.getModelLocation() != null) {
@@ -413,7 +413,7 @@ public class GunDisplayInstance {
                 if (lodPOJO != null) {
                     GunMod.LOGGER.warn("High-poly model not found for {}, falling back to LOD model", modelLocation);
                     modelPOJO = lodPOJO;
-                    // 使用 LOD 模型的材质
+                    // LOD 모델의 텍스처 사용
                     if (gunLod.getModelTexture() != null) {
                         modelTexture = gunLod.getModelTexture();
                     }
@@ -424,17 +424,17 @@ public class GunDisplayInstance {
             }
         }
 
-        // 检查默认材质是否存在
+        // 기본 텍스처가 있는지 확인
         if (modelTexture == null) {
             Identifier textureLocation = display.getModelTexture();
             Preconditions.checkArgument(textureLocation != null, "missing default texture");
             modelTexture = textureLocation;
         }
-        // 先判断是不是 1.10.0 版本基岩版模型文件
+        // 먼저 1.10.0 버전 베드락 모델 파일인지 판단한다
         if (BedrockVersion.isLegacyVersion(modelPOJO) && modelPOJO.getGeometryModelLegacy() != null) {
             gunModel = constructor.apply(modelPOJO, BedrockVersion.LEGACY);
         }
-        // 判定是不是 1.12.0 版本基岩版模型文件
+        // 1.12.0 버전 베드락 모델 파일인지 판단한다
         if (BedrockVersion.isNewVersion(modelPOJO) && modelPOJO.getGeometryModelNew() != null) {
             gunModel = constructor.apply(modelPOJO, BedrockVersion.NEW);
         }
@@ -455,12 +455,12 @@ public class GunDisplayInstance {
             if (modelPOJO == null) {
                 return;
             }
-            // 先判断是不是 1.10.0 版本基岩版模型文件
+            // 먼저 1.10.0 버전 베드락 모델 파일인지 판단한다
             if (BedrockVersion.isLegacyVersion(modelPOJO) && modelPOJO.getGeometryModelLegacy() != null) {
                 BedrockGunModel model = new BedrockGunModel(modelPOJO, BedrockVersion.LEGACY);
                 lodModel = Pair.of(model, texture);
             }
-            // 判定是不是 1.12.0 版本基岩版模型文件
+            // 1.12.0 버전 베드락 모델 파일인지 판단한다
             if (BedrockVersion.isNewVersion(modelPOJO) && modelPOJO.getGeometryModelNew() != null) {
                 BedrockGunModel model = new BedrockGunModel(modelPOJO, BedrockVersion.NEW);
                 lodModel = Pair.of(model, texture);
@@ -477,17 +477,17 @@ public class GunDisplayInstance {
             AnimationStructure gltfAnimations = ClientAssetsManager.INSTANCE.getGltfAnimation(location);
             BedrockAnimationFile bedrockAnimationFile = ClientAssetsManager.INSTANCE.getBedrockAnimations(location);
             if (bedrockAnimationFile != null) {
-                // 用 bedrock 动画资源创建动画控制器
+                // bedrock 애니메이션 자원으로 애니메이션 컨트롤러를 만든다
                 controller = Animations.createControllerFromBedrock(bedrockAnimationFile, gunModel);
             } else if (gltfAnimations != null) {
-                // 用 gltf 动画资源创建动画控制器
+                // gltf 애니메이션 자원으로 애니메이션 컨트롤러를 만든다
                 controller = Animations.createControllerFromGltf(gltfAnimations, gunModel);
             } else {
-                // FALLBACK: 动画文件缺失时创建空控制器，而不是崩溃
+                // 대체 처리: 애니메이션 파일이 없으면 충돌하지 않고 빈 컨트롤러를 만든다
                 GunMod.LOGGER.warn("Animation not found for {}: {}, using empty controller", displayId, location);
                 controller = new AnimationController(Lists.newArrayList(), gunModel);
             }
-            // 将默认动画填入动画控制器
+            // 기본 애니메이션을 애니메이션 컨트롤러에 채운다
             Identifier defaultAnimation = display.getDefaultAnimation();
             if (defaultAnimation != null) {
                 BedrockAnimationFile animationFile = ClientAssetsManager.INSTANCE.getBedrockAnimations(defaultAnimation);
@@ -517,10 +517,10 @@ public class GunDisplayInstance {
                 }
             }
         }
-        // 初始化动画状态机，将动画控制器封装进去。
+        // 애니메이션 상태 기계를 초기화하고 애니메이션 컨트롤러를 감싸 넣는다.
         Identifier stateMachineLocation = display.getStateMachineLocation();
         if (stateMachineLocation == null) {
-            // 如果没指定状态机，则使用默认状态机
+            // 상태 기계를 지정하지 않았으면 기본 상태 기계를 쓴다
             stateMachineLocation = Identifier.fromNamespaceAndPath("tacz", "default_state_machine");
         }
         LuaTable script = ClientAssetsManager.INSTANCE.getScript(stateMachineLocation);
@@ -530,10 +530,10 @@ public class GunDisplayInstance {
                     .setLuaScripts(script)
                     .build();
         } else {
-            // FALLBACK: 状态机脚本缺失时记录警告，而不是崩溃
+            // 대체 처리: 상태 기계 스크립트가 없으면 충돌하지 않고 경고를 남긴다
             GunMod.LOGGER.warn("State machine script not found for {}: {}", displayId, stateMachineLocation);
         }
-        // 加载状态机参数
+        // 상태 기계 매개변수 로드
         Map<String, Object> params = display.getStateMachineParam();
         if (params != null) {
             stateMachineParam = new LuaTable();
@@ -551,7 +551,7 @@ public class GunDisplayInstance {
         if (soundMaps == null || soundMaps.isEmpty()) {
             return;
         }
-        // 部分音效为默认音效，不存在则需要添加默认音效
+        // 일부 효과음은 기본 효과음이므로 없으면 기본 효과음을 넣어야 한다
         soundMaps.putIfAbsent(SoundManager.DRY_FIRE_SOUND, Identifier.fromNamespaceAndPath(GunMod.MOD_ID, SoundManager.DRY_FIRE_SOUND));
         soundMaps.putIfAbsent(SoundManager.FIRE_SELECT, Identifier.fromNamespaceAndPath(GunMod.MOD_ID, SoundManager.FIRE_SELECT));
         soundMaps.putIfAbsent(SoundManager.HEAD_HIT_SOUND, Identifier.fromNamespaceAndPath(GunMod.MOD_ID, SoundManager.HEAD_HIT_SOUND));
@@ -618,7 +618,7 @@ public class GunDisplayInstance {
     }
 
     private void checkSlotTexture(GunDisplay display) {
-        // 加载 GUI 内枪械图标
+        // GUI 안 총기 아이콘 로드
         slotTexture = Objects.requireNonNullElseGet(display.getSlotTextureLocation(), MissingTextureAtlasSprite::getLocation);
     }
 

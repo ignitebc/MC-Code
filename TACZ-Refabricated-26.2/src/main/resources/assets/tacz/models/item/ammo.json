@@ -1,5 +1,5 @@
 {
-  "_comment": "26.2 alignment: upstream parent was builtin/entity (identity transforms) plus this explicit display block. The minecraft:item/generated parent used during the port additionally injected ground/head/thirdperson/fixed/firstperson_righthand offsets, misaligning the held model. Parentless == builtin/entity semantics.",
+  "_comment": "26.2 맞춤: 원본 parent는 builtin/entity(항등 변환)였고 이 명시적 display 블록을 함께 썼다. 이식할 때 쓴 minecraft:item/generated parent는 ground/head/thirdperson/fixed/firstperson_righthand 오프셋을 추가로 넣어 손에 든 모델이 어긋났다. parent 없음 == builtin/entity 의미.",
   "credit": "Made with Blockbench",
   "gui_light": "front",
   "display": {

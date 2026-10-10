@@ -59,7 +59,7 @@ public class ServerMessageSyncGunPack implements CustomPacketPayload {
             CommonAssetsManager.clearInstance();
         }
         CommonNetworkCache.INSTANCE.fromNetwork(message.cache);
-        // 通知客户端重新构建ClientIndex
+        // 클라이언트에 ClientIndex를 다시 만들라고 알린다
         ClientIndexManager.reload();
     }
 }

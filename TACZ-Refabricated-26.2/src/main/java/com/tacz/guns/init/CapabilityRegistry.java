@@ -5,7 +5,7 @@ import com.tacz.guns.entity.sync.core.DataHolderCapabilityProvider;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
- * 26.2: CCA 已移除，改用 DataHolderCapabilityProvider 内置的 WeakHashMap 存储
+ * 26.2: CCA가 제거되어 DataHolderCapabilityProvider에 내장된 WeakHashMap 저장소를 쓴다
  */
 public class CapabilityRegistry {
     public static void init() {

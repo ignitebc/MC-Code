@@ -25,34 +25,34 @@ import net.minecraft.world.item.ItemDisplayContext;
 import java.util.Optional;
 
 /**
- * 标靶矿车渲染器。
+ * 과녁 광산 수레 렌더러.
  *
- * <p><b>第 8 轮修复：模型位置/朝向与碰撞箱对不上。</b></p>
+ * <p><b>8차 수정: 모델 위치/방향이 충돌 상자와 맞지 않던 문제.</b></p>
  *
- * <p>上游 1.21.1 的写法是 {@code extends MinecartRenderer<TargetMinecart>}，
- * 只覆写 {@code renderMinecartContents(...)} —— 矿车的<b>位置插值、朝向（yRot/xRot）、
- * 沿轨道的姿态、受击摇晃</b>等全部由父类 {@code AbstractMinecartRenderer} 负责。</p>
+ * <p>원본 1.21.1은 {@code extends MinecartRenderer<TargetMinecart>}로
+ * {@code renderMinecartContents(...)}만 재정의했다 — 광산 수레의 <b>위치 보간, 방향(yRot/xRot),
+ * 선로를 따르는 자세, 피격 흔들림</b>은 모두 부모 {@code AbstractMinecartRenderer}가 맡았다.</p>
  *
- * <p>移植时改成了直接 {@code extends EntityRenderer<TargetMinecart, 自定义 State>}，
- * 并在 {@code submit} 里手写 {@code translate + scale + 两个固定角度的 mulPose}。
- * 这就<b>丢掉了父类全部的定位与朝向逻辑</b>：</p>
+ * <p>이식할 때 {@code extends EntityRenderer<TargetMinecart, 사용자 정의 State>}로 바꾸고,
+ * {@code submit}에서 {@code translate + scale + 고정 각도 mulPose 두 번}을 직접 썼다.
+ * 그래서 <b>부모의 위치·방향 로직을 모두 잃었다</b>:</p>
  * <ul>
- *   <li>模型永远朝同一个方向（就是你观察到的"方向是固定的、疑似硬编码"）；</li>
- *   <li>模型不跟随矿车沿轨道的插值位置 —— 于是与碰撞箱错位
- *       （而碰撞箱与交互由服务端实体决定，所以是正确的）。</li>
+ *   <li>모델이 늘 같은 방향을 봤다(보고된 "방향이 고정되어 있고 하드코딩된 것 같다").</li>
+ *   <li>모델이 선로를 따르는 광산 수레의 보간 위치를 따라가지 않아 충돌 상자와 어긋났다
+ *       (충돌 상자와 상호작용은 서버 엔티티가 정하므로 그쪽이 맞다).</li>
  * </ul>
  *
- * <p>26.2 中 {@code AbstractMinecartRenderer} 仍在（javap 确认），
- * 只是渲染入口从 {@code render/renderMinecartContents} 改成了
- * {@code submit/submitMinecartContents}，且状态载体是 {@code MinecartRenderState}。
- * 这里恢复继承关系，仅覆写内容物提交，与上游语义一致。</p>
+ * <p>26.2에도 {@code AbstractMinecartRenderer}는 남아 있다(javap 확인).
+ * 렌더링 입구가 {@code render/renderMinecartContents}에서
+ * {@code submit/submitMinecartContents}로 바뀌었고 상태 운반자가 {@code MinecartRenderState}일 뿐이다.
+ * 여기서 상속 관계를 되살리고 내용물 제출만 재정의해 원본 의미와 맞춘다.</p>
  */
 @Environment(EnvType.CLIENT)
 public class TargetMinecartRenderer extends AbstractMinecartRenderer<TargetMinecart, MinecartRenderState> {
     private static final String HEAD_NAME = "head";
     private static final String HEAD_2_NAME = "head2";
 
-    /** 缓存本帧的 GameProfile：extractRenderState 阶段取，submit 阶段用。 */
+    /** 이번 프레임의 GameProfile 캐시: extractRenderState 단계에서 얻고 submit 단계에서 쓴다. */
     private static final String PROFILE_KEY = "tacz$profile";
 
     public TargetMinecartRenderer(EntityRendererProvider.Context ctx) {
@@ -65,14 +65,14 @@ public class TargetMinecartRenderer extends AbstractMinecartRenderer<TargetMinec
         return new TargetMinecartRenderState();
     }
 
-    /** 扩展 vanilla 状态，额外携带皮肤所需的 GameProfile。 */
+    /** 바닐라 상태를 넓혀 스킨에 필요한 GameProfile을 함께 담는다. */
     public static class TargetMinecartRenderState extends MinecartRenderState {
         public GameProfile gameProfile;
     }
 
     @Override
     public void extractRenderState(TargetMinecart entity, MinecartRenderState state, float partialTicks) {
-        // 让父类填好位置、朝向、受击摇晃、沿轨道姿态等全部 vanilla 状态。
+        // 부모가 위치, 방향, 피격 흔들림, 선로 자세 등 바닐라 상태를 모두 채우게 한다.
         super.extractRenderState(entity, state, partialTicks);
         if (state instanceof TargetMinecartRenderState targetState) {
             targetState.gameProfile = entity.getGameProfile();
@@ -88,8 +88,8 @@ public class TargetMinecartRenderer extends AbstractMinecartRenderer<TargetMinec
     }
 
     /**
-     * 由父类在<b>已经套用完矿车位置/朝向</b>的 PoseStack 上调用。
-     * 因此这里只需处理"车厢内容物"自身的局部变换，与上游 renderMinecartContents 一致。
+     * 부모가 <b>광산 수레 위치/방향을 이미 적용한</b> PoseStack에서 호출한다.
+     * 그래서 여기서는 "수레 안 내용물" 자신의 지역 변환만 처리하면 되며, 원본 renderMinecartContents와 같다.
      */
     @Override
     protected void submitMinecartContents(MinecartRenderState state,
@@ -107,7 +107,7 @@ public class TargetMinecartRenderer extends AbstractMinecartRenderer<TargetMinec
             head2Model.visible = false;
 
             stack.pushPose();
-            // 局部变换与上游逐行一致（父类已处理世界位置与朝向）。
+            // 지역 변환은 원본과 줄마다 같다(부모가 월드 위치와 방향을 이미 처리했다).
             stack.translate(0.5, 1.875, 0.5);
             stack.scale(1.5f, 1.5f, 1.5f);
             stack.mulPose(Axis.ZN.rotationDegrees(180));

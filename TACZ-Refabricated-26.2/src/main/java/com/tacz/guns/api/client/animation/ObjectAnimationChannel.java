@@ -10,17 +10,17 @@ public class ObjectAnimationChannel {
     public final ChannelType type;
     private final List<AnimationListener> listeners = new ArrayList<>();
     /**
-     * 节点名称
+     * 노드 이름
      */
     public String node;
     /**
-     * 这个轨道的内容，包括关键帧
+     * 키프레임을 포함한 이 트랙의 내용
      */
     public AnimationChannelContent content;
     public Interpolator interpolator;
     /**
-     * 此变量用于动画过渡，
-     * 如果你不明白在做什么，请不要更改它
+     * 애니메이션 전환에 쓰는 변수다.
+     * 무엇을 하는지 모르면 바꾸지 않는다
      */
     boolean transitioning = false;
 
@@ -62,9 +62,9 @@ public class ObjectAnimationChannel {
     }
 
     /**
-     * 根据输入时间执行计算，并将结果通知所有 AnimationListener
+     * 입력 시간으로 계산하고 결과를 모든 AnimationListener에 알린다
      *
-     * @param timeS 绝对时间（以秒为单位）
+     * @param timeS 절대 시간(초)
      */
     public void update(float timeS, boolean blend) {
         if (!transitioning) {
@@ -99,7 +99,7 @@ public class ObjectAnimationChannel {
         }
         float local = timeS - content.keyframeTimeS[indexFrom];
         float delta = content.keyframeTimeS[indexFrom + 1] - content.keyframeTimeS[indexFrom];
-        // 防御：两个关键帧时间戳相同时 delta=0，直接跳到下一帧
+        // 방어 코드: 두 키프레임의 시간이 같으면 delta=0이므로 바로 다음 프레임으로 넘어간다
         if (delta <= 0.0f) {
             return 1.0f;
         }
@@ -108,15 +108,15 @@ public class ObjectAnimationChannel {
 
     public enum ChannelType {
         /**
-         * 位移
+         * 이동
          */
         TRANSLATION,
         /**
-         * 旋转
+         * 회전
          */
         ROTATION,
         /**
-         * 缩放
+         * 크기
          */
         SCALE
     }

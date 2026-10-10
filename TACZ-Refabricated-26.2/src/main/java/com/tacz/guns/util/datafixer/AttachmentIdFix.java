@@ -27,7 +27,7 @@ public final class AttachmentIdFix {
                 .build();
     }
 
-    // 预留 boolean 返回值用于未来使用，"尽可能避免使用 void ，除非这个操作不能提供任何有用的信息"
+    // 나중에 쓰려고 boolean 반환값을 남겨 둔다. "작업이 쓸모 있는 정보를 줄 수 없는 경우가 아니면 void를 되도록 쓰지 않는다"
     public static boolean updateAttachmentIdInTag(CompoundTag tag) {
         Identifier old = getAttachmentIdFromTag(tag);
         if (!old.equals(DefaultAssets.EMPTY_ATTACHMENT_ID)) {

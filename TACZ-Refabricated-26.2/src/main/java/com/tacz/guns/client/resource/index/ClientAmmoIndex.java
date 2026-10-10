@@ -159,27 +159,27 @@ public class ClientAmmoIndex {
     }
 
     private static void checkTextureAndModel(AmmoDisplay display, ClientAmmoIndex index) {
-        // 检查模型
+        // 모델 확인
         Identifier modelLocation = display.getModelLocation();
         if (modelLocation == null) {
             return;
         }
         BedrockModelPOJO modelPOJO = ClientAssetsManager.INSTANCE.getBedrockModelPOJO(modelLocation);
         Preconditions.checkArgument(modelPOJO != null, "there is no corresponding model file");
-        // 检查材质
+        // 텍스처 확인
         index.modelTextureLocation = display.getModelTexture();
-        // 先判断是不是 1.10.0 版本基岩版模型文件
+        // 먼저 1.10.0 버전 베드락 모델 파일인지 판단한다
         if (BedrockVersion.isLegacyVersion(modelPOJO) && modelPOJO.getGeometryModelLegacy() != null) {
             index.ammoModel = new BedrockAmmoModel(modelPOJO, BedrockVersion.LEGACY);
         }
-        // 判定是不是 1.12.0 版本基岩版模型文件
+        // 1.12.0 버전 베드락 모델 파일인지 판단한다
         if (BedrockVersion.isNewVersion(modelPOJO) && modelPOJO.getGeometryModelNew() != null) {
             index.ammoModel = new BedrockAmmoModel(modelPOJO, BedrockVersion.NEW);
         }
     }
 
     private static void checkSlotTexture(AmmoDisplay display, ClientAmmoIndex index) {
-        // 加载 GUI 内枪械图标
+        // GUI 안 총기 아이콘 로드
         index.slotTextureLocation = Objects.requireNonNullElseGet(display.getSlotTextureLocation(), MissingTextureAtlasSprite::getLocation);
     }
 
@@ -192,11 +192,11 @@ public class ClientAmmoIndex {
             if (modelPOJO == null) {
                 return;
             }
-            // 先判断是不是 1.10.0 版本基岩版模型文件
+            // 먼저 1.10.0 버전 베드락 모델 파일인지 판단한다
             if (BedrockVersion.isLegacyVersion(modelPOJO) && modelPOJO.getGeometryModelLegacy() != null) {
                 index.ammoEntityModel = new BedrockAmmoModel(modelPOJO, BedrockVersion.LEGACY);
             }
-            // 判定是不是 1.12.0 版本基岩版模型文件
+            // 1.12.0 버전 베드락 모델 파일인지 판단한다
             if (BedrockVersion.isNewVersion(modelPOJO) && modelPOJO.getGeometryModelNew() != null) {
                 index.ammoEntityModel = new BedrockAmmoModel(modelPOJO, BedrockVersion.NEW);
             }
@@ -212,11 +212,11 @@ public class ClientAmmoIndex {
             if (modelPOJO == null) {
                 return;
             }
-            // 先判断是不是 1.10.0 版本基岩版模型文件
+            // 먼저 1.10.0 버전 베드락 모델 파일인지 판단한다
             if (BedrockVersion.isLegacyVersion(modelPOJO) && modelPOJO.getGeometryModelLegacy() != null) {
                 index.shellModel = new BedrockAmmoModel(modelPOJO, BedrockVersion.LEGACY);
             }
-            // 判定是不是 1.12.0 版本基岩版模型文件
+            // 1.12.0 버전 베드락 모델 파일인지 판단한다
             if (BedrockVersion.isNewVersion(modelPOJO) && modelPOJO.getGeometryModelNew() != null) {
                 index.shellModel = new BedrockAmmoModel(modelPOJO, BedrockVersion.NEW);
             }

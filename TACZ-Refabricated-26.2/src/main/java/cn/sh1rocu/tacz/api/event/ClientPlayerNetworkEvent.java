@@ -19,15 +19,15 @@ public abstract class ClientPlayerNetworkEvent extends BaseEvent {
     });
 
     /**
-     * @deprecated 【26.2 / r42】本事件<b>已不会被触发</b>。
-     * <p>它原先由 {@code ClientPacketListenerMixin} 注入 {@code handleRespawn} 里的
-     * {@code ClientLevel#addPlayer} 调用点来发射，但 26.2 已无该方法
-     * （对 {@code ClientLevel} 逐方法核对无此项，{@code handleRespawn} 反汇编中亦无该调用），
-     * 那个 mixin 已随之删除。</p>
-     * <p>如果你需要「玩家重生 / 跨维度后」的时机，改为在客户端 tick 里比对
-     * {@code Minecraft#player} 的实例是否被替换 —— 本体的
-     * {@code RefreshClonePlayerDataEvent#onClientTick} 就是这么做的，可作参考。</p>
-     * <p>保留本字段仅为不破坏已有第三方代码的编译，注册回调不会收到任何调用。</p>
+     * @deprecated [26.2 / r42] 이 이벤트는 <b>더 이상 발생하지 않는다</b>.
+     * <p>원래는 {@code ClientPacketListenerMixin}이 {@code handleRespawn} 안의
+     * {@code ClientLevel#addPlayer} 호출 지점에 주입해 발생시켰지만, 26.2에는 그 메서드가 없어
+     * ({@code ClientLevel}을 메서드별로 대조해도 없고, {@code handleRespawn} 역어셈블에도 그 호출이 없다)
+     * 해당 mixin도 함께 삭제했다.</p>
+     * <p>"플레이어 부활·차원 이동 뒤" 시점이 필요하면 클라이언트 틱에서
+     * {@code Minecraft#player} 인스턴스가 바뀌었는지 비교한다. 본체의
+     * {@code RefreshClonePlayerDataEvent#onClientTick}이 그렇게 하므로 참고한다.</p>
+     * <p>이 필드는 기존 외부 코드의 컴파일을 깨지 않으려고 남겨 둔 것이며, 등록한 콜백은 한 번도 호출되지 않는다.</p>
      */
     @Deprecated
     public static final Event<CloneCallback> CLONE = EventFactory.createArrayBacked(CloneCallback.class, callbacks -> event -> {

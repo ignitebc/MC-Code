@@ -27,21 +27,21 @@
 package com.tacz.guns.api.client.animation.gltf.accessor;
 
 /**
- * Methods to convert primitive arrays to arrays of Number objects
+ * 기본 타입 배열을 Number 객체 배열로 바꾸는 메서드 모음
  */
 class NumberArrays {
     /**
-     * Private constructor to prevent instantiation
+     * 인스턴스를 만들지 못하게 막는 비공개 생성자
      */
     private NumberArrays() {
-        // Private constructor to prevent instantiation
+        // 인스턴스를 만들지 못하게 막는 비공개 생성자
     }
 
     /**
-     * Convert the given array into a Number array
+     * 주어진 배열을 Number 배열로 바꾼다
      *
-     * @param array The array
-     * @return The result
+     * @param array 배열
+     * @return 결과
      */
     static Number[] asNumbers(int array[]) {
         Number result[] = new Number[array.length];
@@ -52,10 +52,10 @@ class NumberArrays {
     }
 
     /**
-     * Convert the given array into a Number array
+     * 주어진 배열을 Number 배열로 바꾼다
      *
-     * @param array The array
-     * @return The result
+     * @param array 배열
+     * @return 결과
      */
     static Number[] asNumbers(long array[]) {
         Number result[] = new Number[array.length];
@@ -66,10 +66,10 @@ class NumberArrays {
     }
 
     /**
-     * Convert the given array into a Number array
+     * 주어진 배열을 Number 배열로 바꾼다
      *
-     * @param array The array
-     * @return The result
+     * @param array 배열
+     * @return 결과
      */
     static Number[] asNumbers(float array[]) {
         Number result[] = new Number[array.length];

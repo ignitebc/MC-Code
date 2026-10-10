@@ -4,28 +4,28 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
 
 /**
- * Shared KeyMapping category for all TACZ key bindings.
+ * 모든 TACZ 키 설정이 함께 쓰는 KeyMapping 분류.
  *
- * <h2>为什么必须显式指定 {@code tacz} 命名空间</h2>
- * 26.2 的分类标题是<b>从 Identifier 推导</b>出来的，不再是自己写死的字符串：
+ * <h2>{@code tacz} 네임스페이스를 명시해야 하는 이유</h2>
+ * 26.2의 분류 제목은 직접 고정한 문자열이 아니라 <b>Identifier에서 만들어진다</b>:
  * <pre>
  * KeyMapping.Category#label():
  *     return Component.translatable(this.id.toLanguageKey("key.category"));
  * Identifier#toLanguageKey(String prefix):
  *     return prefix + "." + namespace + "." + path;
  * </pre>
- * （两处均为字节码确认。）
+ * (두 곳 모두 바이트코드 확인.)
  *
- * <p>原先写的是 {@code Identifier.parse("tacz")} —— 不带冒号时会套用<b>默认命名空间
- * {@code minecraft}</b>，于是推出来的键是 {@code key.category.minecraft.tacz}，
- * 而语言文件里根本没有这个键，界面上就直接显示出原始键名
- * （用户实测：按键绑定里标题是一串 {@code key.category.mincraft.tacz}）。
+ * <p>원래는 {@code Identifier.parse("tacz")}였는데 — 콜론이 없으면 <b>기본 네임스페이스
+ * {@code minecraft}</b>가 붙어 {@code key.category.minecraft.tacz}라는 키가 만들어졌다.
+ * 언어 파일에는 이 키가 없어 화면에 원래 키 이름이 그대로 나왔다
+ * (사용자 실측: 키 설정 제목이 {@code key.category.mincraft.tacz}로 표시됨).
  *
- * <p>改为 {@code tacz:tacz} 后推导出 {@code key.category.tacz.tacz}，
- * 并已在全部 21 个语言文件里补上该键。
- * 对照 vanilla：{@code Category.register("movement")} 内部走
- * {@code Identifier.withDefaultNamespace}，得到的正是
- * {@code key.category.minecraft.movement} —— 同一套规则。
+ * <p>{@code tacz:tacz}로 바꾸면 {@code key.category.tacz.tacz}가 만들어지며,
+ * 언어 파일에도 이 키를 넣었다.
+ * 바닐라와 대조: {@code Category.register("movement")}는 안에서
+ * {@code Identifier.withDefaultNamespace}를 거쳐
+ * {@code key.category.minecraft.movement}가 된다 — 같은 규칙이다.
  *
  */
 public final class TaCZKeyCategory {

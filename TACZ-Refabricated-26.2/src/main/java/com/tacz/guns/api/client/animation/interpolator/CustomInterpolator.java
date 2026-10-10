@@ -20,17 +20,17 @@ public class CustomInterpolator implements Interpolator {
         LerpMode fromLerpMode = content.lerpModes[indexFrom];
         LerpMode toLerpMode = content.lerpModes[indexTo];
         if (fromLerpMode == LerpMode.SPHERICAL_LINEAR && toLerpMode == LerpMode.SPHERICAL_LINEAR) {
-            // 球面线性插值
+            // 구면 선형 보간
             return doSphericalLinear(indexFrom, indexTo, alpha);
         }
         if (fromLerpMode == LerpMode.SPHERICAL_SQUAD || toLerpMode == LerpMode.SPHERICAL_SQUAD) {
-            // 球面 Squad 插值
+            // 구면 Squad 보간
             return this.doSphericalSquad(indexFrom, indexTo, alpha);
         } else if (fromLerpMode == LerpMode.CATMULLROM || toLerpMode == LerpMode.CATMULLROM) {
-            // Catmull-Rom 插值
+            // Catmull-Rom 보간
             return doCatmullromLerp(indexFrom, indexTo, alpha);
         } else {
-            // 其他情况的插值计算
+            // 그 밖의 경우 보간 계산
             return doOtherLerp(indexFrom, indexTo, alpha);
         }
     }
@@ -102,8 +102,8 @@ public class CustomInterpolator implements Interpolator {
         vx[3] = valueNext[0];
         vy[3] = valueNext[1];
         vz[3] = valueNext[2];
-        // 这里用的是三次样条插值，主要是为了和 BlockBench 中的表现贴合。
-        // BlockBench 中调用的是 THREE.SplineCurve，其实现是三次样条插值。如果用 Catmull-Rom 插值，区别会比较大。
+        // 여기서는 BlockBench의 동작과 맞추기 위해 3차 스플라인 보간을 쓴다.
+        // BlockBench는 THREE.SplineCurve를 호출하며 그 구현이 3차 스플라인 보간이다. Catmull-Rom 보간을 쓰면 차이가 꽤 크다.
         return new float[]{
                 MathUtil.splineCurve(vx, 0.5f, alpha),
                 MathUtil.splineCurve(vy, 0.5f, alpha),
@@ -115,7 +115,7 @@ public class CustomInterpolator implements Interpolator {
         if (content.values.length == 1) {
             return getAsQuaternion(0, alpha > 0);
         }
-        // 如果旋转值有 8 个，后四个为 Post 数值，用于插值起点
+        // 회전 값이 8개면 뒤의 4개는 Post 값이며 보간 시작점으로 쓴다
         float[] q0 = getAsQuaternion(indexFrom, true);
         float[] q1 = getAsQuaternion(indexTo, false);
         return MathUtil.slerp(q0, q1, alpha);
@@ -132,9 +132,8 @@ public class CustomInterpolator implements Interpolator {
         float[] q2 = getAsQuaternion(indexTo, false);
         float[] q3 = getAsQuaternion(next, false);
 
-        // 这里用的是三次样条插值，主要是为了和 BlockBench 中的表现贴合。
-        // BlockBench 中调用的是 THREE.SplineCurve，其实现是三次样条插值。如果用 Catmull-Rom 插值，区别会比较大。
-        //float[] r = MathUtil.quaternionSplineCurve(new float[][]{q0, content.values[indexFrom], content.values[indexTo], content.values[next]}, 0.5f, alpha);
+        // 여기서는 BlockBench의 동작과 맞추기 위해 3차 스플라인 보간을 쓴다.
+        // BlockBench는 THREE.SplineCurve를 호출하며 그 구현이 3차 스플라인 보간이다. Catmull-Rom 보간을 쓰면 차이가 꽤 크다.
         return squad(q0, q1, q2, q3, alpha);
     }
 

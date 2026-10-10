@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 public interface IAmmo {
     /**
-     * @return 如果物品类型为 IAttachment 则返回显式转换后的实例，否则返回 null。
+     * @return 아이템 종류가 IAttachment면 명시적으로 형변환한 인스턴스, 아니면 null
      */
     @Nullable
     static IAmmo getIAmmoOrNull(@Nullable ItemStack stack) {
@@ -21,24 +21,24 @@ public interface IAmmo {
     }
 
     /**
-     * 获取弹药 ID
+     * 탄약 ID를 얻는다
      *
-     * @param ammo 输入物品
-     * @return 弹药 ID
+     * @param ammo 입력 아이템
+     * @return 탄약 ID
      */
     Identifier getAmmoId(ItemStack ammo);
 
     /**
-     * 设置弹药 ID
+     * 탄약 ID를 설정한다
      */
     void setAmmoId(ItemStack ammo, @Nullable Identifier ammoId);
 
     /**
-     * 弹药是否属于这把枪
+     * 탄약이 이 총의 것인지
      *
-     * @param gun  检查的枪械物品
-     * @param ammo 检查的子弹物品
-     * @return 是否属于这把枪
+     * @param gun  확인할 총기 아이템
+     * @param ammo 확인할 탄약 아이템
+     * @return 이 총의 것인지
      */
     boolean isAmmoOfGun(ItemStack gun, ItemStack ammo);
 }

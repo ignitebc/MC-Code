@@ -69,7 +69,7 @@ public class ExplosionModifier implements IAttachmentModifier<ExplosionModifier.
         });
 
         boolean explode = cacheValue.isExplode() || AttachmentPropertyManager.eval(explodeValues, false);
-        // 如果还是没有爆炸，那就没必要计算后面数值了
+        // 그래도 폭발이 없으면 뒤의 수치를 계산할 필요가 없다
         if (!explode) {
             return;
         }
@@ -109,7 +109,7 @@ public class ExplosionModifier implements IAttachmentModifier<ExplosionModifier.
 
     public static class ExplosionModifierValue {
         /**
-         * 需要显式开启爆炸！
+         * 폭발은 명시적으로 켜야 한다!
          */
         @SerializedName("explode")
         private boolean explode = false;

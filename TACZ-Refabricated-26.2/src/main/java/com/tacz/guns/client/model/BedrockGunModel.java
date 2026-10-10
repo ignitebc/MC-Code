@@ -34,25 +34,25 @@ public class BedrockGunModel extends BedrockAnimatedModel {
     private final Set<String> adapterToRender = Sets.newHashSet();
     private final ArrayList<ShellRender> shellRenderList = new ArrayList<>();
 
-    // 第一人称机瞄摄像机定位组的路径
+    // 1인칭 가늠쇠 카메라 위치 그룹의 경로
     protected @Nullable List<BedrockPart> ironSightPath;
-    // 第一人称idle状态摄像机定位组的路径
+    // 1인칭 idle 상태 카메라 위치 그룹의 경로
     protected @Nullable List<BedrockPart> idleSightPath;
-    // 第三人称手部物品渲染原点定位组的路径
+    // 3인칭 손 아이템 렌더링 원점 위치 그룹의 경로
     protected @Nullable List<BedrockPart> thirdPersonHandOriginPath;
-    // 展示框渲染原点定位组的路径
+    // 아이템 액자 렌더링 원점 위치 그룹의 경로
     protected @Nullable List<BedrockPart> fixedOriginPath;
-    // 地面实体渲染原点定位组的路径
+    // 땅 위 엔티티 렌더링 원점 위치 그룹의 경로
     protected @Nullable List<BedrockPart> groundOriginPath;
-    // 瞄具配件定位组的路径。其他配件不需要存路径，只需要替换渲染。但是瞄具定位组需要用来辅助第一人称瞄准的摄像机定位。
+    // 조준경 부착물 위치 그룹의 경로. 다른 부착물은 경로를 저장할 필요 없이 렌더링만 바꾸면 되지만, 조준경 위치 그룹은 1인칭 조준 카메라 위치를 돕는 데 써야 한다.
     protected @Nullable List<BedrockPart> scopePosPath;
-    // 枪口火焰定位组
+    // 총구 화염 위치 그룹
     protected @Nullable List<BedrockPart> muzzleFlashPosPath;
-    // 根组
+    // 루트 그룹
     protected @Nullable BedrockPart root;
-    // 弹匣定位组
+    // 탄창 위치 그룹
     protected @Nullable BedrockPart magazineNode;
-    // 换弹时第二个弹匣定位组
+    // 재장전 때의 두 번째 탄창 위치 그룹
     protected @Nullable BedrockPart additionalMagazineNode;
     protected @Nullable List<BedrockPart> laserBeamPaths;
 
@@ -67,49 +67,49 @@ public class BedrockGunModel extends BedrockAnimatedModel {
         this.magazineNode = Optional.ofNullable(modelMap.get(MAG_NORMAL_NODE)).map(ModelRendererWrapper::getModelRenderer).orElse(null);
         this.additionalMagazineNode = Optional.ofNullable(modelMap.get(MAG_ADDITIONAL_NODE)).map(ModelRendererWrapper::getModelRenderer).orElse(null);
 
-        // 左手手臂
+        // 왼팔
         this.setFunctionalRenderer(LEFTHAND_POS_NODE, bedrockPart -> new LeftHandRender(this));
-        // 右手手臂
+        // 오른팔
         this.setFunctionalRenderer(RIGHTHAND_POS_NODE, bedrockPart -> new RightHandRender(this));
-        // 枪口火焰
+        // 총구 화염
         this.setFunctionalRenderer(MUZZLE_FLASH_ORIGIN_NODE, bedrockPart -> new MuzzleFlashRender(this));
-        // 枪管内的子弹，用于闭膛待机枪械
+        // 약실 안의 탄. 클로즈드 볼트 대기 총기에 쓴다
         this.setFunctionalRenderer(BULLET_IN_BARREL, bedrockPart -> ammoHiddenRender(bedrockPart, iGun -> iGun.hasBulletInBarrel(currentGunItem)));
-        // 弹匣内子弹
+        // 탄창 안의 탄
         this.setFunctionalRenderer(BULLET_IN_MAG, bedrockPart -> ammoHiddenRender(bedrockPart, iGun -> iGun.getCurrentAmmoCount(currentGunItem) > 0));
-        // 机枪弹链
+        // 기관총 탄띠
         this.setFunctionalRenderer(BULLET_CHAIN, bedrockPart -> ammoHiddenRender(bedrockPart, iGun -> iGun.getCurrentAmmoCount(currentGunItem) > 0));
-        // 有通用瞄具时显示，用于放瞄具的导轨（如 AKM 的导轨）
+        // 일반 조준경이 있을 때 표시. 조준경을 얹는 레일(예: AKM의 레일)
         this.setFunctionalRenderer(MOUNT, bedrockPart -> scopeHiddenRender(bedrockPart, scopeItem -> scopeItem != null && !scopeItem.isEmpty() && renderMount));
-        // 无瞄具时可见，通常用于 M4 上
+        // 조준경이 없을 때 보임. 보통 M4에 쓴다
         this.setFunctionalRenderer(CARRY, bedrockPart -> scopeHiddenRender(bedrockPart, scopeItem -> scopeItem == null || scopeItem.isEmpty()));
-        // 有瞄具时显示，折叠的机械瞄具
+        // 조준경이 있을 때 표시. 접힌 가늠쇠
         this.setFunctionalRenderer(SIGHT_FOLDED, bedrockPart -> scopeHiddenRender(bedrockPart, scopeItem -> scopeItem != null && !scopeItem.isEmpty()));
-        // 无瞄具时可见，机械瞄具
+        // 조준경이 없을 때 보임. 가늠쇠
         this.setFunctionalRenderer(SIGHT, bedrockPart -> scopeHiddenRender(bedrockPart, scopeItem -> scopeItem == null || scopeItem.isEmpty()));
-        // 安装一级扩容弹匣时显示
+        // 1단계 확장 탄창을 달았을 때 표시
         this.setFunctionalRenderer(MAG_EXTENDED_1, bedrockPart -> extendedMagHiddenRender(bedrockPart, 1));
-        // 安装二级扩容弹匣时显示
+        // 2단계 확장 탄창을 달았을 때 표시
         this.setFunctionalRenderer(MAG_EXTENDED_2, bedrockPart -> extendedMagHiddenRender(bedrockPart, 2));
-        // 安装三级扩容弹匣时显示
+        // 3단계 확장 탄창을 달았을 때 표시
         this.setFunctionalRenderer(MAG_EXTENDED_3, bedrockPart -> extendedMagHiddenRender(bedrockPart, 3));
-        // 没有安装扩容弹匣时显示
+        // 확장 탄창을 달지 않았을 때 표시
         this.setFunctionalRenderer(MAG_STANDARD, bedrockPart -> extendedMagHiddenRender(bedrockPart, 0));
-        // 部分枪械换弹动画播放时，会同时出现两个弹匣，这个就是程序自动渲染另一个弹匣的代码
+        // 일부 총기 재장전 애니메이션에서는 탄창 두 개가 동시에 나오는데, 이것이 다른 탄창을 프로그램으로 그리는 코드다
         this.setFunctionalRenderer(MAG_ADDITIONAL_NODE, this::renderAdditionalMagazine);
-        // 默认护木渲染
+        // 기본 총열 덮개 렌더링
         this.setFunctionalRenderer(HANDGUARD_DEFAULT_NODE, this::handguardDefaultRender);
-        // 战术护木渲染
+        // 전술 총열 덮개 렌더링
         this.setFunctionalRenderer(HANDGUARD_TACTICAL_NODE, this::handguardTacticalRender);
-        // 缓存其他定位组
+        // 그 밖의 위치 그룹 캐시
         this.cacheOtherPath();
-        // 缓存改装 UI 下各个配件的特写视角定位组
+        // 개조 UI에서 각 부착물의 근접 시점 위치 그룹 캐시
         this.cacheRefitAttachmentViewPath();
-        // 缓存抛壳窗
+        // 탄피 배출구 캐시
         this.cacheShellOriginNodes();
-        // 准备各个配件的渲染
+        // 각 부착물 렌더링 준비
         this.allAttachmentRender();
-        // 配件转接口渲染
+        // 부착물 어댑터 렌더링
         this.setFunctionalRenderer(ATTACHMENT_ADAPTER_NODE, this::attachmentAdapterNodeRender);
     }
 
@@ -162,7 +162,7 @@ public class BedrockGunModel extends BedrockAnimatedModel {
 
     private void allAttachmentRender() {
         for (AttachmentType type : AttachmentType.values()) {
-            // 瞄具的渲染需要提前
+            // 조준경 렌더링은 먼저 해야 한다
             if (type == AttachmentType.NONE || type == AttachmentType.SCOPE) {
                 continue;
             }
@@ -213,23 +213,23 @@ public class BedrockGunModel extends BedrockAnimatedModel {
     }
 
     /**
-     * {@code additional_magazine} 节点 —— 换弹动画中<b>留在枪身上</b>的那一个弹匣。
+     * {@code additional_magazine} 노드 — 재장전 애니메이션에서 <b>총몸에 남아 있는</b> 탄창.
      *
-     * <p><b>第 8 轮修复：撤销第 2 轮的错误改动。</b></p>
+     * <p><b>8차 수정: 2차의 잘못된 변경을 되돌렸다.</b></p>
      *
-     * <p>模型里两个弹匣节点语义不同：{@code magazine} 是换弹时<b>跟着手走</b>的那一个，
-     * {@code additional_magazine} 是<b>留在枪上</b>的那一个。上游 1.21.1 的做法是
-     * 在本节点的变换下，把 {@code magazine} 的网格<b>再画一遍</b>（同一份几何渲染两次）。
-     * 默认枪包的 {@code reload_tactical}/{@code reload_empty}/{@code inspect}
-     * 等动画同时驱动这两个节点，正依赖该行为。</p>
+     * <p>모델의 두 탄창 노드는 의미가 다르다: {@code magazine}은 재장전 때 <b>손을 따라 움직이는</b> 탄창이고,
+     * {@code additional_magazine}은 <b>총에 남아 있는</b> 탄창이다. 원본 1.21.1은
+     * 이 노드의 변환 아래에서 {@code magazine}의 메시를 <b>한 번 더 그렸다</b>(같은 형상을 두 번 렌더링).
+     * 기본 총기 팩의 {@code reload_tactical}/{@code reload_empty}/{@code inspect}
+     * 등 애니메이션이 두 노드를 함께 움직이며 이 동작에 기댄다.</p>
      *
-     * <p>第 2 轮我改成了 {@code return null}，理由是"{@code magazine} 本来就在模型树里
-     * 会被遍历到"—— <b>那个判断是错的</b>：树里那份是跟手的，留在枪上的那份只能靠这里补画。
-     * 症状即你反馈的：换弹/空仓换弹时<b>枪上的弹匣不渲染，只剩手里那个</b>。</p>
+     * <p>2차에서 "{@code magazine}은 원래 모델 트리에 있어 순회된다"는 이유로 {@code return null}로 바꿨는데 —
+     * <b>그 판단은 틀렸다</b>: 트리에 있는 것은 손을 따라가는 쪽이고, 총에 남는 쪽은 여기서 덧그려야만 한다.
+     * 증상이 바로 보고된 것이다: 재장전/빈 탄창 재장전 때 <b>총의 탄창이 그려지지 않고 손의 것만 남았다</b>.</p>
      *
-     * <p>现改为返回 {@link IMirrorGeometry}，由 {@code BedrockRenderSnapshot} 原生处理：
-     * 在本节点变换下先画自己、再画 {@code magazine}，且与枪身共用同一 RenderType
-     * 与 DrawCommand 批次，保证材质与渲染顺序正确。</p>
+     * <p>지금은 {@link IMirrorGeometry}를 돌려주어 {@code BedrockRenderSnapshot}이 직접 처리한다:
+     * 이 노드의 변환 아래에서 자신을 먼저 그리고 {@code magazine}을 그리며, 총몸과 같은 RenderType과
+     * DrawCommand 묶음을 써서 재질과 렌더링 순서가 맞는다.</p>
      */
     @Nullable
     private IFunctionalRenderer renderAdditionalMagazine(BedrockPart bedrockPart) {
@@ -237,13 +237,13 @@ public class BedrockGunModel extends BedrockAnimatedModel {
     }
 
     /**
-     * 添加枪械自定义的文本显示
+     * 총기 사용자 정의 글자 표시를 추가한다
      */
     public void setTextShowList(Map<String, TextShow> textShowList) {
         textShowList.forEach((name, textShow) -> this.setFunctionalRenderer(name, bedrockPart -> new TextShowRender(this, textShow, currentGunItem)));
     }
 
-    /** Prepares all stack-dependent visibility state before an immediate render or snapshot extraction. */
+    /** 즉시 렌더링이나 스냅숏 추출 전에 스택에 따라 달라지는 표시 상태를 모두 준비한다. */
     private boolean prepareRenderState(ItemStack gunItem) {
         IGun iGun = IGun.getIGunOrNull(gunItem);
         if (iGun == null) {
@@ -252,7 +252,7 @@ public class BedrockGunModel extends BedrockAnimatedModel {
         currentGunItem = gunItem;
         currentExtendMagLevel = 0;
         adapterToRender.clear();
-        // 更新配件物品的缓存，以供渲染使用
+        // 렌더링에 쓰도록 부착물 아이템 캐시를 갱신한다
         for (AttachmentType type : AttachmentType.values()) {
             if (type == AttachmentType.NONE) {
                 continue;
@@ -282,8 +282,8 @@ public class BedrockGunModel extends BedrockAnimatedModel {
 
 
     /**
-     * Backend-neutral 26.2 submission path. Stack-dependent state is prepared before the parent
-     * class freezes all part matrices into an immutable BedrockRenderSnapshot.
+     * 백엔드에 의존하지 않는 26.2 제출 경로. 부모 클래스가 모든 부품 행렬을 변하지 않는 BedrockRenderSnapshot으로
+     * 고정하기 전에 스택에 따라 달라지는 상태를 준비한다.
      */
     public void submit(PoseStack poseStack,
                        ItemStack gunItem,
@@ -299,9 +299,9 @@ public class BedrockGunModel extends BedrockAnimatedModel {
             BeamRenderer.renderLaserBeam(gunItem, poseStack, transformType, laserBeamPaths, collector);
         }
 
-        // A6 baseline: submit the scope as normal geometry without raw-GL stencil clipping. This
-        // keeps the scope body/ring/reticle visible on both backends; a PIP implementation can
-        // replace this ordered fallback later without blocking the core gun model.
+        // A6 기준선: 조준경을 raw-GL stencil 잘라내기 없이 일반 형상으로 제출한다.
+        // 그래서 두 백엔드 모두에서 조준경 몸체/고리/조준선이 보인다. PIP 구현이 나오면
+        // 핵심 총기 모델을 막지 않고 이 순서대로의 대체 경로를 바꿀 수 있다.
         ItemStack scope = currentAttachmentItem.get(AttachmentType.SCOPE);
         if (scopePosPath != null && scope != null && !scope.isEmpty()) {
             PoseStack scopePose = new PoseStack();
@@ -329,7 +329,7 @@ public class BedrockGunModel extends BedrockAnimatedModel {
 
     @Nullable
     private IFunctionalRenderer scopeHiddenRender(BedrockPart bedrockPart, Predicate<ItemStack> predicate) {
-        // 安装瞄具时可见
+        // 조준경을 달았을 때 보임
         ItemStack scopeItem = currentAttachmentItem.get(AttachmentType.SCOPE);
         bedrockPart.visible = predicate.test(scopeItem);
         return null;
@@ -348,7 +348,7 @@ public class BedrockGunModel extends BedrockAnimatedModel {
             return null;
         }
         if (nodeName.equals(MAG_ADDITIONAL_NODE)) {
-            // 额外弹匣只有当动画中有它的关键帧的时候才渲染
+            // 추가 탄창은 애니메이션에 그 키프레임이 있을 때만 그린다
             return new ModelAdditionalMagazineListener(listener, this);
         }
         return listener;

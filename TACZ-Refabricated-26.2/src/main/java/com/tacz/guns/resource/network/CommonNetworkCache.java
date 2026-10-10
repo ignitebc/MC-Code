@@ -26,8 +26,8 @@ import org.luaj.vm2.LuaTable;
 import java.util.*;
 
 /**
- * 网络位置的缓存<br/>
- * 用于存储从网络获取的数据
+ * 네트워크 위치 캐시<br/>
+ * 네트워크에서 가져온 데이터를 저장하는 데 쓴다
  */
 public enum CommonNetworkCache implements ICommonResourceProvider {
     INSTANCE;
@@ -35,7 +35,7 @@ public enum CommonNetworkCache implements ICommonResourceProvider {
     public Map<Identifier, GunData> gunData = new HashMap<>();
     public Map<Identifier, AttachmentData> attachmentData = new HashMap<>();
     public Map<Identifier, RecipeFilter> recipeFilter = new HashMap<>();
-    /** 第 12 轮：服务端同步过来的工作台配方（26.2 客户端无完整配方表）。 */
+    /** 12차: 서버가 동기화해 준 작업대 레시피(26.2 클라이언트에는 완전한 레시피 표가 없음). */
     public Map<Identifier, TableRecipe> tableRecipe = new HashMap<>();
     public Map<Identifier, BlockData> blockData = new HashMap<>();
     public Map<Identifier, CommonGunIndex> gunIndex = new HashMap<>();
@@ -101,7 +101,7 @@ public enum CommonNetworkCache implements ICommonResourceProvider {
 
     @Override
     public @Nullable LuaTable getScript(Identifier scriptId) {
-        return null; // 脚本不需要同步
+        return null; // 스크립트는 동기화할 필요가 없다
     }
 
     @Override
@@ -152,7 +152,7 @@ public enum CommonNetworkCache implements ICommonResourceProvider {
 
     public void fromNetwork(Map<DataType, Map<Identifier, String>> cache) {
         clear();
-        // 延后处理
+        // 나중에 처리
         Map<DataType, Map<Identifier, String>> delayed = new HashMap<>();
         for (Map.Entry<DataType, Map<Identifier, String>> entry : cache.entrySet()) {
             switch (entry.getKey()) {
@@ -179,7 +179,7 @@ public enum CommonNetworkCache implements ICommonResourceProvider {
         AttachmentData data = CommonAssetsManager.GSON.fromJson(json, AttachmentData.class);
         JsonElement element = CommonAssetsManager.GSON.fromJson(json, JsonElement.class);
         if (data != null) {
-            // 序列化注册的配件属性修改
+            // 등록된 부착물 속성 변경을 직렬화한다
             AttachmentPropertyManager.getModifiers().forEach((key, value) -> {
                 if (!element.isJsonObject()) {
                     return;
@@ -190,7 +190,7 @@ public enum CommonNetworkCache implements ICommonResourceProvider {
                     property.initComponents();
                     data.addModifier(key, property);
                 } else if (jsonObject.has(value.getOptionalFields())) {
-                    // 为了兼容旧版本，读取可选字段名
+                    // 예전 버전과 호환하려고 선택 필드 이름을 읽는다
                     JsonProperty<?> property = value.readJson(json);
                     property.initComponents();
                     data.addModifier(key, property);
@@ -227,7 +227,7 @@ public enum CommonNetworkCache implements ICommonResourceProvider {
                     case ATTACHMENT_TAGS -> resolveAttachmentTags(data);
                     case BLOCK_INDEX -> blockIndex.put(entry.getKey(), parse(entry.getValue(), CommonBlockIndex.class));
                     case RECIPE_FILTER -> recipeFilter.put(entry.getKey(), parse(entry.getValue(), RecipeFilter.class));
-                    // 第 12 轮：接上此前只声明未接线的 RECIPES 通道
+                    // 12차: 예전부터 선언만 되고 연결되지 않았던 RECIPES 경로를 잇는다
                     case RECIPES -> tableRecipe.put(entry.getKey(), parse(entry.getValue(), TableRecipe.class));
                     case BLOCK_DATA -> blockData.put(entry.getKey(), parse(entry.getValue(), BlockData.class));
                 }

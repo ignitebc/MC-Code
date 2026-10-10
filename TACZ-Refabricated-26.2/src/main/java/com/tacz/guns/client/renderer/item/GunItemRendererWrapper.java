@@ -49,7 +49,7 @@ import java.util.function.Supplier;
 import static net.minecraft.world.item.ItemDisplayContext.*;
 
 /**
- * 负责主要的枪械动画模型渲染。额外的效果见 {@link FirstPersonRenderGunEvent}
+ * 주요 총기 애니메이션 모델 렌더링을 맡는다. 추가 효과는 {@link FirstPersonRenderGunEvent} 참고
  */
 public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunModel, GunAnimationStateContext> {
     private static final SlotModel SLOT_GUN_MODEL = new SlotModel();
@@ -92,7 +92,6 @@ public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunMod
         });
         if (stateMachine.isInitialized()) {
             stateMachine.trigger(GunAnimationConstant.INPUT_PUT_AWAY);
-//            KeepingItemRenderer.getRenderer().keep(stack, putAwayTime);
             stateMachine.exit();
             stateMachine.setExitingTime(putAwayTime + 50);
         }
@@ -131,7 +130,7 @@ public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunMod
         }
         Optional.ofNullable(getModel(stack)).ifPresent(model -> {
             if (lastModel != model) {
-                // 切换枪械模型的时候清理一下摄像机动画数据，以避免上一次播放到一半的摄像机动画影响观感。
+                // 총기 모델을 바꿀 때 카메라 애니메이션 데이터를 정리해, 지난번에 중간까지 재생된 카메라 애니메이션이 보기에 영향을 주지 않게 한다.
                 model.cleanCameraAnimationTransform();
                 lastModel = model;
             }
@@ -158,7 +157,7 @@ public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunMod
             float multiplier = 1 - aimingProgress + aimingProgress / (float) Math.sqrt(zoom);
             Quaternionf quaternion = MathUtil.multiplyQuaternion(model.getCameraAnimationObject().rotationQuaternion, multiplier);
             poseStack.mulPose(quaternion);
-            // 截至目前，摄像机动画数据已消费完毕。是否有更好的清理动画数据的方法？
+            // 지금까지 카메라 애니메이션 데이터는 모두 소비되었다. 애니메이션 데이터를 정리하는 더 좋은 방법이 있을까?
             model.cleanCameraAnimationTransform();
         });
     }
@@ -177,7 +176,7 @@ public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunMod
                 return;
             }
 
-            // 在渲染之前，先更新动画，让动画数据写入模型
+            // 렌더링 전에 애니메이션을 먼저 갱신해 애니메이션 데이터를 모델에 쓴다
             if (animationStateMachine != null) {
                 animationStateMachine.processContextIfExist(context -> {
                     updateContext(context, stack, player, partialTick);
@@ -186,7 +185,7 @@ public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunMod
             }
 
             poseStack.pushPose();
-            // 逆转原版施加在手上的延滞效果，改为写入模型动画数据中
+            // 바닐라가 손에 거는 지연 효과를 되돌리고 모델 애니메이션 데이터에 대신 쓴다
             float xRotOffset = Mth.lerp(partialTick, player.xBobO, player.xBob);
             float yRotOffset = Mth.lerp(partialTick, player.yBobO, player.yBob);
             float xRot = player.getViewXRot(partialTick) - xRotOffset;
@@ -202,34 +201,34 @@ public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunMod
                 rootNode.additionalQuaternion.mul(Axis.XP.rotationDegrees(xRot * 0.05F));
                 rootNode.additionalQuaternion.mul(Axis.YP.rotationDegrees(yRot * 0.05F));
             }
-            // 从渲染原点 (0, 24, 0) 移动到模型原点 (0, 0, 0)
+            // 렌더링 원점 (0, 24, 0)에서 모델 원점 (0, 0, 0)으로 옮긴다
             poseStack.translate(0, 1.5f, 0);
-            // 基岩版模型是上下颠倒的，需要翻转过来。
+            // 베드락 모델은 위아래가 뒤집혀 있어 다시 뒤집어야 한다.
             poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
-            // 应用持枪姿态变换，如第一人称摄像机定位
+            // 1인칭 카메라 위치 같은 총 들기 자세 변환을 적용한다
             FirstPersonRenderGunEvent.applyFirstPersonGunTransform(player, stack, poseStack, gunModel, partialTick);
 
-            // 开启第一人称弹壳和火焰渲染
+            // 1인칭 탄피와 화염 렌더링을 켠다
             MuzzleFlashRender.isSelf = true;
             ShellRender.isSelf = true;
-            // 如果正在打开改装界面，则取消手臂渲染
+            // 개조 화면을 여는 중이면 팔을 그리지 않는다
             boolean renderHand = gunModel.getRenderHand();
             if (RefitTransform.getOpeningProgress() != 0) {
                 gunModel.setRenderHand(false);
             }
-            // 调用枪械模型渲染
+            // 총기 모델 렌더링 호출
             RenderType renderType = display.enablesTransparency()
                     ? RenderTypes.entityTranslucent(display.getModelTexture())
                     : RenderTypes.entityCutout(display.getModelTexture());
             gunModel.submit(poseStack, stack, ctx, collector, renderType, light, OverlayTexture.NO_OVERLAY);
-            // 缓存枪口位置，为第一人称曳光弹渲染作准备
+            // 1인칭 예광탄 렌더링을 준비하려고 총구 위치를 캐시한다
             cacheMuzzlePosition(poseStack, gunModel);
-            // 恢复手臂渲染
+            // 팔 렌더링 되돌리기
             gunModel.setRenderHand(renderHand);
-            // 渲染完成后，将动画数据从模型中清除，不对其他视角下的模型渲染产生影响
+            // 렌더링이 끝나면 모델에서 애니메이션 데이터를 지워 다른 시점의 모델 렌더링에 영향을 주지 않게 한다
             poseStack.popPose();
             gunModel.cleanAnimationTransform();
-            // 关闭第一人称弹壳和火焰渲染
+            // 1인칭 탄피와 화염 렌더링을 끈다
             MuzzleFlashRender.isSelf = false;
             ShellRender.isSelf = false;
         });
@@ -237,7 +236,7 @@ public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunMod
 
     private static void cacheMuzzlePosition(PoseStack poseStack, BedrockGunModel gunModel) {
         if (gunModel.getMuzzleFlashPosPath() != null) {
-            // 计算出枪口相对于摄像机中心的坐标
+            // 카메라 중심 기준 총구 좌표를 계산한다
             poseStack.pushPose();
             for (BedrockPart bedrockPart : gunModel.getMuzzleFlashPosPath()) {
                 bedrockPart.translateAndRotateAndScale(poseStack);
@@ -246,7 +245,7 @@ public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunMod
             double itemRenderFov = CameraSetupEvent.ITEM_MODEL_FOV_DYNAMICS.get();
             double levelRenderFov = CameraSetupEvent.WORLD_FOV_DYNAMICS.get();
             poseStack.popPose();
-            // 缓存转换后的偏移坐标
+            // 변환한 오프셋 좌표를 캐시한다
             muzzleRenderOffset.set(
                     pose.m30(),
                     pose.m31(),
@@ -264,20 +263,20 @@ public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunMod
         }
         poseStack.pushPose();
         TimelessAPI.getGunDisplay(stack).ifPresentOrElse(gunIndex -> {
-            // 第一人称就不渲染了，交给别的地方
+            // 1인칭은 여기서 그리지 않고 다른 곳에 맡긴다
             if (transformType == FIRST_PERSON_LEFT_HAND || transformType == FIRST_PERSON_RIGHT_HAND) {
                 return;
             }
-            // 第三人称副手也不渲染了
+            // 3인칭 보조 손도 그리지 않는다
             if (transformType == THIRD_PERSON_LEFT_HAND) {
                 return;
             }
-            // GUI 特殊渲染
+            // GUI 특수 렌더링
             if (transformType == GUI) {
                 renderSlotTexture(poseStack, collector, pPackedLight, pPackedOverlay, gunIndex.getSlotTexture());
                 return;
             }
-            // 剩下的渲染
+            // 나머지 렌더링
             BedrockGunModel gunModel;
             Identifier gunTexture;
             Pair<BedrockGunModel, Identifier> lodModel = gunIndex.getLodModel();
@@ -292,19 +291,19 @@ public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunMod
                 renderSlotTexture(poseStack, collector, pPackedLight, pPackedOverlay, gunIndex.getSlotTexture());
                 return;
             }
-            // 移动到模型原点
+            // 모델 원점으로 이동
             poseStack.translate(0.5, 2, 0.5);
-            // 反转模型
+            // 모델 뒤집기
             poseStack.scale(-1, -1, 1);
-            // 应用定位组的变换（位移和旋转，不包括缩放）
+            // 위치 그룹의 변환 적용(이동과 회전, 크기는 제외)
             applyPositioningTransform(transformType, gunIndex.getTransform().getScale(), gunModel, poseStack);
-            // 应用 display 数据中的缩放
+            // display 데이터의 크기 적용
             applyScaleTransform(transformType, gunIndex.getTransform().getScale(), poseStack);
-            // 渲染枪械模型
+            // 총기 모델 렌더링
             RenderType renderType = RenderTypes.entityCutout(gunTexture);
             gunModel.submit(poseStack, stack, transformType, collector, renderType, pPackedLight, pPackedOverlay);
         }, () -> {
-            // 没有这个 gunID，渲染个错误材质提醒别人
+            // 이 gunID가 없으면 오류 텍스처를 그려 알린다
             renderSlotTexture(poseStack, collector, pPackedLight, pPackedOverlay, MissingTextureAtlasSprite.getLocation());
         });
         poseStack.popPose();
@@ -314,9 +313,9 @@ public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunMod
         poseStack.translate(0.5, 1.5, 0.5);
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
         collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(texture), (pose, buffer) -> {
-            // 26.2: 必须使用回调参数 pose（= 提交那一刻 poseStack.last().copy() 的快照），
-            // 而不是外层 poseStack —— 回调执行时它早已被 popPose/复用，
-            // 结果就是图标被画到错误位置（物品栏一片空白）。
+            // 26.2: 바깥 poseStack이 아니라 콜백 인자 pose(= 제출하는 순간 poseStack.last().copy()의 스냅숏)를 써야 한다.
+            // 콜백이 실행될 때 바깥 poseStack은 이미 popPose되었거나 다시 쓰이고 있어,
+            // 그러면 아이콘이 엉뚱한 위치에 그려진다(인벤토리가 텅 빔).
             PoseStack tacz$snapshotPose = new PoseStack();
             tacz$snapshotPose.last().pose().set(pose.pose());
             tacz$snapshotPose.last().normal().set(pose.normal());
@@ -358,7 +357,7 @@ public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunMod
         if (scale == null) {
             scale = new Vector3f(1, 1, 1);
         }
-        // 应用定位组的反向位移、旋转，使定位组的位置就是渲染中心
+        // 위치 그룹의 반대 이동·회전을 적용해 위치 그룹의 위치가 렌더링 중심이 되게 한다
         poseStack.translate(0, 1.5, 0);
         for (int i = nodePath.size() - 1; i >= 0; i--) {
             BedrockPart t = nodePath.get(i);

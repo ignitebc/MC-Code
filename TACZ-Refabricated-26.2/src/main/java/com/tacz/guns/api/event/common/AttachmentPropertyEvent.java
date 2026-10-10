@@ -7,9 +7,9 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * 缓存配件属性修改值时触发的事件
+ * 부착물 속성 보정값을 캐시할 때 발생하는 이벤트
  * <p>
- * 如果有其他模组想要添加自定义的配件属性修改值，可以捕获此事件
+ * 다른 모드가 사용자 정의 부착물 속성 보정값을 추가하려면 이 이벤트를 잡으면 된다
  */
 public class AttachmentPropertyEvent extends BaseEvent {
     private final ItemStack gunItem;

@@ -31,68 +31,68 @@ public class PlayerModelMixin extends HumanoidModel<AvatarRenderState> {
 
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;)V", at = @At(value = "TAIL"))
     private void setRotationAnglesTail(AvatarRenderState renderState, CallbackInfo ci) {
-        // 【第 34 轮修复】收枪后 PAL 第三人称动作卡死在最后一帧。
+        // [34차 수정] 총을 집어넣은 뒤 PAL 3인칭 동작이 마지막 프레임에서 멈춤.
         //
-        // 症状：装了 Player Animation Library 时，持枪的第三人称动作正确；但一切换到
-        // 非枪械物品或空手，玩家就永远保持上一次持枪的姿态（站立/走路/奔跑/趴姿都会卡住）。
+        // 증상: Player Animation Library를 설치하면 총을 든 3인칭 동작은 맞지만,
+        // 총이 아닌 아이템이나 빈손으로 바꾸는 순간 플레이어가 마지막으로 총을 들었던 자세를 영원히 유지한다(서기/걷기/달리기/엎드리기 모두 멈춤).
         //
-        // 根因是<b>这里的提前 return 把"停止动画"的路一起堵死了</b>。
-        // 真正负责停 PAL 的是 InnerThirdPersonManager#setRotationAnglesHead 的头几行：
+        // 근본 원인은 <b>여기의 이른 return이 "애니메이션 멈춤" 경로까지 함께 막은 것</b>이다.
+        // PAL을 실제로 멈추는 것은 InnerThirdPersonManager#setRotationAnglesHead의 앞 몇 줄이다:
         //     IGun iGun = IGun.getIGunOrNull(mainHandItem);
-        // 也就是说"手里不是枪"恰恰是<b>必须把调用送进去</b>的情况 —— 只有进去了才会
-        // 触发 stopAllAnimation。而旧代码在 mixin 层就 `if (getIGunOrNull == null) return;`，
-        // 于是收枪那一刻起 InnerThirdPersonManager 再也不会被调用一次，
-        // PAL 的四个 controller（LOWER/LOOP_UPPER/ONCE_UPPER/ROTATION）
-        // 谁都没收到 fade-out 指令，就一直播着最后那个循环动画。
+        // 즉 "손에 든 것이 총이 아님"이 바로 <b>호출을 반드시 들여보내야 하는</b> 경우다 — 들어가야만
+        // stopAllAnimation이 일어난다. 그런데 예전 코드는 mixin 층에서 `if (getIGunOrNull == null) return;`을 해서,
+        // 총을 집어넣은 순간부터 InnerThirdPersonManager가 한 번도 호출되지 않았고,
+        // PAL의 controller 네 개(LOWER/LOOP_UPPER/ONCE_UPPER/ROTATION)
+        // 어느 것도 fade-out 지시를 받지 못해 마지막 반복 애니메이션을 계속 재생했다.
         //
-        // 这也解释了用户描述的"趴着时比较特殊"：趴姿走的是 LIE/LIE_MOVE 动画，
-        // 卡住后表现为"趴着的直立形态"，本质与其他状态同因。
+        // 이것이 사용자가 말한 "엎드렸을 때는 좀 특이함"도 설명한다: 엎드린 자세는 LIE/LIE_MOVE 애니메이션을 타서,
+        // 멈춘 뒤 "엎드린 채 선 모습"으로 나타나지만 본질은 다른 상태와 같은 원인이다.
         //
-        // 修复：把持枪判断<b>下放</b>给 InnerThirdPersonManager 自己做，
-        // 本方法只负责"有活体实体就转发"。stopAllAnimation 内部对四个 controller
-        // 都有 `controller.isActive()` 守卫（PalAnimationManager#stop），
-        // 重复调用是幂等的，不会每帧重复触发淡出。
-        // 【第 36 轮修复】把上游的 `ageInTicks == 0` 守卫补回来。
+        // 수정: 총을 들었는지 판단하는 일을 InnerThirdPersonManager에 <b>넘겨</b> 스스로 하게 하고,
+        // 이 메서드는 "살아 있는 엔티티가 있으면 넘겨주기"만 맡는다. stopAllAnimation 안에서 controller 네 개
+        // 모두에 `controller.isActive()` 확인이 있으므로(PalAnimationManager#stop),
+        // 반복 호출해도 결과가 같아 프레임마다 fade-out을 다시 일으키지 않는다.
+        // [36차 수정] 원본의 `ageInTicks == 0` 확인을 되살린다.
         //
-        // 上一轮为了修"收枪后动作卡死"，把整个提前 return 删了改成无条件转发，
-        // <b>连同上游本来就有的这条守卫一起删掉了</b>（上游 HumanoidModelMixin L31-33：
+        // 지난 차수에 "총을 집어넣은 뒤 동작이 멈춤"을 고치려고 이른 return 전체를 지우고 무조건 넘기도록 바꾸면서,
+        // <b>원본에 원래 있던 이 확인까지 함께 지웠다</b>(원본 HumanoidModelMixin L31-33:
         //     if (ageInTicks == 0) { return; }
-        // ）。这一处遗漏同时造成了用户报告的两个新 bug：
+        // ). 이 누락 하나가 사용자가 알린 새 버그 두 개를 함께 일으켰다:
         //
-        // <b>① 第三人称持枪退出再进存档必崩。</b>
-        // ageInTicks = tickCount + partialTick（EntityRenderer#extractRenderState 偏移 69-75
-        // 字节码确认：读 Entity.tickCount 写入 EntityRenderState.ageInTicks）。
-        // 刚进世界的第一帧 tickCount == 0，此时实体虽已加入 ClientLevel、
-        // 却还没跑过任何一次 tick —— TACZ 的 ShooterDataHolder / AttachmentCacheProperty
-        // 都是在 tick 里惰性初始化的，PAL 的 controller 也尚未由
-        // ANIMATION_DATA_FACTORY 挂到玩家身上。这一帧就去跑完整动画链，
-        // 会撞上一堆半初始化状态。上游那条守卫的<b>唯一作用</b>就是跳过这一帧。
+        // <b>① 3인칭으로 총을 든 채 나갔다가 저장 파일에 다시 들어오면 반드시 충돌.</b>
+        // ageInTicks = tickCount + partialTick(EntityRenderer#extractRenderState 오프셋 69-75
+        // 바이트코드 확인: Entity.tickCount를 읽어 EntityRenderState.ageInTicks에 씀).
+        // 월드에 막 들어온 첫 프레임은 tickCount == 0이며, 이때 엔티티는 ClientLevel에 들어갔지만
+        // 아직 tick을 한 번도 돌지 않았다 — TACZ의 ShooterDataHolder / AttachmentCacheProperty는
+        // 모두 tick에서 지연 초기화되고, PAL의 controller도 아직
+        // ANIMATION_DATA_FACTORY가 플레이어에게 붙이지 않았다. 이 프레임에 전체 애니메이션 사슬을 돌리면,
+        // 반쯤 초기화된 상태 여럿과 부딪힌다. 원본 확인의 <b>유일한 역할</b>이 바로 이 프레임을 건너뛰는 것이다.
         //
-        // 为什么"第三人称 + 持枪"才触发：第一人称下 PlayerModel 不渲染本体，
-        // 走不到这里；空手时 InnerThirdPersonManager 在 getIGunOrNull==null 处
-        // 就 return 了，够不到后面的动画代码。两个条件缺一不可 —— 与用户实测完全吻合。
+        // "3인칭 + 총 들기"에서만 일어나는 이유: 1인칭에서는 PlayerModel이 몸체를 그리지 않아
+        // 여기까지 오지 않고, 빈손일 때는 InnerThirdPersonManager가 getIGunOrNull==null에서
+        // 바로 return해 뒤쪽 애니메이션 코드에 닿지 않는다. 두 조건 중 하나라도 빠지면 안 된다 — 사용자 실측과 정확히 맞다.
         //
-        // <b>② 收枪后运动状态无持枪动作、开枪换弹时又短暂恢复。</b>
-        // 这条守卫被删后，GUI 里那个缩略玩家模型（物品栏/背包预览，ageInTicks 恒为 0）
-        // 每帧也会进来跑一遍 stopAllAnimation。它和世界里的真实玩家<b>共用同一个
-        // PAL controller</b>（controller 按玩家实体查，不区分渲染场合），
-        // 于是背包预览每帧都在把刚播上的循环动画淡出掉 ——
-        // 表现就是走/跑/游泳的持枪动作起不来；
-        // 而开枪/换弹走的是 ONCE_UPPER 的 triggerAnimation（一次性、优先级更高），
-        // 能抢在被淡出前放完，所以"短暂恢复后又消失"。
+        // <b>② 총을 집어넣은 뒤 이동 상태에 총 든 동작이 없고, 사격/재장전 때 잠깐 돌아옴.</b>
+        // 이 확인이 지워진 뒤 GUI 안의 작은 플레이어 모델(인벤토리/가방 미리보기, ageInTicks는 항상 0)도
+        // 프레임마다 들어와 stopAllAnimation을 한 번씩 돌렸다. 이것은 월드의 실제 플레이어와 <b>같은
+        // PAL controller를 함께 쓴다</b>(controller는 플레이어 엔티티로 찾으며 렌더링 상황을 구분하지 않음).
+        // 그래서 가방 미리보기가 프레임마다 막 재생된 반복 애니메이션을 fade-out시켰고 —
+        // 걷기/달리기/수영의 총 든 동작이 시작되지 않는 것으로 나타났다.
+        // 반면 사격/재장전은 ONCE_UPPER의 triggerAnimation(한 번짜리, 우선순위가 더 높음)을 타서
+        // fade-out되기 전에 먼저 끝까지 재생되므로 "잠깐 돌아왔다가 다시 사라짐"이 된다.
         //
-        // 修复后仍能修好上一轮那个"收枪卡死"：ageInTicks != 0 的正常渲染帧
-        // 照样会转发给 InnerThirdPersonManager，由它在 iGun == null 时调用
-        // stopAllAnimation —— 停止逻辑没有丢，只是不再被第 0 帧和 GUI 预览帧误触发。
-        // <b>为什么是"两段"而不是一个 if/else</b>：上游其实把这两件事拆在<b>两个</b> mixin 里，
-        // 各自有相反的守卫，26.2 因为 setupAnim 签名合并（都变成
-        // setupAnim(AvatarRenderState)）才落到同一个方法里：
-        //   上游 PlayerModelMixin   : if (ageInTicks == 0 && 持枪) 只做手臂归零
-        //   上游 HumanoidModelMixin : if (ageInTicks == 0) return; 之后才跑动画
-        // 上一轮把两者揉成一段并删掉守卫，等于让动画逻辑也在第 0 帧跑了。
+        // 수정한 뒤에도 지난 차수의 "총을 집어넣으면 멈춤"은 그대로 고쳐진다: ageInTicks != 0인 정상 렌더링 프레임은
+        // 여전히 InnerThirdPersonManager로 넘어가고, 그것이 iGun == null일 때
+        // stopAllAnimation을 호출한다 — 멈춤 로직은 사라지지 않았고, 0번째 프레임과 GUI 미리보기 프레임에서 잘못 일어나지 않을 뿐이다.
+        // <b>if/else 하나가 아니라 "두 부분"인 이유</b>: 원본은 사실 이 두 일을 <b>두 개의</b> mixin으로 나눴고,
+        // 각자 반대 확인을 가졌다. 26.2는 setupAnim 시그니처가 합쳐져서(모두
+        // setupAnim(AvatarRenderState)) 한 메서드에 모였다:
+        //   원본 PlayerModelMixin   : if (ageInTicks == 0 && 총을 듦) 팔만 0으로 되돌림
+        //   원본 HumanoidModelMixin : if (ageInTicks == 0) return; 그 뒤에야 애니메이션 실행
+        // 지난 차수에 둘을 한 부분으로 뭉치고 확인을 지워, 애니메이션 로직도 0번째 프레임에 돌게 되었다.
         if (renderState.ageInTicks == 0F) {
-            // 第 0 帧（第一人称手部渲染 / GUI 缩略模型）：只清除默认手臂旋转，
-            // 不碰任何动画状态。持枪判断沿用上游语义。
+            // 0번째 프레임(1인칭 손 렌더링 / GUI 작은 모델): 기본 팔 회전만 지우고
+            // 어떤 애니메이션 상태도 건드리지 않는다. 총 들기 판단은 원본 의미를 따른다.
             if (IGun.getIGunOrNull(renderState.getMainHandItemStack()) != null) {
                 tacz$resetAll(this.rightArm);
                 tacz$resetAll(this.leftArm);
@@ -112,23 +112,23 @@ public class PlayerModelMixin extends HumanoidModel<AvatarRenderState> {
             );
         }
 
-        // 【第 8 轮】此处<b>刻意不再</b>同步袖子姿态。
+        // [8차] 여기서는 <b>일부러</b> 소매 자세를 더는 동기화하지 않는다.
         //
-        // 症状：第三人称（含物品栏里那个缩略玩家模型）手部出现"多出一层、且与手臂错位"的皮肤。
+        // 증상: 3인칭(인벤토리의 작은 플레이어 모델 포함)에서 손에 "한 겹 더 있고 팔과 어긋난" 스킨이 나타났다.
         //
-        // 根因：1.21.1 里 leftSleeve/rightSleeve 是 PlayerModel 的<b>兄弟</b>部件，
-        //       不会自动跟随手臂，所以上游必须显式 `sleeve.copyFrom(arm)`。
-        //       26.2 改成了<b>子</b>部件（反编译 PlayerModel 构造函数确认）：
+        // 근본 원인: 1.21.1에서 leftSleeve/rightSleeve는 PlayerModel의 <b>형제</b> 부품이라
+        //       팔을 자동으로 따라가지 않으므로 원본은 `sleeve.copyFrom(arm)`을 명시적으로 해야 했다.
+        //       26.2는 이를 <b>자식</b> 부품으로 바꿨다(디컴파일한 PlayerModel 생성자로 확인):
         //           this.leftSleeve  = this.leftArm.getChild("left_sleeve");
         //           this.rightSleeve = this.rightArm.getChild("right_sleeve");
-        //       子部件在渲染时会<b>自动继承父级变换</b>。
+        //       자식 부품은 렌더링할 때 <b>부모 변환을 자동으로 물려받는다</b>.
         //
-        //       移植时保留了这次拷贝（写成 loadPose(arm.storePose())），
-        //       等于把手臂的变换<b>又叠加了一遍</b>到袖子上 —— 袖子相对手臂偏移一倍，
-        //       看起来就是"手部多层皮肤没对齐/多出一只残缺的手"。
+        //       이식할 때 이 복사를 남겨 두어(loadPose(arm.storePose())로 씀),
+        //       팔의 변환을 소매에 <b>한 번 더 겹쳐</b> 적용한 셈이 되었다 — 소매가 팔 기준으로 두 배 어긋나
+        //       "손의 여러 겹 스킨이 맞지 않음/일그러진 손이 하나 더 있음"으로 보였다.
         //
-        // 另外，vanilla 的 PlayerModel#setupAnim 每帧只设置袖子的 visible，
-        // 姿态完全交给父子继承，这里不应干预。
+        // 또한 바닐라의 PlayerModel#setupAnim은 프레임마다 소매의 visible만 설정하고
+        // 자세는 전적으로 부모-자식 상속에 맡기므로 여기서 끼어들면 안 된다.
     }
 
     @Unique

@@ -7,32 +7,32 @@ public class ItemAnimationStateContext extends AnimationStateContext {
     protected float partialTicks = 0f;
 
     /**
-     * 获取收起物品动画的建议时长，它只是计算结果，具体如何生效依赖于状态机实现。
+     * 아이템 집어넣기 애니메이션의 권장 시간을 얻는다. 계산 결과일 뿐이며 실제 적용 방식은 상태 기계 구현에 달려 있다.
      *
-     * @return 收起物品动画的建议时长
+     * @return 아이템 집어넣기 애니메이션의 권장 시간
      */
     public float getPutAwayTime() {
         return putAwayTime;
     }
 
     /**
-     * 状态机脚本不要调用此方法。此方法用于设置物品动画的建议时长
+     * 상태 기계 스크립트에서 호출하지 않는다. 아이템 애니메이션의 권장 시간을 설정하는 데 쓴다
      */
     public void setPutAwayTime(float putAwayTime) {
         this.putAwayTime = putAwayTime;
     }
 
     /**
-     * 获取最后一次更新时的 partialTicks
+     * 마지막 갱신 때의 partialTicks를 얻는다
      *
-     * @return 状态机最后一次更新的 partialTicks.
+     * @return 상태 기계가 마지막으로 갱신될 때의 partialTicks
      */
     public float getPartialTicks() {
         return partialTicks;
     }
 
     /**
-     * 状态机脚本请不要调用此方法。此方法用于状态机更新时设置 partialTicks。
+     * 상태 기계 스크립트에서 호출하지 않는다. 상태 기계를 갱신할 때 partialTicks를 설정하는 데 쓴다.
      */
     public void setPartialTicks(float partialTicks) {
         this.partialTicks = partialTicks;

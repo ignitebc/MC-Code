@@ -46,9 +46,9 @@ public class ScriptManager extends SimplePreparableReloadListener<List<Map.Entry
     @Override
     @NotNull
     protected List<Map.Entry<String, Supplier<LuaTable>>> prepare(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
-        // 初始化 globals
+        // globals 초기화
         initGlobals();
-        // 打包加载函数，设置 globals 的 preload
+        // 로드 함수를 묶어 globals의 preload를 설정한다
         List<Map.Entry<String, Supplier<LuaTable>>> output = new ArrayList<>();
         for (Map.Entry<Identifier, Resource> entry : filetoidconverter.listMatchingResources(pResourceManager).entrySet()) {
             var wrappedEntry = wrapLoadingFunction(entry.getKey(), entry.getValue());
@@ -94,7 +94,6 @@ public class ScriptManager extends SimplePreparableReloadListener<List<Map.Entry
 
     private void initGlobals() {
         globals = secureStandardGlobals();
-        //LuaJC.install(globals);
         if (libraries != null) {
             libraries.forEach(library -> library.install(globals));
         }
@@ -115,11 +114,11 @@ public class ScriptManager extends SimplePreparableReloadListener<List<Map.Entry
         globals.load(new Bit32Lib());
         globals.load(new TableLib());
         globals.load(new JseStringLib());
-        // No CoroutineLib
+        // CoroutineLib은 넣지 않는다
         globals.load(new JseMathLib());
-        // No JseIoLib
-        // No JseOsLib
-        // No LuajavaLib
+        // JseIoLib은 넣지 않는다
+        // JseOsLib은 넣지 않는다
+        // LuajavaLib은 넣지 않는다
         LoadState.install(globals);
         LuaC.install(globals);
         return globals;

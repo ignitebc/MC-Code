@@ -50,7 +50,7 @@ import java.util.function.Consumer;
 public class CommonAssetsManager implements ICommonResourceProvider {
     private static CommonAssetsManager INSTANCE;
     public static final Gson GSON = new GsonBuilder()
-            // Gun packs intentionally support JSON5-style comments and trailing commas.
+            // 총기 팩은 JSON5 형식의 주석과 끝 쉼표를 일부러 지원한다.
             .setStrictness(com.google.gson.Strictness.LENIENT)
             .registerTypeAdapter(Identifier.class, new IdentifierSerializer())
             .registerTypeAdapter(Pair.class, new PairSerializer())
@@ -75,7 +75,7 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     private CommonDataManager<CommonGunIndex> gunIndex;
     private CommonDataManager<CommonAttachmentIndex> attachmentIndex;
     private CommonDataManager<CommonBlockIndex> blockIndex;
-    /** 第 12 轮：枪械工作台配方，需同步到客户端供 GunSmithTableScreen 使用。 */
+    /** 12차: 총기 작업대 레시피. GunSmithTableScreen이 쓰도록 클라이언트에 동기화해야 한다. */
     private CommonDataManager<TableRecipe> tableRecipe;
     private RecipeFilterManager recipeFilterManager;
     private LootInjectionManager lootInjectionManager;
@@ -85,7 +85,7 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     private final ScriptManager scriptManager = new ScriptManager(new FileToIdConverter("scripts", ".lua"), libList);
 
     public void reloadAndRegister(Consumer<PreparableReloadListener> register) {
-        // 这里会顺序重载，所以需要把index这种依赖data的放在后面
+        // 여기는 순서대로 다시 불러오므로 index처럼 data에 기대는 것은 뒤에 둬야 한다
         gunData = register(new CommonDataManager<>(DataType.GUN_DATA, GunData.class, GSON, "data/guns", "GunDataLoader"));
         attachmentData = register(new AttachmentDataManager());
         attachmentsTagManager = register(new AttachmentsTagManager());
@@ -99,12 +99,12 @@ public class CommonAssetsManager implements ICommonResourceProvider {
         gunIndex = register(new CommonDataManager<>(DataType.GUN_INDEX, CommonGunIndex.class, GSON, "index/guns", "GunIndexLoader"));
         attachmentIndex = register(new CommonDataManager<>(DataType.ATTACHMENT_INDEX, CommonAttachmentIndex.class, GSON, "index/attachments", "AttachmentIndexLoader"));
         blockIndex = register(new CommonDataManager<>(DataType.BLOCK_INDEX, CommonBlockIndex.class, GSON, "index/blocks", "BlockIndexLoader"));
-        // 第 12 轮：把工作台配方也纳入同步。目录与 vanilla 数据包配方一致（data/<ns>/recipe），
-        // 这样客户端无需 RecipeManager 也能列出配方（26.2 客户端已无完整配方表）。
+        // 12차: 작업대 레시피도 동기화 대상에 넣는다. 디렉터리는 바닐라 데이터 팩 레시피와 같다(data/<ns>/recipe).
+        // 그러면 클라이언트는 RecipeManager 없이도 레시피를 나열할 수 있다(26.2 클라이언트에는 완전한 레시피 표가 없다).
         //
-        // 必须用 TableRecipeManager 而非裸的 CommonDataManager：该目录里混着原版
-        // 与其他模组的配方（实测原版 1585 条），不按 "type" 过滤会全部灌进
-        // TableRecipe 的解析器刷屏，并被原样打进同步包。详见该类的注释。
+        // 맨 CommonDataManager가 아니라 반드시 TableRecipeManager를 써야 한다: 이 디렉터리에는 바닐라와
+        // 다른 모드의 레시피가 섞여 있어(실측 바닐라 1585개) "type"으로 거르지 않으면 모두
+        // TableRecipe 해석기로 들어가 로그가 넘치고 그대로 동기화 패킷에도 실린다. 자세한 내용은 그 클래스 주석 참고.
         tableRecipe = register(new TableRecipeManager());
 
         listeners.forEach(register);
@@ -153,11 +153,11 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     }
 
     /**
-     * 枪包声明过要注入的<b>目标战利品表 ID 集合</b>。
+     * 총기 팩이 주입하겠다고 선언한 <b>대상 전리품 표 ID 집합</b>.
      *
-     * <p>供 {@code LootTableInjectorModifier} 做「正查」用：26.2 无法由 LootTable 实例
-     * 反查其注册 ID（RELOADABLE 层只给 HolderLookup，没有反查接口），
-     * 因此改为拿这个候选集去逐个正查比对实例。默认枪包只有 1 个目标表。</p>
+     * <p>{@code LootTableInjectorModifier}의 "정방향 조회"에 쓴다: 26.2에서는 LootTable 인스턴스로
+     * 등록 ID를 거꾸로 찾을 수 없으므로(RELOADABLE 계층은 HolderLookup만 주고 역조회 인터페이스가 없음)
+     * 이 후보 집합으로 하나씩 정방향 조회해 인스턴스를 비교한다. 기본 총기 팩의 대상 표는 1개뿐이다.</p>
      */
     public Set<Identifier> getLootInjectionTargets() {
         if (lootInjectionManager == null) {
@@ -242,11 +242,11 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     }
 
     /**
-     * 获取实例<br/>
-     * 实例仅当内置服务器/专用服务器启动时才会被创建<br/>
-     * 当客户端正连接到多人游戏时，该方法将返回 null
+     * 인스턴스를 가져온다<br/>
+     * 인스턴스는 내장 서버/전용 서버가 시작할 때만 만들어진다<br/>
+     * 클라이언트가 멀티플레이에 접속 중이면 이 메서드는 null을 돌려준다
      *
-     * @return CommonAssetsManger实例
+     * @return CommonAssetsManger 인스턴스
      */
     @Nullable
     public static CommonAssetsManager getInstance() {
@@ -258,11 +258,11 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     }
 
     /**
-     * 根据当前环境选择合适的缓存<br/>
-     * 当前环境为单人游戏或多人游戏的服务端时，返回CommonAssetsManger实例<br/>
-     * 当前环境为多人游戏的客户端时，返回CommonNetworkCache实例
+     * 현재 환경에 맞는 캐시를 고른다<br/>
+     * 싱글플레이나 멀티플레이 서버이면 CommonAssetsManger 인스턴스를 돌려준다<br/>
+     * 멀티플레이 클라이언트이면 CommonNetworkCache 인스턴스를 돌려준다
      *
-     * @return ICommonResourceProvider实例
+     * @return ICommonResourceProvider 인스턴스
      */
     public static ICommonResourceProvider get() {
         return INSTANCE == null ? CommonNetworkCache.INSTANCE : INSTANCE;
@@ -282,8 +282,8 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     }
 
     /**
-     * 这个事件理论上会在server resource已经完成重载和传输到客户端之前触发<br/>
-     * 尝试根据common data初始化延迟加载的配方
+     * 이 이벤트는 이론상 server resource가 다시 불러오기를 마치고 클라이언트로 전송되기 전에 발생한다<br/>
+     * common data를 바탕으로 지연 로드한 레시피를 초기화해 본다
      */
     public static void onReload(RegistryAccess registries, boolean client) {
         if (!client) {

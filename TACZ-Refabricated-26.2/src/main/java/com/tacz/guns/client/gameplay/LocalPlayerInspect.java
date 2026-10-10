@@ -22,7 +22,7 @@ public class LocalPlayerInspect {
     }
 
     public void inspect() {
-        // 暂定只有主手可以检视
+        // 우선 주 손만 살펴볼 수 있다
         ItemStack mainHandItem = player.getMainHandItem();
 
         if (!(mainHandItem.getItem() instanceof IGun iGun)) {
@@ -31,7 +31,7 @@ public class LocalPlayerInspect {
             }
             return;
         }
-        // 检查状态锁
+        // 상태 잠금 확인
         if (data.clientStateLock) {
             return;
         }
@@ -47,7 +47,7 @@ public class LocalPlayerInspect {
             } else {
                 noAmmo = !iGun.hasBulletInBarrel(mainHandItem);
             }
-            // 触发 inspect，停止播放声音
+            // inspect를 일으키고 소리 재생을 멈춘다
             SoundPlayManager.stopPlayGunSound();
             SoundPlayManager.playInspectSound(player, gunIndex, noAmmo);
             var animationStateMachine = gunIndex.getAnimationStateMachine();

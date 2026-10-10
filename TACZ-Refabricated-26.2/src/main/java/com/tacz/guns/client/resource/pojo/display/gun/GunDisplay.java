@@ -54,7 +54,7 @@ public class GunDisplay implements IDisplay {
     private Map<String, Object> stateMachineParam = null;
     @Nullable
     @SerializedName("use_default_animation")
-    // 弃用，优先使用 default_animation 指定默认动画
+    // 폐기됨. 기본 애니메이션은 default_animation으로 지정하는 것을 우선한다
     private DefaultAnimationType defaultAnimationType;
     @Nullable
     @SerializedName("default_animation")

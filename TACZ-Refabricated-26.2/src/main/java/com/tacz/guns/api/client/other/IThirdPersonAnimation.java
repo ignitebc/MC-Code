@@ -5,23 +5,23 @@ import net.minecraft.world.entity.LivingEntity;
 
 public interface IThirdPersonAnimation {
     /**
-     * 第三人称动画：主手持有枪械时
+     * 3인칭 애니메이션: 주 손에 총기를 들고 있을 때
      *
-     * @param entity   持有枪械的实体
-     * @param rightArm 右手模型
-     * @param leftArm  左手模型
-     * @param head     头部模型
+     * @param entity   총기를 든 엔티티
+     * @param rightArm 오른팔 모델
+     * @param leftArm  왼팔 모델
+     * @param head     머리 모델
      */
     void animateGunHold(LivingEntity entity, ModelPart rightArm, ModelPart leftArm, ModelPart body, ModelPart head);
 
     /**
-     * 第三人称动画：枪械瞄准时
+     * 3인칭 애니메이션: 총기로 조준할 때
      *
-     * @param entity      持有枪械的实体
-     * @param rightArm    右手模型
-     * @param leftArm     左手模型
-     * @param head        头部模型
-     * @param aimProgress 瞄准进度 0-1
+     * @param entity      총기를 든 엔티티
+     * @param rightArm    오른팔 모델
+     * @param leftArm     왼팔 모델
+     * @param head        머리 모델
+     * @param aimProgress 조준 진행도 0~1
      */
     void animateGunAim(LivingEntity entity, ModelPart rightArm, ModelPart leftArm, ModelPart body, ModelPart head, float aimProgress);
 }

@@ -40,10 +40,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 /**
- * 抽象的基岩版动画物品模型BEWLR，包含一些默认实现
+ * 베드락 애니메이션 아이템 모델 BEWLR의 추상 구현. 기본 구현을 일부 담는다
  *
- * @param <M>   基岩版模型
- * @param <CTX> 动画状态机上下文
+ * @param <M>   베드락 모델
+ * @param <CTX> 애니메이션 상태 기계 문맥
  */
 public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX extends ItemAnimationStateContext>
         implements IFPGeoItemRenderer, BuiltinItemRendererRegistry.DynamicItemRenderer {
@@ -53,18 +53,18 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
 
     @Override
     public void render(ItemStack stack, ItemDisplayContext mode, PoseStack matrices, SubmitNodeCollector collector, int light, int overlay) {
-        // 第一人称<b>不</b>在这里处理。
+        // 1인칭은 여기서 처리하지 <b>않는다</b>.
         //
-        // 该方法由 ItemModel(tacz:dynamic_item) 的 SpecialModelRenderer 调用，此时 vanilla 的
-        // ItemInHandRenderer#submitArmWithItem 已经施加了 applyItemArmTransform（±0.56/-0.52/-0.72）、
-        // 挥动动画和装备抬手动画，PoseStack 不再是上游 1.21.1 所预期的干净矩阵 ——
-        // 会导致枪相对摄像机位置/缩放错误，且移动时与 TACZ 动画叠加产生抖动。
+        // 이 메서드는 ItemModel(tacz:dynamic_item)의 SpecialModelRenderer가 호출하는데, 이때 바닐라
+        // ItemInHandRenderer#submitArmWithItem이 이미 applyItemArmTransform(±0.56/-0.52/-0.72),
+        // 휘두르기 애니메이션, 장비 들기 애니메이션을 적용해 PoseStack이 원본 1.21.1이 기대한 깨끗한 행렬이 아니다 —
+        // 그러면 총의 카메라 기준 위치/크기가 틀어지고, 움직일 때 TACZ 애니메이션과 겹쳐 떨린다.
         //
-        // 正确入口是 ItemInHandRendererMixin#tacz$submitArmWithGun，它在 submitArmWithItem 的 HEAD
-        // 拦截并取消，语义与 SimpleBedrockModel 的 RenderHandEvent 注入点一致。详见该 mixin 注释。
+        // 올바른 입구는 ItemInHandRendererMixin#tacz$submitArmWithGun이며, submitArmWithItem의 HEAD에서
+        // 가로채 취소한다. 의미는 SimpleBedrockModel의 RenderHandEvent 주입 지점과 같다. 자세한 내용은 그 mixin 주석 참고.
         //
-        // 这里仍需处理 firstPerson 分支的兜底：正常情况下走不到（mixin 已 cancel），
-        // 但如果 mixin 因故未生效，直接 return 也比画在错误位置好 —— 至少不会出现"双份枪"。
+        // 여기서도 firstPerson 분기의 안전장치는 필요하다: 정상이면 여기까지 오지 않지만(mixin이 cancel),
+        // mixin이 어떤 이유로 적용되지 않았다면 그냥 return하는 편이 엉뚱한 위치에 그리는 것보다 낫다 — 적어도 "총 두 자루"는 생기지 않는다.
         if (mode.firstPerson()) {
             return;
         }
@@ -110,16 +110,16 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
     public abstract void updateContext(CTX context, ItemStack stack, Player player, float partialTick);
 
     /**
-     * 计算并返回切出动画的时长，单位ms
+     * 집어넣기 애니메이션 시간(ms)을 계산해 돌려준다
      *
-     * @return 保持时间
+     * @return 유지 시간
      */
     public long getPutAwayTime(ItemStack stack) {
         return 0;
     }
 
     /**
-     * 尝试初始化状态机并触发切入信号
+     * 상태 기계를 초기화하고 꺼내기 신호를 보내 본다
      */
     public void tryInit(ItemStack stack, Player player, float partialTick) {
         var stateMachine = getStateMachine(stack);
@@ -137,7 +137,7 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
     }
 
     /**
-     * 尝试退出状态机并触发切出信号
+     * 상태 기계를 끝내고 집어넣기 신호를 보내 본다
      */
     public void tryExit(ItemStack stack, long putAwayTime) {
         var stateMachine = getStateMachine(stack);
@@ -150,18 +150,17 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
         if (stateMachine.isInitialized()) {
             stateMachine.trigger(GunAnimationConstant.INPUT_PUT_AWAY);
             
-//            KeepingItemRenderer.getRenderer().keep(stack, putAwayTime);
             stateMachine.exit();
-            // 需要设置的比动画稍长些，避免意外的重初始化（可能是丢精度了）
-            // 延后一tick应该基本没有感知）
+            // 애니메이션보다 조금 길게 잡아야 예기치 않은 재초기화를 피한다(정밀도 손실 때문일 수 있다)
+            // 한 틱 늦춰도 거의 느껴지지 않을 것이다)
             stateMachine.setExitingTime(putAwayTime + 50);
         }
     }
 
     /**
-     * 尝试触发状态机转移
+     * 상태 기계 전이를 일으켜 본다
      *
-     * @param input 输入信号
+     * @param input 입력 신호
      */
     public void triggerAnimation(ItemStack stack, String input) {
         var stateMachine = getStateMachine(stack);
@@ -172,7 +171,7 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
     }
 
     /**
-     * 更新状态机但是不进行模型写入，用于播放音效
+     * 모델에 쓰지 않고 상태 기계만 갱신한다. 효과음 재생에 쓴다
      */
     public void visualUpdate(ItemStack stack) {
         var stateMachine = getStateMachine(stack);
@@ -183,7 +182,7 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
     }
 
     /**
-     * 应用状态机的世界摄像机动画，暂时只用于玩家
+     * 상태 기계의 월드 카메라 애니메이션을 적용한다. 지금은 플레이어에게만 쓴다
      */
     public void applyLevelCameraAnimation(ViewportEvent.ComputeCameraAngles event, ItemStack stack, LocalPlayer player) {
         this.applyLevelCameraAnimation(event, stack, 1);
@@ -207,7 +206,7 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
     }
 
     /**
-     * 应用状态机的手持物品摄像机动画，暂时只用于玩家
+     * 상태 기계의 손에 든 아이템 카메라 애니메이션을 적용한다. 지금은 플레이어에게만 쓴다
      */
     public void applyItemInHandCameraAnimation(BeforeRenderHandEvent event, ItemStack stack, LocalPlayer player) {
         applyItemInHandCameraAnimation(event, stack, 1);
@@ -224,15 +223,15 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
     }
 
     /**
-     * 执行额外的变换
+     * 추가 변환을 실행한다
      */
     public void doExtraTransforms(PoseStack poseStack, M model, ItemStack stack) {
         applyFirstPersonPositioningTransform(poseStack, model, stack);
     }
 
     /**
-     * 渲染第一人称。26.2 入口：客户端 ItemModel(tacz:dynamic_item) -> TaczDynamicItemModel 的
-     * SpecialModelRenderer -> AnimateGeoItemRenderer#render 的 mode.firstPerson() 分支。
+     * 1인칭을 그린다. 26.2 입구: 클라이언트 ItemModel(tacz:dynamic_item) -> TaczDynamicItemModel의
+     * SpecialModelRenderer -> AnimateGeoItemRenderer#render의 mode.firstPerson() 분기.
      */
     public void renderFirstPerson(LocalPlayer player, ItemStack stack, ItemDisplayContext ctx, PoseStack poseStack, SubmitNodeCollector collector,
                                   int light, float partialTick) {
@@ -255,9 +254,9 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
                 rootNode.additionalQuaternion.mul(Axis.YP.rotationDegrees(yRot * 0.05F));
             }
 
-            // 从渲染原点 (0, 24, 0) 移动到模型原点 (0, 0, 0)
+            // 렌더링 원점 (0, 24, 0)에서 모델 원점 (0, 0, 0)으로 옮긴다
             poseStack.translate(0, 1.5f, 0);
-            // 基岩版模型是上下颠倒的，需要翻转过来。
+            // 베드락 모델은 위아래가 뒤집혀 있어 다시 뒤집어야 한다.
             poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
             doExtraTransforms(poseStack, model, stack);
 
@@ -271,7 +270,7 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
 
             model.submit(poseStack, ctx, collector, getRenderType(stack), light, OverlayTexture.NO_OVERLAY);
 
-            // 渲染结束后清除动画变换
+            // 렌더링이 끝난 뒤 애니메이션 변환을 지운다
             model.cleanAnimationTransform();
             poseStack.popPose();
         }
@@ -284,9 +283,9 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
         M model = getModel(stack);
         if (model != null) {
             poseStack.pushPose();
-            // 从渲染原点 (0, 24, 0) 移动到模型原点 (0, 0, 0)
+            // 렌더링 원점 (0, 24, 0)에서 모델 원점 (0, 0, 0)으로 옮긴다
             poseStack.translate(0.5, 1.5f, 0.5);
-            // 基岩版模型是上下颠倒的，需要翻转过来。
+            // 베드락 모델은 위아래가 뒤집혀 있어 다시 뒤집어야 한다.
             poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
             model.submit(poseStack, ctx, collector, RenderTypes.entityCutout(
                     getTextureLocation(stack)
@@ -296,7 +295,7 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
     }
 
     /**
-     * 获取摄像机定位组的反相矩阵
+     * 카메라 위치 그룹의 역행렬을 얻는다
      */
     @Nonnull
     public static Matrix4f getPositioningNodeInverse(List<BedrockPart> nodePath) {
@@ -305,11 +304,11 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
         if (nodePath != null) {
             for (int i = nodePath.size() - 1; i >= 0; i--) {
                 BedrockPart part = nodePath.get(i);
-                // 计算反向的旋转
+                // 반대 회전 계산
                 matrix4f.rotate(Axis.XN.rotation(part.xRot));
                 matrix4f.rotate(Axis.YN.rotation(part.yRot));
                 matrix4f.rotate(Axis.ZN.rotation(part.zRot));
-                // 计算反向的位移
+                // 반대 이동 계산
                 if (part.getParent() != null) {
                     matrix4f.translate(-part.x / 16.0F, -part.y / 16.0F, -part.z / 16.0F);
                 } else {
@@ -323,15 +322,15 @@ public abstract class AnimateGeoItemRenderer<M extends BedrockAnimatedModel, CTX
     public static void applyFirstPersonPositioningTransform(PoseStack poseStack, BedrockAnimatedModel model, ItemStack stack) {
         Matrix4f transformMatrix = new Matrix4f();
         transformMatrix.identity();
-        // 应用瞄准定位
+        // 조준 위치 적용
         List<BedrockPart> idleNodePath = model.getIdleSightPath();
 
         Matrix4f idleViewMatrix = getPositioningNodeInverse(idleNodePath);
 
-        // 应用瞄准变换
+        // 조준 변환 적용
         MathUtil.applyMatrixLerp(transformMatrix, idleViewMatrix, transformMatrix, 1);
 
-        // 应用变换到 PoseStack
+        // PoseStack에 변환 적용
         poseStack.translate(0, 1.5f, 0);
         poseStack.mulPose(transformMatrix);
         poseStack.translate(0, -1.5f, 0);

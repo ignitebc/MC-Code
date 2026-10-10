@@ -8,86 +8,86 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * 客户端枪械操纵者
- * 目前仅用于 LocalPlayer
+ * 클라이언트 총기 조작자
+ * 지금은 LocalPlayer에만 쓴다
  */
 @Environment(EnvType.CLIENT)
 public interface IClientPlayerGunOperator {
     /**
-     * LocalPlayer 通过 Mixin 的方式实现了这个接口
+     * LocalPlayer가 Mixin으로 이 인터페이스를 구현한다
      */
     static IClientPlayerGunOperator fromLocalPlayer(LocalPlayer player) {
         return (IClientPlayerGunOperator) player;
     }
 
     /**
-     * 检查玩家能否开火，并执行客户端开火逻辑。
+     * 플레이어가 발사할 수 있는지 확인하고 클라이언트 발사 로직을 실행한다.
      *
-     * @return 返回开火的结果
+     * @return 발사 결과
      */
     ShootResult shoot();
 
     /**
-     * 执行客户端切枪逻辑。
+     * 클라이언트 총기 교체 로직을 실행한다.
      */
     void draw(ItemStack lastItem);
 
     /**
-     * 客户端手动换弹
+     * 클라이언트 수동 재장전
      */
     void bolt();
 
     /**
-     * 客户端换弹
+     * 클라이언트 재장전
      */
     void reload();
 
     /**
-     * 客户端检视
+     * 클라이언트 살펴보기
      */
     void inspect();
 
     /**
-     * 客户端切换开火模式
+     * 클라이언트 발사 모드 전환
      */
     void fireSelect();
 
     /**
-     * 客户端瞄准
+     * 클라이언트 조준
      */
     void aim(boolean isAim);
 
     /**
-     * 客户端爬行
+     * 클라이언트 엎드리기
      */
     void crawl(boolean isCrawl);
 
     /**
-     * 客户端近战（刺刀）
+     * 클라이언트 근접 공격(총검)
      */
     void melee();
 
     /**
-     * 客户端是否处于瞄准状态
+     * 클라이언트가 조준 중인지
      */
     boolean isAim();
 
     /**
-     * 是否爬行
+     * 엎드려 있는지
      */
     boolean isCrawl();
 
     LocalPlayerDataHolder getDataHolder();
 
     /**
-     * 客户端瞄准进度
+     * 클라이언트 조준 진행도
      *
-     * @return 0-1，1 代表开镜进度到 100%
+     * @return 0~1. 1이면 조준이 100% 진행된 상태
      */
     float getClientAimingProgress(float partialTicks);
 
     /**
-     * 客户端射击冷却时间
+     * 클라이언트 사격 대기 시간
      */
     long getClientShootCoolDown();
 

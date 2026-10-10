@@ -7,15 +7,15 @@ import javax.annotation.Nullable;
 
 public interface IBlock {
     /**
-     * 获取方块 ID
+     * 블록 ID를 얻는다
      *
-     * @param block 输入物品
-     * @return 方块 ID
+     * @param block 입력 아이템
+     * @return 블록 ID
      */
     Identifier getBlockId(ItemStack block);
 
     /**
-     * 设置方块 ID
+     * 블록 ID를 설정한다
      */
     void setBlockId(ItemStack block, @Nullable Identifier blockId);
 }

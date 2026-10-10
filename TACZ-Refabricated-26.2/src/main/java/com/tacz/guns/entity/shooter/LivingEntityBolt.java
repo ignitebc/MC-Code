@@ -34,42 +34,42 @@ public class LivingEntityBolt {
         }
         Identifier gunId = iGun.getGunId(currentGunItem);
         TimelessAPI.getCommonGunIndex(gunId).ifPresent(gunIndex -> {
-            // 判断是否正在射击冷却
+            // 사격 대기 시간 중인지 판단한다
             if (shoot.getShootCoolDown() != 0) {
                 return;
             }
-            // 检查是否正在换弹
+            // 재장전 중인지 확인
             if (data.reloadStateType.isReloading()) {
                 return;
             }
-            // 检查是否在切枪
+            // 총을 바꾸는 중인지 확인한다
             if (draw.getDrawCoolDown() != 0) {
                 return;
             }
-            // 检查是否在拉栓
+            // 노리쇠를 당기는 중인지 확인한다
             if (data.isBolting) {
                 return;
             }
             IGunOperator gunOperator = IGunOperator.fromLivingEntity(shooter);
-            // 检查 bolt 类型是否是 manual action
+            // bolt 종류가 수동 장전(manual action)인지 확인한다
             Bolt boltType = gunIndex.getGunData().getBolt();
-            // 是否为背包直读
+            // 인벤토리 급탄인지
             boolean useInventoryAmmo = iGun.useInventoryAmmo(currentGunItem);
-            // 膛内是否有子弹
+            // 약실에 탄이 있는지
             boolean hasAmmoInBarrel = iGun.hasBulletInBarrel(currentGunItem) && boltType != Bolt.OPEN_BOLT;
-            // 背包内是否还有子弹 (创造模式是否消耗背包备弹)
+            // 인벤토리에 탄이 남아 있는지(크리에이티브에서 인벤토리 예비 탄약을 소모하는지)
             boolean hasInventoryAmmo = iGun.hasInventoryAmmo(shooter, currentGunItem, gunOperator.needCheckAmmo());
-            // 判断没有子弹的条件 (背包直读且包内没子弹 / 非背包直读且弹匣子弹数 < 1)
+            // 탄이 없다고 볼 조건(인벤토리 급탄이면서 인벤토리에 탄 없음 / 인벤토리 급탄이 아니면서 탄창 탄 수 < 1)
             boolean noAmmo = useInventoryAmmo && !hasInventoryAmmo ||
                     !useInventoryAmmo && iGun.getCurrentAmmoCount(currentGunItem) < 1;
             if (boltType != Bolt.MANUAL_ACTION) {
                 return;
             }
-            // 检查是否有弹药在枪膛内
+            // 약실에 탄약이 있는지 확인한다
             if (hasAmmoInBarrel) {
                 return;
             }
-            // 检查弹匣内是否有子弹
+            // 탄창에 탄이 있는지 확인한다
             if (noAmmo) {
                 return;
             }
@@ -79,7 +79,7 @@ public class LivingEntityBolt {
     }
 
     public void tickBolt() {
-        // bolt cool down 为 -1 时，代表拉栓逻辑进程没有开始，不需要tick
+        // bolt cool down이 -1이면 노리쇠 당기기 로직이 시작되지 않은 것이라 tick이 필요 없다
         if (!data.isBolting) {
             return;
         }

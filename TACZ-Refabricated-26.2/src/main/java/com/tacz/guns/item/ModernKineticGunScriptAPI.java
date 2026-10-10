@@ -100,11 +100,11 @@ public class ModernKineticGunScriptAPI {
     private float projectileSpeedMultiplier = 1f;
 
     /**
-     * 获取玩家的属性缓存中缓存的值。
-     * 请勿获取拥有复杂数据结构的属性值，该行为是未定义的。
+     * 플레이어 속성 캐시에 저장된 값을 가져온다.
+     * 복잡한 데이터 구조를 가진 속성 값은 가져오지 않는다. 그 동작은 정의되지 않았다.
      *
-     * @param id 属性 id，请参阅 {@link GunProperties}
-     * @return 属性的值
+     * @param id 속성 id. {@link GunProperties} 참고
+     * @return 속성 값
      * @author ChloePrime
      * @see com.tacz.guns.api.CacheModifiableByScript
      * @since 1.1.7
@@ -122,9 +122,9 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 执行一次完整的射击逻辑，会考虑玩家的状态(是否在瞄准、是否在移动、是否在匍匐等)、配件数值影响、多弹丸散射、连发，播放开火音效、
+     * 완전한 사격 로직을 한 번 실행한다. 플레이어 상태(조준 중, 이동 중, 포복 중 등), 부착물 수치 영향, 다중 산탄 퍼짐, 점사를 고려하고 발사 효과음을 재생한다.
      *
-     * @param consumeAmmo 本次射击是否消耗弹药
+     * @param consumeAmmo 이번 사격에서 탄약을 소모할지 여부
      */
     public void shootOnce(boolean consumeAmmo) {
         GunData gunData = gunIndex.getGunData();
@@ -133,13 +133,13 @@ public class ModernKineticGunScriptAPI {
         final float shotDamageMultiplier = this.shotDamageMultiplier;
         final float projectileSpeedMultiplier = this.projectileSpeedMultiplier;
 
-        // 获取配件数据缓存
+        // 부착물 데이터 캐시 가져오기
         AttachmentCacheProperty cacheProperty = gunOperator.getCacheProperty();
         if (cacheProperty == null) {
             return;
         }
 
-        //Handle Heat Data
+        // 열량 데이터 처리
         float heatInaccuracy = 1f;
         if (hasHeatData()) {
             GunHeatData heatData = Objects.requireNonNull(gunIndex.getGunData().getHeatData());
@@ -148,13 +148,13 @@ public class ModernKineticGunScriptAPI {
             heatInaccuracy *= Mth.lerp(heatPercentage, heatData.getMinInaccuracy(), heatData.getMaxInaccuracy());
         }
 
-        // 散射影响
+        // 탄 퍼짐 영향
         InaccuracyType inaccuracyType = InaccuracyType.getInaccuracyType(shooter);
         final float unmodifiedInaccuracy = cacheProperty.getCache(GunProperties.INACCURACY).get(inaccuracyType) * heatInaccuracy;
         final float inaccuracy = Math.max(0, modifyProperty(GunProperties.INACCURACY, Float.class, unmodifiedInaccuracy));
 
-        // 消音器影响
-        // 使用消音这个选项对于射手来说是在客户端处理的，脚本改了没用，所以干脆不让改了
+        // 소음기 영향
+        // 소음 옵션은 사수 입장에서 클라이언트에서 처리하므로 스크립트가 바꿔도 소용이 없어 아예 바꾸지 못하게 했다
         Pair<Integer, Boolean> silence = cacheProperty.getCache(SilenceModifier.ID);
         final int soundDistance = modifyProperty(GunProperties.RuntimeOnly.SOUND_DISTANCE, Integer.class, silence.left());
         final boolean useSilenceSound = silence.right();
@@ -162,29 +162,29 @@ public class ModernKineticGunScriptAPI {
         final int shotSoundDistance = useSilenceSound ? soundDistance : soundDistance * UNSUPPRESSED_SHOT_DISTANCE_MULTIPLIER;
         final float shotSoundVolume = useSilenceSound ? SUPPRESSED_SHOT_VOLUME : UNSUPPRESSED_SHOT_VOLUME;
 
-        // 子弹飞行速度
+        // 탄환 비행 속도
         float speed = modifyProperty(GunProperties.AMMO_SPEED, Float.class, cacheProperty.getCache(GunProperties.AMMO_SPEED));
         speed *= AmmoConfig.GLOBAL_BULLET_SPEED_MODIFIER.get();
         float processedSpeed = Mth.clamp((speed / 20) * projectileSpeedMultiplier, 0, Float.MAX_VALUE);
-        // 弹丸数量
+        // 산탄 수
         int bulletAmount = modifyProperty(GunProperties.RuntimeOnly.BULLET_AMOUNT, Integer.class, Math.max(bulletData.getBulletAmount(), 1));
 
-        // 连发数量
+        // 점사 수
         FireMode fireMode = abstractGunItem.getFireMode(itemStack);
         int cycles = modifyProperty(GunProperties.RuntimeOnly.BURST_COUNT, Integer.class, fireMode == FireMode.BURST ? gunData.getBurstData().getCount() : 1);
-        // 连发间隔
+        // 점사 간격
         long period = modifyProperty(GunProperties.RuntimeOnly.BURST_SHOOT_INTERVAL, Long.class, fireMode == FireMode.BURST ? gunData.getBurstShootInterval() : 1);
 
         CycleTaskHelper.addCycleTask(() -> {
-            // 如果射击者死亡，取消射击
+            // 사수가 죽으면 사격을 취소한다
             if (shooter.isDeadOrDying()) {
                 return false;
             }
-            // 如果武器变了，取消射击
+            // 무기가 바뀌면 사격을 취소한다
             if (!shooter.getMainHandItem().equals(itemStack) || shooter.getMainHandItem().isEmpty()) {
                 return false;
             }
-            // 触发击发事件
+            // 격발 이벤트 발생
             GunFireEvent gunFireEvent = new GunFireEvent(shooter, itemStack, LogicalSide.SERVER);
             GunFireEvent.CALLBACK.invoker().post(gunFireEvent);
             boolean fire = !gunFireEvent.isCanceled();
@@ -194,7 +194,7 @@ public class ModernKineticGunScriptAPI {
                     return false;
                 }
                 NetworkHandler.sendToTrackingEntity(new ServerMessageGunFire(shooter.getId(), itemStack), shooter);
-                // 削减弹药
+                // 탄약 차감
                 if (consumeAmmo) {
                     if (!this.reduceAmmoOnce()) {
                         return false;
@@ -204,7 +204,7 @@ public class ModernKineticGunScriptAPI {
                 if (monster && !MonsterGunAmmo.consumeShot(itemStack)) {
                     return false;
                 }
-                //Handle Heat Data
+                // 열량 데이터 처리
                 if (gunIndex.getGunData().hasHeatData()) {
                     Optional.ofNullable(gunIndex.getScript())
                             .map(script -> checkFunction(script.get("handle_shoot_heat")))
@@ -213,10 +213,10 @@ public class ModernKineticGunScriptAPI {
                                     this::handleShootHeat
                             );
                 }
-                // 获取射击方向（pitch 和 yaw）
+                // 사격 방향 가져오기(pitch와 yaw)
                 float pitch = pitchSupplier != null ? pitchSupplier.get() : shooter.getXRot();
                 float yaw = yawSupplier != null ? yawSupplier.get() : shooter.getYRot();
-                // 生成子弹
+                // 탄환 생성
                 Level world = shooter.level();
                 Identifier ammoId = gunData.getAmmoId();
                 boolean experienceAllowed = consumeAmmo;
@@ -238,7 +238,7 @@ public class ModernKineticGunScriptAPI {
                             inaccuracy, pitch, yaw);
                     world.addFreshEntity(bullet);
                 }
-                // 播放枪声
+                // 총소리 재생
                 if (soundDistance > 0) {
                     String soundId = useSilenceSound ? SoundManager.SILENCE_3P_SOUND : SoundManager.SHOOT_3P_SOUND;
                     SoundManager.sendSoundToNearby(shooter, shotSoundDistance, gunId, gunDisplayId, soundId, shotSoundVolume, 0.9f + shooter.getRandom().nextFloat() * 0.125f);
@@ -261,7 +261,7 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 处理一次射击的过热变化
+     * 사격 한 번의 과열 변화를 처리한다
      */
     public void handleShootHeat() {
         GunHeatData heatData = gunIndex.getGunData().getHeatData();
@@ -276,77 +276,77 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 让枪械内的子弹减少一发。会遵从栓动、闭膛待击和开膛待机的规律，消耗枪管内子弹或者弹匣内子弹。
-     * 如果没有可以消耗的子弹，这个方法会返回 false。例如栓动步枪，虽然弹匣内有子弹，但是在 bolt 之前枪管内没有子弹，那么就会返回 false，
+     * 총기 안 탄환을 한 발 줄인다. 볼트 액션, 폐쇄 노리쇠 대기, 개방 노리쇠 대기 규칙을 따라 약실 탄환이나 탄창 탄환을 소모한다.
+     * 소모할 탄환이 없으면 false를 돌려준다. 예를 들어 볼트 액션 소총은 탄창에 탄환이 있어도 bolt 전에는 약실에 탄환이 없으므로 false를 돌려준다.
      *
-     * @return 是否成功减少子弹。
+     * @return 탄환을 줄이는 데 성공했는지 여부.
      */
     public boolean reduceAmmoOnce() {
         Bolt boltType = TimelessAPI.getCommonGunIndex(abstractGunItem.getGunId(itemStack))
                 .map(index -> index.getGunData().getBolt())
                 .orElse(null);
-        // 膛内是否有子弹
+        // 약실에 탄이 있는지
         boolean hasAmmoInBarrel = abstractGunItem.hasBulletInBarrel(itemStack) && boltType != Bolt.OPEN_BOLT;
-        // 背包内是否还有子弹 (创造模式是否消耗背包备弹)
+        // 인벤토리에 탄이 남아 있는지(크리에이티브에서 인벤토리 예비 탄약을 소모하는지)
         boolean hasInventoryAmmo = abstractGunItem.hasInventoryAmmo(shooter, itemStack, isReloadingNeedConsumeAmmo());
-        // 判断没有子弹的条件 (背包直读且包内没子弹 / 非背包直读且弹匣子弹数 < 1)
+        // 탄이 없다고 볼 조건(인벤토리 급탄이면서 인벤토리에 탄 없음 / 인벤토리 급탄이 아니면서 탄창 탄 수 < 1)
         boolean noAmmo = useInventoryAmmo() && !hasInventoryAmmo ||
                 !useInventoryAmmo() && abstractGunItem.getCurrentAmmoCount(itemStack) < 1;
         if (boltType == null) {
             return false;
         }
-        // 栓动逻辑
+        // 볼트 액션 로직
         if (boltType == Bolt.MANUAL_ACTION) {
-            // 没有膛内子弹无法射击
+            // 약실 탄환이 없으면 쏠 수 없다
             if (!hasAmmoInBarrel) {
                 return false;
             }
-            // 没有弹匣内的子弹则消耗枪膛内的子弹
+            // 탄창 탄환이 없으면 약실 탄환을 소모한다
             abstractGunItem.setBulletInBarrel(itemStack, false);
             return true;
         }
-        // 闭膛逻辑
+        // 폐쇄 노리쇠 로직
         if (boltType == Bolt.CLOSED_BOLT) {
-            // 如果有弹匣内的子弹则优先消耗弹匣内的子弹
+            // 탄창 탄환이 있으면 탄창 탄환을 먼저 소모한다
             if (!noAmmo) {
-                // 如果背包直读则背包内射击后弹药 - 1
+                // 인벤토리 직접 장전이면 사격 후 인벤토리 탄약 - 1
                 if (useInventoryAmmo()) {
                     return consumeAmmoFromPlayer(1) == 1;
                 }
-                // 如果非背包直读则弹匣内子弹 - 1
+                // 인벤토리 직접 장전이 아니면 탄창 탄환 - 1
                 abstractGunItem.reduceCurrentAmmoCount(itemStack);
                 return true;
             }
-            // 没有膛内子弹无法射击
+            // 약실 탄환이 없으면 쏠 수 없다
             if (!hasAmmoInBarrel) {
                 return false;
             }
-            // 没有弹匣内的子弹则消耗枪膛内的子弹
+            // 탄창 탄환이 없으면 약실 탄환을 소모한다
             abstractGunItem.setBulletInBarrel(itemStack, false);
             return true;
         }
-        // 开膛逻辑
+        // 개방 노리쇠 로직
         if (boltType == Bolt.OPEN_BOLT) {
-            // 没有子弹无法射击
+            // 탄환이 없으면 쏠 수 없다
             if (noAmmo) {
                 return false;
             }
-            // 如果背包直读则背包内射击后弹药 - 1
+            // 인벤토리 직접 장전이면 사격 후 인벤토리 탄약 - 1
             if (useInventoryAmmo()) {
                 return consumeAmmoFromPlayer(1) == 1;
             }
-            // 如果非背包直读则弹匣内子弹 - 1
+            // 인벤토리 직접 장전이 아니면 탄창 탄환 - 1
             abstractGunItem.reduceCurrentAmmoCount(itemStack);
             return true;
         }
-        // 非三种已知 Bolt 类型 (目前不会出现)，默认返回 false
+        // 알려진 세 가지 Bolt 종류가 아니면(지금은 생기지 않음) 기본으로 false를 돌려준다
         return false;
     }
 
     /**
-     * 获取从开始换弹到现在经历的时间，单位为 ms
+     * 재장전을 시작한 뒤 지난 시간을 가져온다. 단위는 ms다
      *
-     * @return 开始换弹到现在经历的时间，单位为 ms
+     * @return 재장전을 시작한 뒤 지난 시간(ms)
      */
     public long getReloadTime() {
         if (dataHolder.reloadTimestamp == -1) {
@@ -356,9 +356,9 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 获取从开始拉栓到现在经历的时间，单位为 ms
+     * 노리쇠 당기기를 시작한 뒤 지난 시간을 가져온다. 단위는 ms다
      *
-     * @return 开始拉栓到现在经历的时间，单位为 ms
+     * @return 노리쇠 당기기를 시작한 뒤 지난 시간(ms)
      */
     public long getBoltTime() {
         if (!dataHolder.isBolting) {
@@ -368,38 +368,38 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 获取枪械的射击间隔，单位毫秒）
+     * 총기의 사격 간격을 가져온다(단위: 밀리초)
      *
-     * @return 射击间隔
+     * @return 사격 간격
      */
     public long getShootInterval() {
         FireMode fireMode = abstractGunItem.getFireMode(itemStack);
         if (fireMode == FireMode.BURST) {
             long coolDown = (long) (gunIndex.getGunData().getBurstData().getMinInterval() * 1000f);
-            // 给 5 ms 的窗口时间，以平衡延迟
+            // 지연을 상쇄하려고 5 ms 여유 시간을 준다
             coolDown = coolDown - 5;
             return Math.max(coolDown, 0L);
         }
         long coolDown = gunIndex.getGunData().getShootInterval(this.shooter, fireMode, itemStack);
-        // 给 5 ms 的窗口时间，以平衡延迟
+        // 지연을 상쇄하려고 5 ms 여유 시간을 준다
         coolDown = coolDown - 5;
         return Math.max(coolDown, 0L);
     }
 
     /**
-     * 返回上次射击的 timestamp(系统时间)，单位为毫秒。此值在切枪时会重置为 -1。
+     * 마지막으로 사격한 timestamp(시스템 시각, 밀리초)를 돌려준다. 총기를 바꾸면 -1로 초기화된다.
      *
-     * @return 上次射击的 timestamp，在切枪时会重置为 -1。
+     * @return 마지막 사격 timestamp. 총기를 바꾸면 -1로 초기화된다.
      */
     public long getLastShootTimestamp() {
         return dataHolder.lastShootTimestamp + dataHolder.baseTimestamp;
     }
 
     /**
-     * 调整射击间隔。
-     * 射击间隔比较特殊，它在客户端和服务端上是分别计算的。因此你还需要在状态机脚本中重复进行一次这个操作。
+     * 사격 간격을 조정한다.
+     * 사격 간격은 특수해서 클라이언트와 서버에서 따로 계산한다. 그래서 상태 기계 스크립트에서도 이 작업을 한 번 더 해야 한다.
      *
-     * @param alpha 需要加上或减少的射击间隔，单位为毫秒。正数即增加射击间隔，负数则是减少。
+     * @param alpha 더하거나 뺄 사격 간격(밀리초). 양수이면 사격 간격이 늘고, 음수이면 준다.
      * @see GunAnimationStateContext#adjustClientShootInterval
      */
     public void adjustShootInterval(long alpha) {
@@ -407,51 +407,51 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 调整换弹时间
+     * 재장전 시간을 조정한다
      *
-     * @param alpha 需要加上或减少的换弹时间，单位为毫秒。正数即增加换弹时间（加快换弹进度），负数则是减少（减慢换弹进度）。
+     * @param alpha 더하거나 뺄 재장전 시간(밀리초). 양수이면 재장전 시간을 늘리고(재장전 진행이 빨라짐), 음수이면 줄인다(재장전 진행이 느려짐).
      */
     public void adjustReloadTime(long alpha) {
         dataHolder.reloadTimestamp -= alpha;
     }
 
     /**
-     * 调整拉栓时间
+     * 노리쇠 당기기 시간을 조정한다
      *
-     * @param alpha 需要加上或减少的拉栓时间，单位为毫秒。正数即增加拉栓时间（加快拉栓进度），负数则是减少（减慢拉栓进度）。
+     * @param alpha 더하거나 뺄 노리쇠 당기기 시간(밀리초). 양수이면 노리쇠 당기기 시간을 늘리고(진행이 빨라짐), 음수이면 줄인다(진행이 느려짐).
      */
     public void adjustBoltTime(long alpha) {
         dataHolder.boltTimestamp -= alpha;
     }
 
     /**
-     * 获取瞄准进度。
+     * 조준 진행도를 가져온다.
      *
-     * @return 范围 0~1。0 代表未瞄准，1 代表瞄准完成。
+     * @return 범위 0~1. 0은 조준하지 않음, 1은 조준 완료를 뜻한다.
      */
     public float getAimingProgress() {
         return dataHolder.aimingProgress;
     }
 
-    // 蓄力相关方法
+    // 충전 관련 메서드
     /**
-     * 本次射击的蓄力进度。此上下文仅在射击流程期间可用，非射击期间调用时返回的值没有意义
-     * @return 蓄力进度
+     * 이번 사격의 충전 진행도. 이 문맥은 사격 과정에서만 쓸 수 있으며, 사격 중이 아닐 때 호출하면 의미 없는 값을 돌려준다
+     * @return 충전 진행도
      */
     public float getChargeProgress() {
         return dataHolder.chargeProgress;
     }
 
     /**
-     * 当前开火模式下，枪械是否有蓄力配置
-     * @return 蓄力进度
+     * 현재 발사 방식에서 총기에 충전 설정이 있는지 여부
+     * @return 충전 진행도
      */
     public boolean hasChargeData() {
         return getChargeData() != null;
     }
 
     /**
-     * 当前开火模式下，蓄力的最大进度
+     * 현재 발사 방식에서 충전 최대 진행도
      */
     public float getMaxCharge() {
         ChargeData chargeData = getChargeData();
@@ -459,7 +459,7 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 当前开火模式下，蓄力的开火阈值
+     * 현재 발사 방식에서 충전 발사 문턱값
      */
     public float getFireThreshold() {
         ChargeData chargeData = getChargeData();
@@ -467,7 +467,7 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 计算本次射击的蓄力进度。此上下文仅在射击流程期间可用，非射击期间调用时返回的值没有意义
+     * 이번 사격의 충전 진행도를 계산한다. 이 문맥은 사격 과정에서만 쓸 수 있으며, 사격 중이 아닐 때 호출하면 의미 없는 값을 돌려준다
      */
     public float getChargeRatio() {
         float maxCharge = getMaxCharge();
@@ -478,28 +478,28 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 设置本次射击的额外伤害倍率（0-256）。此方法仅在射击流程期间可用，非射击调用时没有任何意义
+     * 이번 사격의 추가 피해 배율(0-256)을 설정한다. 이 메서드는 사격 과정에서만 쓸 수 있으며, 사격 중이 아닐 때 호출하면 아무 의미가 없다
      */
     public void setShotDamageMultiplier(float multiplier) {
         this.shotDamageMultiplier = clampMultiplier(multiplier);
     }
 
     /**
-     * 获取本次射击的额外伤害倍率。此方法仅在射击流程期间可用，非射击调用时没有任何意义
+     * 이번 사격의 추가 피해 배율을 가져온다. 이 메서드는 사격 과정에서만 쓸 수 있으며, 사격 중이 아닐 때 호출하면 아무 의미가 없다
      */
     public float getShotDamageMultiplier() {
         return shotDamageMultiplier;
     }
 
     /**
-     * 设置本次射击的额外弹速倍率（0-256）。此方法仅在射击流程期间可用，非射击调用时没有任何意义
+     * 이번 사격의 추가 탄속 배율(0-256)을 설정한다. 이 메서드는 사격 과정에서만 쓸 수 있으며, 사격 중이 아닐 때 호출하면 아무 의미가 없다
      */
     public void setProjectileSpeedMultiplier(float multiplier) {
         this.projectileSpeedMultiplier = clampMultiplier(multiplier);
     }
 
     /**
-     * 获取本次射击的额外弹速倍率。此方法仅在射击流程期间可用，非射击调用时没有任何意义
+     * 이번 사격의 추가 탄속 배율을 가져온다. 이 메서드는 사격 과정에서만 쓸 수 있으며, 사격 중이 아닐 때 호출하면 아무 의미가 없다
      */
     public float getProjectileSpeedMultiplier() {
         return projectileSpeedMultiplier;
@@ -510,45 +510,45 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 获取玩家当前的换弹状态。
+     * 플레이어의 현재 재장전 상태를 가져온다.
      *
-     * @return 玩家当前的换弹状态 (序数)
+     * @return 플레이어의 현재 재장전 상태(서수)
      */
     public int getReloadStateType() {
         return dataHolder.reloadStateType.ordinal();
     }
 
     /**
-     * 获取枪械当前的开火模式（全自动、半自动、连发等）。
+     * 총기의 현재 발사 방식(자동, 반자동, 점사 등)을 가져온다.
      *
-     * @return 开火模式 (序数)
+     * @return 발사 방식(서수)
      */
     public int getFireMode() {
         return abstractGunItem.getFireMode(itemStack).ordinal();
     }
 
     /**
-     * 获取当前玩家射击是否需要消耗弹药。经过设置，创造模式的玩家可以不消耗弹药射击。
+     * 현재 플레이어의 사격이 탄약을 소모하는지 가져온다. 설정에 따라 크리에이티브 모드 플레이어는 탄약을 소모하지 않고 쏠 수 있다.
      *
-     * @return 射击是否需要消耗弹药
+     * @return 사격이 탄약을 소모하는지 여부
      */
     public boolean isShootingNeedConsumeAmmo() {
         return IGunOperator.fromLivingEntity(shooter).consumesAmmoOrNot();
     }
 
     /**
-     * 获取当前玩家换弹是否需要消耗弹药。一般来说创造模式下不需要消耗弹药。
+     * 현재 플레이어의 재장전이 탄약을 소모하는지 가져온다. 보통 크리에이티브 모드에서는 탄약을 소모하지 않는다.
      *
-     * @return 换弹是否需要消耗弹药
+     * @return 재장전이 탄약을 소모하는지 여부
      */
     public boolean isReloadingNeedConsumeAmmo() {
         return IGunOperator.fromLivingEntity(shooter).needCheckAmmo();
     }
 
     /**
-     * 获取当前枪械需要的弹药数量。
+     * 현재 총기에 필요한 탄약 수를 가져온다.
      *
-     * @return 当前枪械需要的弹药数量
+     * @return 현재 총기에 필요한 탄약 수
      */
     public int getNeededAmmoAmount() {
         int maxAmmoCount = ShooterMagazineBonus.maxAmmoCount(shooter, itemStack, gunIndex);
@@ -557,40 +557,40 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 获取弹匣中的备弹数。
+     * 탄창 안의 탄약 수를 얻는다.
      *
-     * @return 返回弹匣中的备弹数，不计算已在枪管中的弹药。
+     * @return 탄창 안의 탄약 수. 약실 안의 탄은 세지 않는다.
      */
     public int getAmmoAmount() {
         return abstractGunItem.getCurrentAmmoCount(itemStack);
     }
 
     /**
-     * 获取枪械弹匣的最大备弹数。
+     * 총기 탄창의 최대 탄약 수를 얻는다.
      *
-     * @return 返回枪械弹匣的最大备弹数，不计算已在枪管中的弹药。
+     * @return 총기 탄창의 최대 탄약 수. 약실 안의 탄은 세지 않는다.
      */
     public int getMaxAmmoCount() {
         return ShooterMagazineBonus.maxAmmoCount(shooter, itemStack, gunIndex);
     }
 
     /**
-     * 获取枪械扩容等级。
+     * 총기 확장 탄창 단계를 얻는다.
      *
-     * @return 扩容等级，范围 0 ~ 3。0 表示没有安装扩容弹匣，1 ~ 3 表示安装了扩容等级 1 ~ 3 的扩容弹匣
+     * @return 확장 단계(0~3). 0은 확장 탄창 없음, 1~3은 해당 단계의 확장 탄창 장착
      */
     public int getMagExtentLevel() {
         return AttachmentDataUtils.getMagExtendLevel(itemStack, gunIndex.getGunData());
     }
 
     /**
-     * 尽可能多地从玩家身上 (或者虚拟备弹) 消耗掉弹药，返回消耗的数量
+     * 플레이어에게서(또는 가상 예비 탄약에서) 탄약을 가능한 한 많이 소모하고, 소모한 수를 돌려준다
      *
-     * @param neededAmount 需要的弹药数量
-     * @return 实际消耗的弹药数量
+     * @param neededAmount 필요한 탄약 수
+     * @return 실제로 소모한 탄약 수
      */
     public int consumeAmmoFromPlayer(int neededAmount) {
-        // 如果处于背包直读并且创造模式不消耗的情况
+        // 인벤토리 직접 장전이면서 크리에이티브 모드라 소모하지 않는 경우
         if (useInventoryAmmo() && !isReloadingNeedConsumeAmmo()) {
             return neededAmount;
         }
@@ -604,10 +604,10 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 检查玩家身上（或者虚拟备弹）是否有弹药可以消耗，通常用于循环换弹的打断。
-     * 创造模式的玩家会直接返回 true
+     * 플레이어(또는 가상 예비 탄약)에게 소모할 탄약이 있는지 확인한다. 보통 반복 재장전을 끊을 때 쓴다.
+     * 크리에이티브 플레이어는 바로 true를 돌려준다
      *
-     * @return 玩家身上（或者虚拟备弹）是否有弹药可以消耗
+     * @return 플레이어(또는 가상 예비 탄약)에게 소모할 탄약이 있는지
      */
     public boolean hasAmmoToConsume() {
         if (!isReloadingNeedConsumeAmmo()) {
@@ -617,7 +617,7 @@ public class ModernKineticGunScriptAPI {
             return abstractGunItem.getDummyAmmoAmount(itemStack) > 0;
         }
         return shooter.tacz$getItemHandler(null).map(cap -> {
-            // 背包检查
+            // 인벤토리 확인
             for (int i = 0; i < cap.getSlots(); i++) {
                 ItemStack checkAmmoStack = cap.getStackInSlot(i);
                 if (checkAmmoStack.getItem() instanceof IAmmo iAmmo && iAmmo.isAmmoOfGun(itemStack, checkAmmoStack)) {
@@ -632,10 +632,10 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 将子弹推入弹匣。
+     * 탄환을 탄창에 밀어 넣는다.
      *
-     * @param amount 需要推入的子弹数量
-     * @return 多余的子弹
+     * @param amount 밀어 넣을 탄환 수
+     * @return 남는 탄환
      */
     public int putAmmoInMagazine(int amount) {
         if (amount < 0) {
@@ -654,10 +654,10 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 将子弹从弹匣移除。
+     * 탄창에서 탄환을 뺀다.
      *
-     * @param amount 需要移除的数量
-     * @return 成功移除的数量
+     * @param amount 뺄 수량
+     * @return 실제로 뺀 수량
      */
     public int removeAmmoFromMagazine(int amount) {
         if (amount < 0) {
@@ -674,18 +674,18 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 获取弹匣内子弹数量。
+     * 탄창 안 탄환 수를 가져온다.
      *
-     * @return 弹匣内子弹数量
+     * @return 탄창 안 탄환 수
      */
     public int getAmmoCountInMagazine() {
         return abstractGunItem.getCurrentAmmoCount(itemStack);
     }
 
     /**
-     * 获取枪膛内是否有子弹。
+     * 약실에 탄환이 있는지 가져온다.
      *
-     * @return 枪膛内是否有子弹.如果是开膛待击的枪械，则此方法返回 false。
+     * @return 약실에 탄환이 있는지 여부. 개방 노리쇠 대기 총기이면 이 메서드는 false를 돌려준다.
      */
     public boolean hasAmmoInBarrel() {
         Bolt boltType = gunIndex.getGunData().getBolt();
@@ -693,34 +693,34 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 设置枪膛内是否有子弹
+     * 약실에 탄환이 있는지 설정한다
      */
     public void setAmmoInBarrel(boolean ammoInBarrel) {
         abstractGunItem.setBulletInBarrel(itemStack, ammoInBarrel);
     }
 
     /**
-     * 将任意 lua 对象数据缓存到玩家数据中。用于脚本中异步传递数据，或者跨方法传递数据。
+     * 임의의 lua 객체 데이터를 플레이어 데이터에 캐시한다. 스크립트에서 비동기로 데이터를 넘기거나 메서드 사이에 데이터를 넘길 때 쓴다.
      *
-     * @param luaValue 缓存的 lua 对象
+     * @param luaValue 캐시할 lua 객체
      */
     public void cacheScriptData(LuaValue luaValue) {
         this.dataHolder.scriptData = luaValue;
     }
 
     /**
-     * 将玩家数据中缓存的 lua 对象取出。
+     * 플레이어 데이터에 캐시한 lua 객체를 꺼낸다.
      *
-     * @return 缓存的 lua 对象
+     * @return 캐시한 lua 객체
      */
     public LuaValue getCachedScriptData() {
         return dataHolder.scriptData;
     }
 
     /**
-     * 获取在枪械 data 中声明的脚本参数
+     * 총기 data에 선언한 스크립트 매개변수를 가져온다
      *
-     * @return 脚本参数表
+     * @return 스크립트 매개변수 표
      */
     public LuaTable getScriptParams() {
         LuaTable param = gunIndex.getScriptParam();
@@ -728,12 +728,12 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 委托延迟的循环任务，在主线程执行，是线程安全的，但是时间不是严格的，粒度取决于 TPS。
+     * 지연 반복 작업을 맡긴다. 메인 스레드에서 실행되어 스레드에 안전하지만 시간은 엄밀하지 않고, 정밀도는 TPS에 따라 다르다.
      *
-     * @param value    应当是一个返回 boolean 的 LuaFunction。如果返回 false ，则将退出循环。
-     * @param delayMs  延迟执行的时间。
-     * @param periodMs 循环执行的间隔。
-     * @param cycles   最大循环次数。-1 代表无限次。
+     * @param value    boolean을 돌려주는 LuaFunction이어야 한다. false를 돌려주면 반복을 끝낸다.
+     * @param delayMs  실행을 늦출 시간.
+     * @param periodMs 반복 실행 간격.
+     * @param cycles   최대 반복 횟수. -1이면 무한이다.
      */
     public void safeAsyncTask(LuaValue value, long delayMs, long periodMs, int cycles) {
         LuaFunction func = value.checkfunction();
@@ -741,18 +741,18 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 获取当前系统时间，单位毫秒。
+     * 현재 시스템 시각(밀리초)을 얻는다.
      *
-     * @return 当前系统时间
+     * @return 현재 시스템 시각
      */
     public long getCurrentTimestamp() {
         return System.currentTimeMillis();
     }
 
     /**
-     * 获取枪械的配件 ID
+     * 총기의 부착물 ID를 얻는다
      *
-     * @return 配件 ID, 如果类型错误或者对应的配件不存在则返回空配件 ID 'tacz:empty'
+     * @return 부착물 ID. 종류가 틀렸거나 해당 부착물이 없으면 빈 부착물 ID 'tacz:empty'
      */
     public String getAttachment(String type) {
         try {
@@ -764,10 +764,10 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 返回一个当前枪械物品的 NBT 访问器。除非要保存持久化数据，你不应该频繁调用这个方法。<br/>
-     * 参见 {@link LuaNbtAccessor}
+     * 현재 총기 아이템의 NBT 접근자를 돌려준다. 영구 데이터를 저장할 때가 아니면 이 메서드를 자주 호출하지 않는다.<br/>
+     * {@link LuaNbtAccessor} 참고
      *
-     * @return NBT 访问器
+     * @return NBT 접근자
      */
     public LuaNbtAccessor getNbt() {
         return nbtUtil;
@@ -806,10 +806,10 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
-     * 返回一个关于当前开枪实体的工具。这个访问器提供了一些常用的方法，例如发送系统消息、发送ActionBar、创建文本组件等。<br/>
-     * 参见 {@link LuaEntityAccessor}
+     * 현재 사격 중인 엔티티에 관한 도구를 돌려준다. 이 접근자는 시스템 메시지 보내기, ActionBar 보내기, 글자 컴포넌트 만들기 같은 자주 쓰는 메서드를 제공한다.<br/>
+     * {@link LuaEntityAccessor} 참고
      *
-     * @return 实体访问器
+     * @return 엔티티 접근자
      */
     public LuaEntityAccessor getEntityUtil() {
         if (entityAccessor == null) {
@@ -920,7 +920,7 @@ public class ModernKineticGunScriptAPI {
         return 0f;
     }
 
-    // TODO: 测试检查 enum 值是否可以直接在 lua 中调用，以简化这个功能为下面那个方法
+    // TODO: enum 값을 lua에서 바로 호출할 수 있는지 시험해, 이 기능을 아래 메서드로 단순화할 수 있는지 확인한다
     public int getBoltByInt() {
         Bolt bolt = gunIndex.getGunData().getBolt();
         if (bolt == Bolt.MANUAL_ACTION) {

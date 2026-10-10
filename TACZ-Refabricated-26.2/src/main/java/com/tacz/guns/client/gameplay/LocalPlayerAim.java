@@ -22,7 +22,7 @@ public class LocalPlayerAim {
     }
 
     public void aim(boolean isAim) {
-        // 暂定为主手
+        // 우선 주 손으로 정한다
         ItemStack mainHandItem = player.getMainHandItem();
         if (!(mainHandItem.getItem() instanceof IGun iGun)) {
             return;
@@ -30,7 +30,7 @@ public class LocalPlayerAim {
         Identifier gunId = iGun.getGunId(mainHandItem);
         TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
             data.clientIsAiming = isAim;
-            // 发送切换开火模式的数据包，通知服务器
+            // 발사 모드 전환 패킷을 보내 서버에 알린다
             ClientPlayNetworking.send(new ClientMessagePlayerAim(isAim));
         });
     }
@@ -45,13 +45,13 @@ public class LocalPlayerAim {
 
     public void tickAimingProgress() {
         ItemStack mainHandItem = player.getMainHandItem();
-        // 如果主手物品不是枪械，则取消瞄准状态并将 aimingProgress 归零，返回。
+        // 주 손 아이템이 총기가 아니면 조준 상태를 끄고 aimingProgress를 0으로 만든 뒤 돌아간다.
         if (!(mainHandItem.getItem() instanceof IGun iGun)) {
             data.clientAimingProgress = 0;
             LocalPlayerDataHolder.oldAimingProgress = 0;
             return;
         }
-        // 如果正在收枪，则不能瞄准
+        // 총을 집어넣는 중이면 조준할 수 없다
         if (System.currentTimeMillis() - data.clientDrawTimestamp < 0) {
             data.clientIsAiming = false;
         }
@@ -68,13 +68,13 @@ public class LocalPlayerAim {
     private void aimProgressCalculate(float alphaProgress) {
         LocalPlayerDataHolder.oldAimingProgress = data.clientAimingProgress;
         if (data.clientIsAiming) {
-            // 处于执行瞄准状态，增加 aimingProgress
+            // 조준하는 중이므로 aimingProgress를 늘린다
             data.clientAimingProgress += alphaProgress;
             if (data.clientAimingProgress > 1) {
                 data.clientAimingProgress = 1;
             }
         } else {
-            // 处于取消瞄准状态，减小 aimingProgress
+            // 조준을 푸는 중이므로 aimingProgress를 줄인다
             data.clientAimingProgress -= alphaProgress;
             if (data.clientAimingProgress < 0) {
                 data.clientAimingProgress = 0;

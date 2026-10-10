@@ -32,7 +32,7 @@ public class ReloadKey {
                 return;
             }
             if (player.getMainHandItem().getItem() instanceof IGun iGun) {
-                // 如果使用背包直读，且没有换弹冷却机制，则在输入时就屏蔽换弹
+                // 인벤토리 급탄이고 재장전 대기 장치가 없으면 입력 단계에서 재장전을 막는다
                 if (iGun.useInventoryAmmo(player.getMainHandItem())) {
                     return;
                 }
@@ -70,7 +70,7 @@ public class ReloadKey {
         }
         ItemStack currentGunItem = player.getMainHandItem();
         if (player.getMainHandItem().getItem() instanceof IGun iGun) {
-            // 如果使用背包直读，且没有换弹冷却机制，则在输入时就屏蔽换弹
+            // 인벤토리 급탄이고 재장전 대기 장치가 없으면 입력 단계에서 재장전을 막는다
             if (iGun.useInventoryAmmo(player.getMainHandItem())) {
                 return;
             }

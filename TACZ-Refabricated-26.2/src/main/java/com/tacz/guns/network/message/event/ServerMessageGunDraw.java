@@ -36,40 +36,40 @@ public class ServerMessageGunDraw implements CustomPacketPayload {
     }
 
     /**
-     * 两个 ItemStack 字段<b>必须</b>用 {@code OPTIONAL_STREAM_CODEC}，不能用 {@code STREAM_CODEC}。
+     * 두 ItemStack 필드는 {@code STREAM_CODEC}이 아니라 <b>반드시</b> {@code OPTIONAL_STREAM_CODEC}을 써야 한다.
      *
-     * <h2>为什么（多人联机致命崩溃的根因）</h2>
-     * {@code ItemStack.STREAM_CODEC} 遇到 {@link ItemStack#EMPTY} 会直接抛
-     * {@code EncoderException("Empty ItemStack not allowed")}（26.2 字节码
-     * {@code ItemStack$2#encode} 第 183 行）。而本消息的
-     * {@code previousGunItem} / {@code currentGunItem} <b>天然就可能是空栈</b>：
+     * <h2>이유(멀티플레이 치명적 충돌의 근본 원인)</h2>
+     * {@code ItemStack.STREAM_CODEC}은 {@link ItemStack#EMPTY}를 만나면 바로
+     * {@code EncoderException("Empty ItemStack not allowed")}를 던진다(26.2 바이트코드
+     * {@code ItemStack$2#encode} 183번째 줄). 그런데 이 메시지의
+     * {@code previousGunItem} / {@code currentGunItem}은 <b>원래 빈 스택일 수 있다</b>:
      *
      * <ul>
-     *   <li>{@code LivingEntityDrawGun#draw} 第 49 行明写
-     *       {@code data.currentGunItem == null ? ItemStack.EMPTY : ...}
-     *       —— 玩家<b>第一次</b>切枪时没有「上一把枪」，必为空栈；</li>
-     *   <li>{@code InventoryEvent#onPlayerChangeSelect} 在
-     *       {@code oldHotbarSelected == -1} 时直接 {@code draw(ItemStack.EMPTY)}；</li>
-     *   <li>玩家<b>丢弃</b>手上物品后该槽位变空，切换/更新时同样传入空栈。</li>
+     *   <li>{@code LivingEntityDrawGun#draw} 49번째 줄에 분명히
+     *       {@code data.currentGunItem == null ? ItemStack.EMPTY : ...}라고 적혀 있다
+     *       — 플레이어가 <b>처음</b> 총을 바꿀 때는 "이전 총"이 없으므로 반드시 빈 스택이다;</li>
+     *   <li>{@code InventoryEvent#onPlayerChangeSelect}는
+     *       {@code oldHotbarSelected == -1}이면 바로 {@code draw(ItemStack.EMPTY)}를 한다;</li>
+     *   <li>플레이어가 손에 든 아이템을 <b>버리면</b> 그 칸이 비어, 전환/갱신 때도 빈 스택이 넘어간다.</li>
      * </ul>
      *
-     * <h2>为什么后果如此严重</h2>
-     * 编码异常发生在 {@code Connection#doSendPacket} 的 Netty 线程里，
-     * 会直接把该连接<b>踢掉</b>（日志：{@code lost connection: Internal Exception:
-     * ... Failed to encode packet ... (tacz:s2c_gundraw)}）。
-     * 而本消息是用 {@code NetworkHandler#sendToTrackingEntity} 发给
-     * <b>所有能看见该实体的玩家</b>的，于是一次空栈就会把
-     * 视野内的每个人（而非动作发起者自己）全部踢下线 ——
-     * 实测表现为「服主丢东西，其他人全部断连」「某玩家一进服全服崩」。
+     * <h2>결과가 이렇게 심각한 이유</h2>
+     * 인코딩 예외는 {@code Connection#doSendPacket}의 Netty 스레드에서 일어나
+     * 그 연결을 바로 <b>끊는다</b>(로그: {@code lost connection: Internal Exception:
+     * ... Failed to encode packet ... (tacz:s2c_gundraw)}).
+     * 그리고 이 메시지는 {@code NetworkHandler#sendToTrackingEntity}로
+     * <b>그 엔티티를 볼 수 있는 모든 플레이어</b>에게 보내지므로, 빈 스택 한 번이
+     * 시야 안의 모든 사람(동작을 한 본인이 아니라)을 모두 내보낸다 —
+     * 실측으로는 "서버장이 물건을 버리면 다른 사람이 모두 끊김", "어떤 플레이어가 들어오면 서버 전체가 멈춤"으로 나타났다.
      *
-     * <h2>与上游对照</h2>
-     * 上游 1.21.1 的 {@code ServerMessageGunDraw.STREAM_CODEC} 对这两个字段用的正是
-     * {@code ItemStack.OPTIONAL_STREAM_CODEC}（逐字确认）。
-     * 本项目移植成手写 {@code write}/read 时误用了非 OPTIONAL 版本，属<b>移植回归</b>。
+     * <h2>원본과 비교</h2>
+     * 원본 1.21.1의 {@code ServerMessageGunDraw.STREAM_CODEC}은 이 두 필드에 바로
+     * {@code ItemStack.OPTIONAL_STREAM_CODEC}을 썼다(글자 그대로 확인).
+     * 이 프로젝트가 직접 쓴 {@code write}/read로 이식하면서 OPTIONAL이 아닌 판을 잘못 써서 <b>이식 회귀</b>가 되었다.
      *
-     * <p>注意同目录其余 5 个事件消息（Fire/FireSelect/Melee/Reload/Shoot）
-     * 上游用的确实是非 OPTIONAL 的 {@code STREAM_CODEC}，且它们承载的
-     * 必定是一把真实的枪，<b>不应</b>一并改动 —— 已逐个与上游比对确认。
+     * <p>같은 디렉터리의 나머지 이벤트 메시지 5개(Fire/FireSelect/Melee/Reload/Shoot)는
+     * 원본도 실제로 OPTIONAL이 아닌 {@code STREAM_CODEC}을 쓰며, 그것들이 싣는 것은
+     * 반드시 실제 총 한 자루이므로 함께 고치면 <b>안 된다</b> — 하나씩 원본과 비교해 확인했다.
      */
     public void write(RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(entityId);

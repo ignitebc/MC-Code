@@ -10,7 +10,7 @@ import org.lwjgl.glfw.GLFW;
 import java.text.DecimalFormat;
 
 /**
- * Slider widget implementation which allows inputting values in a certain range with optional step size.
+ * 정해진 범위 안의 값을 선택적인 간격으로 입력받는 슬라이더 위젯.
  */
 public class ForgeSlider extends AbstractSliderButton {
     protected Component prefix;
@@ -20,7 +20,7 @@ public class ForgeSlider extends AbstractSliderButton {
     protected double maxValue;
 
     /**
-     * Allows input of discontinuous values with a certain step
+     * 정해진 간격의 불연속 값을 입력받는다
      */
     protected double stepSize;
 
@@ -29,18 +29,18 @@ public class ForgeSlider extends AbstractSliderButton {
     private final DecimalFormat format;
 
     /**
-     * @param x            x position of upper left corner
-     * @param y            y position of upper left corner
-     * @param width        Width of the widget
-     * @param height       Height of the widget
-     * @param prefix       {@link Component} displayed before the value string
-     * @param suffix       {@link Component} displayed after the value string
-     * @param minValue     Minimum (left) value of slider
-     * @param maxValue     Maximum (right) value of slider
-     * @param currentValue Starting value when widget is first displayed
-     * @param stepSize     Size of step used. Precision will automatically be calculated based on this value if this value is not 0.
-     * @param precision    Only used when {@code stepSize} is 0. Limited to a maximum of 4 (inclusive).
-     * @param drawString   Should text be displayed on the widget
+     * @param x            왼쪽 위 모서리의 x 위치
+     * @param y            왼쪽 위 모서리의 y 위치
+     * @param width        위젯 너비
+     * @param height       위젯 높이
+     * @param prefix       값 글자 앞에 표시할 {@link Component}
+     * @param suffix       값 글자 뒤에 표시할 {@link Component}
+     * @param minValue     슬라이더 최솟값(왼쪽)
+     * @param maxValue     슬라이더 최댓값(오른쪽)
+     * @param currentValue 위젯을 처음 표시할 때의 값
+     * @param stepSize     간격 크기. 0이 아니면 이 값으로 정밀도를 자동 계산한다.
+     * @param precision    {@code stepSize}가 0일 때만 쓴다. 최대 4(포함)까지.
+     * @param drawString   위젯에 글자를 표시할지
      */
     public ForgeSlider(int x, int y, int width, int height, Component prefix, Component suffix, double minValue, double maxValue, double currentValue, double stepSize, int precision, boolean drawString) {
         super(x, y, width, height, Component.empty(), 0D);
@@ -74,65 +74,65 @@ public class ForgeSlider extends AbstractSliderButton {
     }
 
     /**
-     * Overload with {@code stepSize} set to 1, useful for sliders with whole number values.
+     * {@code stepSize}를 1로 둔 오버로드. 정수 값 슬라이더에 쓴다.
      */
     public ForgeSlider(int x, int y, int width, int height, Component prefix, Component suffix, double minValue, double maxValue, double currentValue, boolean drawString) {
         this(x, y, width, height, prefix, suffix, minValue, maxValue, currentValue, 1D, 0, drawString);
     }
 
     /**
-     * @return Current slider value as a double
+     * @return 현재 슬라이더 값(double)
      */
     public double getValue() {
         return this.value * (maxValue - minValue) + minValue;
     }
 
     /**
-     * @return Current slider value as an long
+     * @return 현재 슬라이더 값(long)
      */
     public long getValueLong() {
         return Math.round(this.getValue());
     }
 
     /**
-     * @return Current slider value as an int
+     * @return 현재 슬라이더 값(int)
      */
     public int getValueInt() {
         return (int) this.getValueLong();
     }
 
     /**
-     * 按<b>真实值</b>（{@code minValue}~{@code maxValue} 区间）设置滑块。
+     * <b>실제 값</b>({@code minValue}~{@code maxValue} 구간)으로 슬라이더를 설정한다.
      *
-     * <h2>为什么叫 setValueReal 而不是 setValue</h2>
-     * 26.2 的 {@code AbstractSliderButton} 有一个<b>同名同签名</b>的方法
-     * {@code setValue(double)}，但语义完全不同 —— 它接收的是
-     * <b>0~1 的比例</b>，并且内部会做两件关键的事（字节码确认）：
+     * <h2>setValue가 아니라 setValueReal인 이유</h2>
+     * 26.2의 {@code AbstractSliderButton}에는 <b>이름과 시그니처가 같은</b> 메서드
+     * {@code setValue(double)}가 있지만 의미가 완전히 다르다 — 그쪽은
+     * <b>0~1 비율</b>을 받고, 안에서 중요한 일을 두 가지 한다(바이트코드 확인):
      * <pre>
      * this.value = Mth.clamp(value, 0.0, 1.0);
-     * if (d != this.value) { this.applyValue(); }   // 值变了才回调
+     * if (d != this.value) { this.applyValue(); }   // 값이 바뀌었을 때만 콜백
      * this.updateMessage();
      * </pre>
      *
-     * <p>本类原先把它命名为 {@code setValue}，于是<b>意外覆写</b>了父类方法，
-     * 而覆写版既按「真实值」解释入参、又<b>从不调用 {@code applyValue()}</b>。
-     * 后果正是用户实测到的诡异现象：
+     * <p>이 클래스는 원래 이 메서드를 {@code setValue}라고 불러 부모 메서드를 <b>의도치 않게 재정의</b>했고,
+     * 재정의한 쪽은 입력을 "실제 값"으로 해석하면서 <b>{@code applyValue()}를 한 번도 호출하지 않았다</b>.
+     * 그 결과가 사용자가 실제로 겪은 이상한 현상이다:
      * <ul>
-     *   <li><b>拖动滑块不生效</b> —— 拖动走的是 vanilla
-     *       {@code AbstractSliderButton#onDrag → setValueFromMouse(event) → setValue(double)}，
-     *       这里的多态分派落进了本类的覆写版，只改了数值、没有回调
-     *       {@code applyValue()}，于是镭射颜色不更新；</li>
-     *   <li><b>点击滑块不同位置却生效</b> —— 点击走的是本类自己的
-     *       {@code onClick → setValueFromMouse(double) → setSliderValue}，
-     *       那条路径显式调了 {@code applyValue()}，所以能改色也能保存。</li>
+     *   <li><b>슬라이더를 끌면 적용되지 않음</b> — 드래그는 바닐라
+     *       {@code AbstractSliderButton#onDrag → setValueFromMouse(event) → setValue(double)}를 거치는데,
+     *       여기서 다형 호출이 이 클래스의 재정의로 들어가 값만 바꾸고
+     *       {@code applyValue()}를 부르지 않아 레이저 색이 갱신되지 않았다.</li>
+     *   <li><b>슬라이더의 다른 위치를 클릭하면 적용됨</b> — 클릭은 이 클래스 자체의
+     *       {@code onClick → setValueFromMouse(double) → setSliderValue}를 거치고,
+     *       그 경로는 {@code applyValue()}를 명시적으로 불러 색도 바뀌고 저장도 됐다.</li>
      * </ul>
-     * 「点击有效、拖动无效」这个组合就是这次分派冲突的指纹。
+     * "클릭은 되는데 드래그는 안 되는" 조합이 바로 이 호출 충돌의 지문이었다.
      *
-     * <p>改名后不再覆写父类，vanilla 的 {@code setValue(double)} 恢复原有语义
-     * （含 {@code applyValue()} 回调），拖动路径自然被打通；
-     * 本类原有的真实值语义则由本方法承担，供键盘左右键调整使用。
+     * <p>이름을 바꾼 뒤로는 부모 메서드를 재정의하지 않으므로 바닐라 {@code setValue(double)}가 원래 의미
+     * ({@code applyValue()} 콜백 포함)를 되찾고, 드래그 경로도 자연히 동작한다.
+     * 이 클래스의 실제 값 의미는 이 메서드가 맡아 키보드 좌우 키 조정에 쓴다.
      *
-     * @param value 新的滑块值（真实值，非比例）
+     * @param value 새 슬라이더 값(비율이 아닌 실제 값)
      */
     public void setValueReal(double value) {
         this.value = this.snapToNearest((value - this.minValue) / (this.maxValue - this.minValue));
@@ -149,25 +149,24 @@ public class ForgeSlider extends AbstractSliderButton {
     }
 
     /**
-     * 拖动时更新滑块值。
+     * 드래그할 때 슬라이더 값을 갱신한다.
      *
-     * <p><b>刻意不调用 {@code super.onDrag}</b>：vanilla 的
-     * {@code AbstractSliderButton#onDrag} 内部是
-     * {@code setValueFromMouse(event) → setValue(double)}，
-     * 那条路径只做 {@code Mth.clamp(0,1)}、<b>不做 {@link #snapToNearest} 步进吸附</b>。
-     * 若先调 super 再调本类的 {@code setValueFromMouse}，等于同一次拖动里
-     * 先按「无吸附」写一次、再按「有吸附」写一次 —— 两次都可能触发
-     * {@code applyValue()}，既做了无谓的重复回调，也让步进语义变得不确定。
+     * <p><b>일부러 {@code super.onDrag}를 호출하지 않는다</b>: 바닐라
+     * {@code AbstractSliderButton#onDrag}는 안에서
+     * {@code setValueFromMouse(event) → setValue(double)}를 부르는데,
+     * 그 경로는 {@code Mth.clamp(0,1)}만 하고 <b>{@link #snapToNearest} 간격 맞춤을 하지 않는다</b>.
+     * super를 먼저 부르고 이 클래스의 {@code setValueFromMouse}를 다시 부르면, 같은 드래그에서
+     * "맞춤 없이" 한 번, "맞춤 있게" 한 번 값을 쓰게 된다 — 두 번 모두
+     * {@code applyValue()}를 부를 수 있어 쓸데없는 중복 콜백이 생기고 간격 동작도 불확실해진다.
      *
-     * <p>因此这里直接走本类的 {@code setValueFromMouse(double)}，
-     * 它最终落到 {@link #setSliderValue}：先 {@code snapToNearest}，
-     * 且<b>仅在值真正变化时</b>才回调 {@code applyValue()} ——
-     * 与 vanilla {@code setValue} 的「变了才回调」保持一致的语义，
-     * 同时保留本类的步进能力。
+     * <p>그래서 이 클래스의 {@code setValueFromMouse(double)}로 바로 가며,
+     * 그 경로는 결국 {@link #setSliderValue}에 이르러 먼저 {@code snapToNearest}를 하고,
+     * <b>값이 실제로 바뀌었을 때만</b> {@code applyValue()}를 부른다 —
+     * 바닐라 {@code setValue}의 "바뀌었을 때만 콜백"과 같은 의미를 지키면서
+     * 이 클래스의 간격 기능도 유지한다.
      *
-     * <p>父类 {@code onDrag} 除此之外没有其他副作用（字节码确认：
-     * 它只有 {@code setValueFromMouse} 与一个空的
-     * {@code WithInactiveMessage#onDrag}），故跳过是安全的。
+     * <p>부모 {@code onDrag}에는 그 밖의 부작용이 없다(바이트코드 확인:
+     * {@code setValueFromMouse}와 빈 {@code WithInactiveMessage#onDrag}뿐이다). 따라서 건너뛰어도 안전하다.
      */
     @Override
     protected void onDrag(MouseButtonEvent event, double dragX, double dragY) {
@@ -194,7 +193,7 @@ public class ForgeSlider extends AbstractSliderButton {
     }
 
     /**
-     * @param value Percentage of slider range
+     * @param value 슬라이더 범위에 대한 비율
      */
     private void setSliderValue(double value) {
         double oldValue = this.value;
@@ -206,8 +205,8 @@ public class ForgeSlider extends AbstractSliderButton {
     }
 
     /**
-     * Snaps the value, so that the displayed value is the nearest multiple of {@code stepSize}.
-     * If {@code stepSize} is 0, no snapping occurs.
+     * 표시 값이 {@code stepSize}의 가장 가까운 배수가 되도록 값을 맞춘다.
+     * {@code stepSize}가 0이면 맞추지 않는다.
      */
     private double snapToNearest(double value) {
         if (stepSize <= 0D)

@@ -99,7 +99,7 @@ public class EntityBulletRenderer extends EntityRenderer<EntityKineticBullet, En
                 poseStack.popPose();
             }
 
-            // 曳光弹发光
+            // 예광탄 발광
             // 예광탄은 스스로 빛나는 탄이라 주변 밝기와 관계없이 최대 밝기로 그린다. 주변 밝기를 쓰면 밤에 어둡게 묻힌다.
             if (bullet.isTracerAmmo()) {
                 float[] actualTracerColor = Objects.requireNonNullElse(tracerColor, ammoIndex.getTracerColor());
@@ -109,7 +109,7 @@ public class EntityBulletRenderer extends EntityRenderer<EntityKineticBullet, En
     }
     
     private RenderType getRenderType(Identifier textureLocation) {
-        // 由于entityTranslucentCull不可用，使用entityTranslucent作为替代
+        // entityTranslucentCull을 쓸 수 없어 entityTranslucent로 대신한다
         return RenderTypes.entityTranslucent(textureLocation);
     }
 
@@ -151,15 +151,15 @@ public class EntityBulletRenderer extends EntityRenderer<EntityKineticBullet, En
                         pitch = (float) Math.toDegrees(Mth.atan2(visualDirection.y, visualDirection.horizontalDistance()));
                     }
                 }
-                // 说是 override 其实默认值是 1
-                // 所以这里直接乘也没关系
+                // override라고 하지만 기본값은 1이다
+                // 그래서 여기서 그냥 곱해도 괜찮다
                 width *= bullet.getTracerSizeOverride();
                 width *= (float) Math.max(1.0, disToEye / 3.5);
                 poseStack.mulPose(Axis.YP.rotationDegrees(yaw - 180.0F));
                 poseStack.mulPose(Axis.XP.rotationDegrees(pitch));
                 poseStack.translate(0, isFirstPerson ? 0 : -0.2, trailLength / 2.0);
                 poseStack.scale(width, width, (float) trailLength);
-                // 距离两格外才渲染，只在前 5 tick 判定
+                // 두 칸 밖에서만 그리며, 처음 5틱 동안만 판정한다
                 double bulletDistance = bulletPosition.distanceTo(shooter.getEyePosition());
                 if (bullet.tickCount >= 5 || bulletDistance > 2) {
                     // 일반 반투명 방식은 빛 계산을 받아 밤에 어두워진다. 자체 발광 방식으로 그려 밤에도 밝게 보이게 한다.

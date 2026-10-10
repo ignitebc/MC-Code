@@ -24,8 +24,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * left 是 Pitch
- * right 是 Yaw
+ * left는 Pitch
+ * right는 Yaw
  */
 public class RecoilModifier implements IAttachmentModifier<Pair<Modifier, Modifier>, ParameterizedCachePair<Float, Float>> {
     public static final String ID = GunProperties.RECOIL.name();
@@ -46,7 +46,7 @@ public class RecoilModifier implements IAttachmentModifier<Pair<Modifier, Modifi
         Data data = CommonAssetsManager.GSON.fromJson(json, Data.class);
         NewRecoilData newRecoilData = data.newRecoilData;
         OldRecoilData oldRecoilData = data.oldRecoilData;
-        // 兼容旧版本写法
+        // 예전 버전 표기 호환
         if (newRecoilData == null && oldRecoilData != null) {
             Modifier pitch = new Modifier();
             Modifier yaw = new Modifier();

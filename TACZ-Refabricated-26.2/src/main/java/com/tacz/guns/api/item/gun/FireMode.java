@@ -4,22 +4,22 @@ import com.google.gson.annotations.SerializedName;
 
 public enum FireMode {
     /**
-     * 全自动
+     * 자동
      */
     @SerializedName("auto")
     AUTO,
     /**
-     * 半自动
+     * 반자동
      */
     @SerializedName("semi")
     SEMI,
     /**
-     * 多连发
+     * 점사
      */
     @SerializedName("burst")
     BURST,
     /**
-     * 未知的其他情况？
+     * 알 수 없는 그 밖의 경우
      */
     @SerializedName("unknown")
     UNKNOWN

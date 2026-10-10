@@ -30,7 +30,7 @@ public class GunSmithTableRenderer implements BlockEntityRenderer<GunSmithTableB
     public GunSmithTableRenderer(BlockEntityRendererProvider.Context context) {
     }
 
-    /** Custom render state that caches block entity data for render-thread use */
+    /** 렌더 스레드가 쓰도록 블록 엔티티 데이터를 캐시하는 사용자 정의 렌더 상태 */
     public static class GunSmithTableRenderState extends BlockEntityRenderState {
         public ClientBlockIndex blockIndex;
         public Direction facing;

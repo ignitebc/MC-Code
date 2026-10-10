@@ -12,7 +12,7 @@ import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public class RefitTransform {
-    // 以下参数、变量用于改装窗口动画插值
+    // 아래 매개변수·변수는 개조 창 애니메이션 보간에 쓴다
     private static final float REFIT_SCREEN_TRANSFORM_TIMES = 0.25f;
     private static float refitScreenTransformProgress = 1;
     private static long refitScreenTransformTimestamp = -1;
@@ -58,7 +58,7 @@ public class RefitTransform {
     }
 
     public static void tickInterpolation(RenderTickEvent event) {
-        // tick opening progress
+        // 열림 진행도 틱
         if (refitScreenOpeningTimestamp == -1) {
             refitScreenOpeningTimestamp = System.currentTimeMillis();
         }
@@ -74,7 +74,7 @@ public class RefitTransform {
             }
         }
         refitScreenOpeningTimestamp = System.currentTimeMillis();
-        // tick transform progress
+        // 변환 진행도 틱
         if (refitScreenTransformTimestamp == -1) {
             refitScreenTransformTimestamp = System.currentTimeMillis();
         }

@@ -43,16 +43,16 @@ public class ArmorIgnoreModifier implements IAttachmentModifier<Modifier, Float>
 
     @Override
     public CacheValue<Float> initCache(ItemStack gunItem, GunData gunData) {
-        // 必要数据获取
+        // 필요한 데이터 가져오기
         IGun iGun = Objects.requireNonNull(IGun.getIGunOrNull(gunItem));
         FireMode fireMode = iGun.getFireMode(gunItem);
         BulletData bulletData = gunData.getBulletData();
         GunFireModeAdjustData fireModeAdjustData = gunData.getFireModeAdjustData(fireMode);
 
-        // 额外伤害
+        // 추가 피해
         ExtraDamage extraDamage = bulletData.getExtraDamage();
-        // 开火模式调整
-        // 最终的 base
+        // 발사 방식 조정
+        // 최종 base
         float finalBase = extraDamage != null ? extraDamage.getArmorIgnore() : 0;
         finalBase = fireModeAdjustData != null ? finalBase + fireModeAdjustData.getArmorIgnore() : finalBase;
         finalBase *= SyncConfig.ARMOR_IGNORE_BASE_MULTIPLIER.get();
@@ -68,16 +68,16 @@ public class ArmorIgnoreModifier implements IAttachmentModifier<Modifier, Float>
     @Override
     @Environment(EnvType.CLIENT)
     public List<DiagramsData> getPropertyDiagramsData(ItemStack gunItem, GunData gunData, AttachmentCacheProperty cacheProperty) {
-        // 必要数据获取
+        // 필요한 데이터 가져오기
         IGun iGun = Objects.requireNonNull(IGun.getIGunOrNull(gunItem));
         FireMode fireMode = iGun.getFireMode(gunItem);
         BulletData bulletData = gunData.getBulletData();
         GunFireModeAdjustData fireModeAdjustData = gunData.getFireModeAdjustData(fireMode);
 
-        // 额外伤害
+        // 추가 피해
         ExtraDamage extraDamage = bulletData.getExtraDamage();
-        // 开火模式调整
-        // 最终的 base
+        // 발사 방식 조정
+        // 최종 base
         float finalBase = extraDamage != null ? extraDamage.getArmorIgnore() : 0;
         finalBase = fireModeAdjustData != null ? finalBase + fireModeAdjustData.getArmorIgnore() : finalBase;
         finalBase *= SyncConfig.ARMOR_IGNORE_BASE_MULTIPLIER.get();

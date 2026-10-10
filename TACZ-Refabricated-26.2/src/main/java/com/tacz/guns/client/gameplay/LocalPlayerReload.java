@@ -36,21 +36,21 @@ public class LocalPlayerReload {
         }
 
         TimelessAPI.getGunDisplay(mainHandItem).ifPresent(display -> {
-            // 如果没在换弹，则返回
+            // 재장전 중이 아니면 돌아간다
             IGunOperator gunOperator = IGunOperator.fromLivingEntity(player);
             ReloadState reloadState = gunOperator.getSynReloadState();
             if (!reloadState.getStateType().isReloading()) {
                 return;
             }
-            // 发包通知服务器
+            // 패킷을 보내 서버에 알린다
             ClientPlayNetworking.send(new ClientMessagePlayerCancelReload());
-            // 执行本地取消换弹逻辑
+            // 로컬 재장전 취소 로직 실행
             this.cancelReload(display);
         });
     }
 
     public void reload() {
-        // 暂定只有主手可以装弹
+        // 우선 주 손만 장전할 수 있다
         ItemStack mainHandItem = player.getMainHandItem();
         if (!(mainHandItem.getItem() instanceof AbstractGunItem gunItem)) {
             return;
@@ -61,34 +61,34 @@ public class LocalPlayerReload {
             return;
         }
         TimelessAPI.getGunDisplay(mainHandItem).ifPresent(display -> {
-            // 检查是否为背包直读
+            // 인벤토리 급탄인지 확인한다
             if (gunItem.useInventoryAmmo(mainHandItem)) {
                 return;
             }
-            // 检查状态锁
+            // 상태 잠금 확인
             if (data.clientStateLock) {
                 return;
             }
             if (System.currentTimeMillis() - data.clientShootTimestamp < 100) {
                 return;
             }
-            // 弹药简单检查
+            // 탄약 간단 확인
             boolean canReload = gunItem.canReload(player, mainHandItem);
             if (IGunOperator.fromLivingEntity(player).needCheckAmmo() && !canReload) {
                 return;
             }
-            // 锁上状态锁
+            // 상태 잠금을 건다
             data.lockState(operator -> operator.getSynReloadState().getStateType().isReloading());
             data.chargeProgress = 0f;
-            // 触发换弹事件
+            // 재장전 이벤트 발생
             GunReloadEvent gunReloadEvent = new GunReloadEvent(player, player.getMainHandItem(), LogicalSide.CLIENT);
             GunReloadEvent.CALLBACK.invoker().post(gunReloadEvent);
             if (gunReloadEvent.isCanceled()) {
                 return;
             }
-            // 发包通知服务器
+            // 패킷을 보내 서버에 알린다
             ClientPlayNetworking.send(new ClientMessagePlayerReloadGun());
-            // 执行客户端 reload 相关内容
+            // 클라이언트 reload 관련 내용 실행
             this.doReload(gunItem, display, gunData, mainHandItem);
         });
     }
@@ -103,7 +103,7 @@ public class LocalPlayerReload {
             } else {
                 noAmmo = !iGun.hasBulletInBarrel(mainHandItem);
             }
-            // 触发 reload，停止播放声音
+            // reload를 일으키고 소리 재생을 멈춘다
             SoundPlayManager.stopPlayGunSound();
             SoundPlayManager.playReloadSound(player, display, noAmmo);
             animationStateMachine.trigger(GunAnimationConstant.INPUT_RELOAD);

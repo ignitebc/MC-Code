@@ -18,27 +18,27 @@ import java.util.*;
 public class BedrockModel {
     public static BedrockModel dummyModel = new BedrockModel();
     /**
-     * 存储 ModelRender 子模型的 HashMap
+     * ModelRender 하위 모델을 담는 HashMap
      */
     protected final HashMap<String, ModelRendererWrapper> modelMap = new HashMap<>();
     /**
-     * 存储 Bones 的 HashMap，主要是给后面寻找父骨骼进行坐标转换用的
+     * Bones를 담는 HashMap. 주로 뒤에서 부모 뼈를 찾아 좌표를 변환할 때 쓴다
      */
     protected final HashMap<String, BonesItem> indexBones = new HashMap<>();
     /**
-     * 哪些模型需要渲染。加载进父骨骼的子骨骼是不需要渲染的
+     * 어떤 모델을 그려야 하는지. 부모 뼈에 들어간 자식 뼈는 그릴 필요가 없다
      */
     protected final List<BedrockPart> shouldRender = new LinkedList<>();
     /**
-     * 委托到渲染结束时执行的渲染器，用于特殊部分的渲染，如手臂
+     * 렌더링이 끝날 때 실행하도록 맡긴 렌더러. 팔 같은 특수 부분 렌더링에 쓴다
      */
     protected List<IFunctionalRenderer> delegateRenderers = new ArrayList<>();
     /**
-     * 模型的中心点
+     * 모델의 중심점
      */
     protected @Nullable Vec3 offset = null;
     /**
-     * 模型的大小
+     * 모델의 크기
      */
     protected @Nullable Vec2 size = null;
 
@@ -49,7 +49,7 @@ public class BedrockModel {
         if (version == BedrockVersion.NEW) {
             loadNewModel(pojo);
         }
-        // 应用发光
+        // 발광 적용
         for (ModelRendererWrapper rendererWrapper : modelMap.values()) {
             if (rendererWrapper.getModelRenderer().name != null && rendererWrapper.getModelRenderer().name.endsWith("_illuminated")) {
                 rendererWrapper.getModelRenderer().illuminated = true;
@@ -78,7 +78,7 @@ public class BedrockModel {
             return;
         }
         Description description = pojo.getGeometryModelNew().getDescription();
-        // 材质的长度、宽度
+        // 텍스처의 너비와 높이
         int texWidth = description.getTextureWidth();
         int texHeight = description.getTextureHeight();
 
@@ -91,54 +91,54 @@ public class BedrockModel {
         float height = description.getVisibleBoundsHeight() / 2.0f;
         this.size = new Vec2(width, height);
 
-        // 往 indexBones 里面注入数据，为后续坐标转换做参考
+        // indexBones에 데이터를 넣어 뒤의 좌표 변환 기준으로 삼는다
         for (BonesItem bones : pojo.getGeometryModelNew().getBones()) {
-            // 塞索引，这是给后面坐标转换用的
+            // 색인을 넣는다. 뒤의 좌표 변환에 쓴다
             indexBones.putIfAbsent(bones.getName(), bones);
-            // 塞入新建的空 BedrockPart 实例
-            // 因为后面添加 parent 需要，所以先塞空对象，然后二次遍历再进行数据存储
+            // 새로 만든 빈 BedrockPart 인스턴스를 넣는다
+            // 뒤에서 parent를 붙여야 하므로 먼저 빈 객체를 넣고, 두 번째 순회에서 데이터를 저장한다
             modelMap.putIfAbsent(bones.getName(), new ModelRendererWrapper(new BedrockPart(bones.getName())));
         }
 
-        // 开始往 ModelRenderer 实例里面塞数据
+        // ModelRenderer 인스턴스에 데이터를 채우기 시작한다
         for (BonesItem bones : pojo.getGeometryModelNew().getBones()) {
-            // 骨骼名称
+            // 뼈 이름
             String name = bones.getName();
-            // 旋转，可能为空
+            // 회전. 비어 있을 수 있다
             @Nullable List<Float> rotation = bones.getRotation();
-            // 父骨骼的名称，可能为空
+            // 부모 뼈 이름. 비어 있을 수 있다
             @Nullable String parent = bones.getParent();
-            // 塞进 HashMap 里面的模型对象
+            // HashMap에 넣는 모델 객체
             BedrockPart model = modelMap.get(name).getModelRenderer();
 
-            // 镜像参数
+            // 거울 매개변수
             model.mirror = bones.isMirror();
 
-            // 旋转点
+            // 회전 중심
             model.setPos(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
 
-            // Nullable 检查，设置旋转角度
+            // Nullable 검사 후 회전 각도 설정
             if (rotation != null) {
                 setRotationAngle(model, convertRotation(rotation.get(0)), convertRotation(rotation.get(1)), convertRotation(rotation.get(2)));
             }
 
-            // Null 检查，进行父骨骼绑定
+            // Null 검사 후 부모 뼈에 묶는다
             if (parent != null) {
                 BedrockPart parentPart = modelMap.get(parent).getModelRenderer();
                 parentPart.addChild(model);
                 model.parent = parentPart;
             } else {
-                // 没有父骨骼的模型才进行渲染
+                // 부모 뼈가 없는 모델만 그린다
                 shouldRender.add(model);
                 model.parent = null;
             }
 
-            // 我的天，Cubes 还能为空……
+            // 세상에, Cubes가 비어 있을 수도 있다……
             if (bones.getCubes() == null) {
                 continue;
             }
 
-            // 塞入 Cube List
+            // Cube List를 넣는다
             for (CubesItem cube : bones.getCubes()) {
                 List<Float> uv = cube.getUv();
                 @Nullable FaceUVsItem faceUv = cube.getFaceUv();
@@ -147,7 +147,7 @@ public class BedrockModel {
                 boolean mirror = cube.isMirror();
                 float inflate = cube.getInflate();
 
-                // 当做普通 cube 存入
+                // 일반 cube로 저장한다
                 if (cubeRotation == null) {
                     if (faceUv == null) {
                         model.cubes.add(new BedrockCubeBox(uv.get(0), uv.get(1),
@@ -161,7 +161,7 @@ public class BedrockModel {
                                 texWidth, texHeight, faceUv));
                     }
                 }
-                // 创建 Cube ModelRender
+                // Cube ModelRender 생성
                 else {
                     BedrockPart cubeRenderer = new BedrockPart(null);
                     cubeRenderer.setPos(convertPivot(bones, cube, 0), convertPivot(bones, cube, 1), convertPivot(bones, cube, 2));
@@ -178,7 +178,7 @@ public class BedrockModel {
                                 texWidth, texHeight, faceUv));
                     }
 
-                    // 添加进父骨骼中
+                    // 부모 뼈에 추가한다
                     model.addChild(cubeRenderer);
                 }
             }
@@ -192,7 +192,7 @@ public class BedrockModel {
             return;
         }
 
-        // 材质的长度、宽度
+        // 텍스처의 너비와 높이
         int texWidth = pojo.getGeometryModelLegacy().getTextureWidth();
         int texHeight = pojo.getGeometryModelLegacy().getTextureHeight();
 
@@ -205,51 +205,51 @@ public class BedrockModel {
         float height = pojo.getGeometryModelLegacy().getVisibleBoundsHeight() / 2.0f;
         this.size = new Vec2(width, height);
 
-        // 往 indexBones 里面注入数据，为后续坐标转换做参考
+        // indexBones에 데이터를 넣어 뒤의 좌표 변환 기준으로 삼는다
         for (BonesItem bones : pojo.getGeometryModelLegacy().getBones()) {
-            // 塞索引，这是给后面坐标转换用的
+            // 색인을 넣는다. 뒤의 좌표 변환에 쓴다
             indexBones.putIfAbsent(bones.getName(), bones);
-            // 塞入新建的空 ModelRenderer 实例
-            // 因为后面添加 parent 需要，所以先塞空对象，然后二次遍历再进行数据存储
+            // 새로 만든 빈 ModelRenderer 인스턴스를 넣는다
+            // 뒤에서 parent를 붙여야 하므로 먼저 빈 객체를 넣고, 두 번째 순회에서 데이터를 저장한다
             modelMap.putIfAbsent(bones.getName(), new ModelRendererWrapper(new BedrockPart(bones.getName())));
         }
 
-        // 开始往 ModelRenderer 实例里面塞数据
+        // ModelRenderer 인스턴스에 데이터를 채우기 시작한다
         for (BonesItem bones : pojo.getGeometryModelLegacy().getBones()) {
-            // 骨骼名称，注意因为后面动画的需要，头部、手部、腿部等骨骼命名必须是固定死的
+            // 뼈 이름. 뒤의 애니메이션 때문에 머리·손·다리 등의 뼈 이름은 반드시 고정되어야 한다
             String name = bones.getName();
-            // 旋转点，可能为空
+            // 회전 중심. 비어 있을 수 있다
             @Nullable List<Float> rotation = bones.getRotation();
-            // 父骨骼的名称，可能为空
+            // 부모 뼈 이름. 비어 있을 수 있다
             @Nullable String parent = bones.getParent();
-            // 塞进 HashMap 里面的模型对象
+            // HashMap에 넣는 모델 객체
             BedrockPart model = modelMap.get(name).getModelRenderer();
 
-            // 镜像参数
+            // 거울 매개변수
             model.mirror = bones.isMirror();
 
-            // 旋转点
+            // 회전 중심
             model.setPos(convertPivot(bones, 0), convertPivot(bones, 1), convertPivot(bones, 2));
 
-            // Nullable 检查，设置旋转角度
+            // Nullable 검사 후 회전 각도 설정
             if (rotation != null) {
                 setRotationAngle(model, convertRotation(rotation.get(0)), convertRotation(rotation.get(1)), convertRotation(rotation.get(2)));
             }
 
-            // Null 检查，进行父骨骼绑定
+            // Null 검사 후 부모 뼈에 묶는다
             if (parent != null) {
                 modelMap.get(parent).getModelRenderer().addChild(model);
             } else {
-                // 没有父骨骼的模型才进行渲染
+                // 부모 뼈가 없는 모델만 그린다
                 shouldRender.add(model);
             }
 
-            // 我的天，Cubes 还能为空……
+            // 세상에, Cubes가 비어 있을 수도 있다……
             if (bones.getCubes() == null) {
                 continue;
             }
 
-            // 塞入 Cube List
+            // Cube List를 넣는다
             for (CubesItem cube : bones.getCubes()) {
                 List<Float> uv = cube.getUv();
                 List<Float> size = cube.getSize();
@@ -265,17 +265,17 @@ public class BedrockModel {
     }
 
     /**
-     * 基岩版的旋转中心计算方式和 Java 版不太一样，需要进行转换
+     * 베드락판의 회전 중심 계산 방식은 자바판과 달라 변환이 필요하다
      * <p>
-     * 如果有父模型
-     * <li>x，z 方向：本模型坐标 - 父模型坐标
-     * <li>y 方向：父模型坐标 - 本模型坐标
+     * 부모 모델이 있으면
+     * <li>x, z 방향: 이 모델 좌표 - 부모 모델 좌표
+     * <li>y 방향: 부모 모델 좌표 - 이 모델 좌표
      * <p>
-     * 如果没有父模型
-     * <li>x，z 方向不变
-     * <li>y 方向：24 - 本模型坐标
+     * 부모 모델이 없으면
+     * <li>x, z 방향은 그대로
+     * <li>y 방향: 24 - 이 모델 좌표
      *
-     * @param index 是 xyz 的哪一个，x 是 0，y 是 1，z 是 2
+     * @param index xyz 중 어느 것인지. x는 0, y는 1, z는 2
      */
     protected float convertPivot(BonesItem bones, int index) {
         if (bones.getParent() != null) {
@@ -303,13 +303,13 @@ public class BedrockModel {
     }
 
     /**
-     * 基岩版和 Java 版本的方块起始坐标也不一致，Java 是相对坐标，而且 y 值方向不一致。
-     * 基岩版是绝对坐标，而且 y 方向朝上。
-     * 其实两者规律很简单，但是我找了一下午，才明白咋回事。
-     * <li>如果是 x，z 轴，那么只需要方块起始坐标减去旋转点坐标
-     * <li>如果是 y 轴，旋转点坐标减去方块起始坐标，再减去方块的 y 长度
+     * 베드락판과 자바판은 블록 시작 좌표도 다르다. 자바는 상대 좌표이고 y 방향도 다르다.
+     * 베드락은 절대 좌표이며 y 방향이 위쪽이다.
+     * 사실 규칙은 아주 간단한데, 오후 내내 찾고서야 알았다.
+     * <li>x, z축이면 블록 시작 좌표에서 회전 중심 좌표를 빼면 된다
+     * <li>y축이면 회전 중심 좌표에서 블록 시작 좌표를 빼고, 다시 블록의 y 길이를 뺀다
      *
-     * @param index 是 xyz 的哪一个，x 是 0，y 是 1，z 是 2
+     * @param index xyz 중 어느 것인지. x는 0, y는 1, z는 2
      */
     protected float convertOrigin(BonesItem bone, CubesItem cube, int index) {
         if (index == 1) {
@@ -329,7 +329,7 @@ public class BedrockModel {
     }
 
     /**
-     * 基岩版用的是度，Java 版用的是弧度，这个转换很简单
+     * 베드락판은 도를, 자바판은 라디안을 쓴다. 변환은 간단하다
      */
     protected float convertRotation(float degree) {
         return (float) (degree * Math.PI / 180);
@@ -354,8 +354,8 @@ public class BedrockModel {
 
     @Deprecated
     public void render(PoseStack matrixStack, ItemDisplayContext transformType, RenderType renderType, int light, int overlay, float red, float green, float blue, float alpha) {
-        // 26.2: Minecraft.renderBuffers() removed. Use submit() or renderInto() with an explicit VertexConsumer instead.
-        // Fallback: no-op for deprecated path. Callers should migrate to submit().
+        // 26.2: Minecraft.renderBuffers()는 제거되었다. 대신 submit()이나 명시적인 VertexConsumer를 받는 renderInto()를 쓴다.
+        // 대체: 폐기된 경로는 아무것도 하지 않는다. 호출하는 쪽은 submit()으로 옮겨야 한다.
     }
     public void renderInto(PoseStack poseStack, ItemDisplayContext transformType, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha) {
         poseStack.pushPose();
@@ -366,23 +366,23 @@ public class BedrockModel {
     }
     public void renderInto(PoseStack poseStack, ItemDisplayContext transformType, VertexConsumer consumer, int light, int overlay) { renderInto(poseStack, transformType, consumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F); }
     public void submit(PoseStack poseStack, ItemDisplayContext transformType, SubmitNodeCollector collector, RenderType renderType, int light, int overlay, float red, float green, float blue, float alpha) {
-        // Extraction happens now; the delayed callback receives immutable matrices rather than the
-        // shared BedrockPart objects that cleanAnimationTransform() or another entity can mutate.
+        // 추출은 지금 일어난다. 지연 콜백은 cleanAnimationTransform()이나 다른 엔티티가 바꿀 수 있는
+        // 공유 BedrockPart 객체 대신 변하지 않는 행렬을 받는다.
         BedrockRenderSnapshot snapshot = BedrockRenderSnapshot.capture(
                 this, poseStack, transformType, light, overlay, red, green, blue, alpha
         );
 
         if (!snapshot.isEmpty()) {
-            // Matrices in the snapshot already include the complete incoming item/entity pose.
-            // Submit from an identity stack to avoid applying that root transform twice.
+            // 스냅숏의 행렬에는 들어온 아이템/엔티티 자세 전체가 이미 들어 있다.
+            // 그 루트 변환을 두 번 적용하지 않도록 단위 스택에서 제출한다.
             PoseStack identity = new PoseStack();
             collector.submitCustomGeometry(identity, renderType, (entryPose, consumer) -> snapshot.write(consumer));
         }
         snapshot.submitFunctionalTasks(collector);
 
-        // Legacy delegate renderers cannot safely submit nested RenderTypes from a VertexConsumer
-        // callback. A3 migrates them to collector-aware immutable tasks; never retain them across
-        // submissions in the meantime.
+        // 예전 위임 렌더러는 VertexConsumer 콜백에서 중첩 RenderType을 안전하게 제출할 수 없다.
+        // A3에서 collector 대응 불변 작업으로 옮긴다. 그 전까지는 제출을 넘어
+        // 붙잡아 두지 않는다.
         delegateRenderers = new ArrayList<>();
     }
     public void submit(PoseStack matrixStack, ItemDisplayContext transformType, SubmitNodeCollector collector, RenderType renderType, int light, int overlay) { submit(matrixStack, transformType, collector, renderType, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F); }

@@ -2,28 +2,28 @@ package com.tacz.guns.client.resource.pojo.animation.gltf;
 
 public class Buffer {
     /**
-     * The URI (or IRI) of the buffer. (optional)
+     * 버퍼의 URI(또는 IRI). (선택)
      */
     private String uri;
     /**
-     * The length of the buffer in bytes. (required)<br>
-     * Minimum: 1 (inclusive)
+     * 버퍼의 바이트 길이. (필수)<br>
+     * 최솟값: 1 (포함)
      */
     private Integer byteLength;
 
     /**
-     * The URI (or IRI) of the buffer. (optional)
+     * 버퍼의 URI(또는 IRI). (선택)
      *
-     * @return The uri
+     * @return uri
      */
     public String getUri() {
         return this.uri;
     }
 
     /**
-     * The URI (or IRI) of the buffer. (optional)
+     * 버퍼의 URI(또는 IRI). (선택)
      *
-     * @param uri The uri to set
+     * @param uri 설정할 uri
      */
     public void setUri(String uri) {
         if (uri == null) {
@@ -34,23 +34,22 @@ public class Buffer {
     }
 
     /**
-     * The length of the buffer in bytes. (required)<br>
-     * Minimum: 1 (inclusive)
+     * 버퍼의 바이트 길이. (필수)<br>
+     * 최솟값: 1 (포함)
      *
-     * @return The byteLength
+     * @return byteLength
      */
     public Integer getByteLength() {
         return this.byteLength;
     }
 
     /**
-     * The length of the buffer in bytes. (required)<br>
-     * Minimum: 1 (inclusive)
+     * 버퍼의 바이트 길이. (필수)<br>
+     * 최솟값: 1 (포함)
      *
-     * @param byteLength The byteLength to set
-     * @throws NullPointerException     If the given value is <code>null</code>
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param byteLength 설정할 byteLength
+     * @throws NullPointerException     주어진 값이 <code>null</code>일 때
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setByteLength(Integer byteLength) {
         if (byteLength == null) {

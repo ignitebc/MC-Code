@@ -82,28 +82,28 @@ public class ClientMessageLaserColor implements CustomPacketPayload {
             for (var entry : colorMap.entrySet()) {
                 AttachmentType type = entry.getKey();
                 int color = entry.getValue();
-                // 【必须改「枪上那份配件 NBT」，不能改 getAttachment() 返回的 ItemStack】
+                // [getAttachment()가 돌려준 ItemStack이 아니라 "총에 있는 부착물 NBT"를 고쳐야 한다]
                 //
-                // getAttachment(gun, type) 内部是
+                // getAttachment(gun, type) 내부는
                 //     ItemNbtUtils.loadItemStack(nbt.getCompoundOrEmpty(key))
-                // —— 每次调用都用 Codec 从 NBT【反序列化出一个全新的 ItemStack】，
-                // 它与枪上存的那份数据没有任何引用关系。
+                // — 호출할 때마다 Codec으로 NBT에서 [완전히 새 ItemStack을 역직렬화]하므로,
+                // 총에 저장된 데이터와 아무 참조 관계도 없다.
                 //
-                // 原先这里写的是
+                // 예전에는 여기를 이렇게 썼다
                 //     ItemStack attachment = iGun.getAttachment(gunItem, type);
                 //     iAttachment.setLaserColor(attachment, color);
-                // 等于把颜色写进了一个【临时副本】，方法返回后该副本即被丢弃，
-                // 枪上的配件 NBT 一个字节都没变。于是服务端「保存成功」、
-                // 客户端界面上看着也变了（因为改装界面用的是本地预览的那份），
-                // 一旦退出界面重新从物品 NBT 读取，就立刻回到默认色 ——
-                // 正是用户实测到的「改完镭射颜色，一退出界面就变回去」。
+                // 색을 [임시 사본]에 쓴 셈이며, 메서드가 돌아가면 그 사본은 버려져
+                // 총의 부착물 NBT는 한 바이트도 바뀌지 않았다. 그래서 서버는 "저장 성공",
+                // 클라이언트 화면도 바뀐 것처럼 보였지만(개조 화면은 로컬 미리보기 사본을 쓰므로),
+                // 화면을 나갔다가 아이템 NBT에서 다시 읽으면 곧바로 기본 색으로 돌아갔다 —
+                // 사용자가 실측한 "레이저 색을 바꿨는데 화면을 나가면 원래대로 돌아감"이 바로 이것이다.
                 //
-                // 上游的写法是就地改 tag 再写回（逐行对照 1.21.1 的 handle）：
+                // 원본은 tag를 그 자리에서 고쳐 다시 쓴다(1.21.1의 handle과 줄마다 대조):
                 //     CompoundTag tag = iGun.getAttachmentTag(gunItem, type);
                 //     if (tag != null) { AttachmentItemDataAccessor.setLaserColorToTag(tag, color); }
                 //     iGun.setAttachmentTag(gunItem, type, tag);
-                // getAttachmentTag/setAttachmentTag 操作的是枪 NBT 里
-                // 「配件 ItemStack 的 components.custom_data」那一层，改动会真正落盘。
+                // getAttachmentTag/setAttachmentTag는 총 NBT 안의
+                // "부착물 ItemStack의 components.custom_data" 층을 다루므로 변경이 실제로 저장된다.
                 CompoundTag tag = iGun.getAttachmentTag(gunItem, type);
                 if (tag != null) {
                     AttachmentItemDataAccessor.setLaserColorToTag(tag, color);
@@ -111,9 +111,9 @@ public class ClientMessageLaserColor implements CustomPacketPayload {
                 }
             }
             if (applyGunColor) {
-                // 枪自身的镭射色（内置镭射）走的是枪本体的 custom_data，
-                // setLaserColor 内部就是 ItemNbtUtils.updateTag(gun, ...)，
-                // 直接作用在 gunItem 上，没有副本问题。
+                // 총 자체의 레이저 색(내장 레이저)은 총 본체의 custom_data를 쓰고,
+                // setLaserColor 내부가 바로 ItemNbtUtils.updateTag(gun, ...)라
+                // gunItem에 직접 작용하므로 사본 문제가 없다.
                 iGun.setLaserColor(gunItem, gunColor);
             }
         }

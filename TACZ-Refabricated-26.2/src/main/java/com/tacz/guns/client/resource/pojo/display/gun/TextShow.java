@@ -22,7 +22,7 @@ public class TextShow {
     @SerializedName("text")
     private String textKey = StringUtils.EMPTY;
 
-    /** 默认白色。<b>必须带 alpha</b>，原因见 {@link #setColorInt(int)}。 */
+    /** 기본은 흰색. <b>alpha가 반드시 있어야 한다</b>. 이유는 {@link #setColorInt(int)} 참고. */
     private volatile int colorInt = 0xFFFFFFFF;
 
     public float getScale() {
@@ -54,18 +54,18 @@ public class TextShow {
     }
 
     /**
-     * 设置文本颜色。<b>会强制补上不透明 alpha。</b>
+     * 글자 색을 설정한다. <b>불투명 alpha를 강제로 채운다.</b>
      *
-     * <p>枪包 display json 里写的是 {@code "color": "#FFFFFF"} 这样的<b>六位</b>色值，
-     * {@code ColorHex.colorTextToRbgInt} 解析出来自然只有 RGB、alpha 为 0。
-     * 1.21.1 的 {@code Font#drawInBatch} 对此宽容；但 26.2 的文本渲染
-     * （{@code SubmitNodeCollector#submitText}，与 {@code GuiGraphicsExtractor#text}
-     * 同一套判据）遇到 alpha == 0 会<b>直接丢弃整段文字</b>。
+     * <p>총기 팩 display json에는 {@code "color": "#FFFFFF"} 같은 <b>여섯 자리</b> 색 값이 적혀 있어,
+     * {@code ColorHex.colorTextToRbgInt}로 해석하면 당연히 RGB만 있고 alpha는 0이다.
+     * 1.21.1의 {@code Font#drawInBatch}는 이를 너그럽게 넘겼지만, 26.2의 글자 렌더링
+     * ({@code SubmitNodeCollector#submitText}. {@code GuiGraphicsExtractor#text}와
+     * 같은 판정)은 alpha == 0을 만나면 <b>글자 전체를 바로 버린다</b>.
      *
-     * <p>不补的话，枪身上的文字显示（如 8 倍镜的弹药计数 {@code ammo_count_text}）
-     * 会全部看不见。在此处补而不是改 {@code ColorHex}，是因为后者还被
-     * {@code colorTextToRbgFloatArray} 使用，那条路径会自行拆分 RGB 分量，
-     * 补 alpha 对它没有意义、反而可能引起混淆。
+     * <p>채우지 않으면 총몸의 글자 표시(예: 8배율 조준경의 탄약 수 {@code ammo_count_text})가
+     * 모두 보이지 않는다. {@code ColorHex}를 고치지 않고 여기서 채우는 이유는, 그쪽이
+     * {@code colorTextToRbgFloatArray}에서도 쓰이는데 그 경로는 RGB 성분을 스스로 나누므로
+     * alpha를 채우는 것이 의미가 없고 오히려 헷갈리게 할 수 있기 때문이다.
      */
     public void setColorInt(int colorInt) {
         this.colorInt = 0xFF000000 | colorInt;

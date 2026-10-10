@@ -29,8 +29,8 @@ public class BeamRenderer {
     private static final LaserConfig DEFAULT_LASER_CONFIG = new LaserConfig();
 
     /**
-     * 26.2 迁移: 使用 RenderTypes.entityTranslucentEmissive 替代自定义 RenderStateShard 组合。
-     * 旧的 additive blend 效果由 entityTranslucentEmissive 内置管线提供。
+     * 26.2 이전: 사용자 정의 RenderStateShard 조합 대신 RenderTypes.entityTranslucentEmissive를 쓴다.
+     * 예전 더하기 혼합 효과는 entityTranslucentEmissive 내장 파이프라인이 제공한다.
      */
     public static RenderType getLaserBeam() {
         return RenderTypes.entityTranslucentEmissive(LASER_BEAM_TEXTURE);
@@ -49,9 +49,9 @@ public class BeamRenderer {
             return;
         }
 
-        // 26.2: MultiBufferSource 已移除，通过 SubmitNodeCollector.submitCustomGeometry 提交自定义几何
+        // 26.2: MultiBufferSource는 제거되었고, SubmitNodeCollector.submitCustomGeometry로 사용자 정의 형상을 제출한다
         if (collector == null) {
-            // TODO 26.2: 调用者尚未提供 SubmitNodeCollector，激光束暂不渲染，待渲染管线全面迁移后恢复
+            // TODO 26.2: 호출하는 쪽이 아직 SubmitNodeCollector를 넘기지 않아 레이저 빔을 그리지 않는다. 렌더링 파이프라인 이전이 끝나면 되살린다
             return;
         }
 
@@ -104,7 +104,7 @@ public class BeamRenderer {
         int endAlpha = fadeOut ? 0 : 255;
         int light = 15728880;
         int overlay = OverlayTexture.NO_OVERLAY;
-        // 26.2: addVertex(pose, x,y,z).setColor().setUv().setOverlay().setLight().setNormal() - must complete all vertex elements
+        // 26.2: addVertex(pose, x,y,z).setColor().setUv().setOverlay().setLight().setNormal() - 정점 요소를 모두 채워야 한다
         pConsumer.addVertex(pPose.pose(), -halfWidth, -halfWidth, 0).setColor(r, g, b, 255).setUv(0, 0).setOverlay(overlay).setLight(light).setNormal(pPose, 0, 0, 1);
         pConsumer.addVertex(pPose.pose(), -halfWidth, halfWidth, 0).setColor(r, g, b, 255).setUv(0, 1).setOverlay(overlay).setLight(light).setNormal(pPose, 0, 0, 1);
         pConsumer.addVertex(pPose.pose(), -halfWidth, halfWidth, z).setColor(r, g, b, endAlpha).setUv(1, 1).setOverlay(overlay).setLight(light).setNormal(pPose, 0, 0, 1);

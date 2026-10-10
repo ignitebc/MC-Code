@@ -2,67 +2,67 @@ package com.tacz.guns.api.entity;
 
 public enum ShootResult {
     /**
-     * 成功
+     * 성공
      */
     SUCCESS,
     /**
-     * 未知原因失败
+     * 알 수 없는 이유로 실패
      */
     UNKNOWN_FAIL,
     /**
-     * 射击冷却时间还没到
+     * 사격 대기 시간이 아직 지나지 않음
      */
     COOL_DOWN,
     /**
-     * 无弹药 (或没有备弹)
+     * 탄약 없음(또는 예비 탄약 없음)
      */
     NO_AMMO,
     /**
-     * 没有执行切枪逻辑
+     * 총기 교체 로직을 실행하지 않음
      */
     NOT_DRAW,
     /**
-     * 当前物品不是枪
+     * 현재 아이템이 총이 아님
      */
     NOT_GUN,
     /**
-     * 枪械 ID 不存在
+     * 총기 ID가 없음
      */
     ID_NOT_EXIST,
     /**
-     * 需要手动上膛
+     * 수동으로 장전해야 함
      */
     NEED_BOLT,
     /**
-     * 正处于换弹状态
+     * 재장전 중
      */
     IS_RELOADING,
     /**
-     * 正处于切枪状态
+     * 총기 교체 중
      */
     IS_DRAWING,
     /**
-     * 正处于拉拴状态
+     * 노리쇠 당기는 중
      */
     IS_BOLTING,
     /**
-     * 正处于近战状态
+     * 근접 공격 중
      */
     IS_MELEE,
     /**
-     * 正处于疾跑状态
+     * 질주 중
      */
     IS_SPRINTING,
     /**
-     * 网络波动导致射击失败
+     * 네트워크 불안정으로 사격 실패
      */
     NETWORK_FAIL,
     /**
-     * Forge 事件原因取消
+     * Forge 이벤트가 취소함
      */
     FORGE_EVENT_CANCEL,
     /**
-     * 武器过热
+     * 무기 과열
      */
     OVERHEATED
 }

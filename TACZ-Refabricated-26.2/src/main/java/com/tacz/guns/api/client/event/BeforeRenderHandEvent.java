@@ -6,8 +6,8 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 /**
- * 在调用 ItemInHandRenderer#renderHandsWithItems 方法时触发该事件
- * 用于相机动画相关调用
+ * ItemInHandRenderer#renderHandsWithItems를 호출할 때 발생하는 이벤트
+ * 카메라 애니메이션 관련 처리에 쓴다
  */
 public class BeforeRenderHandEvent extends BaseEvent {
     private final PoseStack poseStack;

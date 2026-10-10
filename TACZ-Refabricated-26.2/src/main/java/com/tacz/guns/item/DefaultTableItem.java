@@ -23,6 +23,6 @@ public class DefaultTableItem extends GunSmithTableItem {
 
     @Override
     public void setBlockId(ItemStack block, @Nullable Identifier blockId) {
-        // 默认块的id无效，锁定为"tacz:gun_smith_table"
+        // 기본 블록 id가 유효하지 않아 "tacz:gun_smith_table"로 고정한다
     }
 }

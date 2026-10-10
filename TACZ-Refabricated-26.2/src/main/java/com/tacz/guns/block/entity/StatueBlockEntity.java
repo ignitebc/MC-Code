@@ -73,9 +73,9 @@ public class StatueBlockEntity extends BlockEntity {
 
     @Override
     public void loadAdditional(net.minecraft.world.level.storage.ValueInput input) {
-        // 26.2 data migration: ItemStack.OPTIONAL_CODEC may fail on legacy NBT data
-        // where Item was stored as COMPOUND instead of the new string-based format.
-        // Gracefully handle both formats.
+        // 26.2 데이터 이전: Item을 새 문자열 형식이 아니라 COMPOUND로 저장한 예전 NBT에서는
+        // ItemStack.OPTIONAL_CODEC이 실패할 수 있다.
+        // 두 형식을 모두 안전하게 처리한다.
         try {
             this.gunItem = input.read(ITEM_TAG, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         } catch (Exception e) {
@@ -97,8 +97,8 @@ public class StatueBlockEntity extends BlockEntity {
         return tag;
     }
 
-    // In Minecraft 26.2+, getRenderBoundingBox() is handled differently
-    // Rendering bounds are now typically managed through BlockEntityRenderers
+    // Minecraft 26.2+에서는 getRenderBoundingBox()를 다르게 처리한다
+    // 렌더링 범위는 이제 보통 BlockEntityRenderer가 관리한다
 
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {

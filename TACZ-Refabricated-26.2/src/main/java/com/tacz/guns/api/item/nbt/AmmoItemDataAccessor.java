@@ -41,44 +41,44 @@ public interface AmmoItemDataAccessor extends IAmmo {
     }
 
     /**
-     * 按枪包数据写入 {@code minecraft:max_stack_size} 组件，修复「子弹不可堆叠」。
+     * 총기 팩 데이터에 따라 {@code minecraft:max_stack_size} 컴포넌트를 써서 "탄이 겹쳐지지 않는" 문제를 고친다.
      *
-     * <h2>问题根因</h2>
-     * {@code AmmoItem} 的构造是 {@code super(properties.stacksTo(1))} —— 与上游一致，
-     * 因为真正的堆叠上限是<b>每种弹药各不相同</b>的（来自枪包 {@code CommonAmmoIndex#getStackSize}），
-     * 没法在物品注册时写死。
+     * <h2>문제의 원인</h2>
+     * {@code AmmoItem}의 생성자는 {@code super(properties.stacksTo(1))}다 — 원본과 같다.
+     * 실제 최대 묶음 수가 <b>탄약마다 다르기</b> 때문이다(총기 팩 {@code CommonAmmoIndex#getStackSize}에서 온다).
+     * 아이템 등록 시점에 고정할 수 없다.
      *
-     * <p>上游靠覆写 {@code Item#verifyComponentsAfterLoad(ItemStack)} 在物品载入后
-     * 写入 {@code DataComponents.MAX_STACK_SIZE}。但 <b>26.2 的 {@code Item} 已没有这个方法</b>
-     * （字节码确认），移植时改成了自定义的 {@code IItem#tacz$getMaxStackSize} +
-     * {@code ItemStackMixin} 去改 {@code ItemStack#getMaxStackSize} 的返回值。
+     * <p>원본은 {@code Item#verifyComponentsAfterLoad(ItemStack)}를 재정의해 아이템을 불러온 뒤
+     * {@code DataComponents.MAX_STACK_SIZE}를 썼다. 하지만 <b>26.2의 {@code Item}에는 그 메서드가 없다</b>
+     * (바이트코드 확인). 그래서 이식할 때 사용자 정의 {@code IItem#tacz$getMaxStackSize} +
+     * {@code ItemStackMixin}으로 {@code ItemStack#getMaxStackSize}의 반환값을 바꾸도록 했다.
      *
-     * <p><b>但那条路是死的，有两处独立失效：</b>
+     * <p><b>하지만 그 경로는 죽어 있었고, 서로 독립적인 실패가 두 곳 있었다:</b>
      * <ol>
-     *   <li>{@code ItemStackMixin} <b>从未被注册</b>到任何 {@code *.mixins.json}
-     *       （全仓 grep 零命中）→ 根本不会加载；</li>
-     *   <li>即便注册，它的目标 {@code ItemStack#getMaxStackSize} 在 26.2 <b>也不存在</b>
-     *       （字节码确认 {@code ItemStack} 只有 {@code getCount/setCount/limitSize/copyWithCount}），
-     *       注册后反而会因找不到目标而<b>崩溃</b>。</li>
+     *   <li>{@code ItemStackMixin}이 어떤 {@code *.mixins.json}에도 <b>등록된 적이 없다</b>
+     *       (저장소 전체 grep 결과 0건) → 아예 로드되지 않는다.</li>
+     *   <li>등록하더라도 대상인 {@code ItemStack#getMaxStackSize}가 26.2에는 <b>없다</b>
+     *       (바이트코드 확인 결과 {@code ItemStack}에는 {@code getCount/setCount/limitSize/copyWithCount}만 있다).
+     *       등록하면 오히려 대상을 찾지 못해 <b>크래시</b>가 난다.</li>
      * </ol>
-     * 两者叠加的结果就是：所有弹药永远停在 {@code stacksTo(1)}。
+     * 두 가지가 겹쳐 모든 탄약이 계속 {@code stacksTo(1)}에 머물렀다.
      *
-     * <h2>本修复</h2>
-     * 26.2 里堆叠上限由 {@code DataComponents.MAX_STACK_SIZE} 组件决定（该组件确认存在）。
-     * 这里在<b>写入弹药 ID 的同时</b>写入该组件 —— {@code setAmmoId} 是所有弹药物品
-     * 获得身份的唯一入口（{@code AmmoItemBuilder#build}、换弹、合成、创造栏均经由此处），
-     * 因此覆盖面等价于上游的 {@code verifyComponentsAfterLoad}，且无需 mixin。
+     * <h2>이번 수정</h2>
+     * 26.2에서는 {@code DataComponents.MAX_STACK_SIZE} 컴포넌트가 최대 묶음 수를 정한다(컴포넌트 존재 확인).
+     * 여기서 <b>탄약 ID를 쓸 때 함께</b> 이 컴포넌트를 쓴다 — {@code setAmmoId}는 모든 탄약 아이템이
+     * 정체성을 얻는 유일한 입구다({@code AmmoItemBuilder#build}, 재장전, 제작, 크리에이티브 탭이 모두 여기를 거친다).
+     * 그래서 적용 범위가 원본의 {@code verifyComponentsAfterLoad}와 같고 mixin도 필요 없다.
      */
     static void applyMaxStackSize(ItemStack ammo) {
         if (!(ammo.getItem() instanceof IAmmo iAmmo)) {
             return;
         }
-        // 【第 34 轮】上限必须夹到 [1, 99]。
+        // [34차] 상한을 [1, 99]로 묶어야 한다.
         //
-        // 26.2 的 max_stack_size 组件是 ExtraCodecs.intRange(1, 99)（与原版
-        // Item.ABSOLUTE_MAX_STACK_SIZE 一致），枪包里若写了超过 99 的 stack_size，
-        // 直接 set 进去会在<b>序列化/网络同步</b>时被 codec 拒绝，
-        // 表现为物品异常甚至断线。这里先夹住，宁可少堆也不能崩。
+        // 26.2의 max_stack_size 컴포넌트는 ExtraCodecs.intRange(1, 99)이며(바닐라
+        // Item.ABSOLUTE_MAX_STACK_SIZE와 같다), 총기 팩에 99를 넘는 stack_size를 적었을 때
+        // 그대로 넣으면 <b>직렬화·네트워크 동기화</b> 때 codec이 거부해
+        // 아이템 이상이나 접속 끊김으로 나타난다. 그래서 먼저 범위를 묶는다. 덜 겹쳐지는 편이 크래시보다 낫다.
         TimelessAPI.getCommonAmmoIndex(iAmmo.getAmmoId(ammo))
                 .map(index -> Math.clamp(index.getStackSize(), 1, 99))
                 .ifPresent(size -> ammo.set(DataComponents.MAX_STACK_SIZE, size));

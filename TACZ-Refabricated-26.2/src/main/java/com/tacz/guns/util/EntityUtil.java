@@ -25,14 +25,14 @@ public class EntityUtil {
         Vec3 hitVec = null;
         Entity hitEntity = null;
         boolean headshot = false;
-        // 获取子弹 tick 路径上所有的实体
+        // 탄환 tick 경로 위의 모든 엔티티를 가져온다
         List<Entity> entities = bulletEntity.level().getEntities(bulletEntity, bulletEntity.getBoundingBox().expandTowards(bulletEntity.getDeltaMovement()).inflate(1.0), PROJECTILE_TARGETS);
         double closestDistance = Double.MAX_VALUE;
         Entity owner = bulletEntity.getOwner();
         for (Entity entity : entities) {
-            // 禁止对自己造成伤害（如有需要可以增加 Config 开启对自己的伤害）
+            // 자신에게 피해를 주지 못하게 한다(필요하면 자신에게 주는 피해를 켜는 Config를 추가할 수 있다)
             if (!entity.equals(owner)) {
-                // 射击无视自己的载具和该载具上的其他乘客
+                // 사격은 자신의 탈것과 그 탈것의 다른 탑승자를 무시한다
                 if (owner != null && entity.isPassengerOfSameVehicle(owner)) {
                     continue;
                 }
@@ -95,22 +95,22 @@ public class EntityUtil {
     @Nullable
     protected static EntityKineticBullet.EntityResult getHitResult(Projectile bulletEntity, Entity entity, Vec3 startVec, Vec3 endVec) {
         AABB boundingBox = HitboxHelper.getFixedBoundingBox(entity, bulletEntity.getOwner());
-        // 计算射线与实体 boundingBox 的交点
+        // 광선과 엔티티 boundingBox의 교점을 계산한다
         Vec3 hitPos = boundingBox.clip(startVec, endVec).orElse(null);
-        // 爆头判定
+        // 헤드샷 판정
         if (hitPos == null) {
             return null;
         }
         Vec3 hitBoxPos = hitPos.subtract(entity.position());
         Identifier entityId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-        // 有配置的调用配置
+        // 설정이 있으면 설정을 쓴다
         if (entityId != null) {
             AABB aabb = HeadShotAABBConfigRead.getAABB(entityId);
             if (aabb != null) {
                 return new EntityKineticBullet.EntityResult(entity, hitPos, aabb.contains(hitBoxPos));
             }
         }
-        // 没有配置的默认给一个
+        // 설정이 없으면 기본값을 하나 준다
         boolean headshot = false;
         float eyeHeight = entity.getEyeHeight();
         if ((eyeHeight - 0.25) < hitBoxPos.y && hitBoxPos.y < (eyeHeight + 0.25)) {

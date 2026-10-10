@@ -24,7 +24,7 @@ public class LocalPlayerBolt {
     }
 
     public void bolt() {
-        // 检查状态锁
+        // 상태 잠금 확인
         if (data.clientStateLock) {
             return;
         }
@@ -42,34 +42,34 @@ public class LocalPlayerBolt {
 
         TimelessAPI.getGunDisplay(mainHandItem).ifPresent(display -> {
             IGunOperator gunOperator = IGunOperator.fromLivingEntity(player);
-            // 检查 bolt 类型是否是 manual action
+            // bolt 종류가 수동 장전(manual action)인지 확인한다
             Bolt boltType = gunData.getBolt();
-            // 是否为背包直读
+            // 인벤토리 급탄인지
             boolean useInventoryAmmo = iGun.useInventoryAmmo(mainHandItem);
-            // 膛内是否有子弹
+            // 약실에 탄이 있는지
             boolean hasAmmoInBarrel = iGun.hasBulletInBarrel(mainHandItem) && boltType != Bolt.OPEN_BOLT;
-            // 背包内是否还有子弹 (创造模式是否消耗背包备弹)
+            // 인벤토리에 탄이 남아 있는지(크리에이티브에서 인벤토리 예비 탄약을 소모하는지)
             boolean hasInventoryAmmo = iGun.hasInventoryAmmo(player, mainHandItem, gunOperator.needCheckAmmo());
-            // 判断没有子弹的条件 (背包直读且包内没子弹 / 非背包直读且弹匣子弹数 < 1)
+            // 탄이 없다고 볼 조건(인벤토리 급탄이면서 인벤토리에 탄 없음 / 인벤토리 급탄이 아니면서 탄창 탄 수 < 1)
             boolean noAmmo = useInventoryAmmo && !hasInventoryAmmo ||
                     !useInventoryAmmo && iGun.getCurrentAmmoCount(mainHandItem) < 1;
             if (boltType != Bolt.MANUAL_ACTION) {
                 return;
             }
-            // 检查是否有弹药在枪膛内
+            // 약실에 탄약이 있는지 확인한다
             if (hasAmmoInBarrel) {
                 return;
             }
-            // 检查弹匣内是否有子弹
+            // 탄창에 탄이 있는지 확인한다
             if (noAmmo) {
                 return;
             }
-            // 锁上状态锁
+            // 상태 잠금을 건다
             data.lockState(IGunOperator::getSynIsBolting);
             data.isBolting = true;
-            // 发包通知服务器
+            // 패킷을 보내 서버에 알린다
             ClientPlayNetworking.send(new ClientMessagePlayerBoltGun());
-            // 播放动画和音效
+            // 애니메이션과 효과음 재생
             AnimationStateMachine<?> animationStateMachine = display.getAnimationStateMachine();
             if (animationStateMachine != null) {
                 SoundPlayManager.playBoltSound(player, display);
@@ -86,7 +86,7 @@ public class LocalPlayerBolt {
         }
         bolt();
         if (data.isBolting) {
-            // 对于客户端来说，膛内弹药被填入的状态同步到客户端的瞬间，bolt 过程才算完全结束
+            // 클라이언트에서는 약실에 탄약이 채워진 상태가 동기화되는 순간 bolt 과정이 완전히 끝난다
             if (iGun.hasBulletInBarrel(mainHandItem)) {
                 data.isBolting = false;
             }

@@ -9,7 +9,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 /**
- * 延迟执行的工具类
+ * 지연 실행 도구 클래스
  */
 @Environment(EnvType.CLIENT)
 public final class DelayedTask {

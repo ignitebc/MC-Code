@@ -5,7 +5,7 @@ import net.minecraft.world.phys.Vec3;
 import java.lang.annotation.*;
 
 /**
- * 文档性质的注解。被注解的枪械属性生效时的值可以被逻辑脚本修改。
+ * 문서용 어노테이션. 이 어노테이션이 붙은 총기 속성은 적용 시점의 값을 로직 스크립트가 바꿀 수 있다.
  *
  * @author ChloePrime
  * @see com.tacz.guns.entity.EntityKineticBullet
@@ -18,7 +18,7 @@ import java.lang.annotation.*;
 @Repeatable(Holder.class)
 public @interface ValueModifiableAtRuntime {
     /**
-     * 运行时值的类型
+     * 실행 시 값의 종류
      */
     Class<?> value();
 }

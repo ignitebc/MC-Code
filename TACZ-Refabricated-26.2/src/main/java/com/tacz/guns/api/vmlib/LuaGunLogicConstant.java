@@ -12,11 +12,11 @@ public class LuaGunLogicConstant implements LuaLibrary {
     private final Map<String, Object> constantMap = Maps.newHashMap();
 
     public LuaGunLogicConstant() {
-        // 映射 ReloadState.StateType 枚举
+        // ReloadState.StateType 열거형 대응
         for (ReloadState.StateType stateType : ReloadState.StateType.values()) {
             constantMap.put(stateType.name(), stateType.ordinal());
         }
-        // 映射 FireMode 枚举
+        // FireMode 열거형 대응
         for (var fireMode : FireMode.values()) {
             constantMap.put(fireMode.name(), fireMode.ordinal());
         }

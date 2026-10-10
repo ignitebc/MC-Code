@@ -9,8 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 
 /**
- * 参数化的属性缓存。将每个乘区的结果保存在缓存中，以便快速计算。
- * 适用于一些初始值无法确定直接确定的属性，如后坐力
+ * 매개변수가 있는 속성 캐시. 곱셈 구간마다 결과를 캐시에 저장해 빠르게 계산한다.
+ * 반동처럼 초깃값을 바로 정할 수 없는 속성에 쓴다
  */
 public class ParameterizedCache<T> {
     private final T defaultValue;

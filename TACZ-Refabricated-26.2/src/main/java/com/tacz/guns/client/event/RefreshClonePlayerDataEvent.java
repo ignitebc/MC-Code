@@ -12,45 +12,45 @@ import java.lang.ref.WeakReference;
 import java.util.function.BooleanSupplier;
 
 /**
- * 当玩家跨越维度时，客户端需要刷新一次玩家的配件属性缓存
+ * 플레이어가 차원을 넘으면 클라이언트가 플레이어의 부착물 속성 캐시를 한 번 새로 고쳐야 한다
  */
 @Environment(EnvType.CLIENT)
 public class RefreshClonePlayerDataEvent {
     /**
-     * 上一次见到的本地玩家实例，用于检测「玩家对象被替换」。
+     * 마지막으로 본 로컬 플레이어 인스턴스. "플레이어 객체가 바뀌었는지" 감지하는 데 쓴다.
      *
-     * <p>用弱引用，避免在切服/退出后仍attach住旧的 LocalPlayer。</p>
+     * <p>서버를 옮기거나 나간 뒤에도 예전 LocalPlayer를 붙잡지 않도록 약한 참조를 쓴다.</p>
      */
     private static WeakReference<LocalPlayer> lastPlayer = new WeakReference<>(null);
 
     /**
-     * 延迟执行是通过这个方法执行的。
+     * 지연 실행은 이 메서드로 처리한다.
      *
-     * <p>【第 42 轮】顺带承担「重生/换维度后刷新配件缓存」的触发职责，
-     * 取代已失效的 {@code ClientPacketListenerMixin}。</p>
+     * <p>[42차] 효력을 잃은 {@code ClientPacketListenerMixin}을 대신해
+     * "부활·차원 이동 뒤 부착물 캐시 새로 고침"을 시작하는 역할도 함께 맡는다.</p>
      *
-     * <h2>为什么不再用 mixin</h2>
-     * 原 {@code ClientPacketListenerMixin} 注入
-     * {@code handleRespawn} 里的 {@code ClientLevel#addPlayer} 调用点，
-     * 但 26.2 <b>已无 {@code ClientLevel#addPlayer} 这个方法</b>
-     * （对 {@code ClientLevel} 逐方法核对无此项，
-     * {@code handleRespawn} 完整反汇编里也不存在该调用）。
-     * 也就是说 {@code ClientPlayerNetworkEvent.CLONE} 事件<b>永远发不出来</b>，
-     * 重生后的配件属性缓存刷新一直是失效的。
+     * <h2>더 이상 mixin을 쓰지 않는 이유</h2>
+     * 예전 {@code ClientPacketListenerMixin}은
+     * {@code handleRespawn} 안의 {@code ClientLevel#addPlayer} 호출 지점에 주입했지만,
+     * 26.2에는 <b>{@code ClientLevel#addPlayer} 메서드가 없다</b>
+     * ({@code ClientLevel}을 메서드별로 대조해도 없고,
+     * {@code handleRespawn} 전체 역어셈블에도 그 호출이 없다).
+     * 즉 {@code ClientPlayerNetworkEvent.CLONE} 이벤트가 <b>절대 발생하지 않아</b>
+     * 부활 뒤 부착물 속성 캐시 새로 고침이 계속 동작하지 않았다.
      *
-     * <h2>为什么改成轮询是合适的</h2>
-     * 这个功能本质只是「玩家实例被换掉之后，延迟 10 tick 调一次
-     * {@code initialData()}」—— 它<b>不需要精确的时机</b>，
-     * 原实现自己就要靠 {@link DelayedTask} 再延迟 10 tick，
-     * 因为事件触发时背包尚未同步。
+     * <h2>폴링으로 바꾼 것이 적절한 이유</h2>
+     * 이 기능의 본질은 "플레이어 인스턴스가 바뀐 뒤 10틱 늦게
+     * {@code initialData()}를 한 번 호출"하는 것뿐이다 — <b>정확한 시점이 필요 없다</b>.
+     * 원래 구현도 이벤트 발생 시점에는 인벤토리가 아직 동기화되지 않아
+     * {@link DelayedTask}로 10틱을 더 늦춰야 했다.
      *
-     * <p>而 {@code Minecraft#player} 字段在重生/换维度时会被整体替换成新实例，
-     * 因此在这里比对引用即可捕获同一时机，且：</p>
+     * <p>{@code Minecraft#player} 필드는 부활·차원 이동 때 새 인스턴스로 통째로 바뀌므로,
+     * 여기서 참조를 비교하면 같은 시점을 잡을 수 있고 다음과 같은 장점이 있다:</p>
      * <ul>
-     *   <li>本方法<b>本来就已注册</b>为 {@code START_CLIENT_TICK} 回调（驱动 DelayedTask），
-     *       不新增任何 tick 开销；</li>
-     *   <li>每 tick 只做一次引用比较（{@code !=}），代价可忽略；</li>
-     *   <li>零 mixin —— 不依赖任何会随版本改名的内部方法。</li>
+     *   <li>이 메서드는 <b>원래부터</b> {@code START_CLIENT_TICK} 콜백으로 등록되어 있어(DelayedTask 구동)
+     *       틱 비용이 늘지 않는다.</li>
+     *   <li>틱마다 참조 비교({@code !=}) 한 번만 하므로 비용이 거의 없다.</li>
+     *   <li>mixin이 없다 — 버전마다 이름이 바뀌는 내부 메서드에 기대지 않는다.</li>
      * </ul>
      */
     public static void onClientTick(Minecraft client) {
@@ -75,12 +75,12 @@ public class RefreshClonePlayerDataEvent {
         }
         lastPlayer = new WeakReference<>(current);
         if (current == null || previous == null) {
-            // null -> 玩家：首次进入世界，PlayerEnterWorld 已负责初始化，这里不重复。
-            // 玩家 -> null：退出世界，无需处理。
+            // null -> 플레이어: 처음 월드에 들어옴. PlayerEnterWorld가 이미 초기화하므로 여기서는 반복하지 않는다.
+            // 플레이어 -> null: 월드에서 나감. 처리할 필요 없다.
             return;
         }
-        // 走到这里说明玩家实例被替换了（重生 / 跨维度），与原 CLONE 事件语义一致。
-        // 同样延迟 10 tick：此刻背包还没同步完，立即读枪械数据会拿不到配件。
+        // 여기까지 왔다면 플레이어 인스턴스가 바뀐 것이다(부활 / 차원 이동). 예전 CLONE 이벤트와 의미가 같다.
+        // 똑같이 10틱 늦춘다: 지금은 인벤토리 동기화가 끝나지 않아 바로 총기 데이터를 읽으면 부착물을 얻지 못한다.
         DelayedTask.add(() -> IGunOperator.fromLivingEntity(current).initialData(), 10);
     }
 }

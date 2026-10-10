@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 /**
- * 子弹击中方块时触发的事件，目前仅在服务端触发
+ * 탄환이 블록에 맞을 때 발생하는 이벤트. 지금은 서버에서만 발생한다
  */
 public class AmmoHitBlockEvent extends BaseEvent implements ICancellableEvent {
     private final Level level;

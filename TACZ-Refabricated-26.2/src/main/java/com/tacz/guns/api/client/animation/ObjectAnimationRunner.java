@@ -12,30 +12,30 @@ public class ObjectAnimationRunner {
     private final ObjectAnimation animation;
     protected long transitionTimeNs;
     /**
-     * 用于动画过渡，储存的是过渡起点动画的值，与下方transitionFromChannels一一对应
+     * 애니메이션 전환용. 전환 시작 애니메이션의 값을 담으며, 아래 transitionFromChannels와 하나씩 대응한다
      */
     protected ArrayList<float[]> valueFrom;
     /**
-     * 用于动画过渡，储存的是过渡起点需要恢复原位的channel的值，与下方recoverChannels一一对应
+     * 애니메이션 전환용. 전환 시작점에서 원위치로 돌려야 하는 channel의 값을 담으며, 아래 recoverChannels와 하나씩 대응한다
      */
     protected ArrayList<float[]> valueRecover;
     /**
-     * 用于动画过渡，储存的是过渡起点动画的channel
+     * 애니메이션 전환용. 전환 시작 애니메이션의 channel을 담는다
      */
     protected ArrayList<ObjectAnimationChannel> transitionFromChannels;
     /**
-     * 用于动画过渡，储存的是过渡终点动画的channel，顺序与上面对应
+     * 애니메이션 전환용. 전환 목표 애니메이션의 channel을 담으며, 순서는 위와 대응한다
      */
     protected ArrayList<ObjectAnimationChannel> transitionToChannels;
     /**
-     * 用于动画过渡，储存的是过渡起点动画需要恢复到原位的channel
+     * 애니메이션 전환용. 전환 시작 애니메이션에서 원위치로 돌려야 하는 channel을 담는다
      */
     protected ArrayList<ObjectAnimationChannel> recoverChannels;
     private boolean running = false;
     private boolean pausing = false;
     private long lastUpdateNs;
     /**
-     * 当前动画播放进度
+     * 현재 애니메이션 재생 진행도
      */
     private long progressNs;
     private boolean isTransitioning = false;
@@ -106,7 +106,7 @@ public class ObjectAnimationRunner {
             for (Map.Entry<String, List<ObjectAnimationChannel>> entry : animation.getChannels().entrySet()) {
                 List<ObjectAnimationChannel> toChannels = transitionTo.animation.getChannels().get(entry.getKey());
                 if (toChannels != null) {
-                    // 如果过渡终点的动画中同一个node 包含相同类型的动画数据(位移、旋转、缩放)，那么加入到 list 中用于更新。
+                    // 전환 목표 애니메이션의 같은 node에 같은 종류(이동·회전·크기)의 데이터가 있으면 갱신용 목록에 넣는다.
                     for (ObjectAnimationChannel channel : entry.getValue()) {
                         Optional<ObjectAnimationChannel> toChannel =
                                 toChannels.stream().filter(c -> c.type.equals(channel.type)).findAny();
@@ -118,7 +118,7 @@ public class ObjectAnimationRunner {
                             valueFrom.add(value);
                             transitionFromChannels.add(channel);
                             transitionToChannels.add(toChannel.get());
-                            // 取消过渡目标的channel对模型的更新，统一在起点channel进行更新。
+                            // 전환 목표 channel이 모델을 갱신하지 않게 하고, 시작점 channel에서 한꺼번에 갱신한다.
                             toChannel.get().transitioning = true;
                         } else {
                             valueRecover.add(value);
@@ -126,7 +126,7 @@ public class ObjectAnimationRunner {
                         }
                     }
                 } else {
-                    // 如果过渡终点的动画中 同一个 node 不包含动画数据，那么将过渡到原位。
+                    // 전환 목표 애니메이션의 같은 node에 데이터가 없으면 원위치로 전환한다.
                     for (ObjectAnimationChannel channel : entry.getValue()) {
                         float[] value = channel.getResult(progressNs / 1e9f);
                         if (channel.type == ObjectAnimationChannel.ChannelType.ROTATION && value.length == 3) {
@@ -143,7 +143,7 @@ public class ObjectAnimationRunner {
             ArrayList<ObjectAnimationChannel> newTransitionFromChannels = new ArrayList<>();
             ArrayList<ObjectAnimationChannel> newTransitionToChannels = new ArrayList<>();
             ArrayList<ObjectAnimationChannel> newRecoverChannels = new ArrayList<>();
-            // 如果正在过渡，则需要把当前过渡计算出的插值保存，作为下次过渡的起点
+            // 전환 중이면 지금 계산한 보간값을 저장해 다음 전환의 시작점으로 쓴다
             for (int i = 0; i < transitionFromChannels.size(); i++) {
                 assert this.transitionTo != null;
                 ObjectAnimationChannel fromChannel = transitionFromChannels.get(i);
@@ -161,7 +161,7 @@ public class ObjectAnimationRunner {
                         to = MathUtil.toQuaternion(to[0], to[1], to[2]);
                     }
                     slerp(from, to, progress, result);
-                } else { // Scale
+                } else { // 크기
                     result = new float[3];
                     lerp(from, to, progress, result);
                 }
@@ -174,7 +174,7 @@ public class ObjectAnimationRunner {
                         newValueFrom.add(result);
                         newTransitionFromChannels.add(fromChannel);
                         newTransitionToChannels.add(newToChannel.get());
-                        // 取消过渡目标的channel对模型的更新，统一在起点channel进行更新。
+                        // 전환 목표 channel이 모델을 갱신하지 않게 하고, 시작점 channel에서 한꺼번에 갱신한다.
                         newToChannel.get().transitioning = true;
                     } else {
                         newValueRecover.add(result);
@@ -302,8 +302,8 @@ public class ObjectAnimationRunner {
     }
 
     /**
-     * 动画过渡的时候，计算出的插值将通过当前Runner中包含的ObjectAnimation中的channel对模型进行update
-     * 这意味着需要暂时取消transitionTo中对应channel的update功能(将变量available设置为false)
+     * 애니메이션 전환 중에는 계산한 보간값을 현재 Runner의 ObjectAnimation에 든 channel로 모델에 적용한다.
+     * 그래서 transitionTo의 해당 channel 갱신 기능을 잠시 꺼야 한다(available 변수를 false로 설정).
      */
     private void updateTransition(float progress, boolean blend) {
         assert transitionTo != null;
@@ -324,7 +324,7 @@ public class ObjectAnimationRunner {
                     to = MathUtil.toQuaternion(to[0], to[1], to[2]);
                 }
                 slerp(from, to, progress, result);
-            } else { // Scale
+            } else { // 크기
                 result = new float[3];
                 lerp(from, to, progress, result);
             }
@@ -333,7 +333,7 @@ public class ObjectAnimationRunner {
             }
 
         }
-        if (animation.playType != ObjectAnimation.PlayType.PLAY_ONCE_STOP) { // 如果是 PLAY_ONCE_STOP，动画结束后不应该 update 其本身的关键帧，因此不进行恢复过渡
+        if (animation.playType != ObjectAnimation.PlayType.PLAY_ONCE_STOP) { // PLAY_ONCE_STOP이면 애니메이션이 끝난 뒤 자기 키프레임을 갱신하면 안 되므로 복귀 전환을 하지 않는다
             for (int i = 0; i < recoverChannels.size(); i++) {
                 ObjectAnimationChannel channel = recoverChannels.get(i);
                 float[] from = valueRecover.get(i);

@@ -98,11 +98,11 @@ public abstract class LivingEntityMixin extends Entity implements IGunOperator, 
     @Override
     @Unique
     public void initialData() {
-        // 初始化 ShooterDataHolder
+        // ShooterDataHolder 초기화
         this.tacz$data.initialData();
-        // 刷新当前武器
+        // 현재 무기 새로 고치기
         this.tacz$data.currentGunItem = () -> tacz$shooter.getMainHandItem();
-        // 刷新配件属性缓存
+        // 부착물 속성 캐시 새로 고치기
         AttachmentPropertyManager.postChangeEvent(tacz$shooter, tacz$shooter.getMainHandItem());
     }
 
@@ -221,9 +221,9 @@ public abstract class LivingEntityMixin extends Entity implements IGunOperator, 
 
     @Inject(method = "tick", at = @At(value = "RETURN"))
     private void onTickServerSide(CallbackInfo ci) {
-        // 仅在服务端调用
+        // 서버에서만 호출한다
         if (!level().isClientSide()) {
-            // 完成各种 tick 任务
+            // 각종 tick 작업 완료
             ReloadState reloadState = this.tacz$reload.tickReloadState();
             this.tacz$aim.tickAimingProgress();
             this.tacz$aim.tickSprint();
@@ -233,7 +233,7 @@ public abstract class LivingEntityMixin extends Entity implements IGunOperator, 
             this.tacz$speed.updateSpeedModifier();
             this.tacz$heat.tickHeat();
             tacz$shooter.setSprinting(getProcessedSprintStatus(tacz$shooter.isSprinting()));
-            // 从服务端同步数据
+            // 서버에서 데이터 동기화
             ModSyncedEntityData.SHOOT_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$shoot.getShootCoolDown());
             ModSyncedEntityData.MELEE_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$melee.getMeleeCoolDown());
             ModSyncedEntityData.DRAW_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$draw.getDrawCoolDown());

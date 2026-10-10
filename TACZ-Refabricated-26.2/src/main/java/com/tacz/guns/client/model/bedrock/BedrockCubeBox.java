@@ -74,15 +74,15 @@ public class BedrockCubeBox implements BedrockCube {
     }
 
     /**
-     * 只读访问六个面。
+     * 여섯 면에 읽기 전용으로 접근한다.
      *
-     * <p>供瞄具掩码（{@code ScopeMaskRenderer}）复用同一份几何：
-     * 掩码要把目镜写进离屏纹理，走的是<b>自建顶点缓冲</b>而非 VertexConsumer，
-     * 因此不能用 {@link #compile}，但必须使用<b>完全相同</b>的顶点数据，
-     * 否则掩码会与画面错位。</p>
+     * <p>조준경 마스크({@code ScopeMaskRenderer})가 같은 형상을 다시 쓰게 한다:
+     * 마스크는 접안렌즈를 화면 밖 텍스처에 쓰며 VertexConsumer가 아니라 <b>직접 만든 정점 버퍼</b>를 써서
+     * {@link #compile}을 쓸 수 없지만, <b>완전히 같은</b> 정점 데이터를 써야 한다.
+     * 아니면 마스크와 화면이 어긋난다.</p>
      *
-     * <p>返回内部数组本身而不是拷贝：这是渲染热路径，每帧都会走；
-     * 调用方只读不改。</p>
+     * <p>복사본이 아니라 내부 배열 자체를 돌려준다: 매 프레임 지나는 렌더링 핵심 경로이고,
+     * 호출하는 쪽은 읽기만 하고 고치지 않는다.</p>
      */
     @Override
     public BedrockPolygon[] getPolygons() {
@@ -105,12 +105,12 @@ public class BedrockCubeBox implements BedrockCube {
                 float x = vertex.pos.x() / 16.0F;
                 float y = vertex.pos.y() / 16.0F;
                 float z = vertex.pos.z() / 16.0F;
-                // 26.2 迁移: 旧 API consumer.vertex(x,y,z,r,g,b,a,u,v,overlay,light,nx,ny,nz) 已移除
-                // 新 API 使用链式 addVertex + setColor + setUv + setOverlay + setLight + setNormal
-                // 保留矩阵变换以兼容旧逻辑，或直接使用 pose 传递
+                // 26.2 이전: 예전 API consumer.vertex(x,y,z,r,g,b,a,u,v,overlay,light,nx,ny,nz)는 제거되었다
+                // 새 API는 addVertex + setColor + setUv + setOverlay + setLight + setNormal을 이어서 호출한다
+                // 예전 로직과 호환하도록 행렬 변환을 유지하거나 pose를 그대로 넘긴다
                 Vector4f vector4f = new Vector4f(x, y, z, 1.0F);
                 vector4f.mul(matrix4f);
-                // 新 API 示例 (需根据 26.2 实际 VertexConsumer 确认):
+                // 새 API 예(26.2의 실제 VertexConsumer에 맞춰 확인 필요):
                 consumer.addVertex(vector4f.x(), vector4f.y(), vector4f.z())
                         .setColor(red, green, blue, alpha)
                         .setUv(vertex.u, vertex.v)

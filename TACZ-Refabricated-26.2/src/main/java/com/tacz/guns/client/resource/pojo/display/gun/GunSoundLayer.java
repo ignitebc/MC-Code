@@ -6,10 +6,10 @@ import net.minecraft.resources.Identifier;
 import javax.annotation.Nullable;
 
 /**
- * One additional layer mixed with a named gun sound.
+ * 이름 있는 총소리에 섞는 추가 층 하나.
  *
- * <p>The layer points at an existing TaCZ OGG resource. Volume and pitch are
- * relative multipliers applied on top of the base gun sound settings.
+ * <p>층은 기존 TaCZ OGG 자원을 가리킨다. 음량과 음높이는
+ * 기본 총소리 설정 위에 곱하는 상대 배율이다.
  */
 public class GunSoundLayer {
     @Nullable

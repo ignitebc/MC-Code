@@ -2,11 +2,11 @@ package com.tacz.guns.client.resource.pojo.model;
 
 public enum BedrockVersion {
     /**
-     * 旧版本基岩版模型
+     * 예전 버전 베드락 모델
      */
     LEGACY("1.10.0"),
     /**
-     * 新版本基岩版模型，往后的 1.14.0，1.16.0 1.21.0 通通用此版本读取
+     * 새 버전 베드락 모델. 이후의 1.14.0, 1.16.0, 1.21.0은 모두 이 버전으로 읽는다
      */
     NEW("1.12.0");
 

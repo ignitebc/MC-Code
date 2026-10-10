@@ -36,31 +36,31 @@ public class LivingEntityReload {
         }
         Identifier gunId = gunItem.getGunId(currentGunItem);
         TimelessAPI.getCommonGunIndex(gunId).ifPresent(gunIndex -> {
-            // 检查是否为背包直读
+            // 인벤토리 급탄인지 확인한다
             if (gunItem.useInventoryAmmo(currentGunItem)) {
                 return;
             }
-            // 检查换弹是否还未完成
+            // 재장전이 아직 끝나지 않았는지 확인한다
             if (data.reloadStateType.isReloading()) {
                 return;
             }
-            // 检查是否正在开火冷却
+            // 사격 대기 시간 중인지 확인한다
             if (shoot.getShootCoolDown() != 0) {
                 return;
             }
-            // 检查是否在切枪
+            // 총을 바꾸는 중인지 확인한다
             if (draw.getDrawCoolDown() != 0) {
                 return;
             }
-            // 检查是否在拉栓
+            // 노리쇠를 당기는 중인지 확인한다
             if (data.isBolting) {
                 return;
             }
-            // 检查弹药
+            // 탄약 확인
             if (IGunOperator.fromLivingEntity(shooter).needCheckAmmo() && !gunItem.canReload(shooter, currentGunItem)) {
                 return;
             }
-            // 触发装弹事件
+            // 장전 이벤트 발생
             GunReloadEvent gunReloadEvent = new GunReloadEvent(shooter, currentGunItem, LogicalSide.SERVER);
             GunReloadEvent.CALLBACK.invoker().post(gunReloadEvent);
             if (gunReloadEvent.isCanceled()) {
@@ -70,14 +70,14 @@ public class LivingEntityReload {
             Bolt boltType = gunIndex.getGunData().getBolt();
             int ammoCount = gunItem.getCurrentAmmoCount(currentGunItem) + (gunItem.hasBulletInBarrel(currentGunItem) && boltType != Bolt.OPEN_BOLT ? 1 : 0);
             if (ammoCount <= 0) {
-                // 初始化空仓换弹的 tick 的状态
+                // 빈 탄창 재장전 tick 상태 초기화
                 data.reloadStateType = ReloadState.StateType.EMPTY_RELOAD_FEEDING;
             } else {
-                // 初始化战术换弹的 tick 的状态
+                // 전술 재장전 tick 상태 초기화
                 data.reloadStateType = ReloadState.StateType.TACTICAL_RELOAD_FEEDING;
             }
             data.reloadTimestamp = System.currentTimeMillis();
-            // 调用枪械逻辑
+            // 총기 로직 호출
             if (!gunItem.startReload(data, currentGunItem, shooter)) {
                 data.reloadStateType = ReloadState.StateType.NOT_RELOADING;
                 data.reloadTimestamp = -1;
@@ -93,7 +93,7 @@ public class LivingEntityReload {
         if (!(currentGunItem.getItem() instanceof AbstractGunItem gunItem)) {
             return;
         }
-        // 检查是否在换弹
+        // 재장전 중인지 확인한다
         if (!data.reloadStateType.isReloading()) {
             return;
         }
@@ -102,18 +102,18 @@ public class LivingEntityReload {
 
     public ReloadState tickReloadState() {
         ReloadState result = new ReloadState();
-        // 如果没有在换弹，直接返回
+        // 재장전 중이 아니면 바로 돌아간다
         if (data.reloadTimestamp == -1) {
             return result;
         }
-        // 调用枪械逻辑
+        // 총기 로직 호출
         if (data.currentGunItem != null) {
             ItemStack currentGunItem = data.currentGunItem.get();
             if (currentGunItem != null && currentGunItem.getItem() instanceof AbstractGunItem abstractGunItem) {
                 result = abstractGunItem.tickReload(data, currentGunItem, shooter);
             }
         }
-        // 将 tick 的结果保存到 data holder
+        // tick 결과를 data holder에 저장한다
         data.reloadStateType = result.getStateType();
         if (!result.getStateType().isReloading()) {
             data.reloadTimestamp = -1;

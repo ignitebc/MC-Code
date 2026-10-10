@@ -21,48 +21,48 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
- * 渲染"背在身上"的枪：副手枪 + 快捷栏里未手持的枪。
+ * "몸에 멘" 총을 그린다: 보조 손 총 + 손에 들지 않은 단축바의 총.
  *
- * <p><b>26.2 迁移说明（对齐反编译源）</b></p>
+ * <p><b>26.2 이전 설명(디컴파일 소스와 맞춤)</b></p>
  *
- * <p>1.21.1 的实现走 {@code ItemRenderer#renderStatic(stack, ctx, light, overlay, poseStack,
- * MultiBufferSource, level, seed)}。26.2 已经没有该方法：实体层渲染改为"先 extract 出
- * {@link ItemStackRenderState}，再 submit 到 {@link SubmitNodeCollector}"的两段式。</p>
+ * <p>1.21.1 구현은 {@code ItemRenderer#renderStatic(stack, ctx, light, overlay, poseStack,
+ * MultiBufferSource, level, seed)}를 썼다. 26.2에는 그 메서드가 없다: 엔티티 층 렌더링은 "먼저
+ * {@link ItemStackRenderState}를 extract하고, 그다음 {@link SubmitNodeCollector}에 submit하는" 두 단계 방식이 되었다.</p>
  *
- * <p>等价链路（均由 javap / 反编译确认）：</p>
+ * <p>같은 효과의 경로(모두 javap / 디컴파일로 확인):</p>
  * <ul>
  *   <li>{@code Minecraft#getItemModelResolver()} → {@link ItemModelResolver}</li>
  *   <li>{@code ItemModelResolver#updateForTopItem(ItemStackRenderState, ItemStack,
- *       ItemDisplayContext, Level, ItemOwner, int)} —— 填充 render state；
- *       它内部会 {@code output.clear()} 并写入 {@code displayContext}</li>
+ *       ItemDisplayContext, Level, ItemOwner, int)} — render state를 채운다.
+ *       안에서 {@code output.clear()}를 하고 {@code displayContext}를 쓴다</li>
  *   <li>{@code ItemStackRenderState#submit(PoseStack, SubmitNodeCollector, int, int, int)}
- *       —— 与 vanilla {@code ItemInHandLayer#submitArmWithItem} 结尾调用的是同一个方法</li>
+ *       — 바닐라 {@code ItemInHandLayer#submitArmWithItem} 끝에서 부르는 것과 같은 메서드</li>
  * </ul>
  *
- * <p>这里刻意<b>不</b>使用 {@code updateForLiving}：后者的 seed 是
- * {@code entity.getId() + displayContext.ordinal()}，同一实体上的多把枪（副手 + 多个快捷栏槽位）
- * 会算出同一个 seed。改用 {@code updateForTopItem} 并把槽位编号混入 seed，保证每把枪独立。</p>
+ * <p>여기서는 일부러 {@code updateForLiving}을 <b>쓰지 않는다</b>: 그쪽의 seed는
+ * {@code entity.getId() + displayContext.ordinal()}이라 한 엔티티의 총 여러 자루(보조 손 + 여러 단축바 칸)가
+ * 같은 seed를 얻는다. {@code updateForTopItem}을 쓰고 칸 번호를 seed에 섞어 총마다 독립되게 한다.</p>
  *
- * <p>坐标变换与 1.21.1 逐行一致（translate → scale(-x,-y,z) → 欧拉转四元数），
- * 只替换渲染提交方式，不改变几何语义。</p>
+ * <p>좌표 변환은 1.21.1과 줄마다 같고(translate → scale(-x,-y,z) → 오일러 각을 사원수로),
+ * 렌더링 제출 방식만 바꾸며 형상 의미는 바꾸지 않는다.</p>
  */
 public class HumanoidOffhandRender {
-    /** 副手 seed 的偏移量，避开 0..8 的快捷栏槽位编号。 */
+    /** 보조 손 seed 오프셋. 0..8 단축바 칸 번호를 피한다. */
     private static final int OFFHAND_SEED_OFFSET = 100;
 
     /**
-     * 由 {@code ItemInHandLayerMixin} 在 {@code ItemInHandLayer#submit} 的 TAIL 调用。
+     * {@code ItemInHandLayerMixin}이 {@code ItemInHandLayer#submit}의 TAIL에서 호출한다.
      *
-     * <p>26.2 的实体层拿到的是 render state 而不是实体本身，因此需要用
-     * {@code state.id} 反查实体。GUI/展示柜等场景可能没有真实实体，此时直接跳过。</p>
+     * <p>26.2의 엔티티 층은 엔티티 자체가 아니라 render state를 받으므로
+     * {@code state.id}로 엔티티를 다시 찾아야 한다. GUI/진열대 등에서는 실제 엔티티가 없을 수 있으며, 이때는 바로 건너뛴다.</p>
      */
     public static void renderGun(ArmedEntityRenderState state, PoseStack poseStack, SubmitNodeCollector collector, int packedLight) {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null) {
             return;
         }
-        // ArmedEntityRenderState 自身没有 id 字段（javap 已确认），id 定义在 AvatarRenderState 上。
-        // 这里通过 render state 的实际类型取回实体。
+        // ArmedEntityRenderState 자체에는 id 필드가 없고(javap 확인), id는 AvatarRenderState에 정의되어 있다.
+        // 여기서는 render state의 실제 타입으로 엔티티를 되찾는다.
         LivingEntity entity = resolveEntity(state);
         if (entity == null) {
             return;
@@ -106,7 +106,7 @@ public class HumanoidOffhandRender {
             return;
         }
         Inventory inventory = player.getInventory();
-        // 26.2: Inventory#selected 字段已改为 getSelectedSlot() 访问器。
+        // 26.2: Inventory#selected 필드는 getSelectedSlot() 접근자로 바뀌었다.
         int selected = inventory.getSelectedSlot();
         for (int i = 0; i < 9; i++) {
             if (i == selected) {
@@ -137,7 +137,7 @@ public class HumanoidOffhandRender {
     }
 
     /**
-     * 变换部分与 1.21.1 逐行等价；提交部分改为 26.2 的 extract → submit 两段式。
+     * 변환 부분은 1.21.1과 줄마다 같고, 제출 부분은 26.2의 extract → submit 두 단계로 바꿨다.
      */
     private static void renderGunItem(LivingEntity entity, PoseStack poseStack, SubmitNodeCollector collector, int packedLight,
                                       ItemStack itemStack, LayerGunShow gunShow, int seedSalt) {
@@ -158,8 +158,8 @@ public class HumanoidOffhandRender {
         MathUtil.toQuaternion((float) Math.toRadians(rotate.x), (float) Math.toRadians(rotate.y), (float) Math.toRadians(rotate.z), rotation);
         poseStack.mulPose(rotation);
 
-        // 26.2 等价于旧的 ItemRenderer#renderStatic(..., ItemDisplayContext.FIXED, ...)。
-        // seed 混入 seedSalt，避免同一实体上多把枪共用 seed。
+        // 26.2에서 예전 ItemRenderer#renderStatic(..., ItemDisplayContext.FIXED, ...)에 해당한다.
+        // seed에 seedSalt를 섞어 한 엔티티의 총 여러 자루가 seed를 함께 쓰지 않게 한다.
         ItemStackRenderState renderState = new ItemStackRenderState();
         resolver.updateForTopItem(renderState, itemStack, ItemDisplayContext.FIXED, entity.level(), entity,
                 entity.getId() + seedSalt * 31);

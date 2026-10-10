@@ -2,37 +2,37 @@ package com.tacz.guns.client.resource.pojo.animation.gltf;
 
 public class AccessorSparseValues {
     /**
-     * The index of the bufferView with sparse values. The referenced buffer
-     * view **MUST NOT** have its `target` or `byteStride` properties
-     * defined. (required)
+     * 희소 값을 담은 bufferView의 인덱스. 참조하는 buffer
+     * view에는 `target`이나 `byteStride` 속성을 정의하면
+     * **안 된다**. (필수)
      */
     private Integer bufferView;
     /**
-     * The offset relative to the start of the bufferView in bytes.
-     * (optional)<br>
-     * Default: 0<br>
-     * Minimum: 0 (inclusive)
+     * bufferView 시작 위치 기준 바이트 오프셋.
+     * (선택)<br>
+     * 기본값: 0<br>
+     * 최솟값: 0 (포함)
      */
     private Integer byteOffset;
 
     /**
-     * The index of the bufferView with sparse values. The referenced buffer
-     * view **MUST NOT** have its `target` or `byteStride` properties
-     * defined. (required)
+     * 희소 값을 담은 bufferView의 인덱스. 참조하는 buffer
+     * view에는 `target`이나 `byteStride` 속성을 정의하면
+     * **안 된다**. (필수)
      *
-     * @return The bufferView
+     * @return bufferView
      */
     public Integer getBufferView() {
         return this.bufferView;
     }
 
     /**
-     * The index of the bufferView with sparse values. The referenced buffer
-     * view **MUST NOT** have its `target` or `byteStride` properties
-     * defined. (required)
+     * 희소 값을 담은 bufferView의 인덱스. 참조하는 buffer
+     * view에는 `target`이나 `byteStride` 속성을 정의하면
+     * **안 된다**. (필수)
      *
-     * @param bufferView The bufferView to set
-     * @throws NullPointerException If the given value is <code>null</code>
+     * @param bufferView 설정할 bufferView
+     * @throws NullPointerException 주어진 값이 <code>null</code>일 때
      */
     public void setBufferView(Integer bufferView) {
         if (bufferView == null) {
@@ -42,26 +42,25 @@ public class AccessorSparseValues {
     }
 
     /**
-     * The offset relative to the start of the bufferView in bytes.
-     * (optional)<br>
-     * Default: 0<br>
-     * Minimum: 0 (inclusive)
+     * bufferView 시작 위치 기준 바이트 오프셋.
+     * (선택)<br>
+     * 기본값: 0<br>
+     * 최솟값: 0 (포함)
      *
-     * @return The byteOffset
+     * @return byteOffset
      */
     public Integer getByteOffset() {
         return this.byteOffset;
     }
 
     /**
-     * The offset relative to the start of the bufferView in bytes.
-     * (optional)<br>
-     * Default: 0<br>
-     * Minimum: 0 (inclusive)
+     * bufferView 시작 위치 기준 바이트 오프셋.
+     * (선택)<br>
+     * 기본값: 0<br>
+     * 최솟값: 0 (포함)
      *
-     * @param byteOffset The byteOffset to set
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param byteOffset 설정할 byteOffset
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setByteOffset(Integer byteOffset) {
         if (byteOffset == null) {
@@ -75,9 +74,9 @@ public class AccessorSparseValues {
     }
 
     /**
-     * Returns the default value of the byteOffset<br>
+     * byteOffset의 기본값을 돌려준다<br>
      *
-     * @return The default byteOffset
+     * @return byteOffset 기본값
      * @see #getByteOffset
      */
     public Integer defaultByteOffset() {

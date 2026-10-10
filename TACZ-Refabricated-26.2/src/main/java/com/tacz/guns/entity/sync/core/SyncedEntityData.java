@@ -62,9 +62,9 @@ public class SyncedEntityData {
     }
 
     /**
-     * Registers a synced data key into the system.
+     * 동기화 데이터 키를 시스템에 등록한다.
      *
-     * @param dataKey a synced data key instance
+     * @param dataKey 동기화 데이터 키 인스턴스
      */
     public synchronized <E extends Entity, T> void registerDataKey(SyncedDataKey<E, T> dataKey) {
         Identifier keyId = dataKey.id();
@@ -75,7 +75,7 @@ public class SyncedEntityData {
         if (this.registeredDataKeys.contains(dataKey)) {
             throw new IllegalArgumentException(String.format("The synced data key %s for %s is already registered", keyId, classKey.id()));
         }
-        // Attempt to register the class key. Will ignore if already registered.
+        // 클래스 키 등록을 시도한다. 이미 등록되어 있으면 무시한다.
         this.registerClassKey(dataKey.classKey());
         this.registeredDataKeys.add(dataKey);
         this.classToKeys.computeIfAbsent(classKey, c -> new HashMap<>()).put(keyId, dataKey);
@@ -86,11 +86,11 @@ public class SyncedEntityData {
     }
 
     /**
-     * Sets the value of a synced data key to the specified player
+     * 지정한 플레이어에게 동기화 데이터 키의 값을 설정한다
      *
-     * @param entity the player to assign the value to
-     * @param key    a registered synced data key
-     * @param value  a new value that matches the synced data key type
+     * @param entity 값을 지정할 플레이어
+     * @param key    등록된 동기화 데이터 키
+     * @param value  동기화 데이터 키 타입과 맞는 새 값
      */
     public <E extends Entity, T> void set(E entity, SyncedDataKey<?, ?> key, T value) {
         if (!this.registeredDataKeys.contains(key)) {
@@ -108,11 +108,11 @@ public class SyncedEntityData {
     }
 
     /**
-     * Gets the value for the synced data key from the specified player. It is best to check that
-     * the player is alive before getting the value.
+     * 지정한 플레이어에게서 동기화 데이터 키의 값을 가져온다. 값을 가져오기 전에
+     * 플레이어가 살아 있는지 확인하는 것이 좋다.
      *
-     * @param entity the player to retrieve the data from
-     * @param key    a registered synced data key
+     * @param entity 데이터를 가져올 플레이어
+     * @param key    등록된 동기화 데이터 키
      */
     public <E extends Entity, T> T get(E entity, SyncedDataKey<E, T> key) {
         if (!this.registeredDataKeys.contains(key)) {
@@ -156,40 +156,20 @@ public class SyncedEntityData {
         if (!this.hasSyncedDataKey(entity.getClass())) {
             return null;
         }
-        // Lazy creation closes the old lifecycle hole where every caller used maybeGet(), so no
-        // provider ever existed and all set() calls silently discarded their values.
+        // 지연 생성으로 예전 수명 주기 구멍을 막는다. 예전에는 모든 호출자가 maybeGet()을 써서
+        // provider가 한 번도 생기지 않았고, set() 호출이 모두 값을 조용히 버렸다.
         return DataHolderCapabilityProvider.get(entity).getDataHolder().orElse(null);
     }
 
-//    public boolean hasSyncedDataKey(Class<? extends Entity> entityClass) {
-//        // Gets the class name capability cache for the effective side.
-//        // This is needed to avoid concurrency issue due to client and server threads;
-//        // fast util does not support concurrent maps.
-//        Object2BooleanMap<String> cache = EffectiveSide.get().isClient() ? this.clientClassNameCapabilityCache : this.serverClassNameCapabilityCache;
-//        // It's possible that the entity doesn't have a key, but it's superclass or subsequent does have a synced data key.
-//        // In order to prevent checking this every time we attach the capability, a simple one time check can be performed then cache the result.
-//        return cache.computeIfAbsent(entityClass.getName(), c -> {
-//            Class<?> targetClass = entityClass;
-//            // Should be good enough
-//            while (!targetClass.isAssignableFrom(Entity.class)) {
-//                if (this.classNameToClassKey.containsKey(targetClass.getName())) {
-//                    return true;
-//                }
-//                targetClass = targetClass.getSuperclass();
-//            }
-//            return false;
-//        });
-//    }
-
     public boolean hasSyncedDataKey(Class<? extends Entity> entityClass) {
-        /* It's possible that the entity doesn't have a key, but it's superclass or subsequent does
-         * have a synced data key. In order to prevent checking this every time we attach the
-         * capability, a simple one time check can be performed then cache the result. */
+        /* 엔티티 자체에는 키가 없지만 그 상위 클래스나 하위 클래스에 동기화 데이터 키가
+         * 있을 수 있다. capability를 붙일 때마다 이를 확인하지 않도록 한 번만
+         * 간단히 확인한 뒤 결과를 캐시한다. */
         return this.getClassNameCapabilityCache(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
                 .computeIfAbsent(entityClass.getName(), c ->
                 {
                     Class<?> targetClass = entityClass;
-                    while (!targetClass.isAssignableFrom(Entity.class)) // Should be good enough
+                    while (!targetClass.isAssignableFrom(Entity.class)) // 이 정도면 충분하다
                     {
                         if (this.classNameToClassKey.containsKey(targetClass.getName())) {
                             return true;

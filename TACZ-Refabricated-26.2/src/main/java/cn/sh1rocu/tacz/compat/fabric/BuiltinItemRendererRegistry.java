@@ -10,8 +10,8 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 /**
- * Local replacement for Fabric API's BuiltinItemRendererRegistry (removed in 26.2).
- * Provides a simple Item → DynamicItemRenderer registry.
+ * 26.2에서 제거된 Fabric API의 BuiltinItemRendererRegistry를 대신하는 로컬 구현.
+ * 단순한 Item → DynamicItemRenderer 레지스트리를 제공한다.
  */
 public class BuiltinItemRendererRegistry {
     public static final BuiltinItemRendererRegistry INSTANCE = new BuiltinItemRendererRegistry();
@@ -30,8 +30,8 @@ public class BuiltinItemRendererRegistry {
     }
 
     /**
-     * Interface for custom item renderers in 26.2.
-     * Replaces the old BlockEntityWithoutLevelRenderer + DynamicItemRenderer pattern.
+     * 26.2용 사용자 정의 아이템 렌더러 인터페이스.
+     * 예전 BlockEntityWithoutLevelRenderer + DynamicItemRenderer 방식을 대신한다.
      */
     public interface DynamicItemRenderer {
         void render(ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector collector, int light, int overlay);

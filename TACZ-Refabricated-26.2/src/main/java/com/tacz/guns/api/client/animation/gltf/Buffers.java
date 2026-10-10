@@ -30,24 +30,23 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * Utility methods related to buffers
+ * 버퍼 관련 도우미 메서드
  */
 public class Buffers {
     /**
-     * Private constructor to prevent instantiation
+     * 인스턴스를 만들지 못하게 막는 비공개 생성자
      */
     private Buffers() {
-        // Private constructor to prevent instantiation
+        // 인스턴스를 만들지 못하게 막는 비공개 생성자
     }
 
     /**
-     * Create a slice of the given byte buffer, using its current position
-     * and limit. The returned slice will have the same byte order as the
-     * given buffer. If the given buffer is <code>null</code>, then
-     * <code>null</code> will be returned.
+     * 주어진 바이트 버퍼의 현재 위치와 한계로 조각을 만든다.
+     * 돌려주는 조각은 주어진 버퍼와 바이트 순서가 같다.
+     * 주어진 버퍼가 <code>null</code>이면 <code>null</code>을 돌려준다.
      *
-     * @param byteBuffer The byte buffer
-     * @return The slice
+     * @param byteBuffer 바이트 버퍼
+     * @return 조각
      */
     public static ByteBuffer createSlice(ByteBuffer byteBuffer) {
         if (byteBuffer == null) {
@@ -57,17 +56,16 @@ public class Buffers {
     }
 
     /**
-     * Create a slice of the given byte buffer, in the specified range.
-     * The returned buffer will have the same byte order as the given
-     * buffer. If the given buffer is <code>null</code>, then
-     * <code>null</code> will be returned.
+     * 주어진 바이트 버퍼에서 지정한 범위의 조각을 만든다.
+     * 돌려주는 버퍼는 주어진 버퍼와 바이트 순서가 같다.
+     * 주어진 버퍼가 <code>null</code>이면 <code>null</code>을 돌려준다.
      *
-     * @param byteBuffer The byte buffer
-     * @param position   The position where the slice should start
-     * @param length     The length of the slice
-     * @return The slice
-     * @throws IllegalArgumentException If the range that is specified
-     *                                  by the position and length are not valid for the given buffer
+     * @param byteBuffer 바이트 버퍼
+     * @param position   조각이 시작할 위치
+     * @param length     조각 길이
+     * @return 조각
+     * @throws IllegalArgumentException 위치와 길이로 지정한 범위가
+     *                                  주어진 버퍼에 맞지 않을 때
      */
     public static ByteBuffer createSlice(
             ByteBuffer byteBuffer, int position, int length) {
@@ -95,24 +93,24 @@ public class Buffers {
     }
 
     /**
-     * Creates a new, direct byte buffer that contains the given data,
-     * with little-endian byte order
+     * 주어진 데이터를 담은 새 다이렉트 바이트 버퍼를
+     * 리틀 엔디언 순서로 만든다
      *
-     * @param data The data
-     * @return The byte buffer
+     * @param data 데이터
+     * @return 바이트 버퍼
      */
     public static ByteBuffer create(byte data[]) {
         return create(data, 0, data.length);
     }
 
     /**
-     * Creates a new, direct byte buffer that contains the specified range
-     * of the given data, with little-endian byte order
+     * 주어진 데이터의 지정한 범위를 담은 새 다이렉트 바이트 버퍼를
+     * 리틀 엔디언 순서로 만든다
      *
-     * @param data   The data
-     * @param offset The offset in the data array
-     * @param length The length of the range
-     * @return The byte buffer
+     * @param data   데이터
+     * @param offset 데이터 배열 안의 오프셋
+     * @param length 범위 길이
+     * @return 바이트 버퍼
      */
     public static ByteBuffer create(byte data[], int offset, int length) {
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(length);
@@ -123,12 +121,12 @@ public class Buffers {
     }
 
     /**
-     * Create a new direct byte buffer with the given size, and little-endian
-     * byte order.
+     * 주어진 크기와 리틀 엔디언 순서로
+     * 새 다이렉트 바이트 버퍼를 만든다.
      *
-     * @param size The size of the buffer
-     * @return The byte buffer
-     * @throws IllegalArgumentException If the given size is negative
+     * @param size 버퍼 크기
+     * @return 바이트 버퍼
+     * @throws IllegalArgumentException 크기가 음수일 때
      */
     public static ByteBuffer create(int size) {
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(size);

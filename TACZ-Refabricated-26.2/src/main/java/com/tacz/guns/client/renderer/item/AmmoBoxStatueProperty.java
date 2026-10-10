@@ -15,40 +15,40 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nullable;
 
 /**
- * 弹药盒外观变体的 {@code select} 属性，对应上游 1.21.1 的
- * {@code ItemProperties.register(AmmoBoxItem.PROPERTY_NAME, AmmoBoxItem::getStatue)}。
+ * 탄약 상자 외형 변형의 {@code select} 속성. 원본 1.21.1의
+ * {@code ItemProperties.register(AmmoBoxItem.PROPERTY_NAME, AmmoBoxItem::getStatue)}에 해당한다.
  *
- * <h2>为什么必须自定义，不能用原版的 {@code minecraft:component}</h2>
- * 26.2 内置的 {@code select} 属性里，唯一能读物品数据的是
- * {@code minecraft:component}，它的实现就一行：
+ * <h2>바닐라 {@code minecraft:component}를 쓰지 않고 직접 만들어야 하는 이유</h2>
+ * 26.2 내장 {@code select} 속성 중 아이템 데이터를 읽을 수 있는 것은
+ * {@code minecraft:component}뿐이며, 그 구현은 한 줄이다:
  * <pre>
  * return stack.get(this.componentType);   // ComponentContents#get
  * </pre>
- * 也就是只能<b>整体</b>取出某个组件、再与 {@code when} 里的字面量比较。
- * 而弹药盒的状态（等级 / 开合）是塞在
- * {@code DataComponents.CUSTOM_DATA} 这一个组件<b>内部的若干 NBT 字段</b>里
- * （见 {@code AmmoBoxItemDataAccessor}：{@code Level} / {@code AmmoId} /
- * {@code AmmoCount}），
- * 且最终外观还要由这些字段<b>组合运算</b>得出。
- * 原版属性没有任何一个能表达「读组件内部字段并做运算」，因此必须自建。
+ * 즉 컴포넌트 하나를 <b>통째로</b> 꺼내 {@code when}의 리터럴과 비교할 수만 있다.
+ * 그런데 탄약 상자 상태(등급 / 열림)는
+ * {@code DataComponents.CUSTOM_DATA} 컴포넌트 하나 <b>안의 NBT 필드 몇 개</b>에 들어 있고
+ * ({@code AmmoBoxItemDataAccessor} 참고: {@code Level} / {@code AmmoId} /
+ * {@code AmmoCount}),
+ * 최종 외형도 이 필드들을 <b>조합 계산</b>해야 나온다.
+ * 바닐라 속성 중 "컴포넌트 안 필드를 읽어 계산하는" 것을 표현할 수 있는 것이 없으므로 직접 만들어야 한다.
  *
- * <h2>取值语义与上游逐位对齐</h2>
- * 直接移植 {@code AmmoBoxItem#getStatue} 的算法（上游返回 float，这里返回 int，
- * 因为 {@code select} 按值精确匹配，用整数更稳妥）：
+ * <h2>값의 의미는 원본과 비트 단위로 맞춘다</h2>
+ * {@code AmmoBoxItem#getStatue}의 계산법을 그대로 옮겼다(원본은 float를 돌려주지만 여기서는 int를 돌려준다.
+ * {@code select}는 값을 정확히 비교하므로 정수가 더 안전하다):
  * <pre>
- * 普通                              -> 2 * 等级 + 开合(0/1)
- * 开合：ammoId 为空 或 数量 &lt;= 0 记 0（open），否则记 1（close）
+ * 일반                              -> 2 * 등급 + 열림(0/1)
+ * 열림: ammoId가 비었거나 수량 &lt;= 0이면 0(open), 아니면 1(close)
  * </pre>
- * 于是 0..5 正好对应 {@code models/item/ammo_box/} 下现成的 6 个变体模型，
- * 与旧 {@code overrides} 格式里的 {@code tacz:ammo_statue} 谓词一一对应。
+ * 그래서 0..5가 {@code models/item/ammo_box/}에 있는 변형 모델 6개와 딱 맞고,
+ * 예전 {@code overrides} 형식의 {@code tacz:ammo_statue} 조건과 하나씩 대응한다.
  *
- * <h2>为什么不再走自定义渲染器</h2>
- * 此前的 {@code AmmoBoxItemRenderer} 把 128×128 的<b>3D 模型 UV 展开图</b>
- * （{@code textures/item/ammo_box.png}）当成平面图标，贴在 {@code SlotModel}
- * 那个 16×16 的四边形上。那张图只有左上角 69×69 像素非透明、且是六面展开的碎片，
- * 拉伸到 16×16 后既不是图标也不是模型，物品栏与手持看到的都是错乱的色块。
- * 上游<b>从来没有</b>这个渲染器 —— 这里使用 6 个普通弹药盒 JSON 模型交给原版渲染。
- * 本类补上 26.2 缺失的那一环（属性注册），让弹药盒回到原版渲染路径。
+ * <h2>더 이상 사용자 정의 렌더러를 쓰지 않는 이유</h2>
+ * 예전 {@code AmmoBoxItemRenderer}는 128×128 <b>3D 모델 UV 전개도</b>
+ * ({@code textures/item/ammo_box.png})를 평면 아이콘처럼 {@code SlotModel}의
+ * 16×16 사각형에 붙였다. 그 그림은 왼쪽 위 69×69 픽셀만 불투명하고 여섯 면 전개도 조각이라,
+ * 16×16으로 늘이면 아이콘도 모델도 아닌 엉망인 색 덩어리가 인벤토리와 손에 보였다.
+ * 원본에는 이 렌더러가 <b>처음부터 없었다</b> — 여기서는 일반 탄약 상자 JSON 모델 6개를 바닐라 렌더링에 맡긴다.
+ * 이 클래스는 26.2에서 빠진 고리(속성 등록)를 채워 탄약 상자를 바닐라 렌더링 경로로 돌려보낸다.
  */
 public record AmmoBoxStatueProperty() implements SelectItemModelProperty<Integer> {
 
@@ -60,9 +60,9 @@ public record AmmoBoxStatueProperty() implements SelectItemModelProperty<Integer
     public static final SelectItemModelProperty.Type<AmmoBoxStatueProperty, Integer> TYPE =
             SelectItemModelProperty.Type.create(MAP_CODEC, Codec.INT);
 
-    /** 盒盖打开（没装弹药）。 */
+    /** 뚜껑 열림(탄약 없음). */
     private static final int OPEN = 0;
-    /** 盒盖关闭（装了弹药）。 */
+    /** 뚜껑 닫힘(탄약 있음). */
     private static final int CLOSE = 1;
 
     @Override

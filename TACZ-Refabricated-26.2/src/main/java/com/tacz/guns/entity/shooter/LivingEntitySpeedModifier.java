@@ -33,7 +33,7 @@ public class LivingEntitySpeedModifier {
         if (speedModifier == null) return;
 
         if (stack.getItem() instanceof AbstractGunItem) {
-            // 处理重量带来的修正
+            // 무게에 따른 보정 처리
             AttachmentCacheProperty cacheProperty = IGunOperator.fromLivingEntity(shooter).getCacheProperty();
             if (cacheProperty != null) {
                 double weightFactor = SyncConfig.WEIGHT_SPEED_MULTIPLIER.get();

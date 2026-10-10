@@ -3,7 +3,7 @@ package com.tacz.guns.api.client.animation.interpolator;
 import com.tacz.guns.api.client.animation.AnimationChannelContent;
 
 /**
- * 用于四元数的线性插值。
+ * 사원수용 선형 보간.
  */
 public class SLerp implements Interpolator {
     private AnimationChannelContent content;
@@ -15,7 +15,7 @@ public class SLerp implements Interpolator {
 
     @Override
     public float[] interpolate(int indexFrom, int indexTo, float alpha) {
-        // 如果旋转值有 8 个，后四个为 Post 数值，用于插值起点
+        // 회전 값이 8개면 뒤의 4개는 Post 값이며 보간 시작점으로 쓴다
         int offset = content.values[indexFrom].length == 8 ? 4 : 0;
         float ax = content.values[indexFrom][offset];
         float ay = content.values[indexFrom][1 + offset];

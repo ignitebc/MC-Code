@@ -19,7 +19,7 @@ public class AttachmentDataManager extends CommonDataManager<AttachmentData> {
     protected AttachmentData parseJson(JsonElement element) {
         AttachmentData data = getGson().fromJson(element, getDataClass());
         if (data != null) {
-            // 序列化注册的配件属性修改
+            // 등록된 부착물 속성 변경을 직렬화한다
             AttachmentPropertyManager.getModifiers().forEach((key, value) -> {
                 String json = getGson().toJson(element);
                 if (!element.isJsonObject()) {
@@ -31,7 +31,7 @@ public class AttachmentDataManager extends CommonDataManager<AttachmentData> {
                     property.initComponents();
                     data.addModifier(key, property);
                 } else if (jsonObject.has(value.getOptionalFields())) {
-                    // 为了兼容旧版本，读取可选字段名
+                    // 예전 버전과 호환하려고 선택 필드 이름을 읽는다
                     JsonProperty<?> property = value.readJson(json);
                     property.initComponents();
                     data.addModifier(key, property);

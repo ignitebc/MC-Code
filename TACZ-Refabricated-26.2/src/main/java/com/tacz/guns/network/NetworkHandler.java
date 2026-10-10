@@ -27,11 +27,11 @@ import java.util.function.Function;
 
 public class NetworkHandler {
     /**
-     * Register all payload types with the PayloadTypeRegistry.
-     * Must be called on both client and server (common init).
+     * 모든 payload 종류를 PayloadTypeRegistry에 등록한다.
+     * 클라이언트와 서버 양쪽에서 호출해야 한다(공통 초기화).
      */
     public static void registerPayloads() {
-        // C2S (serverbound play)
+        // C2S(서버로 가는 play)
         PayloadTypeRegistry.serverboundPlay().register(ClientMessagePlayerShoot.TYPE, ClientMessagePlayerShoot.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(ClientMessagePlayerReloadGun.TYPE, ClientMessagePlayerReloadGun.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(ClientMessagePlayerCancelReload.TYPE, ClientMessagePlayerCancelReload.CODEC);
@@ -48,7 +48,7 @@ public class NetworkHandler {
         PayloadTypeRegistry.serverboundPlay().register(ClientMessagePlayerMelee.TYPE, ClientMessagePlayerMelee.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(ClientMessageSyncBaseTimestamp.TYPE, ClientMessageSyncBaseTimestamp.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(ClientMessageLaserColor.TYPE, ClientMessageLaserColor.CODEC);
-        // S2C (clientbound play)
+        // S2C(클라이언트로 가는 play)
         PayloadTypeRegistry.clientboundPlay().register(ServerMessageSound.TYPE, ServerMessageSound.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(ServerMessageCraft.TYPE, ServerMessageCraft.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(ServerMessageRefreshRefitScreen.TYPE, ServerMessageRefreshRefitScreen.CODEC);
@@ -65,7 +65,7 @@ public class NetworkHandler {
         PayloadTypeRegistry.clientboundPlay().register(ServerMessageGunReload.TYPE, ServerMessageGunReload.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(ServerMessageGunShoot.TYPE, ServerMessageGunShoot.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(ServerMessageSyncBaseTimestamp.TYPE, ServerMessageSyncBaseTimestamp.CODEC);
-        // Extra spawn data payload
+        // 추가 생성 데이터 payload
         IEntityAdditionalSpawnData.registerPayload();
     }
 
@@ -145,7 +145,7 @@ public class NetworkHandler {
     }
 
     /**
-     * 发送给所有监听此实体的玩家
+     * 이 엔티티를 지켜보는 모든 플레이어에게 보낸다
      */
     public static void sendToTrackingEntityAndSelf(Entity centerEntity, CustomPacketPayload message) {
         if (centerEntity instanceof ServerPlayer player) {

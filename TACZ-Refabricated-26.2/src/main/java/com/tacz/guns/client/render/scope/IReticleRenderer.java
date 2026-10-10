@@ -7,72 +7,71 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
 
 /**
- * 准星（分划）绘制策略。
+ * 조준선(눈금) 그리기 전략.
  *
- * <p>把「准星怎么画」从 {@code BedrockAttachmentModel} 里抽出来，
- * 让全息红点 / 老式蚀刻 / 混合镜 / 自定义各走各的实现，
- * 并允许第三方枪包通过 {@link #priority()} 覆盖内置策略。</p>
+ * <p>"조준선을 어떻게 그릴지"를 {@code BedrockAttachmentModel}에서 떼어 내,
+ * 홀로그램 도트 / 옛 새김 / 혼합 조준경 / 사용자 정의가 각자 구현을 갖게 하고,
+ * 외부 총기 팩이 {@link #priority()}로 내장 전략을 덮어쓸 수 있게 한다.</p>
  *
- * <h2>为什么需要这层抽象</h2>
- * 三类准星的物理行为完全不同：
+ * <h2>이 추상화가 필요한 이유</h2>
+ * 세 종류 조준선의 물리적 동작이 완전히 다르다:
  * <ul>
- *   <li><b>全息/红点</b>：准直光学系统，准星<b>不随枪体贴合</b>，
- *       而是随视线方向漂移（无视差），且恒定发光；</li>
- *   <li><b>蚀刻分划</b>：物理刻在镜片玻璃上，<b>完全跟随枪体</b>，不发光；</li>
- *   <li><b>混合</b>：几何跟随枪体，但其中一段发光。</li>
+ *   <li><b>홀로그램/도트</b>: 평행광 광학계라 조준선이 <b>총몸에 붙지 않고</b>
+ *       시선 방향을 따라 움직이며(시차 없음) 항상 빛난다.</li>
+ *   <li><b>새긴 눈금</b>: 렌즈 유리에 물리적으로 새겨져 <b>총몸을 완전히 따라가며</b> 빛나지 않는다.</li>
+ *   <li><b>혼합</b>: 형상은 총몸을 따라가지만 그중 한 구간이 빛난다.</li>
  * </ul>
- * 用 if/else 硬写会迅速失控，因此定义成策略接口。
+ * if/else로 굳혀 쓰면 금방 감당할 수 없게 되므로 전략 인터페이스로 정의했다.
  *
- * <h2>实现约定</h2>
+ * <h2>구현 약속</h2>
  * <ol>
- *   <li>只能走 <b>submit 快照</b>链路（{@code BedrockRenderSnapshot}），
- *       <b>不要</b>调用 legacy {@code renderTempPart}——它在 26.2 是 no-op；</li>
- *   <li>若修改了 {@link BedrockPart#visible}，必须在 {@code finally} 里还原：
- *       模型节点是<b>跨帧共享</b>的，不还原会污染第三人称与物品栏；</li>
- *   <li>实现应当是无状态的（单例即可），所有每帧数据从 {@link Context} 取。</li>
+ *   <li><b>submit 스냅숏</b> 경로({@code BedrockRenderSnapshot})만 쓴다.
+ *       예전 {@code renderTempPart}는 <b>호출하지 않는다</b> — 26.2에서는 아무것도 하지 않는다.</li>
+ *   <li>{@link BedrockPart#visible}을 바꿨으면 반드시 {@code finally}에서 되돌린다:
+ *       모델 노드는 <b>여러 프레임이 함께 쓰므로</b> 되돌리지 않으면 3인칭과 인벤토리까지 망가진다.</li>
+ *   <li>구현은 상태가 없어야 하며(싱글턴이면 된다), 프레임마다 필요한 데이터는 모두 {@link Context}에서 얻는다.</li>
  * </ol>
  */
 public interface IReticleRenderer {
 
     /**
-     * 本策略是否适用于该瞄具。
+     * 이 전략이 해당 조준경에 맞는지.
      *
-     * @param nodes 已解析的准星节点集合
+     * @param nodes 해석한 조준선 노드 모음
      */
     boolean matches(ScopeNodeSet nodes);
 
     /**
-     * 提交准星几何。调用时机在 {@code super.submit(...)} <b>之后</b>，
-     * 以保证准星盖在镜身之上。
+     * 조준선 형상을 제출한다. 조준선이 몸체 위에 덮이도록 {@code super.submit(...)} <b>뒤에</b> 호출된다.
      */
     void submitReticle(Context ctx, ScopeNodeSet nodes);
 
     /**
-     * 优先级，数值大者优先。内置实现一律为 0，
-     * 第三方枪包/附属模组注册 {@code > 0} 的实现即可覆盖。
+     * 우선순위. 값이 클수록 먼저다. 내장 구현은 모두 0이고,
+     * 외부 총기 팩/애드온 모드가 {@code > 0}인 구현을 등록하면 덮어쓸 수 있다.
      */
     default int priority() {
         return 0;
     }
 
     /**
-     * 一帧内准星绘制所需的全部上下文。
+     * 한 프레임 동안 조준선을 그리는 데 필요한 모든 문맥.
      *
-     * @param poseStack      当前矩阵（已包含瞄具自身的变换）
-     * @param collector      26.2 的提交收集器
-     * @param displayContext 显示上下文（第一人称 / 第三人称 / GUI…）
-     * @param baseRenderType 瞄具本体使用的 RenderType（贴图已绑定）
-     * @param light          继承的光照
-     * @param overlay        overlay 坐标
-     * @param aimingProgress 开镜进度 0~1，可用于淡入淡出
+     * @param poseStack      현재 행렬(조준경 자신의 변환이 들어 있음)
+     * @param collector      26.2의 제출 수집기
+     * @param displayContext 표시 문맥(1인칭 / 3인칭 / GUI…)
+     * @param baseRenderType 조준경 본체가 쓰는 RenderType(텍스처가 묶여 있음)
+     * @param light          물려받은 조명
+     * @param overlay        overlay 좌표
+     * @param aimingProgress 조준 진행도 0~1. 나타나기/사라지기에 쓸 수 있다
      */
     /**
-     * @param baseRenderType 准星应当使用的 RenderType。掩码生效时它是「反向裁剪」版
-     *                       （只在目镜投影内绘制）；否则是普通的 entityCutout。
-     * @param maskActive     本帧目镜掩码是否真的生效。
-     *                       <p>{@link EtchedReticleRenderer} 必须看这个标志：
-     *                       {@code division} 里混着大块遮光板，只有在掩码把它们裁掉时
-     *                       才能安全绘制，否则会糊住屏幕（第 9 轮的教训）。</p>
+     * @param baseRenderType 조준선이 써야 할 RenderType. 마스크가 적용되면 "반대 잘라내기" 판
+     *                       (접안렌즈 투영 안에만 그림)이고, 아니면 일반 entityCutout이다.
+     * @param maskActive     이번 프레임에 접안렌즈 마스크가 실제로 적용되었는지.
+     *                       <p>{@link EtchedReticleRenderer}는 반드시 이 표시를 봐야 한다:
+     *                       {@code division}에는 큰 차광판이 섞여 있어 마스크가 그것을 잘라낼 때만
+     *                       안전하게 그릴 수 있고, 아니면 화면을 덮는다(9차의 교훈).</p>
      */
     record Context(PoseStack poseStack,
                    SubmitNodeCollector collector,

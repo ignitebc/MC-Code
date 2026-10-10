@@ -4,37 +4,37 @@ import com.google.gson.annotations.SerializedName;
 
 public enum AttachmentType {
     /**
-     * 瞄具
+     * 조준경
      */
     @SerializedName("scope")
     SCOPE,
     /**
-     * 枪口组件
+     * 총구 부품
      */
     @SerializedName("muzzle")
     MUZZLE,
     /**
-     * 枪托
+     * 개머리판
      */
     @SerializedName("stock")
     STOCK,
     /**
-     * 握把
+     * 손잡이
      */
     @SerializedName("grip")
     GRIP,
     /**
-     * 激光指示器
+     * 레이저 지시기
      */
     @SerializedName("laser")
     LASER,
     /**
-     * 扩容弹夹（匣）
+     * 확장 탄창
      */
     @SerializedName("extended_mag")
     EXTENDED_MAG,
     /**
-     * 用来表示物品不是配件的情况。
+     * 아이템이 부착물이 아님을 나타낸다.
      */
     NONE
 }

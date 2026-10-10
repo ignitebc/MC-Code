@@ -46,7 +46,7 @@ import java.util.function.DoubleFunction;
 import java.util.function.Supplier;
 
 /**
- * 现代枪的逻辑实现
+ * 현대식 총의 로직 구현
  */
 public class ModernKineticGunItem extends AbstractGunItem implements GunItemDataAccessor {
     public static final String TYPE_NAME = "modern_kinetic";
@@ -344,7 +344,7 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
             return true;
         }
         if (!api.hasAmmoInBarrel()) {
-            // 如果是背包直读则检测消耗背包弹药
+            // 인벤토리 직접 장전 방식이면 인벤토리 탄약 소모를 확인한다
             if (api.useInventoryAmmo()) {
                 if (api.consumeAmmoFromPlayer(1) == 1) {
                     api.setAmmoInBarrel(true);
@@ -358,10 +358,10 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
 
     private ReloadState defaultTickReload(ModernKineticGunScriptAPI api) {
         CommonGunIndex gunIndex = api.getGunIndex();
-        // 获取 ReloadData
+        // ReloadData 가져오기
         GunData gunData = gunIndex.getGunData();
         GunReloadData reloadData = gunData.getReloadData();
-        // 计算新的 stateType 和 countDown
+        // 새 stateType과 countDown 계산
         long countDown;
         ReloadState.StateType stateType;
         ReloadState.StateType oldStateType = ReloadState.StateType.values()[api.getReloadStateType()];
@@ -396,14 +396,14 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
             stateType = ReloadState.StateType.NOT_RELOADING;
             countDown = ReloadState.NOT_RELOADING_COUNTDOWN;
         }
-        // 如果换弹状态发生 装填 -> 收尾 的变化，则需要调用补弹
+        // 재장전 상태가 장전 -> 마무리로 바뀌면 탄 보충을 호출해야 한다
         if (oldStateType == ReloadState.StateType.EMPTY_RELOAD_FEEDING && oldStateType != stateType) {
             this.defaultReloadFinishing(api, false);
         }
         if (oldStateType == ReloadState.StateType.TACTICAL_RELOAD_FEEDING && oldStateType != stateType) {
             this.defaultReloadFinishing(api, true);
         }
-        // 返回 tick 结果
+        // tick 결과 돌려주기
         ReloadState reloadState = new ReloadState();
         reloadState.setStateType(stateType);
         reloadState.setCountDown(countDown);
@@ -434,7 +434,7 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
                 }
             }
             case INVENTORY -> {
-                // 背包直读：换弹时从背包消耗弹药填入弹匣（与 MAGAZINE 行为一致）
+                // 인벤토리 직접 장전: 재장전할 때 인벤토리에서 탄약을 소모해 탄창에 채운다(MAGAZINE 동작과 같음)
                 if (needConsumeAmmo) {
                     int consumedAmount = api.consumeAmmoFromPlayer(needAmmoCount);
                     api.putAmmoInMagazine(consumedAmount);
@@ -443,7 +443,7 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
                 }
             }
             default -> {
-                // 未知类型，按 MAGAZINE 逻辑兜底
+                // 알 수 없는 종류는 MAGAZINE 로직으로 처리한다
                 if (needConsumeAmmo) {
                     int consumedAmount = api.consumeAmmoFromPlayer(needAmmoCount);
                     api.putAmmoInMagazine(consumedAmount);
@@ -452,7 +452,7 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
                 }
             }
         }
-        // 如果不是战术换弹，需要将弹匣中的一枚子弹放到枪膛中
+        // 전술 재장전이 아니면 탄창의 탄환 한 발을 약실에 넣어야 한다
         Bolt boltType = api.getGunIndex().getGunData().getBolt();
         if (!isTactical && (boltType == Bolt.MANUAL_ACTION || boltType == Bolt.CLOSED_BOLT)) {
             int i = api.removeAmmoFromMagazine(1);
@@ -463,15 +463,15 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
     }
 
     private void doMelee(LivingEntity user, float gunDistance, float meleeDistance, float rangeAngle, float knockback, float damage, List<EffectData> effects) {
-        // 枪长 + 刺刀长 = 总长
+        // 총 길이 + 총검 길이 = 전체 길이
         double distance = gunDistance + meleeDistance;
         float xRot = (float) Math.toRadians(-user.getXRot());
         float yRot = (float) Math.toRadians(-user.getYRot());
-        // 视角向量
+        // 시선 벡터
         Vec3 eyeVec = new Vec3(0, 0, 1).xRot(xRot).yRot(yRot).normalize().scale(distance);
-        // 球心坐标
+        // 구 중심 좌표
         Vec3 centrePos = user.getEyePosition().subtract(eyeVec);
-        // 先获取范围内所有的实体
+        // 먼저 범위 안 모든 엔티티를 가져온다
         List<LivingEntity> entityList = user.level().getEntitiesOfClass(LivingEntity.class, user.getBoundingBox().inflate(distance));
         Supplier<Float> realDamage = Suppliers.memoize(() -> {
             var instance = user.getAttribute(Attributes.ATTACK_DAMAGE);
@@ -489,32 +489,32 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
                 instance.removeModifier(modifier);
             }
         });
-        // 而后检查是否在锥形范围内
+        // 그다음 원뿔 범위 안에 있는지 확인한다
         for (LivingEntity living : entityList) {
             // 주인의 펫은 총검·개머리판 공격을 통과한다. 밀려나거나 총검 효과를 받지 않는다.
             if (EntityUtil.isShootersPet(living, user)) {
                 continue;
             }
-            // 先计算出球心->目标向量
+            // 먼저 구 중심->대상 벡터를 계산한다
             Vec3 targetVec = living.getEyePosition().subtract(centrePos);
-            // 目标到球心距离
+            // 대상과 구 중심 사이 거리
             double targetLength = targetVec.length();
-            // 距离在一倍距离之内的，在玩家背后，不进行伤害
+            // 거리가 1배 거리 안이면 플레이어 뒤쪽이므로 피해를 주지 않는다
             if (targetLength < distance) {
                 continue;
             }
-            // 计算出向量夹角
+            // 벡터 사이 각 계산
             double degree = Math.toDegrees(Math.acos(targetVec.dot(eyeVec) / (targetLength * distance)));
-            // 向量夹角在范围内的，才能进行伤害
+            // 벡터 사이 각이 범위 안이어야 피해를 줄 수 있다
             if (degree < (rangeAngle / 2)) {
-                // 判断实体和玩家之间是否有阻隔
+                // 엔티티와 플레이어 사이에 가로막는 것이 있는지 판단한다
                 if (user.hasLineOfSight(living)) {
                     doPerLivingHurt(user, living, knockback, realDamage.get(), effects);
                 }
             }
         }
 
-        // 玩家扣饱食度
+        // 플레이어 허기 차감
         if (user instanceof Player player) {
             player.causeFoodExhaustion(0.1F);
         }
@@ -530,7 +530,7 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
         } else {
             target.hurt(user.damageSources().mobAttack(user), damage);
         }
-        // 修复近战枪械不触发神化词条/宝石的bug (doEnchantDamageEffects 已在新版本移除)
+        // 근접 총기가 Apotheosis 접사/보석을 발동하지 않던 버그 수정(doEnchantDamageEffects는 새 버전에서 제거됨)
 
         if (!target.isAlive()) {
             return;
@@ -575,7 +575,7 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
         TimelessAPI.getCommonGunIndex(gunId).map(gunIndex -> {
             FireMode fireMode = this.getFireMode(gunItem);
             List<FireMode> fireModeSet = gunIndex.getGunData().getFireModeSet();
-            // 即使玩家拿的是没有的 FireMode，这里也能切换到正常情况
+            // 플레이어가 없는 FireMode를 들고 있어도 여기서 정상 상태로 바꿀 수 있다
             int nextIndex = (fireModeSet.indexOf(fireMode) + 1) % fireModeSet.size();
             FireMode nextFireMode = fireModeSet.get(nextIndex);
             this.setFireMode(gunItem, nextFireMode);

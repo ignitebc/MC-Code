@@ -71,10 +71,10 @@ public class BedrockCubePerFace implements BedrockCube {
 
 
     /**
-     * 只读访问六个面。与 {@code BedrockCubeBox#getPolygons} 同构。
+     * 여섯 면에 읽기 전용으로 접근한다. {@code BedrockCubeBox#getPolygons}와 구조가 같다.
      *
-     * <p>目镜几何<b>几乎全部</b>走这个实现（默认枪包 161 个目镜立方体无一例外），
-     * 因为它们都带 {@code face_uv}。瞄具掩码依赖本方法取顶点。</p>
+     * <p>접안렌즈 형상은 <b>거의 모두</b> 이 구현을 쓴다(기본 총기 팩 접안렌즈 육면체 161개 모두).
+     * 모두 {@code face_uv}를 갖기 때문이다. 조준경 마스크는 이 메서드로 정점을 얻는다.</p>
      */
     @Override
     public BedrockPolygon[] getPolygons() {
@@ -97,7 +97,7 @@ public class BedrockCubePerFace implements BedrockCube {
                 float x = vertex.pos.x() / 16.0F;
                 float y = vertex.pos.y() / 16.0F;
                 float z = vertex.pos.z() / 16.0F;
-                // 26.2 迁移: 使用新 VertexConsumer API
+                // 26.2 이전: 새 VertexConsumer API를 쓴다
                 Vector4f vector4f = new Vector4f(x, y, z, 1.0F);
                 vector4f.mul(matrix4f);
                 consumer.addVertex(vector4f.x(), vector4f.y(), vector4f.z())

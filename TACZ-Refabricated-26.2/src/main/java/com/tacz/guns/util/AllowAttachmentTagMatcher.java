@@ -31,24 +31,24 @@ public final class AllowAttachmentTagMatcher {
         Identifier gunId = record.getLeft();
         Identifier attachmentId = record.getRight();
         Set<String> allowAttachmentTags = CommonAssetsManager.get().getAllowAttachmentTags(gunId);
-        // 如果枪械对应的 allowAttachmentTags 为空，说明目前没有任何可以装的配件
+        // 총기의 allowAttachmentTags가 비었으면 지금은 달 수 있는 부착물이 하나도 없다는 뜻이다
         if (allowAttachmentTags == null || allowAttachmentTags.isEmpty()) {
             return false;
         }
-        // 开始遍历 allowAttachmentTags，寻找配件 id
+        // allowAttachmentTags를 훑으며 부착물 id를 찾기 시작한다
         AtomicBoolean searchSignal = new AtomicBoolean(false);
         treeSearch(allowAttachmentTags, attachmentId, searchSignal);
         return searchSignal.get();
     }
 
     /**
-     * 匹配配件是否有指定的标签。
-     * 目前内部用于独头弹特殊标签的判断，
-     * 也能方便到外部（附属，整合包等）制作它们的特殊标签。
+     * 부착물에 지정한 태그가 있는지 맞춰 본다.
+     * 지금은 내부에서 슬러그탄 특수 태그 판단에 쓰며,
+     * 외부(애드온, 모드팩 등)가 자체 특수 태그를 만들기에도 편하다.
      *
-     * @param tag          tacz 配件标签
-     * @param attachmentId 配件 id
-     * @return 配件 id 是否有这个配件标签
+     * @param tag          tacz 부착물 태그
+     * @param attachmentId 부착물 id
+     * @return 부착물 id에 이 부착물 태그가 있는지 여부
      * @since 1.1.7
      */
     public static boolean matchTag(Identifier tag, Identifier attachmentId) {
@@ -60,29 +60,29 @@ public final class AllowAttachmentTagMatcher {
         Identifier tag = record.getLeft();
         Identifier attachmentId = record.getRight();
         Set<String> tagContent = CommonAssetsManager.get().getAttachmentTags(tag);
-        // 如果 tag 对应的内容集为空，说明目前没有任何内容
+        // tag에 대응하는 내용 집합이 비었으면 지금은 아무 내용도 없다는 뜻이다
         if (tagContent == null || tagContent.isEmpty()) {
             return false;
         }
-        // 开始遍历内容集，寻找配件 id
+        // 내용 집합을 훑으며 부착물 id를 찾기 시작한다
         AtomicBoolean searchSignal = new AtomicBoolean(false);
         treeSearch(tagContent, attachmentId, searchSignal);
         return searchSignal.get();
     }
 
     private static void treeSearch(Set<String> tags, Identifier attachmentId, AtomicBoolean searchSignal) {
-        // 开始遍历 tags，寻找配件 id
+        // tags를 훑으며 부착물 id를 찾기 시작한다
         for (String tag : tags) {
-            // 如果是 tag，则去 attachment tag 寻找我们的东西
+            // tag이면 attachment tag에서 우리 것을 찾는다
             if (tag.startsWith(TAG_PREFIX)) {
                 Identifier tagId = Identifier.parse(tag.substring(TAG_PREFIX.length()));
                 Set<String> attachmentTags = CommonAssetsManager.get().getAttachmentTags(tagId);
-                // 如果检索的这个配件 tag 不为空，开始递归查找
+                // 조회한 이 부착물 tag가 비어 있지 않으면 재귀로 찾기 시작한다
                 if (attachmentTags != null && !attachmentTags.isEmpty()) {
                     treeSearch(attachmentTags, attachmentId, searchSignal);
                 }
             }
-            // 如果是配件 id，直接对比
+            // 부착물 id이면 바로 비교한다
             else {
                 Identifier matchAttachmentId = Identifier.parse(tag);
                 if (attachmentId.equals(matchAttachmentId)) {

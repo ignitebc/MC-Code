@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * 用于 AttachmentCacheProperty 的，类型安全的 key。
+ * AttachmentCacheProperty에 쓰는 타입 안전 키.
  */
 public class GunProperties {
     /**
@@ -40,7 +40,7 @@ public class GunProperties {
     ).stream().collect(Collectors.toMap(GunProperty::name, Function.identity())));
 
     /**
-     * 返回所有属性
+     * 모든 속성을 돌려준다
      *
      * @author ChloePrime
      * @since 1.1.7
@@ -50,7 +50,7 @@ public class GunProperties {
     }
 
     /**
-     * 返回所有可在配件缓存中被脚本更改的属性
+     * 부착물 캐시 안에서 스크립트가 바꿀 수 있는 속성을 모두 돌려준다
      *
      * @author ChloePrime
      * @since 1.1.7
@@ -61,10 +61,10 @@ public class GunProperties {
 
     public static final GunProperty<Float> ADS_TIME = GunProperty.of("ads", Float.class);
     /**
-     * @deprecated 此类是一个意外和设计失误，其功能和{@link InaccuracyModifier}完全重复<br/>
-     * 已不再使用，内部的所有方法实际不会执行，请使用 {@link InaccuracyModifier} <br/>
+     * @deprecated 이 클래스는 실수로 생긴 설계 결함이며 기능이 {@link InaccuracyModifier}와 완전히 겹친다<br/>
+     * 더 이상 쓰지 않고 안의 메서드는 실제로 실행되지 않는다. {@link InaccuracyModifier}를 쓴다 <br/>
      * <p>
-     * 同时，此Modifier的id也已经被重定向到 {@link InaccuracyModifier} <br/>
+     * 이 Modifier의 ID도 {@link InaccuracyModifier}로 넘겨 두었다 <br/>
      */
     @Deprecated
     public static final GunProperty<Map<InaccuracyType, Float>> AIM_INACCURACY = GunProperty.of("inaccuracy", new TypeToken<>() {
@@ -79,8 +79,8 @@ public class GunProperties {
     public static final GunProperty<Float> ARMOR_IGNORE = GunProperty.of("armor_ignore", Float.class);
 
     /**
-     * 枪械伤害。
-     * 生效的值在命中时被脚本修改。
+     * 총기 피해량.
+     * 실제 적용 값은 명중할 때 스크립트가 바꾼다.
      */
     @ValueModifiableAtRuntime(Float.class)
     public static final GunProperty<LinkedList<ExtraDamage.DistanceDamagePair>> DAMAGE = GunProperty.of("damage", new TypeToken<>() {
@@ -139,8 +139,8 @@ public class GunProperties {
     public static final GunProperty<Float> WEIGHT = GunProperty.of("weight_modifier", Float.class);
 
     /**
-     * 这个类是纯文档性质的，
-     * 介绍了仅限脚本运行时修改，而不存在于配件缓存中的一些枪械属性。
+     * 문서 전용 클래스로,
+     * 부착물 캐시에는 없고 스크립트 실행 중에만 바꿀 수 있는 총기 속성을 소개한다.
      *
      * @author ChloePrime
      * @since 1.1.7
@@ -148,111 +148,111 @@ public class GunProperties {
     @ApiStatus.Experimental
     public static final class RuntimeOnly {
         /**
-         * 热量上限
+         * 열량 상한
          */
         @ValueModifiableAtRuntime(Float.class)
         public static final String MAX_HEAT = "max_heat";
 
         /**
-         * 弹丸数量
+         * 탄환(펠릿) 수
          */
         @ValueModifiableAtRuntime(Integer.class)
         public static final String BULLET_AMOUNT = "bullet_amount";
 
         /**
-         * 连发数量，
-         * 对于非 Burst 模式依然生效
+         * 연발 수.
+         * Burst 모드가 아니어도 적용된다
          */
         @ValueModifiableAtRuntime(Integer.class)
         public static final String BURST_COUNT = "burst_count";
 
         /**
-         * 连发间隔，单位为毫秒（ms）
-         * 对于非 Burst 模式依然生效
+         * 연발 간격(밀리초, ms)
+         * Burst 모드가 아니어도 적용된다
          */
         @ValueModifiableAtRuntime(Long.class)
         public static final String BURST_SHOOT_INTERVAL = "burst_shoot_interval";
 
         /**
-         * 子弹寿命，单位为秒（s）
+         * 탄환 수명(초, s)
          */
         @ValueModifiableAtRuntime(Float.class)
         public static final String BULLET_LIFE = "bullet_life";
 
         /**
-         * 子弹重力
+         * 탄환 중력
          */
         @ValueModifiableAtRuntime(Float.class)
         public static final String BULLET_GRAVITY = "bullet_gravity";
 
         /**
-         * 子弹空气阻力
+         * 탄환 공기 저항
          */
         @ValueModifiableAtRuntime(Float.class)
         public static final String BULLET_FRICTION = "bullet_friction";
 
         /**
-         * 子弹声音传播距离
+         * 탄환 소리 전달 거리
          */
         @ValueModifiableAtRuntime(Integer.class)
         public static final String SOUND_DISTANCE = "sound_distance";
 
         /**
-         * 是否点燃实体
+         * 엔티티에 불을 붙일지
          */
         @ValueModifiableAtRuntime(Boolean.class)
         public static final String IGNITE_ENTITY = "ignite_entity";
 
         /**
-         * 点燃实体的时间，单位 tick
+         * 엔티티에 붙는 불의 지속 시간(틱)
          */
         @ValueModifiableAtRuntime(Integer.class)
         public static final String IGNITE_ENTITY_TIME = "ignite_entity_time";
 
         /**
-         * 是否点燃方块
+         * 블록에 불을 붙일지
          */
         @ValueModifiableAtRuntime(Boolean.class)
         public static final String IGNITE_BLOCK = "ignite_block";
 
         /**
-         * 子弹是否爆炸，
-         * 在子弹创建时被修改。
+         * 탄환이 폭발하는지.
+         * 탄환을 만들 때 바뀐다.
          */
         @ValueModifiableAtRuntime(Boolean.class)
         public static final String EXPLODE_ENABLED = "explode_enabled";
 
         /**
-         * 子弹爆炸伤害，
-         * 在子弹创建时被修改。
+         * 탄환 폭발 피해량.
+         * 탄환을 만들 때 바뀐다.
          */
         @ValueModifiableAtRuntime(Float.class)
         public static final String EXPLOSION_DAMAGE = "explosion_damage";
 
         /**
-         * 子弹爆炸半径，
-         * 在子弹创建时被修改。
+         * 탄환 폭발 반경.
+         * 탄환을 만들 때 바뀐다.
          */
         @ValueModifiableAtRuntime(Float.class)
         public static final String EXPLOSION_RADIUS = "explosion_radius";
 
         /**
-         * 子弹爆炸是否造成击退，
-         * 在子弹创建时被修改。
+         * 탄환 폭발이 밀어내기를 주는지.
+         * 탄환을 만들 때 바뀐다.
          */
         @ValueModifiableAtRuntime(Boolean.class)
         public static final String EXPLOSION_KNOCKBACK = "explosion_knockback";
 
         /**
-         * 子弹爆炸是否炸坏方块，
-         * 在子弹创建时被修改。
+         * 탄환 폭발이 블록을 부수는지.
+         * 탄환을 만들 때 바뀐다.
          */
         @ValueModifiableAtRuntime(Boolean.class)
         public static final String EXPLOSION_DESTROYS_BLOCK = "explosion_destroys_block";
 
         /**
-         * 子弹发射后到自动爆炸的延迟，单位为秒（s）
-         * 在子弹创建时被修改。
+         * 발사 후 자동으로 폭발할 때까지의 지연(초, s).
+         * 탄환을 만들 때 바뀐다.
          */
         @ValueModifiableAtRuntime(Float.class)
         public static final String EXPLOSION_DELAY = "explosion_delay";

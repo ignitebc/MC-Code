@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** 26.2 bob hooks using CameraRenderState signatures. */
+/** CameraRenderState 시그니처를 쓰는 26.2 흔들림 훅. */
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
     @Shadow @Final private Minecraft minecraft;
@@ -35,9 +35,9 @@ public abstract class GameRendererMixin {
                                     Matrix4fc projection,
                                     CallbackInfo ci) {
         this.tacz$renderingItemInHand = true;
-        // renderAllFeatures 每帧被调用多次（世界一次、手持一次），
-        // 瞄具只存在于手持那次。掩码必须只在那次绘制，否则世界那次会先把
-        // target 清空，把手持那次的结果冲掉。
+        // renderAllFeatures는 프레임마다 여러 번 호출되며(월드 한 번, 손에 든 것 한 번),
+        // 조준경은 손에 든 것을 그릴 때만 있다. 마스크는 그때만 그려야 한다. 아니면 월드 차례가 먼저
+        // target을 비워 손에 든 것 차례의 결과를 지워 버린다.
         ScopeMaskRenderer.setInHandPass(true);
     }
 

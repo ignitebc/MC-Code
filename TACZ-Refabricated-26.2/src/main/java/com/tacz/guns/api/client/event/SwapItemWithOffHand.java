@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 /**
- * 玩家交换主副手物品时触发该事件
+ * 플레이어가 주 손과 보조 손 아이템을 바꿀 때 발생하는 이벤트
  */
 public class SwapItemWithOffHand extends BaseEvent {
     public SwapItemWithOffHand() {

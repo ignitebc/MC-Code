@@ -1,10 +1,10 @@
 package com.tacz.guns.client.animation.statemachine;
 
 /**
- * 枪械动画状态机常用的常量，如状态转移的输入值
+ * 총기 애니메이션 상태 기계에서 자주 쓰는 상수(상태 전이 입력값 등)
  */
 public class GunAnimationConstant {
-    /*以下常量用于状态转移的输入*/
+    /*아래 상수는 상태 전이 입력에 쓴다*/
     public static final String INPUT_BOLT = "blot";
     public static final String INPUT_DRAW = "draw";
     public static final String INPUT_PUT_AWAY = "put_away";

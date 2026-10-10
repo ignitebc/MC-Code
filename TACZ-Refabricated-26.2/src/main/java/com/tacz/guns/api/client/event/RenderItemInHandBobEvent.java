@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 /**
- * 当第一人称视角触发摇晃时，玩家手部的摇晃
+ * 1인칭 시점이 흔들릴 때의 플레이어 손 흔들림
  */
 public class RenderItemInHandBobEvent extends BaseEvent {
     public static final Event<HurtCallback> HURT = EventFactory.createArrayBacked(HurtCallback.class, callbacks -> event -> {

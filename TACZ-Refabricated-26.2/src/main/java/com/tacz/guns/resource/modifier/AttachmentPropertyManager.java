@@ -59,18 +59,18 @@ public class AttachmentPropertyManager {
         Identifier gunId = iGun.getGunId(gunItem);
         TimelessAPI.getCommonGunIndex(gunId).ifPresent(index -> {
             AttachmentCacheProperty cacheProperty = new AttachmentCacheProperty();
-            // 发布事件
+            // 이벤트 발행
             AttachmentPropertyEvent event = new AttachmentPropertyEvent(gunItem, cacheProperty);
             ChangeGunPropertyEvent.internalOnAttachmentPropertyEvent(event);
             AttachmentPropertyEvent.CALLBACK.invoker().post(event);
-            // 让脚本更新缓存
+            // 스크립트가 캐시를 갱신하게 한다
             IGunOperator operator = IGunOperator.fromLivingEntity(shooter);
             ShooterDataHolder dataHolder = operator.getDataHolder();
             GunProperties.allCacheModifiableByScript().forEach((id, property) -> {
                 // noinspection rawtypes,unchecked
                 iGun.modifyProperty(dataHolder, gunItem, shooter, "modify_cached_property", property.name(), (Class) property.type(), cacheProperty.getCache(property));
             });
-            // 更新实体的缓存对象
+            // 엔티티의 캐시 객체 갱신
             operator.updateCacheProperty(cacheProperty);
         });
     }
@@ -102,10 +102,10 @@ public class AttachmentPropertyManager {
 
     public static boolean eval(List<Boolean> modified, boolean defaultValue) {
         if (defaultValue) {
-            // 如果默认值为 true，那么只要有一个 false 就返回 false
+            // 기본값이 true이면 false가 하나라도 있으면 false를 돌려준다
             return modified.stream().allMatch(s -> s);
         } else {
-            // 如果默认值为 false，那么只要有一个 true 就返回 true
+            // 기본값이 false이면 true가 하나라도 있으면 true를 돌려준다
             return modified.stream().anyMatch(s -> s);
         }
     }

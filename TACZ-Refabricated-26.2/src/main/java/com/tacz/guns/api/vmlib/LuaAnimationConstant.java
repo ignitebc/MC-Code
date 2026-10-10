@@ -11,8 +11,8 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 
 /**
- * 此类用于在 Lua 脚本中引入 ContextConstant 定义的常量，如播放类型等。
- * 调用 install 方法直接将常量注入环境
+ * ContextConstant가 정의한 재생 방식 등의 상수를 Lua 스크립트에 넣기 위한 클래스.
+ * install 메서드를 호출하면 상수를 환경에 바로 주입한다
  *
  * @see AnimationConstant
  */
@@ -20,13 +20,13 @@ public class LuaAnimationConstant implements LuaLibrary {
     private final Map<String, Object> constantMap = Maps.newHashMap();
 
     public LuaAnimationConstant() {
-        // 获取 AnimationConstant 中所有 public 字段
+        // AnimationConstant의 public 필드를 모두 얻는다
         Field[] fields = AnimationConstant.class.getFields();
-        // 将 static final 的常量字段提取到 constantMap
+        // static final 상수 필드를 constantMap에 뽑아낸다
         for (Field field : fields) {
             if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
                 try {
-                    // 获取变量名和值
+                    // 변수 이름과 값을 얻는다
                     String name = field.getName();
                     Object value = field.get(null);
                     constantMap.put(name, value);
@@ -36,7 +36,7 @@ public class LuaAnimationConstant implements LuaLibrary {
             }
         }
 
-        // 映射 PlayType 枚举
+        // PlayType 열거형 대응
         for (var playType : ObjectAnimation.PlayType.values()) {
             constantMap.put(playType.name(), playType.ordinal());
         }

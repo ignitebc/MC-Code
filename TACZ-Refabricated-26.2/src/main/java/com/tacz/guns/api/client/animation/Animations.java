@@ -29,16 +29,16 @@ public class Animations {
         for (AnimationModel animationModel : animationModels) {
             ObjectAnimation animation = new ObjectAnimation(animationModel.getName());
 
-            // 初始化动画轨道
+            // 애니메이션 트랙 초기화
             List<AnimationModel.Channel> channelModels = animationModel.getChannels();
             for (AnimationModel.Channel channelModel : channelModels) {
                 ObjectAnimationChannel channel = new ObjectAnimationChannel(ObjectAnimationChannel.ChannelType.valueOf(channelModel.path().toUpperCase(Locale.ENGLISH)));
                 AnimationModel.Sampler sampler = channelModel.sampler();
 
-                // 初始化轨道的节点名称和插值器
+                // 트랙의 노드 이름과 보간기 초기화
                 AnimationModel.Interpolation interpolation = sampler.interpolation();
                 NodeModel nodeModel = channelModel.nodeModel();
-                // 四元数需要特殊的插值
+                // 사원수는 특수한 보간이 필요하다
                 if (channel.type.equals(ObjectAnimationChannel.ChannelType.ROTATION) && interpolation.equals(AnimationModel.Interpolation.LINEAR)) {
                     channel.interpolator = InterpolatorUtil.fromInterpolation(InterpolatorUtil.InterpolatorType.SLERP);
                 } else {
@@ -46,7 +46,7 @@ public class Animations {
                 }
                 channel.node = nodeModel.getName();
 
-                // 计算出各个初始值的逆
+                // 각 초깃값의 역을 계산한다
                 AnimationListener animationListener = supplier.supplyListeners(channel.node, channel.type);
                 if (animationListener == null) {
                     continue;
@@ -63,14 +63,14 @@ public class Animations {
                     inverseValue[2] = -inverseValue[2];
                 }
 
-                // 初始化轨道的关键帧时间和关键帧数值
-                // 关键帧时间的访问器
+                // 트랙의 키프레임 시간과 키프레임 값 초기화
+                // 키프레임 시간 접근자
                 AccessorModel input = sampler.input();
                 AccessorData inputData = input.getAccessorData();
                 if (!(inputData instanceof AccessorFloatData inputFloatData)) {
                     throw new IllegalArgumentException("Input data is not an AccessorFloatData, but " + inputData.getClass());
                 }
-                // 关键帧时间的访问器
+                // 키프레임 시간 접근자
                 AccessorModel output = sampler.output();
                 AccessorData outputData = output.getAccessorData();
                 if (!(outputData instanceof AccessorFloatData outputFloatData)) {
@@ -98,14 +98,14 @@ public class Animations {
                 channel.content.keyframeTimeS = keyframeTimeS;
                 channel.content.values = values;
 
-                // 加载完所有内容后编译插值器
+                // 모든 내용을 불러온 뒤 보간기를 컴파일한다
                 channel.interpolator.compile(channel.content);
 
-                // 将轨道添加到动画
+                // 트랙을 애니메이션에 추가한다
                 animation.addChannel(channel);
             }
 
-            // 将动画添加到原型列表中
+            // 애니메이션을 원형 목록에 추가한다
             prototypes.add(animation);
         }
         return new AnimationController(prototypes, supplier);
@@ -130,7 +130,7 @@ public class Animations {
                         ObjectAnimationChannel translationChannel = new ObjectAnimationChannel(ObjectAnimationChannel.ChannelType.TRANSLATION);
                         translationChannel.node = boneEntry.getKey();
                         translationChannel.interpolator = new CustomInterpolator();
-                        // 将位移数据转移进 AnimationChannel
+                        // 이동 데이터를 AnimationChannel로 옮긴다
                         writeBedrockTranslation(translationChannel, bone.getPosition());
                         translationChannel.interpolator.compile(translationChannel.content);
                         animation.addChannel(translationChannel);
@@ -139,7 +139,7 @@ public class Animations {
                         ObjectAnimationChannel rotationChannel = new ObjectAnimationChannel(ObjectAnimationChannel.ChannelType.ROTATION);
                         rotationChannel.node = boneEntry.getKey();
                         rotationChannel.interpolator = new CustomInterpolator();
-                        // 将旋转数据转移进 AnimationChannel
+                        // 회전 데이터를 AnimationChannel로 옮긴다
                         writeBedrockRotation(rotationChannel, bone.getRotation());
                         rotationChannel.interpolator.compile(rotationChannel.content);
                         animation.addChannel(rotationChannel);
@@ -148,14 +148,14 @@ public class Animations {
                         ObjectAnimationChannel scaleChannel = new ObjectAnimationChannel(ObjectAnimationChannel.ChannelType.SCALE);
                         scaleChannel.node = boneEntry.getKey();
                         scaleChannel.interpolator = new CustomInterpolator();
-                        // 将缩放数据转移进 AnimationChannel
+                        // 크기 데이터를 AnimationChannel로 옮긴다
                         writeBedrockScale(scaleChannel, bone.getScale());
                         scaleChannel.interpolator.compile(scaleChannel.content);
                         animation.addChannel(scaleChannel);
                     }
                 }
             }
-            // 将声音数据转移到 ObjectAnimation 中
+            // 소리 데이터를 ObjectAnimation으로 옮긴다
             SoundEffectKeyframes soundEffectKeyframes = bedrockAnimation.getSoundEffects();
             if (soundEffectKeyframes != null) {
                 ObjectAnimationSoundChannel soundChannel = new ObjectAnimationSoundChannel();
@@ -177,17 +177,17 @@ public class Animations {
     }
 
     private static void writeBedrockTranslation(ObjectAnimationChannel animationChannel, AnimationKeyframes keyframes) {
-        // 基岩版动画中储存的动画数据为相对值，而 tac 的动画系统使用的是绝对值，所以需要叠加初始值。
-        // 此处就是在获取动画数据的初始值。
+        // 베드락 애니메이션 데이터는 상대값이지만 tac 애니메이션 시스템은 절대값을 쓰므로 초깃값을 더해야 한다.
+        // 여기서 애니메이션 데이터의 초깃값을 구한다.
         Double2ObjectRBTreeMap<AnimationKeyframes.Keyframe> keyframesMap = keyframes.getKeyframes();
         animationChannel.content.keyframeTimeS = new float[keyframesMap.size()];
         animationChannel.content.values = new float[keyframesMap.size()][];
         animationChannel.content.lerpModes = new AnimationChannelContent.LerpMode[keyframesMap.size()];
         int index = 0;
         for (Double2ObjectMap.Entry<AnimationKeyframes.Keyframe> entry : keyframesMap.double2ObjectEntrySet()) {
-            // 写入关键帧时间
+            // 키프레임 시간 기록
             animationChannel.content.keyframeTimeS[index] = (float) entry.getDoubleKey();
-            // 写入关键帧数值。
+            // 키프레임 값 기록.
             AnimationKeyframes.Keyframe keyframe = entry.getValue();
             if (keyframe.pre() != null || keyframe.post() != null) {
                 if (keyframe.pre() != null && keyframe.post() != null) {
@@ -215,7 +215,7 @@ public class Animations {
                 data.mul(1 / 16f, 1 / 16f, 1 / 16f);
                 readVector3fToArray(animationChannel.content.values[index], data, 0);
             }
-            // 写入关键帧插值类型
+            // 키프레임 보간 종류 기록
             String lerpModeName = keyframe.lerpMode();
             if (lerpModeName != null) {
                 try {
@@ -237,9 +237,9 @@ public class Animations {
         animationChannel.content.lerpModes = new AnimationChannelContent.LerpMode[keyframesMap.size()];
         int index = 0;
         for (Double2ObjectMap.Entry<AnimationKeyframes.Keyframe> entry : keyframesMap.double2ObjectEntrySet()) {
-            // 写入关键帧时间
+            // 키프레임 시간 기록
             animationChannel.content.keyframeTimeS[index] = (float) entry.getDoubleKey();
-            // 写入关键帧数值。
+            // 키프레임 값 기록.
             AnimationKeyframes.Keyframe keyframe = entry.getValue();
             if (keyframe.pre() != null || keyframe.post() != null) {
                 if (keyframe.pre() != null && keyframe.post() != null) {
@@ -298,9 +298,9 @@ public class Animations {
         animationChannel.content.lerpModes = new AnimationChannelContent.LerpMode[keyframesMap.size()];
         int index = 0;
         for (Double2ObjectMap.Entry<AnimationKeyframes.Keyframe> entry : keyframesMap.double2ObjectEntrySet()) {
-            // 写入关键帧时间
+            // 키프레임 시간 기록
             animationChannel.content.keyframeTimeS[index] = (float) entry.getDoubleKey();
-            // 写入关键帧数值。
+            // 키프레임 값 기록.
             AnimationKeyframes.Keyframe keyframe = entry.getValue();
             if (keyframe.pre() != null || keyframe.post() != null) {
                 if (keyframe.pre() != null && keyframe.post() != null) {
@@ -323,7 +323,7 @@ public class Animations {
                 Vector3f data = keyframe.data();
                 readVector3fToArray(animationChannel.content.values[index], data, 0);
             }
-            // 写入关键帧插值类型
+            // 키프레임 보간 종류 기록
             String lerpModeName = keyframe.lerpMode();
             if (lerpModeName != null) {
                 try {

@@ -30,7 +30,7 @@ import static com.tacz.guns.block.TargetBlock.STAND;
 public class TargetBlockEntity extends BlockEntity implements Nameable {
     public static final BlockEntityType<TargetBlockEntity> TYPE = new BlockEntityType<>(TargetBlockEntity::new, Set.of(ModBlocks.TARGET));
     /**
-     * 标靶复位时间，暂定为 5 秒
+     * 과녁이 되돌아오는 시간. 우선 5초로 둔다
      */
     private static final int RESET_TIME = 5 * 20;
     private static final String OWNER_TAG = "Owner";
@@ -60,7 +60,7 @@ public class TargetBlockEntity extends BlockEntity implements Nameable {
 
     public void setOwner(@Nullable GameProfile owner) {
         this.owner = owner;
-        // 26.2: SkullBlockEntity.updateGameprofile removed. Just refresh directly.
+        // 26.2: SkullBlockEntity.updateGameprofile은 제거되었다. 바로 새로 고친다.
         this.refresh();
     }
 
@@ -122,13 +122,13 @@ public class TargetBlockEntity extends BlockEntity implements Nameable {
         }
     }
 
-    // In Minecraft 26.2+, getRenderBoundingBox() is handled differently
-    // Rendering bounds are now typically managed through BlockEntityRenderers
+    // Minecraft 26.2+에서는 getRenderBoundingBox()를 다르게 처리한다
+    // 렌더링 범위는 이제 보통 BlockEntityRenderer가 관리한다
 
     public void hit(Level level, BlockState state, BlockHitResult hit, boolean isUpperBlock) {
         if (this.level != null && state.getValue(STAND)) {
             BlockPos blockPos = hit.getBlockPos();
-            // 如果是击中上方，把状态移动到下方处理
+            // 위쪽에 맞으면 상태를 아래쪽으로 옮겨 처리한다
             if (isUpperBlock) {
                 blockPos = blockPos.below();
                 state = level.getBlockState(blockPos);
@@ -136,8 +136,8 @@ public class TargetBlockEntity extends BlockEntity implements Nameable {
             int redstoneStrength = TargetBlock.getRedstoneStrength(hit, isUpperBlock);
             level.setBlock(blockPos, state.setValue(STAND, false).setValue(OUTPUT_POWER, redstoneStrength), Block.UPDATE_ALL);
             level.scheduleTick(blockPos, state.getBlock(), RESET_TIME);
-            // 原版的声音传播距离由 volume 决定
-            // 当声音大于 1 时，距离为 = 16 * volume
+            // 바닐라 소리 전달 거리는 volume이 정한다
+            // 소리가 1보다 크면 거리 = 16 * volume
             float volume = OtherConfig.TARGET_SOUND_DISTANCE.get() / 16.0f;
             volume = Math.max(volume, 0);
             level.playSound(null, blockPos, ModSounds.TARGET_HIT, SoundSource.BLOCKS, volume, this.level.getRandom().nextFloat() * 0.1F + 0.9F);

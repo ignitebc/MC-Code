@@ -28,7 +28,7 @@ import org.joml.Matrix3x2fStack;
 import java.text.DecimalFormat;
 
 /**
- * 26.2 HUD implementation using Fabric HudElementRegistry + GuiGraphicsExtractor.
+ * Fabric HudElementRegistry + GuiGraphicsExtractor를 쓰는 26.2 HUD 구현.
  */
 public class GunHudOverlay {
     private static final Identifier FIRE_MODE_SEMI =
@@ -82,16 +82,16 @@ public class GunHudOverlay {
                 iGun.getCurrentAmmoCount(stack) + (iGun.hasBulletInBarrel(stack) && gunData.getBolt() != Bolt.OPEN_BOLT ? 1 : 0);
         ammoCount = Math.min(ammoCount, MAX_AMMO_COUNT);
 
-        // 【顺序】先算缓存, 再画 —— 上游是先画后算, 导致首帧用的是上一帧的
-        // cacheMaxAmmoCount, 百分比模式下切枪瞬间会闪一下错误数字。这里修正。
+        // [순서] 캐시를 먼저 계산한 뒤 그린다 — 원본은 먼저 그리고 나서 계산해, 첫 프레임에 직전 프레임의
+        // cacheMaxAmmoCount를 써서 백분율 모드에서 총을 바꾸는 순간 틀린 숫자가 깜박였다. 여기서 고쳤다.
         handleCacheCount(player, stack, gunData, iGun, useInventoryAmmo);
 
         int width = graphics.guiWidth();
         // 오른쪽 하단은 소리 자막과 겹치므로 오른쪽 상단에 붙인다. 가로 배치는 상류 1.21.1 과 같다.
         int top = hudTop(player);
 
-        // 弹药数颜色: 余弹告急 / 过热 -> 红; 背包直读+虚拟备弹 -> 青;
-        // 仅背包直读 -> 黄; 其余 -> 白
+        // 탄약 수 색: 탄 부족 / 과열 -> 빨강, 인벤토리 급탄+가상 예비 탄약 -> 청록,
+        // 인벤토리 급탄만 -> 노랑, 그 밖 -> 흰색
         int ammoCountColor;
         if (ammoCount < (cacheMaxAmmoCount * 0.25) && ammoCount < 10 || overheatLocked) {
             ammoCountColor = 0xFFFF5555;
@@ -99,10 +99,10 @@ public class GunHudOverlay {
             ammoCountColor = useInventoryAmmo && useDummyAmmo ? 0xFF55FFFF
                     : useInventoryAmmo ? 0xFFFFFF55 : 0xFFFFFFFF;
         }
-        // 备弹颜色
+        // 예비 탄약 색
         int inventoryAmmoCountColor = (!useInventoryAmmo && useDummyAmmo) ? 0xFF55FFFF : 0xFFAAAAAA;
 
-        // 当前弹药数文本
+        // 현재 탄약 수 글자
         String currentAmmoCountText;
         if (display != null && display.getAmmoCountStyle() == AmmoCountStyle.PERCENT) {
             currentAmmoCountText = CURRENT_AMMO_FORMAT_PERCENT.format(
@@ -111,7 +111,7 @@ public class GunHudOverlay {
             currentAmmoCountText = CURRENT_AMMO_FORMAT.format(ammoCount);
         }
 
-        // 备弹文本: 背包直读模式不显示备弹; 无限备弹显示 ∞
+        // 예비 탄약 글자: 인벤토리 급탄 모드에서는 표시하지 않고, 무한 예비 탄약은 ∞로 표시한다
         String inventoryAmmoCountText = useInventoryAmmo ? ""
                 : INVENTORY_AMMO_FORMAT.format(Math.min(cacheInventoryAmmoCount, MAX_AMMO_COUNT));
         if (!useInventoryAmmo && gunData.getReloadData().isInfinite()) {
@@ -121,17 +121,17 @@ public class GunHudOverlay {
         Font font = mc.font;
         Matrix3x2fStack poseStack = graphics.pose();
 
-        // 竖线分隔符
+        // 세로 구분선
         graphics.fill(width - 75, top, width - 74, top + 14, 0xFFFFFFFF);
 
-        // 当前弹药数 (1.5 倍字号)
+        // 현재 탄약 수(1.5배 글자 크기)
         poseStack.pushMatrix();
         poseStack.scale(1.5f, 1.5f);
         graphics.text(font, currentAmmoCountText,
                 (int) ((width - 70) / 1.5f), (int) (top / 1.5f), ammoCountColor, false);
         poseStack.popMatrix();
 
-        // 备弹数 (0.8 倍字号, 紧跟在当前弹药数右侧)
+        // 예비 탄약 수(0.8배 글자 크기, 현재 탄약 수 바로 오른쪽)
         poseStack.pushMatrix();
         poseStack.scale(0.8f, 0.8f);
         graphics.text(font, inventoryAmmoCountText,
@@ -139,15 +139,15 @@ public class GunHudOverlay {
                 (int) (top / 0.8f), inventoryAmmoCountColor, false);
         poseStack.popMatrix();
 
-        // 枪械图标。弹尽/过热时若有专用空仓图标就换图, 否则染红。
+        // 총기 아이콘. 탄이 떨어지거나 과열되면 전용 빈 탄창 아이콘이 있으면 바꾸고, 없으면 빨갛게 물들인다.
         if (display != null) {
             Identifier hudTexture = display.getHUDTexture();
             Identifier hudEmptyTexture = display.getHudEmptyTexture();
             int hudTint = 0xFFFFFFFF;
             if (ammoCount <= 0 || overheatLocked) {
                 if (hudEmptyTexture == null) {
-                    // 上游用 RenderSystem.setShaderColor(1,0.3,0.3,1); 26.2 该 API 已移除,
-                    // 改用 blit 的 tint 参数 —— 等价且不依赖全局状态。
+                    // 원본은 RenderSystem.setShaderColor(1,0.3,0.3,1)를 썼지만 26.2에서 이 API가 제거되어,
+                    // blit의 tint 인자를 쓴다 — 동등하며 전역 상태에 기대지 않는다.
                     hudTint = 0xFFFF4D4D;
                 } else {
                     hudTexture = hudEmptyTexture;
@@ -159,7 +159,7 @@ public class GunHudOverlay {
             }
         }
 
-        // 开火模式图标
+        // 발사 모드 아이콘
         Identifier fireModeTexture = switch (iGun.getFireMode(stack)) {
             case AUTO -> FIRE_MODE_AUTO;
             case BURST -> FIRE_MODE_BURST;

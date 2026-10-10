@@ -6,11 +6,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 资源后台预热器。
+ * 자원 백그라운드 예열기.
  *
- * <p>这个池本来就是 daemon（唯一一个），改用统一工厂只为口径一致 ——
- * 三个池各写各的 daemon 逻辑正是上一轮漏掉两个的原因。
- * 为什么必须 daemon 见 {@link TaczThreads}。
+ * <p>이 풀은 원래부터 데몬(유일한 하나)이었고, 기준을 맞추려고 공통 팩토리로 바꿨을 뿐이다 —
+ * 풀 세 개가 각자 데몬 로직을 쓴 것이 지난번에 두 개를 놓친 원인이었다.
+ * 데몬이어야 하는 이유는 {@link TaczThreads} 참고.
  */
 public final class ClientAssetLoadDispatcher {
     private static final ExecutorService EXECUTOR =

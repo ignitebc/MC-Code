@@ -24,13 +24,13 @@ public class TickAnimationEvent {
             if (animationStateMachine == null) {
                 return;
             }
-            // 群组服切世界导致的特殊 BUG 处理，正常情况不会遇到此问题
+            // 연동 서버에서 월드를 옮길 때 생기는 특수 버그 처리. 보통은 이 문제가 생기지 않는다
             if (player.input == null) {
                 animationStateMachine.trigger(GunAnimationConstant.INPUT_IDLE);
                 return;
             }
             if (!player.isMovingSlowly() && player.isSprinting()) {
-                // 如果玩家正在移动，播放移动动画，否则播放 idle 动画
+                // 플레이어가 움직이면 이동 애니메이션을, 아니면 idle 애니메이션을 재생한다
                 animationStateMachine.trigger(GunAnimationConstant.INPUT_RUN);
             } else if (!player.isMovingSlowly() && player.input.getMoveVector().length() > 0.01) {
                 animationStateMachine.trigger(GunAnimationConstant.INPUT_WALK);
@@ -53,7 +53,7 @@ public class TickAnimationEvent {
         }
         ItemStack mainHandItem = player.getMainHandItem();
         if (BuiltinItemRendererRegistry.INSTANCE.get(mainHandItem.getItem()) instanceof AnimateGeoItemRenderer<?, ?> renderer) {
-            // 如果物品不一样了，先尝试初始化状态机
+            // 아이템이 바뀌었으면 먼저 상태 기계를 초기화해 본다
             if (renderer.needReInit(mainHandItem)) {
                 renderer.tryInit(mainHandItem, player, event.renderTickTime);
             }

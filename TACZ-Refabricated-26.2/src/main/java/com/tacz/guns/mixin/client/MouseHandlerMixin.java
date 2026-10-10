@@ -52,7 +52,7 @@ public class MouseHandlerMixin {
         }
         float zoomLevel = 1;
         if (DefaultAssets.isEmptyAttachmentId(scopeId)) {
-            // 缩放倍率
+            // 확대 배율
             zoomLevel = TimelessAPI.getGunDisplay(mainHandItem).map(GunDisplayInstance::getIronZoom).orElse(1f);
         } else {
             Optional<ClientAttachmentIndex> optional = TimelessAPI.getClientAttachmentIndex(scopeId);
@@ -66,16 +66,16 @@ public class MouseHandlerMixin {
         }
         Minecraft minecraft = Minecraft.getInstance();
         float progress = IGunOperator.fromLivingEntity(player).getSynAimingProgress();
-        // 开镜灵敏度系数
+        // 조준 감도 계수
         double sensitivityMultiplier = ZoomConfig.ZOOM_SENSITIVITY_BASE_MULTIPLIER.get();
         sensitivityMultiplier = 1 + (sensitivityMultiplier - 1) * progress;
-        // 两种状态下的 fov 计算
+        // 두 상태의 fov 계산
         double originalFov = minecraft.options.fov().get();
         double currentFov = MathUtil.magnificationToFov(1 + (zoomLevel - 1) * progress, originalFov);
-        // 荧幕距离系数，MC 和 COD 一样使用 MDV 标准，默认为 MDV133（系数为 1.33）
+        // 화면 거리 계수. MC는 COD처럼 MDV 기준을 쓰며 기본은 MDV133(계수 1.33)이다
         double coefficient = ZoomConfig.SCREEN_DISTANCE_COEFFICIENT.get();
         double denominator = MathUtil.zoomSensitivityRatio(currentFov, originalFov, coefficient) * sensitivityMultiplier;
-        // 最终结果
+        // 최종 결과
         double finalYaw = yaw * denominator;
         double finalPitch = getCrawlPitch(player, pitch, denominator);
         original.call(player, finalYaw, finalPitch);
@@ -84,15 +84,15 @@ public class MouseHandlerMixin {
     @Unique
     private static double getCrawlPitch(LocalPlayer player, double pitch, double denominator) {
         double finalPitch = pitch * denominator;
-        // 如果是趴下，那么还需要限制 pitch 范围
+        // 엎드린 상태이면 pitch 범위도 제한해야 한다
         if (!player.isSwimming() && player.getPose() == Pose.SWIMMING) {
-            // 仰角正负是反的
+            // 올려다보는 각의 부호는 반대다
             float playerPitch = -player.getXRot();
-            // 如果玩家上仰超过 25 度，不允许上
+            // 플레이어가 25도 넘게 올려다보면 더 올리지 못하게 한다
             if (playerPitch > 45) {
                 finalPitch = Math.max(finalPitch, 0);
             }
-            // 下俯超过 25 度，不允许下
+            // 25도 넘게 내려다보면 더 내리지 못하게 한다
             if (playerPitch < -30) {
                 finalPitch = Math.min(finalPitch, 0);
             }

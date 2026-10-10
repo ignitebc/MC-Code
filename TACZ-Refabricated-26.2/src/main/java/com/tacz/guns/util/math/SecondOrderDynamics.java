@@ -7,15 +7,15 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class SecondOrderDynamics {
     /**
-     * 每个实例占用一个线程跑 {@link #update()} 死循环，所以池容量必须 >= 实例数。
+     * 인스턴스마다 스레드 하나를 차지해 {@link #update()} 무한 반복을 돌리므로 풀 용량은 인스턴스 수 이상이어야 한다.
      *
-     * <p><b>必须是 daemon 池</b>：{@code update()} 是 {@code while (!stop)} 死循环，
-     * 而 {@code stop()} 全仓从未被调用；同时有 5 个常驻实例。
-     * 原先用的 {@code Thread::new} 会<b>继承创建者线程</b>的 daemon 属性
-     * —— 静态初始化块由谁先触发就随谁，等于把「关闭游戏会不会崩」交给运气。
-     * 一旦摊上非 daemon，这 5 个线程就会卡住 JVM 退出，
-     * 15 秒后 {@code ClientShutdownWatchdog} 发一份崩溃报告。
-     * 详见 {@link TaczThreads}。
+     * <p><b>반드시 daemon 풀이어야 한다</b>: {@code update()}는 {@code while (!stop)} 무한 반복인데
+     * {@code stop()}은 저장소 전체에서 한 번도 호출되지 않으며, 상주 인스턴스가 5개 있다.
+     * 원래 쓰던 {@code Thread::new}는 <b>만든 스레드</b>의 daemon 속성을 물려받는다
+     * — 정적 초기화 블록을 누가 먼저 일으키느냐에 따르므로 "게임을 닫을 때 충돌하는지"를 운에 맡긴 셈이다.
+     * non-daemon이 걸리면 이 5개 스레드가 JVM 종료를 막아
+     * 15초 뒤 {@code ClientShutdownWatchdog}가 충돌 보고서를 낸다.
+     * 자세한 내용은 {@link TaczThreads} 참고.
      */
     public static final ScheduledExecutorService executorService =
             Executors.newScheduledThreadPool(15, TaczThreads.daemonFactory("tacz-dynamics"));
@@ -40,10 +40,10 @@ public class SecondOrderDynamics {
     private boolean stop = false;
 
     /**
-     * @param f  Natural frequency
-     * @param z  Damping coefficient
-     * @param r  Initial velocity
-     * @param x0 Initial position
+     * @param f  고유 진동수
+     * @param z  감쇠 계수
+     * @param r  초기 속도
+     * @param x0 초기 위치
      */
     public SecondOrderDynamics(float f, float z, float r, float x0) {
         k1 = (float) (z / (Math.PI * f));
@@ -59,7 +59,7 @@ public class SecondOrderDynamics {
     }
 
     /**
-     * @return processed y value
+     * @return 처리한 y 값
      */
     public float update(float x) {
         target = x;
@@ -67,7 +67,7 @@ public class SecondOrderDynamics {
     }
 
     public float get() {
-        // 修正罕见的 NAN 错误
+        // 드물게 생기는 NAN 오류를 고친다
         if (Float.isNaN(py)) {
             py = 0;
         }
@@ -83,7 +83,7 @@ public class SecondOrderDynamics {
 
     private void update() {
         while (!stop) {
-            // 修正罕见的 NAN 错误
+            // 드물게 생기는 NAN 오류를 고친다
             if (Float.isNaN(py)) {
                 py = 0;
             }

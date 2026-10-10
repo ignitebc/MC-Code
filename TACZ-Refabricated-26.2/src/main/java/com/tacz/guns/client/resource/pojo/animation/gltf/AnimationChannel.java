@@ -2,31 +2,31 @@ package com.tacz.guns.client.resource.pojo.animation.gltf;
 
 public class AnimationChannel {
     /**
-     * The index of a sampler in this animation used to compute the value for
-     * the target. (required)
+     * 대상 값을 계산하는 데 쓰는, 이 애니메이션 안 샘플러의
+     * 인덱스. (필수)
      */
     private Integer sampler;
     /**
-     * The descriptor of the animated property. (required)
+     * 애니메이션되는 속성의 설명자. (필수)
      */
     private AnimationChannelTarget target;
 
     /**
-     * The index of a sampler in this animation used to compute the value for
-     * the target. (required)
+     * 대상 값을 계산하는 데 쓰는, 이 애니메이션 안 샘플러의
+     * 인덱스. (필수)
      *
-     * @return The sampler
+     * @return sampler
      */
     public Integer getSampler() {
         return this.sampler;
     }
 
     /**
-     * The index of a sampler in this animation used to compute the value for
-     * the target. (required)
+     * 대상 값을 계산하는 데 쓰는, 이 애니메이션 안 샘플러의
+     * 인덱스. (필수)
      *
-     * @param sampler The sampler to set
-     * @throws NullPointerException If the given value is <code>null</code>
+     * @param sampler 설정할 sampler
+     * @throws NullPointerException 주어진 값이 <code>null</code>일 때
      */
     public void setSampler(Integer sampler) {
         if (sampler == null) {
@@ -36,19 +36,19 @@ public class AnimationChannel {
     }
 
     /**
-     * The descriptor of the animated property. (required)
+     * 애니메이션되는 속성의 설명자. (필수)
      *
-     * @return The target
+     * @return target
      */
     public AnimationChannelTarget getTarget() {
         return this.target;
     }
 
     /**
-     * The descriptor of the animated property. (required)
+     * 애니메이션되는 속성의 설명자. (필수)
      *
-     * @param target The target to set
-     * @throws NullPointerException If the given value is <code>null</code>
+     * @param target 설정할 target
+     * @throws NullPointerException 주어진 값이 <code>null</code>일 때
      */
     public void setTarget(AnimationChannelTarget target) {
         if (target == null) {

@@ -13,11 +13,11 @@ import java.util.Optional;
 import java.util.WeakHashMap;
 
 /**
- * 26.2: CCA 5.2.3 与 Mojang 映射不兼容，改用 WeakHashMap 存储实体数据
+ * 26.2: CCA 5.2.3이 Mojang 매핑과 호환되지 않아 WeakHashMap으로 엔티티 데이터를 저장한다
  */
 public class DataHolderCapabilityProvider {
-    // Integrated client and server threads share this static map. A plain WeakHashMap can corrupt
-    // itself under concurrent access, so all lifecycle operations must be synchronized.
+    // 통합 클라이언트와 서버 스레드가 이 정적 맵을 함께 쓴다. 일반 WeakHashMap은 동시 접근 시
+    // 스스로 망가질 수 있으므로 모든 수명 주기 작업을 동기화해야 한다.
     private static final Map<Entity, DataHolderCapabilityProvider> INSTANCES =
             Collections.synchronizedMap(new WeakHashMap<>());
 

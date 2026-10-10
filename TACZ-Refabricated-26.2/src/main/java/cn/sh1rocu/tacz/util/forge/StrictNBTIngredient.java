@@ -14,8 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.stream.Stream;
 
 /**
- * 26.2: 迁移到 DataComponents 系统。
- * 原来的 NBT tag 比较改为使用 ItemStack.isSameItemSameComponents()。
+ * 26.2: DataComponents 체계로 옮겼다.
+ * 예전 NBT 태그 비교는 ItemStack.isSameItemSameComponents()로 바꿨다.
  */
 public class StrictNBTIngredient implements CustomIngredient {
     private final ItemStack stack;
@@ -25,7 +25,7 @@ public class StrictNBTIngredient implements CustomIngredient {
     }
 
     /**
-     * Creates a new ingredient matching the given stack and components
+     * 주어진 스택·컴포넌트와 일치하는 재료를 만든다
      */
     public static StrictNBTIngredient of(ItemStack stack) {
         return new StrictNBTIngredient(stack);

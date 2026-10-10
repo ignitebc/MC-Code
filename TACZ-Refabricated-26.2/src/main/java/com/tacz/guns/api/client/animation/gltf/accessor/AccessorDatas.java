@@ -33,26 +33,25 @@ import java.nio.ByteBuffer;
 import java.util.Locale;
 
 /**
- * Methods to create instances of the accessor data utility classes
- * that allow a <i>typed</i> access to the data that is contained in the
- * buffer view that the accessor refers to.<br>
+ * 접근자가 참조하는 버퍼 뷰의 데이터에 <i>타입별로</i> 접근하게 해 주는
+ * 접근자 데이터 도우미 클래스의 인스턴스를 만드는 메서드 모음.<br>
  * <br>
- * Unless otherwise noted, none of the arguments to these methods may
- * be <code>null</code>.
+ * 따로 적지 않았다면 이 메서드들의 인자는 모두
+ * <code>null</code>이면 안 된다.
  */
 public class AccessorDatas {
     /**
-     * Private constructor to prevent instantiation
+     * 인스턴스를 만들지 못하게 막는 비공개 생성자
      */
     private AccessorDatas() {
-        // Private constructor to prevent instantiation
+        // 인스턴스를 만들지 못하게 막는 비공개 생성자
     }
 
     /**
-     * Create the {@link AccessorData} for the given {@link AccessorModel}
+     * 주어진 {@link AccessorModel}의 {@link AccessorData}를 만든다
      *
-     * @param accessorModel The {@link AccessorModel}
-     * @return The {@link AccessorData}
+     * @param accessorModel {@link AccessorModel}
+     * @return {@link AccessorData}
      */
     public static AccessorData create(AccessorModel accessorModel) {
         BufferViewModel bufferViewModel = accessorModel.getBufferViewModel();
@@ -61,12 +60,12 @@ public class AccessorDatas {
     }
 
     /**
-     * Create the {@link AccessorData} for the given {@link AccessorModel}
-     * that refers to the data from the given buffer.
+     * 주어진 버퍼의 데이터를 참조하는 {@link AccessorModel}의
+     * {@link AccessorData}를 만든다.
      *
-     * @param accessorModel The {@link AccessorModel}
-     * @param byteBuffer    The byte buffer containing the data
-     * @return The {@link AccessorData}
+     * @param accessorModel {@link AccessorModel}
+     * @param byteBuffer    데이터가 든 바이트 버퍼
+     * @return {@link AccessorData}
      */
     public static AccessorData create(
             AccessorModel accessorModel, ByteBuffer byteBuffer) {
@@ -86,22 +85,22 @@ public class AccessorDatas {
     }
 
     /**
-     * Create an {@link AccessorData} depending on the given component type.
-     * This will return an {@link AccessorByteData}, {@link AccessorShortData},
-     * {@link AccessorIntData} or {@link AccessorFloatData}
+     * 주어진 성분 종류에 맞는 {@link AccessorData}를 만든다.
+     * {@link AccessorByteData}, {@link AccessorShortData},
+     * {@link AccessorIntData}, {@link AccessorFloatData} 중 하나를 돌려준다
      *
-     * @param componentType           The component type, as a GL constant (for example,
-     *                                <code>GL_UNSIGNED_SHORT</code> or <code>GL_FLOAT</code>)
-     * @param bufferViewData          The buffer view data that the accessor refers to
-     * @param byteOffset              The byte offset for the accessor
-     * @param count                   The count (number of elements) for the accessor
-     * @param numComponentsPerElement The number of components per element.
-     *                                For example, if the accessor type is <code>"VEC3"</code>, then this
-     *                                will be 3
-     * @param byteStride              The optional byte stride for the accessor data
-     * @return The {@link AccessorData}
-     * @throws IllegalArgumentException If the given component type is
-     *                                  not a valid GL constant
+     * @param componentType           GL 상수로 나타낸 성분 종류(예:
+     *                                <code>GL_UNSIGNED_SHORT</code>나 <code>GL_FLOAT</code>)
+     * @param bufferViewData          접근자가 참조하는 버퍼 뷰 데이터
+     * @param byteOffset              접근자의 바이트 오프셋
+     * @param count                   접근자의 개수(요소 수)
+     * @param numComponentsPerElement 요소당 성분 수.
+     *                                예를 들어 접근자 종류가 <code>"VEC3"</code>이면
+     *                                3이다
+     * @param byteStride              접근자 데이터의 선택적 바이트 간격
+     * @return {@link AccessorData}
+     * @throws IllegalArgumentException 주어진 성분 종류가
+     *                                  올바른 GL 상수가 아닐 때
      */
     public static AccessorData create(
             int componentType, ByteBuffer bufferViewData, int byteOffset,
@@ -131,11 +130,11 @@ public class AccessorDatas {
     }
 
     /**
-     * Returns whether the given constant is <code>GL_BYTE</code> or
-     * <code>GL_UNSIGNED_BYTE</code>.
+     * 주어진 상수가 <code>GL_BYTE</code>나
+     * <code>GL_UNSIGNED_BYTE</code>인지 돌려준다.
      *
-     * @param type The type constant
-     * @return Whether the type is a <code>byte</code> type
+     * @param type 종류 상수
+     * @return <code>byte</code> 종류인지
      */
     public static boolean isByteType(int type) {
         return
@@ -144,11 +143,11 @@ public class AccessorDatas {
     }
 
     /**
-     * Returns whether the given constant is <code>GL_SHORT</code> or
-     * <code>GL_UNSIGNED_SHORT</code>.
+     * 주어진 상수가 <code>GL_SHORT</code>나
+     * <code>GL_UNSIGNED_SHORT</code>인지 돌려준다.
      *
-     * @param type The type constant
-     * @return Whether the type is a <code>short</code> type
+     * @param type 종류 상수
+     * @return <code>short</code> 종류인지
      */
     public static boolean isShortType(int type) {
         return
@@ -157,11 +156,11 @@ public class AccessorDatas {
     }
 
     /**
-     * Returns whether the given constant is <code>GL_INT</code> or
-     * <code>GL_UNSIGNED_INT</code>.
+     * 주어진 상수가 <code>GL_INT</code>나
+     * <code>GL_UNSIGNED_INT</code>인지 돌려준다.
      *
-     * @param type The type constant
-     * @return Whether the type is an <code>int</code> type
+     * @param type 종류 상수
+     * @return <code>int</code> 종류인지
      */
     public static boolean isIntType(int type) {
         return
@@ -170,21 +169,21 @@ public class AccessorDatas {
     }
 
     /**
-     * Returns whether the given constant is <code>GL_FLOAT</code>.
+     * 주어진 상수가 <code>GL_FLOAT</code>인지 돌려준다.
      *
-     * @param type The type constant
-     * @return Whether the type is a <code>float</code> type
+     * @param type 종류 상수
+     * @return <code>float</code> 종류인지
      */
     public static boolean isFloatType(int type) {
         return type == GltfConstants.GL_FLOAT;
     }
 
     /**
-     * Returns whether the given constant is <code>GL_UNSIGNED_BYTE</code>,
-     * <code>GL_UNSIGNED_SHORT</code> or <code>GL_UNSIGNED_INT</code>.
+     * 주어진 상수가 <code>GL_UNSIGNED_BYTE</code>,
+     * <code>GL_UNSIGNED_SHORT</code>, <code>GL_UNSIGNED_INT</code> 중 하나인지 돌려준다.
      *
-     * @param type The type constant
-     * @return Whether the type is an unsigned type
+     * @param type 종류 상수
+     * @return 부호 없는 종류인지
      */
     static boolean isUnsignedType(int type) {
         return
@@ -194,13 +193,13 @@ public class AccessorDatas {
     }
 
     /**
-     * Make sure that the given type is <code>GL_BYTE</code> or
-     * <code>GL_UNSIGNED_BYTE</code>, and throw an
-     * <code>IllegalArgumentException</code> if this is not the case.
+     * 주어진 종류가 <code>GL_BYTE</code>나
+     * <code>GL_UNSIGNED_BYTE</code>인지 확인하고, 아니면
+     * <code>IllegalArgumentException</code>을 던진다.
      *
-     * @param type The type constant
-     * @throws IllegalArgumentException If the given type is not
-     *                                  <code>GL_BYTE</code> or <code>GL_UNSIGNED_BYTE</code>
+     * @param type 종류 상수
+     * @throws IllegalArgumentException 주어진 종류가
+     *                                  <code>GL_BYTE</code>나 <code>GL_UNSIGNED_BYTE</code>가 아닐 때
      */
     static void validateByteType(int type) {
         if (!isByteType(type)) {
@@ -211,13 +210,13 @@ public class AccessorDatas {
     }
 
     /**
-     * Make sure that the given type is <code>GL_SHORT</code> or
-     * <code>GL_UNSIGNED_SHORT</code>, and throw an
-     * <code>IllegalArgumentException</code> if this is not the case.
+     * 주어진 종류가 <code>GL_SHORT</code>나
+     * <code>GL_UNSIGNED_SHORT</code>인지 확인하고, 아니면
+     * <code>IllegalArgumentException</code>을 던진다.
      *
-     * @param type The type constant
-     * @throws IllegalArgumentException If the given type is not
-     *                                  <code>GL_SHORT</code> or <code>GL_UNSIGNED_BYTE</code>
+     * @param type 종류 상수
+     * @throws IllegalArgumentException 주어진 종류가
+     *                                  <code>GL_SHORT</code>나 <code>GL_UNSIGNED_BYTE</code>가 아닐 때
      */
     static void validateShortType(int type) {
         if (!isShortType(type)) {
@@ -228,13 +227,13 @@ public class AccessorDatas {
     }
 
     /**
-     * Make sure that the given type is <code>GL_INT</code> or
-     * <code>GL_UNSIGNED_INT</code>, and throw an
-     * <code>IllegalArgumentException</code> if this is not the case.
+     * 주어진 종류가 <code>GL_INT</code>나
+     * <code>GL_UNSIGNED_INT</code>인지 확인하고, 아니면
+     * <code>IllegalArgumentException</code>을 던진다.
      *
-     * @param type The type constant
-     * @throws IllegalArgumentException If the given type is not
-     *                                  <code>GL_INT</code> or <code>GL_UNSIGNED_INT</code>
+     * @param type 종류 상수
+     * @throws IllegalArgumentException 주어진 종류가
+     *                                  <code>GL_INT</code>나 <code>GL_UNSIGNED_INT</code>가 아닐 때
      */
     static void validateIntType(int type) {
         if (!isIntType(type)) {
@@ -245,12 +244,12 @@ public class AccessorDatas {
     }
 
     /**
-     * Make sure that the given type is <code>GL_FLOAT</code>, and throw an
-     * <code>IllegalArgumentException</code> if this is not the case.
+     * 주어진 종류가 <code>GL_FLOAT</code>인지 확인하고, 아니면
+     * <code>IllegalArgumentException</code>을 던진다.
      *
-     * @param type The type constant
-     * @throws IllegalArgumentException If the given type is not
-     *                                  <code>GL_FLOAT</code>
+     * @param type 종류 상수
+     * @throws IllegalArgumentException 주어진 종류가
+     *                                  <code>GL_FLOAT</code>가 아닐 때
      */
     static void validateFloatType(int type) {
         if (!isFloatType(type)) {
@@ -261,13 +260,13 @@ public class AccessorDatas {
     }
 
     /**
-     * Creates an {@link AccessorByteData} for the given {@link AccessorModel}
+     * 주어진 {@link AccessorModel}의 {@link AccessorByteData}를 만든다
      *
-     * @param accessorModel The {@link AccessorModel}
-     * @return The {@link AccessorByteData}
-     * @throws IllegalArgumentException If the
-     *                                  {@link AccessorModel#getComponentType() component type} of the given
-     *                                  accessor is not <code>GL_BYTE</code> or <code>GL_UNSIGNED_BYTE</code>
+     * @param accessorModel {@link AccessorModel}
+     * @return {@link AccessorByteData}
+     * @throws IllegalArgumentException 주어진 접근자의
+     *                                  {@link AccessorModel#getComponentType() 성분 종류}가
+     *                                  <code>GL_BYTE</code>나 <code>GL_UNSIGNED_BYTE</code>가 아닐 때
      */
     static AccessorByteData createByte(AccessorModel accessorModel) {
         BufferViewModel bufferViewModel = accessorModel.getBufferViewModel();
@@ -275,17 +274,17 @@ public class AccessorDatas {
     }
 
     /**
-     * Creates an {@link AccessorByteData} for the given {@link AccessorModel}
+     * 주어진 {@link AccessorModel}의 {@link AccessorByteData}를 만든다
      *
-     * @param accessorModel        The {@link AccessorModel}
-     * @param bufferViewByteBuffer The byte buffer of the
-     *                             {@link BufferViewModel} referenced by the {@link AccessorModel}
-     * @return The {@link AccessorByteData}
-     * @throws NullPointerException     If any argument is <code>null</code>
-     * @throws IllegalArgumentException If the
-     *                                  {@link AccessorModel#getComponentType() component type} of the given
-     *                                  accessorModel is not <code>GL_BYTE</code> or
-     *                                  <code>GL_UNSIGNED_BYTE</code>
+     * @param accessorModel        {@link AccessorModel}
+     * @param bufferViewByteBuffer {@link AccessorModel}이 참조하는
+     *                             {@link BufferViewModel}의 바이트 버퍼
+     * @return {@link AccessorByteData}
+     * @throws NullPointerException     인자 중 하나라도 <code>null</code>일 때
+     * @throws IllegalArgumentException 주어진 accessorModel의
+     *                                  {@link AccessorModel#getComponentType() 성분 종류}가
+     *                                  <code>GL_BYTE</code>나
+     *                                  <code>GL_UNSIGNED_BYTE</code>가 아닐 때
      */
     private static AccessorByteData createByte(
             AccessorModel accessorModel, ByteBuffer bufferViewByteBuffer) {
@@ -298,14 +297,14 @@ public class AccessorDatas {
     }
 
     /**
-     * Creates an {@link AccessorShortData} for the given {@link AccessorModel}
+     * 주어진 {@link AccessorModel}의 {@link AccessorShortData}를 만든다
      *
-     * @param accessorModel The {@link AccessorModel}
-     * @return The {@link AccessorShortData}
-     * @throws IllegalArgumentException If the
-     *                                  {@link AccessorModel#getComponentType() component type} of the given
-     *                                  accessorModel is not <code>GL_SHORT</code> or
-     *                                  <code>GL_UNSIGNED_SHORT</code>
+     * @param accessorModel {@link AccessorModel}
+     * @return {@link AccessorShortData}
+     * @throws IllegalArgumentException 주어진 accessorModel의
+     *                                  {@link AccessorModel#getComponentType() 성분 종류}가
+     *                                  <code>GL_SHORT</code>나
+     *                                  <code>GL_UNSIGNED_SHORT</code>가 아닐 때
      */
     static AccessorShortData createShort(AccessorModel accessorModel) {
         BufferViewModel bufferViewModel = accessorModel.getBufferViewModel();
@@ -313,17 +312,17 @@ public class AccessorDatas {
     }
 
     /**
-     * Creates an {@link AccessorShortData} for the given {@link AccessorModel}
+     * 주어진 {@link AccessorModel}의 {@link AccessorShortData}를 만든다
      *
-     * @param accessorModel        The {@link AccessorModel}
-     * @param bufferViewByteBuffer The byte buffer of the
-     *                             {@link BufferViewModel} referenced by the {@link AccessorModel}
-     * @return The {@link AccessorShortData}
-     * @throws NullPointerException     If any argument is <code>null</code>
-     * @throws IllegalArgumentException If the
-     *                                  {@link AccessorModel#getComponentType() component type} of the given
-     *                                  accessorModel is not <code>GL_SHORT</code> or
-     *                                  <code>GL_UNSIGNED_SHORT</code>
+     * @param accessorModel        {@link AccessorModel}
+     * @param bufferViewByteBuffer {@link AccessorModel}이 참조하는
+     *                             {@link BufferViewModel}의 바이트 버퍼
+     * @return {@link AccessorShortData}
+     * @throws NullPointerException     인자 중 하나라도 <code>null</code>일 때
+     * @throws IllegalArgumentException 주어진 accessorModel의
+     *                                  {@link AccessorModel#getComponentType() 성분 종류}가
+     *                                  <code>GL_SHORT</code>나
+     *                                  <code>GL_UNSIGNED_SHORT</code>가 아닐 때
      */
     private static AccessorShortData createShort(
             AccessorModel accessorModel, ByteBuffer bufferViewByteBuffer) {
@@ -336,13 +335,13 @@ public class AccessorDatas {
     }
 
     /**
-     * Creates an {@link AccessorIntData} for the given {@link AccessorModel}
+     * 주어진 {@link AccessorModel}의 {@link AccessorIntData}를 만든다
      *
-     * @param accessorModel The {@link AccessorModel}
-     * @return The {@link AccessorIntData}
-     * @throws IllegalArgumentException If the
-     *                                  {@link AccessorModel#getComponentType() component type} of the given
-     *                                  accessorModel is not <code>GL_INT</code> or <code>GL_UNSIGNED_INT</code>
+     * @param accessorModel {@link AccessorModel}
+     * @return {@link AccessorIntData}
+     * @throws IllegalArgumentException 주어진 accessorModel의
+     *                                  {@link AccessorModel#getComponentType() 성분 종류}가
+     *                                  <code>GL_INT</code>나 <code>GL_UNSIGNED_INT</code>가 아닐 때
      */
     static AccessorIntData createInt(AccessorModel accessorModel) {
         BufferViewModel bufferViewModel = accessorModel.getBufferViewModel();
@@ -350,16 +349,16 @@ public class AccessorDatas {
     }
 
     /**
-     * Creates an {@link AccessorIntData} for the given {@link AccessorModel}
+     * 주어진 {@link AccessorModel}의 {@link AccessorIntData}를 만든다
      *
-     * @param accessorModel        The {@link AccessorModel}
-     * @param bufferViewByteBuffer The byte buffer of the
-     *                             {@link BufferViewModel} referenced by the {@link AccessorModel}
-     * @return The {@link AccessorIntData}
-     * @throws NullPointerException     If any argument is <code>null</code>
-     * @throws IllegalArgumentException If the
-     *                                  {@link AccessorModel#getComponentType() component type} of the given
-     *                                  accessorModel is not <code>GL_INT</code> or <code>GL_UNSIGNED_INT</code>
+     * @param accessorModel        {@link AccessorModel}
+     * @param bufferViewByteBuffer {@link AccessorModel}이 참조하는
+     *                             {@link BufferViewModel}의 바이트 버퍼
+     * @return {@link AccessorIntData}
+     * @throws NullPointerException     인자 중 하나라도 <code>null</code>일 때
+     * @throws IllegalArgumentException 주어진 accessorModel의
+     *                                  {@link AccessorModel#getComponentType() 성분 종류}가
+     *                                  <code>GL_INT</code>나 <code>GL_UNSIGNED_INT</code>가 아닐 때
      */
     private static AccessorIntData createInt(
             AccessorModel accessorModel, ByteBuffer bufferViewByteBuffer) {
@@ -372,13 +371,13 @@ public class AccessorDatas {
     }
 
     /**
-     * Creates an {@link AccessorFloatData} for the given {@link AccessorModel}
+     * 주어진 {@link AccessorModel}의 {@link AccessorFloatData}를 만든다
      *
-     * @param accessorModel The {@link AccessorModel}
-     * @return The {@link AccessorFloatData}
-     * @throws IllegalArgumentException If the
-     *                                  {@link AccessorModel#getComponentType() component type} of the given
-     *                                  accessorModel is not <code>GL_FLOAT</code>
+     * @param accessorModel {@link AccessorModel}
+     * @return {@link AccessorFloatData}
+     * @throws IllegalArgumentException 주어진 accessorModel의
+     *                                  {@link AccessorModel#getComponentType() 성분 종류}가
+     *                                  <code>GL_FLOAT</code>가 아닐 때
      */
     public static AccessorFloatData createFloat(AccessorModel accessorModel) {
         BufferViewModel bufferViewModel = accessorModel.getBufferViewModel();
@@ -386,14 +385,14 @@ public class AccessorDatas {
     }
 
     /**
-     * Creates an {@link AccessorFloatData} for the given {@link AccessorModel}
+     * 주어진 {@link AccessorModel}의 {@link AccessorFloatData}를 만든다
      *
-     * @param accessorModel        The {@link AccessorModel}
-     * @param bufferViewByteBuffer The byte buffer of the
-     *                             {@link BufferViewModel} referenced by the {@link AccessorModel}
-     * @return The {@link AccessorFloatData}
-     * @throws NullPointerException     If any argument is <code>null</code>
-     * @throws IllegalArgumentException If the
+     * @param accessorModel        {@link AccessorModel}
+     * @param bufferViewByteBuffer {@link AccessorModel}이 참조하는
+     *                             {@link BufferViewModel}의 바이트 버퍼
+     * @return {@link AccessorFloatData}
+     * @throws NullPointerException     인자 중 하나라도 <code>null</code>일 때
+     * @throws IllegalArgumentException 성분 종류가 맞지 않을 때
      */
     private static AccessorFloatData createFloat(
             AccessorModel accessorModel, ByteBuffer bufferViewByteBuffer) {
@@ -406,15 +405,15 @@ public class AccessorDatas {
     }
 
     /**
-     * Validate that the given {@link AccessorModel} parameters are valid for
-     * accessing a buffer with the given capacity
+     * 주어진 {@link AccessorModel} 매개변수가 주어진 용량의 버퍼에
+     * 접근하기에 올바른지 검사한다
      *
-     * @param byteOffset           The byte offset
-     * @param numElements          The number of elements
-     * @param byteStridePerElement The byte stride
-     * @param bufferCapacity       The buffer capacity
-     * @throws IllegalArgumentException If the given byte buffer does not
-     *                                  have a sufficient capacity
+     * @param byteOffset           바이트 오프셋
+     * @param numElements          요소 수
+     * @param byteStridePerElement 바이트 간격
+     * @param bufferCapacity       버퍼 용량
+     * @throws IllegalArgumentException 주어진 바이트 버퍼의
+     *                                  용량이 모자랄 때
      */
     static void validateCapacity(int byteOffset, int numElements,
                                  int byteStridePerElement, int bufferCapacity) {
@@ -430,12 +429,12 @@ public class AccessorDatas {
     }
 
     /**
-     * Compute the the minimum component values of the given
-     * {@link AccessorData}
+     * 주어진 {@link AccessorData}의 성분별 최솟값을
+     * 계산한다
      *
-     * @param accessorData The {@link AccessorData}
-     * @return The minimum values
-     * @throws IllegalArgumentException If the given model has an unknown type
+     * @param accessorData {@link AccessorData}
+     * @return 최솟값
+     * @throws IllegalArgumentException 주어진 모델의 종류를 알 수 없을 때
      */
     public static Number[] computeMin(AccessorData accessorData) {
         if (accessorData instanceof AccessorByteData) {
@@ -467,12 +466,12 @@ public class AccessorDatas {
     }
 
     /**
-     * Compute the the maximum component values of the given
-     * {@link AccessorData}
+     * 주어진 {@link AccessorData}의 성분별 최댓값을
+     * 계산한다
      *
-     * @param accessorData The {@link AccessorData}
-     * @return The maximum values
-     * @throws IllegalArgumentException If the given model has an unknown type
+     * @param accessorData {@link AccessorData}
+     * @return 최댓값
+     * @throws IllegalArgumentException 주어진 모델의 종류를 알 수 없을 때
      */
     public static Number[] computeMax(AccessorData accessorData) {
         if (accessorData instanceof AccessorByteData) {
@@ -504,18 +503,17 @@ public class AccessorDatas {
     }
 
     /**
-     * Creates a (possibly large!) string representation of the given
-     * {@link AccessorData}, by calling
+     * 주어진 데이터 종류에 따라
      * {@link AccessorByteData#createString(Locale, String, int)},
      * {@link AccessorShortData#createString(Locale, String, int)},
-     * {@link AccessorIntData#createString(Locale, String, int)} or
-     * {@link AccessorFloatData#createString(Locale, String, int)},
-     * depending on the type of the given data, with an unspecified
-     * format string.
+     * {@link AccessorIntData#createString(Locale, String, int)},
+     * {@link AccessorFloatData#createString(Locale, String, int)} 중 하나를
+     * 정해지지 않은 형식 문자열로 호출해,
+     * 주어진 {@link AccessorData}의 문자열 표현을 만든다(아주 길 수 있다!).
      *
-     * @param accessorData   The {@link AccessorData}
-     * @param elementsPerRow The number of elements per row
-     * @return The string
+     * @param accessorData   {@link AccessorData}
+     * @param elementsPerRow 한 줄에 넣을 요소 수
+     * @return 문자열
      */
     public static String createString(
             AccessorData accessorData, int elementsPerRow) {

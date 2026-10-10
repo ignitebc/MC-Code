@@ -42,19 +42,19 @@ public class GunSmithTableItemRenderer implements BuiltinItemRendererRegistry.Dy
             }
             poseStack.pushPose();
 
-            // 26.2 修复：恢复上游的 display transforms 应用。移植时 ClientBlockIndex 的
-            // transforms 解析被删除，这一段也随之消失，导致手持模型按方块原始尺寸(1m³)渲染
-            // —— 默认包声明 scale 0.25，即实际大了 4 倍。
+            // 26.2 수정: 원본의 display transforms 적용을 되살렸다. 이식할 때 ClientBlockIndex의
+            // transforms 해석이 지워지며 이 부분도 사라져, 손에 든 모델이 블록 원래 크기(1m³)로 그려졌다
+            // — 기본 팩은 scale 0.25를 선언하므로 실제로 4배 컸다.
             //
-            // 上游 1.21.1 写法：
+            // 원본 1.21.1 작성법:
             //   poseStack.translate(0.5F, 0.5F, 0.5F);
             //   transforms.getTransform(ctx).apply(false, poseStack);
             //   poseStack.translate(-0.5F, -0.5F, -0.5F);
             //
-            // 26.2 差异（均由反编译确认）：
-            //   1) ItemTransform#apply 第二参数是 PoseStack.Pose，不是 PoseStack；
-            //   2) apply 内部已自带 translate(-0.5,-0.5,-0.5)，故调用方不再补最后那一次；
-            //   3) 左手上下文需传 applyLeftHandFix=true，上游硬编码 false（左手镜像有误）。
+            // 26.2의 차이(모두 디컴파일로 확인):
+            //   1) ItemTransform#apply의 두 번째 인자는 PoseStack이 아니라 PoseStack.Pose다.
+            //   2) apply 안에 translate(-0.5,-0.5,-0.5)가 이미 있어 호출하는 쪽은 마지막 이동을 더하지 않는다.
+            //   3) 왼손 문맥에서는 applyLeftHandFix=true를 넘겨야 한다. 원본은 false로 고정해 왼손 거울 처리가 틀렸다.
             ItemTransforms transforms = index.getTransforms();
             if (transforms != null && transforms != ItemTransforms.NO_TRANSFORMS) {
                 poseStack.translate(0.5F, 0.5F, 0.5F);
@@ -71,9 +71,9 @@ public class GunSmithTableItemRenderer implements BuiltinItemRendererRegistry.Dy
             poseStack.translate(0.5, 1.5, 0.5);
             poseStack.mulPose(Axis.ZN.rotationDegrees(180));
             collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(MissingTextureAtlasSprite.getLocation()), (pose, buffer) -> {
-                // 26.2: 必须使用回调参数 pose（= 提交那一刻 poseStack.last().copy() 的快照），
-                // 而不是外层 poseStack —— 回调执行时它早已被 popPose/复用，
-                // 结果就是图标被画到错误位置（物品栏一片空白）。
+                // 26.2: 바깥 poseStack이 아니라 콜백 인자 pose(= 제출하는 순간 poseStack.last().copy()의 스냅숏)를 써야 한다.
+                // 콜백이 실행될 때 바깥 poseStack은 이미 popPose되었거나 다시 쓰이고 있어,
+                // 그러면 아이콘이 엉뚱한 위치에 그려진다(인벤토리가 텅 빔).
                 PoseStack tacz$snapshotPose = new PoseStack();
                 tacz$snapshotPose.last().pose().set(pose.pose());
                 tacz$snapshotPose.last().normal().set(pose.normal());

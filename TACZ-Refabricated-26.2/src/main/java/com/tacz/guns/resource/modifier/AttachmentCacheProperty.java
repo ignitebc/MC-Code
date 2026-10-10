@@ -14,7 +14,7 @@ import java.util.Map;
 import static org.jetbrains.annotations.ApiStatus.Experimental;
 
 /**
- * 所有与配件缓存计算相关的都在这里
+ * 부착물 캐시 계산과 관련된 것은 모두 여기에 있다
  */
 public class AttachmentCacheProperty {
     @SuppressWarnings("rawtypes")
@@ -23,14 +23,14 @@ public class AttachmentCacheProperty {
 
     @SuppressWarnings("all")
     public void eval(ItemStack gunItem, GunData gunData) {
-        // 数值初始化
+        // 수치 초기화
         var modifiers = AttachmentPropertyManager.getModifiers();
         modifiers.forEach((id, value) -> {
             cacheValues.put(id, value.initCache(gunItem, gunData));
             cacheModifiers.put(id, Lists.newArrayList());
         });
 
-        // 逐个读取配件属性，写入 modifier
+        // 부착물 속성을 하나씩 읽어 modifier에 쓴다
         AttachmentDataUtils.getAllAttachmentData(gunItem, gunData, data -> {
             data.getModifier().forEach((id, value) -> {
                 List objects = cacheModifiers.get(id);
@@ -38,17 +38,17 @@ public class AttachmentCacheProperty {
             });
         });
 
-        // 最后一次性计算完毕，并存入缓存
+        // 마지막에 한 번에 계산을 끝내고 캐시에 넣는다
         cacheValues.forEach((id, value) -> {
             List cacheModifier = cacheModifiers.get(id);
-            // 可能该枪没有这个 modifier 或者 modifier 为空
+            // 이 총에 해당 modifier가 없거나 modifier가 비었을 수 있다
             if (cacheModifier == null || cacheModifier.isEmpty()) {
                 return;
             }
             modifiers.get(id).eval(cacheModifier, value);
         });
 
-        // 清除不必要的数据，防止内存占用
+        // 메모리를 차지하지 않도록 필요 없는 데이터를 지운다
         cacheModifiers.clear();
     }
 

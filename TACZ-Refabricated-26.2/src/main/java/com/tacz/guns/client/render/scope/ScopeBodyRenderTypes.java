@@ -15,15 +15,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 会被目镜掩码裁剪的镜身 RenderType。
+ * 접안렌즈 마스크로 잘리는 조준경 몸체 RenderType.
  *
- * <h2>它是什么</h2>
- * 与 {@code RenderTypes.entityCutout(texture)} <b>只差一件事</b>：
- * 片元着色器多一步「落在目镜投影内就 discard」。
- * 这是上游那句 {@code scope_body: stencilFunc(GL_EQUAL, 0)} 的等价物。
+ * <h2>무엇인가</h2>
+ * {@code RenderTypes.entityCutout(texture)}와 <b>한 가지만 다르다</b>:
+ * 조각 셰이더에 "접안렌즈 투영 안이면 discard" 단계가 하나 더 있다.
+ * 원본의 {@code scope_body: stencilFunc(GL_EQUAL, 0)}에 해당한다.
  *
- * <h2>管线配方（逐项对照 vanilla ENTITY_CUTOUT 的 &lt;clinit&gt; 反汇编）</h2>
- * vanilla 的 {@code ENTITY_CUTOUT}（偏移 1726-1774）是：
+ * <h2>파이프라인 구성(바닐라 ENTITY_CUTOUT의 &lt;clinit&gt; 역어셈블과 항목별 대조)</h2>
+ * 바닐라 {@code ENTITY_CUTOUT}(오프셋 1726-1774)은 다음과 같다:
  * <pre>
  * builder(ENTITY_SNIPPET)
  *     .withLocation("pipeline/entity_cutout")
@@ -32,40 +32,40 @@ import java.util.Map;
  *     .withBindGroupLayout(SAMPLER1)
  *     .withCull(false)
  * </pre>
- * 本类<b>完全照抄</b>，只额外加三样：
+ * 이 클래스는 이를 <b>그대로 따르고</b> 세 가지만 더한다:
  * <ul>
- *   <li>{@code withShaderDefine("SCOPE_MASK")} —— 打开 fsh 里的裁剪分支；</li>
- *   <li>自建一个只含 {@code ScopeMaskSampler} 的 bind group layout —— 声明掩码采样器
- *       （{@code BindGroupLayouts} 只到 SAMPLER2，没有 SAMPLER3，
- *       额外采样器要仿 vanilla {@code DissolveMaskSampler} 自建）；</li>
- *   <li>换成我们自己的 {@code scope_body} shader（vsh 与 vanilla entity.vsh 逐字节相同，
- *       fsh 只多了 SCOPE_MASK 那一段）。</li>
+ *   <li>{@code withShaderDefine("SCOPE_MASK")} — fsh의 잘라내기 분기를 켠다.</li>
+ *   <li>{@code ScopeMaskSampler}만 담은 bind group layout을 직접 만든다 — 마스크 샘플러를 선언한다
+ *       ({@code BindGroupLayouts}에는 SAMPLER2까지만 있고 SAMPLER3가 없어,
+ *       추가 샘플러는 바닐라 {@code DissolveMaskSampler}처럼 직접 만들어야 한다).</li>
+ *   <li>우리 {@code scope_body} 셰이더로 바꾼다(vsh는 바닐라 entity.vsh와 바이트까지 같고,
+ *       fsh에는 SCOPE_MASK 부분만 더 있다).</li>
  * </ul>
  *
- * <p>为什么必须显式带上 {@code SAMPLER1}：{@code ENTITY_SNIPPET} 用的是
- * {@code SAMPLER0_SAMPLER2}（没有 Sampler1），而 entity.vsh 在
- * {@code !NO_OVERLAY} 时会用 {@code Sampler1} 取 overlay。
- * r52 就是漏了这类声明才崩在 {@code Missing sampler Sampler0}。
+ * <p>{@code SAMPLER1}을 명시해야 하는 이유: {@code ENTITY_SNIPPET}은
+ * {@code SAMPLER0_SAMPLER2}(Sampler1 없음)를 쓰는데, entity.vsh는
+ * {@code !NO_OVERLAY}일 때 {@code Sampler1}로 overlay를 읽는다.
+ * r52는 이런 선언을 빠뜨려 {@code Missing sampler Sampler0}으로 크래시가 났다.
  *
- * <h2>失败时的退路</h2>
- * 掩码不可用（未开启/建不出来/绘制失败）时，调用方应当回退到
- * {@code RenderTypes.entityCutout}，也就是<b>当前已 PASS 的行为</b>。
- * 这样即便本特性整个坏掉，也只是回到"镜内能看到镜筒内壁"，不会更糟。
+ * <h2>실패했을 때 물러날 곳</h2>
+ * 마스크를 쓸 수 없으면(꺼짐/만들지 못함/그리기 실패) 호출하는 쪽이
+ * {@code RenderTypes.entityCutout}, 곧 <b>이미 PASS한 동작</b>으로 돌아가야 한다.
+ * 그러면 이 기능 전체가 망가져도 "렌즈 안에 경통 안쪽 벽이 보이는" 정도로 돌아갈 뿐 더 나빠지지 않는다.
  */
 @Environment(EnvType.CLIENT)
 public final class ScopeBodyRenderTypes {
 
     /**
-     * 掩码采样器的名字。
+     * 마스크 샘플러의 이름.
      *
-     * <p>刻意<b>不</b>叫 {@code Sampler3}：{@code BindGroupLayouts} 里根本没有
-     * {@code SAMPLER3} 常量（只到 SAMPLER2），编号槽位是 vanilla 自己预留的。
-     * 额外采样器应当像 vanilla 的 {@code DissolveMaskSampler} 那样起个描述性名字，
-     * 自建 layout 声明 —— 见 {@code BindGroupLayouts.<clinit>} 偏移 259-270。
+     * <p>일부러 {@code Sampler3}라고 하지 <b>않는다</b>: {@code BindGroupLayouts}에는
+     * {@code SAMPLER3} 상수가 아예 없고(SAMPLER2까지만 있음), 번호 칸은 바닐라가 스스로 예약해 둔 것이다.
+     * 추가 샘플러는 바닐라 {@code DissolveMaskSampler}처럼 설명적인 이름을 붙이고
+     * layout을 직접 선언해야 한다 — {@code BindGroupLayouts.<clinit>} 오프셋 259-270 참고.
      */
     private static final String MASK_SAMPLER = "ScopeMaskSampler";
 
-    /** 掩码采样器的 bind group layout。仿 vanilla DISSOLVE_MASK_SAMPLER 的做法自建。 */
+    /** 마스크 샘플러의 bind group layout. 바닐라 DISSOLVE_MASK_SAMPLER를 본떠 직접 만든다. */
     private static final BindGroupLayout MASK_SAMPLER_LAYOUT =
             BindGroupLayout.builder().withSampler(MASK_SAMPLER).build();
 
@@ -74,35 +74,35 @@ public final class ScopeBodyRenderTypes {
                 .withLocation(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "pipeline/" + name))
                 .withVertexShader(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "core/scope_body"))
                 .withFragmentShader(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "core/scope_body"))
-                // 以下四项与 vanilla ENTITY_CUTOUT 完全一致，缺一不可
+                // 아래 네 가지는 바닐라 ENTITY_CUTOUT과 완전히 같으며 하나도 빠지면 안 된다
                 .withShaderDefine("ALPHA_CUTOUT", 0.1F)
                 .withShaderDefine("PER_FACE_LIGHTING")
                 .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
                 .withCull(false)
-                // 本特性专属：打开裁剪分支 + 声明掩码采样器
+                // 이 기능 전용: 잘라내기 분기를 켜고 마스크 샘플러를 선언한다
                 .withShaderDefine("SCOPE_MASK")
                 .withBindGroupLayout(MASK_SAMPLER_LAYOUT);
         if (invert) {
-            // 准星版：只保留镜内（上游 stencilFunc(EQUAL, i+1)）
+            // 조준선 판: 렌즈 안만 남긴다(원본 stencilFunc(EQUAL, i+1))
             builder = builder.withShaderDefine("SCOPE_MASK_INVERT");
         }
         return builder.build();
     }
 
-    /** 镜身：只在目镜<b>没盖到</b>处绘制。 */
+    /** 몸체: 접안렌즈가 <b>덮지 않은</b> 곳에만 그린다. */
     private static final RenderPipeline CLIPPED_PIPELINE =
             buildPipeline("scope_body_clipped", false);
 
-    /** 准星：只在目镜<b>盖到</b>处绘制。 */
+    /** 조준선: 접안렌즈가 <b>덮은</b> 곳에만 그린다. */
     private static final RenderPipeline RETICLE_PIPELINE =
             buildPipeline("scope_reticle_clipped", true);
 
     /**
-     * 按贴图缓存。
+     * 텍스처별 캐시.
      *
-     * <p>RenderType 参与批次合并，同一贴图必须复用同一实例，否则每次调用
-     * 都产生新对象 → 批次爆炸 → 掉帧。瞄具贴图种类有限（个位数），
-     * 用无上限的 HashMap 不会有内存问题。
+     * <p>RenderType은 묶음 합치기에 참여하므로 같은 텍스처는 같은 인스턴스를 다시 써야 한다. 아니면 호출할 때마다
+     * 새 객체가 생겨 → 묶음이 폭증하고 → 프레임이 떨어진다. 조준경 텍스처 종류는 많지 않아(한 자릿수)
+     * 상한 없는 HashMap을 써도 메모리 문제가 없다.
      */
     private static final Map<Identifier, RenderType> BODY_CACHE = new HashMap<>();
     private static final Map<Identifier, RenderType> RETICLE_CACHE = new HashMap<>();
@@ -111,9 +111,9 @@ public final class ScopeBodyRenderTypes {
     }
 
     /**
-     * 镜身：只在目镜<b>没盖到</b>处绘制。
+     * 몸체: 접안렌즈가 <b>덮지 않은</b> 곳에만 그린다.
      *
-     * <p>等价于上游 {@code scope_body: stencilFunc(GL_EQUAL, 0)}。
+     * <p>원본 {@code scope_body: stencilFunc(GL_EQUAL, 0)}과 같다.
      */
     public static RenderType clipped(Identifier texture) {
         return BODY_CACHE.computeIfAbsent(texture,
@@ -121,10 +121,10 @@ public final class ScopeBodyRenderTypes {
     }
 
     /**
-     * 准星：只在目镜<b>盖到</b>处绘制。
+     * 조준선: 접안렌즈가 <b>덮은</b> 곳에만 그린다.
      *
-     * <p>等价于上游 {@code renderDivisionOnly: stencilFunc(GL_EQUAL, i+1)} ——
-     * 准星被约束在目镜投影内，不会溢出镜筒贴到屏幕上。
+     * <p>원본 {@code renderDivisionOnly: stencilFunc(GL_EQUAL, i+1)}과 같다 —
+     * 조준선이 접안렌즈 투영 안으로 묶여 경통 밖 화면에 붙지 않는다.
      */
     public static RenderType reticle(Identifier texture) {
         return RETICLE_CACHE.computeIfAbsent(texture,
@@ -134,14 +134,14 @@ public final class ScopeBodyRenderTypes {
     private static RenderType create(String name, RenderPipeline pipeline, Identifier tex) {
         return RenderType.create(name,
                 RenderSetup.builder(pipeline)
-                        // Sampler0 = 瞄具自身贴图。r52 教训：管线声明的每个 sampler
-                        // 都必须在这里绑定，少一个就在 drawIndexed 时抛 Missing sampler。
+                        // Sampler0 = 조준경 자신의 텍스처. r52의 교훈: 파이프라인이 선언한 sampler는
+                        // 모두 여기서 묶어야 하며, 하나라도 빠지면 drawIndexed 때 Missing sampler가 난다.
                         .withTexture("Sampler0", tex)
-                        // 掩码采样器 = 目镜掩码。指向 ScopeMaskTextureHandle 注册的那张，
-                        // 它每帧被刷新为当前掩码 target 的 view。
+                        // 마스크 샘플러 = 접안렌즈 마스크. ScopeMaskTextureHandle이 등록한 텍스처를 가리키며,
+                        // 매 프레임 현재 마스크 target의 view로 새로 고쳐진다.
                         .withTexture(MASK_SAMPLER, ScopeMaskTextureHandle.ID)
-                        // useLightmap/useOverlay 提供 Sampler2/Sampler1，
-                        // 与 vanilla entityCutout 的 RenderSetup 一致。
+                        // useLightmap/useOverlay가 Sampler2/Sampler1을 제공한다.
+                        // 바닐라 entityCutout의 RenderSetup과 같다.
                         .useLightmap()
                         .useOverlay()
                         .createRenderSetup());

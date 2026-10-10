@@ -72,7 +72,7 @@ public class CommonGunIndex {
         if (readInaccuracy == null || readInaccuracy.isEmpty()) {
             data.setInaccuracy(defaultInaccuracy);
         } else {
-            // run / fly 是后加的状态，旧枪包里没有。缺省时按该枪自己的 stand 推算，而不是套用固定默认值
+            // run / fly는 나중에 추가된 상태라 예전 총기 팩에는 없다. 없으면 고정 기본값 대신 그 총 자신의 stand로 추정한다
             float stand = readInaccuracy.getOrDefault(InaccuracyType.STAND, defaultInaccuracy.get(InaccuracyType.STAND));
             readInaccuracy.putIfAbsent(InaccuracyType.RUN, stand * InaccuracyType.RUN_STAND_RATIO);
             readInaccuracy.putIfAbsent(InaccuracyType.FLY, stand * InaccuracyType.FLY_STAND_RATIO);
@@ -129,7 +129,7 @@ public class CommonGunIndex {
     }
 
     private static void checkScript(GunData data, CommonGunIndex index) {
-        // 加载脚本
+        // 스크립트 로드
         Identifier scriptId = data.getScript();
         CommonAssetsManager commonAssetsManager = CommonAssetsManager.getInstance();
         if (scriptId != null && commonAssetsManager != null) {
@@ -138,7 +138,7 @@ public class CommonGunIndex {
                 GunMod.LOGGER.warn(MARKER, "script '{}' not found", scriptId);
             }
         }
-        // 加载脚本参数
+        // 스크립트 매개변수 로드
         Map<String, Object> params = data.getScriptParam();
         if (params != null) {
             index.scriptParam = new LuaTable();

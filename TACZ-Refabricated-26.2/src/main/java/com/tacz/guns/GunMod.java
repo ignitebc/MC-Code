@@ -14,7 +14,7 @@ public class GunMod {
     public static final String MOD_ID = "tacz";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     /**
-     * 默认模型包文件夹
+     * 기본 모델 팩 폴더
      */
     public static final String DEFAULT_GUN_PACK_NAME = "tacz_default_gun";
 

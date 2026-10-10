@@ -55,11 +55,11 @@ public class ClientBlockIndex {
         BedrockModelPOJO modelPOJO = ClientAssetsManager.INSTANCE.getBedrockModelPOJO(modelLocation);
         Preconditions.checkArgument(modelPOJO != null, "there is no corresponding model file");
 
-        // 先判断是不是 1.10.0 版本基岩版模型文件
+        // 먼저 1.10.0 버전 베드락 모델 파일인지 판단한다
         if (BedrockVersion.isLegacyVersion(modelPOJO) && modelPOJO.getGeometryModelLegacy() != null) {
             index.model = new BedrockModel(modelPOJO, BedrockVersion.LEGACY);
         }
-        // 判定是不是 1.12.0 版本基岩版模型文件
+        // 1.12.0 버전 베드락 모델 파일인지 판단한다
         if (BedrockVersion.isNewVersion(modelPOJO) && modelPOJO.getGeometryModelNew() != null) {
             index.model = new BedrockModel(modelPOJO, BedrockVersion.NEW);
         }
@@ -71,13 +71,13 @@ public class ClientBlockIndex {
     }
 
     /**
-     * 26.2 修复：移植时这段被整体删除，导致工作台/装配台手持模型不缩放（默认包声明 scale 0.25，
-     * 实际按 1.0 渲染 => 大 4 倍）。这里恢复上游行为，只是把解析换成 26.2 可用的实现，
-     * 详见 {@link BlockTransformParser}。
+     * 26.2 수정: 이식할 때 이 부분이 통째로 지워져 작업대/조립대의 손에 든 모델이 축소되지 않았다(기본 팩은 scale 0.25를 선언하지만
+     * 실제로는 1.0으로 그려짐 => 4배 큼). 여기서 원본 동작을 되살리되 해석만 26.2에서 쓸 수 있는 구현으로 바꿨다.
+     * 자세한 내용은 {@link BlockTransformParser} 참고.
      *
-     * <p>与上游的一处刻意差异：上游用 {@code Preconditions.checkArgument(transforms != null)}
-     * 硬性要求枪包提供 transforms，缺失即抛异常导致整个 index 加载失败。这里改为回退到
-     * {@code NO_TRANSFORMS}，避免第三方枪包因缺该字段而整包加载不出来。</p>
+     * <p>원본과 일부러 다르게 한 점 하나: 원본은 {@code Preconditions.checkArgument(transforms != null)}로
+     * 총기 팩에 transforms를 강제로 요구해, 없으면 예외를 던져 index 로드 전체가 실패했다. 여기서는
+     * {@code NO_TRANSFORMS}로 대체해, 서드파티 총기 팩이 이 필드가 없다는 이유로 팩 전체를 못 불러오는 일을 막는다.</p>
      */
     private static void checkTransforms(BlockDisplay display, ClientBlockIndex index) {
         index.transforms = BlockTransformParser.parse(display.getTransforms());

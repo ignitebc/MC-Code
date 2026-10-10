@@ -26,7 +26,7 @@ public enum GunTooltipPart {
                 return tag.getIntOr("HideFlags", 0);
             }
         }
-        return /*stack.getItem().getDefaultTooltipHideFlags(stack)*/ 0;
+        return 0;
     }
 
     public static void setHideFlags(ItemStack stack, int mask) {

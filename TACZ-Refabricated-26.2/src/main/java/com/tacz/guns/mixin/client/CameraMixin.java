@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Produces the previously orphaned camera/FOV events from Minecraft 26.2's Camera API. */
+/** 이전에 고립되었던 카메라/FOV 이벤트를 Minecraft 26.2의 Camera API에서 만들어 낸다. */
 @Mixin(Camera.class)
 public abstract class CameraMixin {
     @Shadow

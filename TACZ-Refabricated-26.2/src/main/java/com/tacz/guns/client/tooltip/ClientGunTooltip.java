@@ -252,10 +252,10 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         if (shouldShow(GunTooltipPart.AMMO_INFO)) {
             yOffset += 4;
 
-            // 弹药名
+            // 탄약 이름
             graphics.text(font, this.ammoName, pX + 20, yOffset, 0xFFffaa00);
 
-            // 弹药数
+            // 탄약 수
             graphics.text(font, this.ammoCountText, pX + 20, yOffset + 10, 0xFF777777);
 
             yOffset += 20;
@@ -265,20 +265,20 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         if (shouldShow(GunTooltipPart.BASE_INFO)) {
             yOffset += 4;
 
-            // 等级信息
+            // 등급 정보
             graphics.text(font, this.levelInfo, pX, yOffset, 0xFF777777);
             yOffset += 10;
 
             graphics.text(font, this.levelDamageBonus, pX, yOffset, 0xFF777777);
             yOffset += 10;
 
-            // 枪械类型
+            // 총기 종류
             if (this.gunType != null) {
                 graphics.text(font, this.gunType, pX, yOffset, 0xFF777777);
                 yOffset += 10;
             }
 
-            // 伤害
+            // 피해
             graphics.text(font, this.damage, pX, yOffset, 0xFF777777);
             yOffset += 10;
             if (this.pelletDamage != null) {
@@ -291,11 +291,11 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         if (shouldShow(GunTooltipPart.EXTRA_DAMAGE_INFO)) {
             yOffset += 4;
 
-            // 穿甲伤害
+            // 방어 관통 피해
             graphics.text(font, this.armorIgnore, pX, yOffset, 0xFFffaa00);
             yOffset += 10;
 
-            // 爆头伤害
+            // 헤드샷 피해
             graphics.text(font, this.headShotMultiplier, pX, yOffset, 0xFFffaa00);
             yOffset += 10;
 
@@ -307,7 +307,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         if (shouldShow(GunTooltipPart.UPGRADES_TIP)) {
             yOffset += 4;
 
-            // Z 键说明
+            // Z 키 설명
             graphics.text(font, this.tips, pX, yOffset, 0xFFffffff);
             yOffset += 10;
         }

@@ -34,10 +34,10 @@ public class GunRecoil {
     }
 
     /**
-     * 返回经过随机取值、缩放后摄像机垂直后坐力的样条插值函数。
+     * 무작위로 값을 고르고 크기를 조정한 카메라 수직 반동의 스플라인 보간 함수를 돌려준다.
      *
-     * @param modifier 配件对后坐力的修改
-     * @return 样条插值函数
+     * @param modifier 부착물의 반동 수정값
+     * @return 스플라인 보간 함수
      */
     @Nullable
     public PolynomialSplineFunction genPitchSplineFunction(float modifier) {
@@ -45,10 +45,10 @@ public class GunRecoil {
     }
 
     /**
-     * 返回经过随机取值、缩放后摄像机水平后坐力的样条插值函数。
+     * 무작위로 값을 고르고 크기를 조정한 카메라 수평 반동의 스플라인 보간 함수를 돌려준다.
      *
-     * @param modifier 配件对后坐力的修改
-     * @return 样条插值函数
+     * @param modifier 부착물의 반동 수정값
+     * @return 스플라인 보간 함수
      */
     @Nullable
     public PolynomialSplineFunction genYawSplineFunction(float modifier) {

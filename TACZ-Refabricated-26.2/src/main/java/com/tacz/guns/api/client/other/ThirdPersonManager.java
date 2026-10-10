@@ -8,7 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.Map;
 
 /**
- * 简单的第三人称持枪动画 Manager
+ * 간단한 3인칭 총 들기 애니메이션 관리자
  */
 public final class ThirdPersonManager {
     private static final Map<String, IThirdPersonAnimation> CACHE = Maps.newHashMap();

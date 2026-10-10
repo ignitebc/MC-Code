@@ -58,13 +58,13 @@ public class TargetBlock extends BaseEntityBlock {
     }
 
     public static int getRedstoneStrength(BlockHitResult hit, boolean isUpperBlock) {
-        // 击中下方，恒为 1
+        // 아래쪽에 맞으면 항상 1점
         if (!isUpperBlock) {
             return 1;
         }
         Vec3 hitLocation = hit.getLocation();
         Direction direction = hit.getDirection();
-        // 标靶中心为 (0.5, 0.32, 0.5)
+        // 과녁 중심은 (0.5, 0.32, 0.5)
         double x = Math.abs(Mth.frac(hitLocation.x) - 0.5);
         double y = Math.abs(Mth.frac(hitLocation.y) - 0.32);
         double z = Math.abs(Mth.frac(hitLocation.z) - 0.5);
@@ -77,7 +77,7 @@ public class TargetBlock extends BaseEntityBlock {
         } else {
             distance = Math.max(y, z);
         }
-        // 离开中心 0.25 单位就是最低分？
+        // 중심에서 0.25칸 벗어나면 최저점일까?
         double percent = Mth.clamp((0.25 - distance) / 0.25, 0, 1);
         return Math.max(1, Mth.ceil(15 * percent));
     }
@@ -115,7 +115,7 @@ public class TargetBlock extends BaseEntityBlock {
 
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        // 计划刻的内容
+        // 예약 틱에 할 일
         if (!state.getValue(STAND)) {
             level.setBlock(pos, state.setValue(STAND, true).setValue(OUTPUT_POWER, 0), Block.UPDATE_ALL);
         }
@@ -148,18 +148,18 @@ public class TargetBlock extends BaseEntityBlock {
 
         if (facing.getAxis() == Direction.Axis.Y) {
             if (half.equals(DoubleBlockHalf.LOWER) && facing == Direction.UP || half.equals(DoubleBlockHalf.UPPER) && facing == Direction.DOWN) {
-                // 拆一半另外一半跟着没
+                // 절반을 부수면 나머지 절반도 함께 사라진다
                 if (!facingState.is(this)) {
                     return Blocks.AIR.defaultBlockState();
                 }
-                // 同步击倒状态
+                // 쓰러짐 상태 동기화
                 if (facingState.getValue(STAND) != stand) {
                     return state.setValue(STAND, facingState.getValue(STAND)).setValue(OUTPUT_POWER, facingState.getValue(OUTPUT_POWER));
                 }
             }
         }
 
-        // 底下方块没了也拆掉
+        // 아래 블록이 없어지면 함께 부순다
         if (half == DoubleBlockHalf.LOWER && facing == Direction.DOWN && !state.canSurvive(level, currentPos)) {
             return Blocks.AIR.defaultBlockState();
         } else {

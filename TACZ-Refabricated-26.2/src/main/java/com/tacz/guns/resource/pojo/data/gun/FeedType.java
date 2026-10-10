@@ -4,22 +4,22 @@ import com.google.gson.annotations.SerializedName;
 
 public enum FeedType {
     /**
-     * 弹匣供弹
+     * 탄창 급탄
      */
     @SerializedName("magazine")
     MAGAZINE,
     /**
-     * 手动供弹
+     * 수동 급탄
      */
     @SerializedName("manual")
     MANUAL,
     /**
-     * 燃料供弹(消耗单个物品补满弹药)
+     * 연료 급탄(아이템 하나를 소모해 탄약을 가득 채움)
      */
     @SerializedName("fuel")
     FUEL,
     /**
-     * 背包直读(直接消耗背包内弹药)
+     * 인벤토리 직접 장전(인벤토리 안 탄약을 바로 소모)
      */
     @SerializedName("inventory")
     INVENTORY

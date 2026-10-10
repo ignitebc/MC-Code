@@ -20,10 +20,10 @@ public class ClientHooks {
         ClientPlayerNetworkEvent.LOGGING_OUT.invoker().post(new ClientPlayerNetworkEvent.LoggingOut(pc, player, player != null ? player.connection != null ? player.connection.getConnection() : null : null));
     }
 
-    // 【r42】firePlayerRespawn 已删除：它的唯一调用者 ClientPacketListenerMixin
-    // 依赖 ClientLevel#addPlayer 注入点，而 26.2 已无该方法，那个 mixin 已删。
-    // 重生后的配件缓存刷新改由 RefreshClonePlayerDataEvent#onClientTick
-    // 检测 Minecraft#player 实例变化来触发，不再需要本 hook。
+    // [r42] firePlayerRespawn은 삭제했다. 유일한 호출자인 ClientPacketListenerMixin이
+    // ClientLevel#addPlayer 주입 지점에 의존했는데, 26.2에는 그 메서드가 없어 해당 mixin을 지웠다.
+    // 부활 뒤 부착물 캐시 새로 고침은 RefreshClonePlayerDataEvent#onClientTick이
+    // Minecraft#player 인스턴스 변화를 감지해 처리하므로 이 훅은 더 필요 없다.
 
     public static void onTextureStitchedPost(TextureAtlas map) {
         TextureStitchEvent.POST.invoker().post(new TextureStitchEvent.Post(map));

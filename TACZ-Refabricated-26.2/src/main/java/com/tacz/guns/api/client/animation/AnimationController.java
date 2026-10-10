@@ -55,7 +55,7 @@ public class AnimationController {
     }
 
     public void queueAnimation(int track, Queue<AnimationPlan> queue) {
-        // 确保数组长度正确
+        // 배열 길이가 맞는지 확인한다
         for (int i = animationQueue.size(); i <= track; i++) {
             animationQueue.add(null);
         }
@@ -72,7 +72,7 @@ public class AnimationController {
     }
 
     public void runAnimation(int track, String animationName, ObjectAnimation.PlayType playType, float transitionTimeS) {
-        // 运行单个动画的时候视为执行一个只有一个动画的动画队列，因此需要清理旧的队列。
+        // 애니메이션 하나를 실행할 때도 애니메이션이 하나뿐인 대기열로 보므로, 예전 대기열을 비운다.
         if (track < animationQueue.size()) {
             animationQueue.set(track, null);
         }
@@ -84,7 +84,7 @@ public class AnimationController {
         if (prototype == null) {
             return;
         }
-        // 确保数组长度正确
+        // 배열 길이가 맞는지 확인한다
         for (int i = currentRunners.size(); i <= track; i++) {
             currentRunners.add(null);
         }
@@ -109,7 +109,7 @@ public class AnimationController {
     }
 
     public void setBlending(int track, boolean blend) {
-        // 确保数组长度正确
+        // 배열 길이가 맞는지 확인한다
         for (int i = blending.size(); i <= track; i++) {
             blending.add(false);
         }
@@ -125,7 +125,7 @@ public class AnimationController {
     }
 
     synchronized public void update() {
-        // 如果有 updatingTrackArray，则按照 updatingTrackArray 指定的顺序更新，否则从低到高更新。
+        // updatingTrackArray가 있으면 그 순서대로, 없으면 낮은 번호부터 갱신한다.
         if (updatingTrackArray != null) {
             updatingTrackArray.forEach(track -> this.updateByTrack(track, false));
         } else {
@@ -150,7 +150,7 @@ public class AnimationController {
         if (runner == null) {
             return;
         }
-        //更新当前动画runner
+        //현재 애니메이션 runner 갱신
         if (runner.isRunning() || runner.isHolding() || runner.isPausing() || runner.isTransitioning()) {
             if (isSoundOnly) {
                 runner.updateSoundOnly();
@@ -158,7 +158,7 @@ public class AnimationController {
                 runner.update(blend);
             }
         }
-        //更新过渡目标动画runner，并且如果过渡已经完成，将其塞进currentRunners
+        //전환 목표 애니메이션 runner를 갱신하고, 전환이 끝났으면 currentRunners에 넣는다
         if (runner.getTransitionTo() != null) {
             if (isSoundOnly) {
                 runner.getTransitionTo().updateSoundOnly();
@@ -170,7 +170,7 @@ public class AnimationController {
                 runner = runner.getTransitionTo();
             }
         }
-        // 如果动画结束，检查队列是否有下一个动画，有则播放
+        // 애니메이션이 끝나면 대기열에 다음 애니메이션이 있는지 보고, 있으면 재생한다
         if ((runner.isHolding() || runner.isStopped()) && !runner.isTransitioning()) {
             if (track < animationQueue.size()) {
                 Queue<AnimationPlan> queue = animationQueue.get(track);

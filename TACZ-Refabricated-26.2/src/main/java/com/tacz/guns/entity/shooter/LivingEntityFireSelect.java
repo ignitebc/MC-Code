@@ -35,7 +35,7 @@ public class LivingEntityFireSelect {
         NetworkHandler.sendToTrackingEntity(new ServerMessageGunFireSelect(shooter.getId(), currentGunItem), shooter);
         if (iGun instanceof AbstractGunItem logicGun) {
             logicGun.fireSelect(data, currentGunItem);
-            // 刷新配件缓存
+            // 부착물 캐시 새로 고치기
             AttachmentPropertyManager.postChangeEvent(shooter, currentGunItem);
         }
     }

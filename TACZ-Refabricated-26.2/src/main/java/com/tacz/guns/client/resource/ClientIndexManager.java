@@ -57,10 +57,10 @@ public class ClientIndexManager {
         if (player != null && IGun.mainHandHoldGun(player)) {
             AttachmentPropertyManager.postChangeEvent(player, player.getMainHandItem());
 
-            // 自动切一次枪，以便刷新状态机
+            // 상태 기계를 새로 고치려고 총을 한 번 자동으로 바꾼다
             IClientPlayerGunOperator.fromLocalPlayer(player).draw(ItemStack.EMPTY);
-            // 26.2 已解决: FirstPersonRenderHandler.reset() 的功能已由
-            // AnimateGeoItemRenderer.needReInit()/tryInit() 自动重初始化机制取代。
+            // 26.2 해결됨: FirstPersonRenderHandler.reset()의 기능은
+            // AnimateGeoItemRenderer.needReInit()/tryInit()의 자동 재초기화 방식으로 대체되었다.
         }
     }
 

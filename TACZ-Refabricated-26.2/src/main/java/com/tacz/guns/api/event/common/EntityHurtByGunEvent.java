@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
- * 生物被枪械子弹伤害时触发的事件
+ * 생물이 총기 탄환에 피해를 입을 때 발생하는 이벤트
  */
 public class EntityHurtByGunEvent extends BaseEvent {
     protected final Entity bullet;
@@ -70,7 +70,7 @@ public class EntityHurtByGunEvent extends BaseEvent {
     }
 
     /**
-     * 实体受到枪击，伤害判定前触发的事件，可以设置枪击的伤害属性
+     * 엔티티가 총에 맞아 피해 판정을 하기 전에 발생한다. 총격 피해 속성을 설정할 수 있다
      */
     public static class Pre extends EntityHurtByGunEvent implements ICancellableEvent {
         @ApiStatus.Internal
@@ -119,9 +119,9 @@ public class EntityHurtByGunEvent extends BaseEvent {
     }
 
     /**
-     * 实体受到枪击，伤害判定结束但没有死亡后触发的事件
+     * 엔티티가 총에 맞아 피해 판정이 끝났지만 죽지 않았을 때 발생한다
      *
-     * @see EntityKillByGunEvent 实体因枪击致死时触发的事件
+     * @see EntityKillByGunEvent 엔티티가 총격으로 죽을 때 발생하는 이벤트
      */
     public static class Post extends EntityHurtByGunEvent {
         @ApiStatus.Internal

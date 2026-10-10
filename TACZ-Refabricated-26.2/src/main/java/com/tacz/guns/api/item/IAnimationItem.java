@@ -4,11 +4,11 @@ import net.minecraft.world.item.ItemStack;
 
 public interface IAnimationItem {
     /**
-     * 返回物品是否需要重新初始化状态机或属性
+     * 상태 기계나 속성을 다시 초기화해야 하는 아이템인지 돌려준다
      *
-     * @param stack1 物品2
-     * @param stack2 物品2
-     * @return 是否需要重新初始化
+     * @param stack1 아이템1
+     * @param stack2 아이템2
+     * @return 다시 초기화해야 하는지
      */
     boolean isSame(ItemStack stack1, ItemStack stack2);
 

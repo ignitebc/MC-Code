@@ -86,11 +86,11 @@ public class GunRefitScreen extends Screen {
     @Override
     public void init() {
         this.clearWidgets();
-        // 添加配件槽位
+        // 부착물 칸 추가
         this.addAttachmentTypeButtons();
-        // 添加可选配件列表
+        // 고를 수 있는 부착물 목록 추가
         this.addInventoryAttachmentButtons();
-        // 添加属性图隐藏按钮
+        // 속성 그래프 숨기기 버튼 추가
         if (HIDE_GUN_PROPERTY_DIAGRAMS) {
             this.addRenderableWidget(new FlatColorButton(11, 11, 288, 16,
                     Component.translatable("gui.tacz.gun_refit.property_diagrams.show"), b -> switchHideButton()));
@@ -117,7 +117,7 @@ public class GunRefitScreen extends Screen {
             GunPropertyDiagrams.draw(graphics, font, 11, 11);
         }
 
-        // 26.2 tooltip API: widgets push tooltip contents through their existing consumer hooks.
+        // 26.2 툴팁 API: 위젯이 기존 consumer 훅으로 툴팁 내용을 넘긴다.
         ((ScreenAccessor) this).tacz$getRenderables().stream().filter(w -> w instanceof IComponentTooltip).forEach(w -> {
             IComponentTooltip tooltipWidget = (IComponentTooltip) w;
             tooltipWidget.renderTooltip(lines -> graphics.setTooltipForNextFrame(font, lines, java.util.Optional.empty(), mouseX, mouseY));
@@ -133,27 +133,27 @@ public class GunRefitScreen extends Screen {
     }
 
     /**
-     * 改装界面<b>不要</b>全屏模糊 —— 与上游 1.21.1 行为一致。
+     * 개조 화면에서는 전체 화면 흐림을 <b>쓰지 않는다</b> — 원본 1.21.1과 같은 동작이다.
      *
-     * <p>上游 {@code GunRefitScreen} 里有一个空实现的
+     * <p>원본 {@code GunRefitScreen}에는 내용이 빈
      * <pre>
      * &#64;Override protected void renderBlurredBackground(float partialTick) { }
      * </pre>
-     * 移植时漏掉了，于是走 vanilla 默认实现，改装界面糊上一层背景模糊。
+     * 이 있었는데, 이식할 때 빠져 바닐라 기본 구현을 타면서 개조 화면에 배경 흐림이 덮였다.
      *
-     * <p>26.2 的对应方法改名为 {@code extractBlurredBackground(GuiGraphicsExtractor)}，
-     * 调用链（字节码确认）：
+     * <p>26.2에서 대응하는 메서드 이름은 {@code extractBlurredBackground(GuiGraphicsExtractor)}이며,
+     * 호출 흐름은 다음과 같다(바이트코드 확인):
      * <pre>
      * Screen#extractBackground
      *   -> Screen#extractBlurredBackground
      *        -> if (options.getMenuBackgroundBlurriness() != 0)
      *               graphics.blurBeforeThisStratum();
      * </pre>
-     * 覆写为空即可精确复刻上游「不模糊」的效果。
+     * 빈 재정의로 원본의 "흐림 없음" 효과를 정확히 재현할 수 있다.
      *
-     * <p>这里必须留空而不是不覆写：玩家一边看着枪模型一边装配件，
-     * 背景模糊会把枪身也一起糊掉（模糊是整个 stratum 之前的全屏后处理），
-     * 严重影响观察配件外观 —— 这正是上游特意关掉它的原因。
+     * <p>재정의하지 않는 것이 아니라 비워 둬야 한다: 플레이어는 총 모델을 보면서 부착물을 다는데,
+     * 배경 흐림은 총까지 함께 흐리게 만든다(흐림은 해당 stratum 이전 전체 화면 후처리다).
+     * 부착물 모양을 보기가 크게 어려워지며 — 원본이 일부러 끈 이유가 이것이다.
      */
     @Override
     protected void extractBlurredBackground(GuiGraphicsExtractor graphics) {
@@ -240,7 +240,7 @@ public class GunRefitScreen extends Screen {
                             .map(GunDisplayInstance::getLaserConfig)
                             .ifPresent(laserConfig -> {
                                 if (laserConfig.canEdit()) {
-                                    // 添加镭射颜色选择器
+                                    // 레이저 색 선택기 추가
                                     HSVSliderGroup hsvSliderGroup = new HSVSliderGroup(width - 140, height - 64, 120, 16, inventory, inventory.getSelectedSlot(), AttachmentType.NONE);
                                     this.addRenderableWidget(hsvSliderGroup.getHueSlider());
                                     this.addRenderableWidget(hsvSliderGroup.getSaturationSlider());
@@ -251,28 +251,28 @@ public class GunRefitScreen extends Screen {
             }
             GunAttachmentSlot button = new GunAttachmentSlot(startX, startY, type, inventory.getSelectedSlot(), inventory, b -> {
                 AttachmentType buttonType = ((GunAttachmentSlot) b).getType();
-                // 如果这个槽位不允许安装配件，则默认退回概览，不选中槽位。
+                // 이 칸에 부착물을 달 수 없으면 개요로 돌아가고 칸을 고르지 않는다.
                 if (!((GunAttachmentSlot) b).isAllow()) {
                     if (RefitTransform.changeRefitScreenView(AttachmentType.NONE)) {
                         this.init();
                     }
                     return;
                 }
-                // 点击的是当前选中的槽位，则退回概览
+                // 이미 고른 칸을 누르면 개요로 돌아간다
                 if (RefitTransform.getCurrentTransformType() == buttonType && buttonType != AttachmentType.NONE) {
                     if (RefitTransform.changeRefitScreenView(AttachmentType.NONE)) {
                         this.init();
                     }
                     return;
                 }
-                // 切换选中的槽位。
+                // 고른 칸을 바꾼다.
                 if (RefitTransform.changeRefitScreenView(buttonType)) {
                     this.init();
                 }
             });
             if (RefitTransform.getCurrentTransformType() == type) {
                 button.setSelected(true);
-                // 添加拆卸配件按钮
+                // 부착물 떼기 버튼 추가
                 RefitUnloadButton unloadButton = new RefitUnloadButton(startX + 5, startY + SLOT_SIZE + 2, b -> {
                     ItemStack attachmentItem = button.getAttachmentItem();
                     if (!attachmentItem.isEmpty()) {
@@ -294,7 +294,7 @@ public class GunRefitScreen extends Screen {
                                 .map(ClientAttachmentIndex::getLaserConfig)
                                 .ifPresent(laserConfig -> {
                                     if (laserConfig.canEdit()) {
-                                        // 添加镭射颜色选择器
+                                        // 레이저 색 선택기 추가
                                         HSVSliderGroup hsvSliderGroup = new HSVSliderGroup(width - 140, height - 64, 120, 16, inventory, inventory.getSelectedSlot(), type);
                                         this.addRenderableWidget(hsvSliderGroup.getHueSlider());
                                         this.addRenderableWidget(hsvSliderGroup.getSaturationSlider());
@@ -310,7 +310,7 @@ public class GunRefitScreen extends Screen {
 
     @Override
     public void onClose() {
-        // 关闭界面时，一次性上传所有的染色数据
+        // 화면을 닫을 때 염색 데이터를 한꺼번에 올린다
         LocalPlayer player = this.minecraft.player;
         if (player != null) {
             ItemStack gun = player.getMainHandItem();

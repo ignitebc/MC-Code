@@ -23,7 +23,7 @@ public class ClientMessagePlayerShoot implements CustomPacketPayload {
     private static final float MAX_AIM_DIFFERENCE_DEGREES = 60f;
 
     /**
-     * 这里的 timestamp 应该是基于 base timestamp 的相对值
+     * 여기의 timestamp는 base timestamp 기준 상대값이어야 한다
      */
     private final long timestamp;
     private float chargeProgress;

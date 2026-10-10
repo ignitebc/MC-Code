@@ -1,5 +1,5 @@
 {
-  "_comment": "26.2 alignment: upstream parent was builtin/entity (identity transforms) plus this explicit display block, which already declares every context it needs. See ammo.json.",
+  "_comment": "26.2 맞춤: 원본 parent는 builtin/entity(항등 변환)였고, 필요한 모든 문맥을 이미 선언한 이 명시적 display 블록을 함께 썼다. ammo.json 참고.",
   "gui_light": "front",
   "display": {
     "thirdperson_righthand": {

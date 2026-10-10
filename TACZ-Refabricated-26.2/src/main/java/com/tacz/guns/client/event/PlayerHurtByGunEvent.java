@@ -20,7 +20,7 @@ public class PlayerHurtByGunEvent {
         }
         Entity hurtEntity = event.getHurtEntity();
         LocalPlayer player = Minecraft.getInstance().player;
-        // 当受伤的是自己的时候，触发受伤晃动的调整参数
+        // 다친 것이 자신일 때 피격 흔들림 조정 매개변수를 적용한다
         if (player != null && player.equals(hurtEntity)) {
             Identifier gunId = event.getGunId();
             TimelessAPI.getCommonGunIndex(gunId).ifPresent(index -> {

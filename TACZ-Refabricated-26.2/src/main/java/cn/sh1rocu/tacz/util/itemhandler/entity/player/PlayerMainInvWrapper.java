@@ -18,7 +18,7 @@ public class PlayerMainInvWrapper extends RangedWrapper {
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         ItemStack rest = super.insertItem(slot, stack, simulate);
         if (rest.getCount() != stack.getCount()) {
-            // the stack in the slot changed, animate it
+            // 칸의 스택이 바뀌었으므로 애니메이션을 준다
             ItemStack inSlot = getStackInSlot(slot);
             if (!inSlot.isEmpty()) {
                 if (getInventoryPlayer().player.level().isClientSide()) {

@@ -4,15 +4,15 @@ import com.tacz.guns.api.client.animation.gltf.GltfConstants;
 
 public class Accessors {
     /**
-     * Private constructor to prevent instantiation
+     * 인스턴스를 만들지 못하게 막는 비공개 생성자
      */
     private Accessors() {
-        // Private constructor to prevent instantiation
+        // 인스턴스를 만들지 못하게 막는 비공개 생성자
     }
 
     /**
-     * Returns the number of components that one element has for the given
-     * accessor type. Valid parameters are
+     * 주어진 접근자 종류에서 요소 하나가 가진 성분 수를 돌려준다.
+     * 올바른 매개변수는 다음과 같다
      * <pre><code>
      * "SCALAR" :  1
      * "VEC2"   :  2
@@ -23,10 +23,10 @@ public class Accessors {
      * "MAT4"   : 16
      * </code></pre>
      *
-     * @param accessorType The accessor type.
-     * @return The number of components
-     * @throws IllegalArgumentException If the given type is none of the
-     *                                  valid parameters
+     * @param accessorType 접근자 종류
+     * @return 성분 수
+     * @throws IllegalArgumentException 주어진 종류가 올바른
+     *                                  매개변수가 아닐 때
      */
     public static int getNumComponentsForAccessorType(String accessorType) {
         switch (accessorType) {
@@ -52,9 +52,9 @@ public class Accessors {
     }
 
     /**
-     * Returns the number of bytes that one component with the given
-     * accessor component type consists of.
-     * Valid parameters are
+     * 주어진 접근자 성분 종류의 성분 하나가 차지하는
+     * 바이트 수를 돌려준다.
+     * 올바른 매개변수는 다음과 같다
      * <pre><code>
      * GL_BYTE           : 1
      * GL_UNSIGNED_BYTE  : 1
@@ -65,10 +65,10 @@ public class Accessors {
      * GL_FLOAT          : 4
      * </code></pre>
      *
-     * @param componentType The component type
-     * @return The number of bytes
-     * @throws IllegalArgumentException If the given type is none of the
-     *                                  valid parameters
+     * @param componentType 성분 종류
+     * @return 바이트 수
+     * @throws IllegalArgumentException 주어진 종류가 올바른
+     *                                  매개변수가 아닐 때
      */
     public static int getNumBytesForAccessorComponentType(int componentType) {
         switch (componentType) {
@@ -94,8 +94,8 @@ public class Accessors {
     }
 
     /**
-     * Returns the data type for the given accessor component type.
-     * Valid parameters and their return values are
+     * 주어진 접근자 성분 종류의 데이터 타입을 돌려준다.
+     * 올바른 매개변수와 반환값은 다음과 같다
      * <pre><code>
      * GL_BYTE           : byte.class
      * GL_UNSIGNED_BYTE  : byte.class
@@ -106,10 +106,10 @@ public class Accessors {
      * GL_FLOAT          : float.class
      * </code></pre>
      *
-     * @param componentType The component type
-     * @return The data type
-     * @throws IllegalArgumentException If the given type is none of the
-     *                                  valid parameters
+     * @param componentType 성분 종류
+     * @return 데이터 타입
+     * @throws IllegalArgumentException 주어진 종류가 올바른
+     *                                  매개변수가 아닐 때
      */
     public static Class<?> getDataTypeForAccessorComponentType(
             int componentType) {

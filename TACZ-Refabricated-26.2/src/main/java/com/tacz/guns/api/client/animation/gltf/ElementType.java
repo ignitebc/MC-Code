@@ -2,60 +2,60 @@ package com.tacz.guns.api.client.animation.gltf;
 
 public enum ElementType {
     /**
-     * The scalar type
+     * 스칼라 종류
      */
     SCALAR(1),
 
     /**
-     * The 2D vector type
+     * 2차원 벡터 종류
      */
     VEC2(2),
 
     /**
-     * The 3D vector type
+     * 3차원 벡터 종류
      */
     VEC3(3),
 
     /**
-     * The 4D vector type
+     * 4차원 벡터 종류
      */
     VEC4(4),
 
     /**
-     * The 2x2 matrix type
+     * 2x2 행렬 종류
      */
     MAT2(4),
 
     /**
-     * The 3x3 matrix type
+     * 3x3 행렬 종류
      */
     MAT3(9),
 
     /**
-     * The 4x4 matrix type
+     * 4x4 행렬 종류
      */
     MAT4(16);
 
     /**
-     * The number of components that one element consists of
+     * 요소 하나를 이루는 성분 수
      */
     private final int numComponents;
 
     /**
-     * Creates a new instance with the given number of components
+     * 주어진 성분 수로 새 인스턴스를 만든다
      *
-     * @param numComponents The number of components
+     * @param numComponents 성분 수
      */
     ElementType(int numComponents) {
         this.numComponents = numComponents;
     }
 
     /**
-     * Returns whether the given string is a valid element type name, and may be
-     * passed to <code>ElementType.valueOf</code> without causing an exception.
+     * 주어진 문자열이 올바른 요소 종류 이름이어서 예외 없이
+     * <code>ElementType.valueOf</code>에 넘길 수 있는지 돌려준다.
      *
-     * @param s The string
-     * @return Whether the given string is a valid element type
+     * @param s 문자열
+     * @return 올바른 요소 종류인지
      */
     public static boolean contains(String s) {
         for (ElementType elementType : values()) {
@@ -67,12 +67,12 @@ public enum ElementType {
     }
 
     /**
-     * Returns the element type for the given string. If the string is
-     * <code>null</code> or does not describe a valid element type,
-     * then <code>null</code> is returned
+     * 주어진 문자열에 해당하는 요소 종류를 돌려준다. 문자열이
+     * <code>null</code>이거나 올바른 요소 종류가 아니면
+     * <code>null</code>을 돌려준다
      *
-     * @param string The string
-     * @return The element type
+     * @param string 문자열
+     * @return 요소 종류
      */
     public static ElementType forString(String string) {
         if (string == null) {
@@ -85,9 +85,9 @@ public enum ElementType {
     }
 
     /**
-     * Returns the number of components that one element consists of
+     * 요소 하나를 이루는 성분 수를 돌려준다
      *
-     * @return The number of components
+     * @return 성분 수
      */
     public int getNumComponents() {
         return numComponents;

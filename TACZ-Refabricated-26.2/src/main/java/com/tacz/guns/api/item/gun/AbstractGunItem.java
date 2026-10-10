@@ -46,54 +46,54 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 开始拉栓时调用，返回 bolt 状态
+     * 노리쇠를 당기기 시작할 때 호출되며 bolt 상태를 돌려준다
      *
-     * @return bolt 状态。ture 代表开始 bolt，false 则代表不开始。
+     * @return bolt 상태. true면 bolt를 시작하고, false면 시작하지 않는다.
      */
     public abstract boolean startBolt(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter);
 
     /**
-     * 拉栓 tick 时调用，返回是否仍在 bolt 状态
+     * 노리쇠 당기기 틱마다 호출되며 아직 bolt 상태인지 돌려준다
      *
-     * @return 是否仍在 bolt 状态
+     * @return 아직 bolt 상태인지
      */
     public abstract boolean tickBolt(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter);
 
     /**
-     * 射击时触发
+     * 사격할 때 호출된다
      */
     public abstract void shoot(ShooterDataHolder dataHolder, ItemStack gunItem, Supplier<Float> pitch, Supplier<Float> yaw, LivingEntity shooter);
 
     /**
-     * 开始换弹时调用
+     * 재장전을 시작할 때 호출된다
      */
     public abstract boolean startReload(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter);
 
     /**
-     * 换弹时每个 tick 调用
+     * 재장전 중 매 틱 호출된다
      *
-     * @return 如果返回的类型是 NOT_RELOADING 则下一个 tick 不再继续调用
+     * @return 돌려준 종류가 NOT_RELOADING이면 다음 틱부터 호출하지 않는다
      */
     public abstract ReloadState tickReload(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter);
 
     /**
-     * 尝试打断换弹时调用
+     * 재장전을 끊으려 할 때 호출된다
      */
     public abstract void interruptReload(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter);
 
     /**
-     * 切换开火模式时调用
+     * 발사 모드를 바꿀 때 호출된다
      */
     public abstract void fireSelect(ShooterDataHolder dataHolder, ItemStack gunItem);
 
     /**
-     * 近战时调用
+     * 근접 공격할 때 호출된다
      */
     public abstract void melee(ShooterDataHolder dataHolder, LivingEntity user, ItemStack gunItem);
 
     /**
-     * 过热 tick 处理<br/>
-     * 默认不做任何事情
+     * 과열 틱 처리<br/>
+     * 기본적으로 아무것도 하지 않는다
      */
     public void tickHeat(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter) {
     }
@@ -101,17 +101,17 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     ;
 
     /**
-     * 初始化子弹角度和速度
+     * 탄환의 각도와 속도를 초기화한다
      *
-     * @param dataHolder     状态数据
-     * @param gunItem        枪械物品
-     * @param shooter        射击者
-     * @param projectile     子弹
-     * @param bulletCnt      多弹丸的子弹序数
-     * @param processedSpeed 修正后的子弹初速
-     * @param inaccuracy     修正后的子弹不准确度
-     * @param pitch          射击方向
-     * @param yaw            射击方向
+     * @param dataHolder     상태 데이터
+     * @param gunItem        총기 아이템
+     * @param shooter        사격자
+     * @param projectile     탄환
+     * @param bulletCnt      다탄두 탄환의 순번
+     * @param processedSpeed 보정한 탄환 초속
+     * @param inaccuracy     보정한 탄환 부정확도
+     * @param pitch          사격 방향
+     * @param yaw            사격 방향
      */
     public void doBulletSpread(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter, Projectile projectile,
                                int bulletCnt, float processedSpeed, float inaccuracy, float pitch, float yaw) {
@@ -119,11 +119,11 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 换弹前的检查，完成如下检查：枪内弹药是否已经填满？玩家背包是否有可用弹药？是否为背包直读？
+     * 재장전 전 검사. 총 안 탄약이 가득 찼는지, 플레이어 인벤토리에 쓸 탄약이 있는지, 인벤토리 급탄인지 확인한다.
      *
-     * @param shooter 准备换弹的实体
-     * @param gunItem 枪械物品
-     * @return 是否满足换弹条件
+     * @param shooter 재장전하려는 엔티티
+     * @param gunItem 총기 아이템
+     * @return 재장전 조건을 만족하는지
      */
     public boolean canReload(LivingEntity shooter, ItemStack gunItem) {
         Identifier gunId = this.getGunId(gunItem);
@@ -137,21 +137,21 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
         if (currentAmmoCount >= maxAmmoCount) {
             return false;
         }
-        // 背包直读不进行换弹
+        // 인벤토리 급탄이면 재장전하지 않는다
         if (useInventoryAmmo(gunItem)) {
             return false;
         }
-        // 无限备弹不需要消耗实际子弹
+        // 무한 예비 탄약은 실제 탄을 소모하지 않는다
         if (gunIndex.getGunData().getReloadData().isInfinite()) {
             return true;
         }
-        // 虚拟备弹处理
+        // 가상 예비 탄약 처리
         if (useDummyAmmo(gunItem)) {
             return getDummyAmmoAmount(gunItem) > 0;
         }
-        // 检查背包内的弹药数量
+        // 인벤토리의 탄약 수를 확인한다
         return shooter.tacz$getItemHandler(null).map(cap -> {
-            // 背包检查
+            // 인벤토리 확인
             for (int i = 0; i < cap.getSlots(); i++) {
                 ItemStack checkAmmoStack = cap.getStackInSlot(i);
                 if (checkAmmoStack.getItem() instanceof IAmmo iAmmo && iAmmo.isAmmoOfGun(gunItem, checkAmmoStack)) {
@@ -166,30 +166,30 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 将枪内的弹药全部退至背包（如果背包满了会丢到地上）。不会退枪膛内的弹药。
-     * 目前，仅更换弹匣配件时调用。
+     * 총 안의 탄약을 모두 인벤토리로 돌려준다(인벤토리가 가득 차면 땅에 떨어뜨린다). 약실 안의 탄은 빼지 않는다.
+     * 지금은 탄창 부착물을 바꿀 때만 호출한다.
      *
-     * @param player  玩家
-     * @param gunItem 枪械物品
+     * @param player  플레이어
+     * @param gunItem 총기 아이템
      */
     @Override
     public void dropAllAmmo(Player player, ItemStack gunItem) {
-        // 背包直读时不调用退弹
+        // 인벤토리 급탄이면 탄약을 빼지 않는다
         if (useInventoryAmmo(gunItem)) {
             return;
         }
-        // 操作对象已从 Player 改为 LivingEntity，以支持非玩家实体
-        // 此外，现在也处理枪膛内的子弹
+        // 비플레이어 엔티티를 지원하도록 대상을 Player에서 LivingEntity로 바꿨다
+        // 또한 이제 약실 안의 탄도 처리한다
         int ammoCount = getCurrentAmmoCount(gunItem);
         if (ammoCount <= 0) {
             return;
         }
         Identifier gunId = getGunId(gunItem);
         TimelessAPI.getCommonGunIndex(gunId).ifPresent(index -> {
-            // 如果使用的是虚拟备弹，返还至虚拟备弹
+            // 가상 예비 탄약을 쓰면 가상 예비 탄약으로 돌려준다
             if (useDummyAmmo(gunItem)) {
                 setCurrentAmmoCount(gunItem, 0);
-                // 燃料罐类型的换弹不返还
+                // 연료통 방식 재장전은 돌려주지 않는다
                 if (index.getGunData().getReloadData().getType().equals(FeedType.FUEL)) {
                     return;
                 }
@@ -198,13 +198,13 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
             }
 
             Identifier ammoId = index.getGunData().getAmmoId();
-            // 创造模式类型的换弹，只填满子弹总数，不进行任何卸载弹药逻辑
+            // 크리에이티브 방식 재장전은 탄 총수만 채우고 탄약을 빼는 로직은 실행하지 않는다
             if (player.isCreative()) {
                 int maxAmmCount = ShooterMagazineBonus.maxAmmoCount(player, gunItem, index);
                 setCurrentAmmoCount(gunItem, maxAmmCount);
                 return;
             }
-            // 燃料罐类型的只清空不返还
+            // 연료통 방식은 비우기만 하고 돌려주지 않는다
             if (index.getGunData().getReloadData().getType().equals(FeedType.FUEL)) {
                 setCurrentAmmoCount(gunItem, 0);
                 return;
@@ -225,12 +225,12 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 枪械寻弹和扣除背包弹药逻辑
+     * 총기의 탄약 찾기와 인벤토리 탄약 차감 로직
      *
-     * @param itemHandler   目标实体的背包
-     * @param gunItem       枪械物品
-     * @param needAmmoCount 需要的弹药 (物品) 数量
-     * @return 寻找到的弹药 (物品) 数量
+     * @param itemHandler   대상 엔티티의 인벤토리
+     * @param gunItem       총기 아이템
+     * @param needAmmoCount 필요한 탄약(아이템) 수
+     * @return 찾은 탄약(아이템) 수
      */
     @Deprecated
     public int findAndExtractInventoryAmmos(IItemHandler itemHandler, ItemStack gunItem, int needAmmoCount) {
@@ -238,16 +238,16 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 枪械寻弹和扣除背包弹药逻辑
+     * 총기의 탄약 찾기와 인벤토리 탄약 차감 로직
      *
-     * @param itemHandler   目标实体的背包
-     * @param gunItem       枪械物品
-     * @param needAmmoCount 需要的弹药 (物品) 数量
-     * @return 寻找到的弹药 (物品) 数量
+     * @param itemHandler   대상 엔티티의 인벤토리
+     * @param gunItem       총기 아이템
+     * @param needAmmoCount 필요한 탄약(아이템) 수
+     * @return 찾은 탄약(아이템) 수
      */
     public int findAndExtractInventoryAmmo(IItemHandler itemHandler, ItemStack gunItem, int needAmmoCount) {
         int cnt = needAmmoCount;
-        // 背包检查
+        // 인벤토리 확인
         for (int i = 0; i < itemHandler.getSlots(); i++) {
             ItemStack checkAmmoStack = itemHandler.getStackInSlot(i);
             if (checkAmmoStack.getItem() instanceof IAmmo iAmmo && iAmmo.isAmmoOfGun(gunItem, checkAmmoStack)) {
@@ -275,11 +275,11 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 扣除虚拟弹药逻辑，该方法具有通用的实现，放在此处
+     * 가상 탄약 차감 로직. 공통 구현이라 여기에 둔다
      *
-     * @param gunItem       枪械物品
-     * @param needAmmoCount 需要的弹药(物品)数量
-     * @return 找到的弹药(物品)数量
+     * @param gunItem       총기 아이템
+     * @param needAmmoCount 필요한 탄약(아이템) 수
+     * @return 찾은 탄약(아이템) 수
      */
     public int findAndExtractDummyAmmo(ItemStack gunItem, int needAmmoCount) {
         int dummyAmmoCount = getDummyAmmoAmount(gunItem);
@@ -289,7 +289,7 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 检查枪械是否允许安装指定的物品作为配件
+     * 총기에 지정한 아이템을 부착물로 장착할 수 있는지 확인한다
      */
     @Override
     public boolean allowAttachment(ItemStack gun, ItemStack attachmentItem) {
@@ -304,7 +304,7 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 检查枪械是否允许安装某种类型的配件
+     * 총기에 특정 종류의 부착물을 장착할 수 있는지 확인한다
      */
     @Override
     public boolean allowAttachmentType(ItemStack gun, AttachmentType type) {
@@ -323,7 +323,7 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 获取枪械的显示名称
+     * 총기의 표시 이름을 얻는다
      */
     @Override
     @Nonnull
@@ -338,7 +338,7 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 获取某一类 TabType 的所有枪械物品的实例。用于填充创造物品栏和枪械制造台。
+     * 특정 TabType의 모든 총기 아이템 인스턴스를 얻는다. 크리에이티브 인벤토리와 총기 제작대를 채우는 데 쓴다.
      */
     public static NonNullList<ItemStack> fillItemCategory(GunTabType type) {
         NonNullList<ItemStack> stacks = NonNullList.create();
@@ -362,7 +362,7 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 阻止玩家手臂挥动
+     * 플레이어 팔 휘두르기를 막는다
      */
     @Override
     public boolean tacz$onEntitySwing(ItemStack stack, LivingEntity entity) {
@@ -376,7 +376,7 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 获取在 Tooltip 中渲染的图片
+     * 툴팁에 그릴 그림을 얻는다
      */
     @Override
     @Nonnull
@@ -393,10 +393,10 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 获取是否使用弹药直读
+     * 인벤토리 탄약을 바로 쓰는지 얻는다
      *
-     * @param gun 枪械
-     * @return 是否使用弹药直读
+     * @param gun 총기
+     * @return 인벤토리 탄약을 바로 쓰는지
      */
     @Override
     public boolean useInventoryAmmo(ItemStack gun) {
@@ -406,35 +406,35 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
                 return false;
             }
             CommonGunIndex gunIndex = gunIndexOptional.get();
-            // 是否为弹药直读
+            // 인벤토리 급탄인지
             return gunIndex.getGunData().getReloadData().getType().equals(FeedType.INVENTORY);
         }
         return false;
     }
 
     /**
-     * 获取是否有供给弹药直读的弹药
+     * 인벤토리 급탄에 쓸 탄약이 있는지 얻는다
      *
-     * @param gun 枪械
-     * @return 是否有供给弹药直读的弹药
+     * @param gun 총기
+     * @return 인벤토리 급탄에 쓸 탄약이 있는지
      */
     @Override
     public boolean hasInventoryAmmo(LivingEntity shooter, ItemStack gun, boolean needCheckAmmo) {
-        // 如果不是背包直读，则直接返回 false
+        // 인벤토리 급탄이 아니면 바로 false를 돌려준다
         if (!useInventoryAmmo(gun)) {
             return false;
         }
-        // 如果不需要检查子弹，则直接返回 true
+        // 탄을 확인할 필요가 없으면 바로 true를 돌려준다
         if (!needCheckAmmo) {
             return true;
         }
-        // 虚拟备弹处理
+        // 가상 예비 탄약 처리
         if (useDummyAmmo(gun)) {
             return getDummyAmmoAmount(gun) > 0;
         }
-        // 检查背包内的弹药数量
+        // 인벤토리의 탄약 수를 확인한다
         return shooter.tacz$getItemHandler(null).map(cap -> {
-            // 背包检查
+            // 인벤토리 확인
             for (int i = 0; i < cap.getSlots(); i++) {
                 ItemStack checkAmmoStack = cap.getStackInSlot(i);
                 if (checkAmmoStack.getItem() instanceof IAmmo iAmmo && iAmmo.isAmmoOfGun(gun, checkAmmoStack)) {
@@ -449,10 +449,10 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 获取 RPM
+     * RPM을 얻는다
      *
-     * @param gun 枪械
-     * @return RPM 数值
+     * @param gun 총기
+     * @return RPM 값
      */
     public int getRPM(ItemStack gun) {
         if (gun.getItem() instanceof IGun iGun) {
@@ -471,10 +471,10 @@ public abstract class AbstractGunItem extends Item implements IGun, IAnimationIt
     }
 
     /**
-     * 获取是否可以趴下射击
+     * 엎드려 사격할 수 있는지 얻는다
      *
-     * @param gun 枪械
-     * @return 是否可以趴下射击
+     * @param gun 총기
+     * @return 엎드려 사격할 수 있는지
      */
     public boolean isCanCrawl(ItemStack gun) {
         if (gun.getItem() instanceof IGun) {

@@ -10,45 +10,45 @@ import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * 瞄具「目镜掩码」的离屏渲染目标。
+ * 조준경 "접안렌즈 마스크"의 화면 밖 렌더링 대상.
  *
- * <h2>它要解决什么</h2>
- * 上游 1.21.1 用 stencil 做「镜身只在目镜圆<b>之外</b>绘制」：
+ * <h2>무엇을 해결하는가</h2>
+ * 원본 1.21.1은 stencil로 "몸체를 접안렌즈 원 <b>바깥</b>에만 그리기"를 했다:
  * <pre>
- * renderOcularStencil(...)              // 用 ocular 几何本身写模板值
- *     colorMask(false,false,false,false);  //   只写模板、不写颜色
- * scope_body: stencilFunc(GL_EQUAL, 0)  // 只在目镜【没盖到】的地方画镜身
+ * renderOcularStencil(...)              // ocular 형상 자체로 스텐실 값을 씀
+ *     colorMask(false,false,false,false);  //   스텐실만 쓰고 색은 쓰지 않음
+ * scope_body: stencilFunc(GL_EQUAL, 0)  // 접안렌즈가 [덮지 않은] 곳에만 몸체를 그림
  * </pre>
- * 注意裁剪区域是<b>目镜几何的屏幕投影</b>，不是某个几何圆
- * （r46 就是把这里搞错了：画了个固定在屏幕中心的圆，导致擦掉整个瞄具主体）。
+ * 잘라내기 영역은 어떤 기하학적 원이 아니라 <b>접안렌즈 형상의 화면 투영</b>이라는 점에 주의한다
+ * (r46은 여기서 틀려 화면 중심에 고정된 원을 그렸고, 조준경 본체 전체를 지워 버렸다).
  *
- * <p>26.2 的渲染抽象层（含 Vulkan 后端）完全没有 stencil，
- * 等价做法是把 {@code ocular} 单独渲染到一张离屏纹理当作掩码，
- * 再让镜身的 shader 采样它决定 discard。本类负责那张纹理的生命周期。</p>
+ * <p>26.2의 렌더링 추상층(Vulkan 백엔드 포함)에는 stencil이 전혀 없다.
+ * 같은 효과를 내려면 {@code ocular}를 따로 화면 밖 텍스처에 그려 마스크로 삼고,
+ * 몸체 shader가 그것을 샘플링해 discard를 정하게 한다. 이 클래스는 그 텍스처의 수명을 맡는다.</p>
  *
- * <h2>进度</h2>
+ * <h2>진행 상황</h2>
  * <ul>
- *   <li><b>Step 1（已 PASS）</b>：建 target、清成纯红、blit 到屏幕角落。
- *       证明了「离屏 target 能建、能清、纹理能被采样回屏幕」。
- *       那次的清屏方法已随本轮删除 —— 目标达成即退场，不留死代码。</li>
- *   <li><b>Step 2-probe（已 PASS）</b>：在<b>阶段边界</b>开一个指向本 target 的
- *       空 render pass 并清成纯绿，验证「跨 OutputTarget 的 pass 切换在阶段边界
- *       是否安全」—— 这是 r51 撞上 {@code VK_ERROR_DEVICE_LOST} 之后
- *       唯一没被单独验过的假设。实测通过，探针已删除。</li>
- *   <li><b>Step 2（当前）</b>：由 {@link ScopeMaskRenderer} 在同一时机
- *       把当帧所有目镜几何画进本 target。预览块里应出现
- *       <b>随枪移动的白色形状</b> —— 这一步验证整个方案的核心假设：
- *       <b>裁剪区域 = 目镜几何的屏幕投影</b>。</li>
+ *   <li><b>Step 1(PASS)</b>: target을 만들고 순수 빨강으로 비운 뒤 화면 구석에 blit했다.
+ *       "화면 밖 target을 만들고, 비우고, 텍스처를 화면으로 다시 샘플링할 수 있다"를 증명했다.
+ *       그때의 화면 비우기 메서드는 이번에 지웠다 — 목표를 이뤘으니 물러나며 죽은 코드를 남기지 않는다.</li>
+ *   <li><b>Step 2-probe(PASS)</b>: <b>단계 경계</b>에서 이 target을 가리키는 빈 render pass를 열고
+ *       순수 초록으로 비워, "OutputTarget을 넘나드는 pass 전환이 단계 경계에서 안전한가"를 검증했다
+ *       — r51이 {@code VK_ERROR_DEVICE_LOST}를 겪은 뒤 따로 검증하지 않은 유일한 가정이었다.
+ *       실측 통과했고 시험 코드는 지웠다.</li>
+ *   <li><b>Step 2(현재)</b>: {@link ScopeMaskRenderer}가 같은 시점에
+ *       이번 프레임의 모든 접안렌즈 형상을 이 target에 그린다. 미리 보기 칸에
+ *       <b>총을 따라 움직이는 흰 모양</b>이 나타나야 한다 — 이 단계로 전체 방안의 핵심 가정을 검증한다:
+ *       <b>잘라내기 영역 = 접안렌즈 형상의 화면 투영</b>.</li>
  * </ul>
  *
- * <p>为什么要拆得这么碎：沙盒里既无法编译也无法看画面，掩码类 bug 通常表现为
- * 「全黑」或「全没」，很难区分是哪一环坏的。每一步都设计成<b>肉眼可判定</b>，
- * 后续步骤才有可信的基准。</p>
+ * <p>이렇게 잘게 나눈 이유: 작업 환경에서는 컴파일도 화면 확인도 할 수 없었고, 마스크 버그는 보통
+ * "온통 검정"이나 "아무것도 없음"으로 나타나 어느 단계가 고장 났는지 구분하기 어렵다. 단계마다 <b>눈으로 판정할 수 있게</b>
+ * 설계해야 다음 단계에 믿을 만한 기준이 생긴다.</p>
  */
 @Environment(EnvType.CLIENT)
 public final class ScopeMaskTarget {
 
-    /** 掩码分辨率相对主帧缓冲的缩放。1.0 = 等分辨率。 */
+    /** 주 프레임 버퍼 대비 마스크 해상도 배율. 1.0 = 같은 해상도. */
     private static final float SCALE = 1.0f;
 
     @Nullable
@@ -56,19 +56,19 @@ public final class ScopeMaskTarget {
     private static int lastWidth = -1;
     private static int lastHeight = -1;
 
-    /** 一旦出过错就永久停用，避免每帧刷屏或反复抛异常。 */
+    /** 한 번 오류가 나면 영구히 끈다. 매 프레임 로그를 쏟거나 예외를 반복해 던지지 않게 한다. */
     private static boolean failed = false;
 
     private ScopeMaskTarget() {
     }
 
     /**
-     * 取（必要时创建/重建）掩码 target。
+     * 마스크 target을 얻는다(필요하면 만들거나 다시 만든다).
      *
-     * <p>窗口尺寸变化时会重建 —— {@code RenderTarget#resize} 存在，
-     * 但重建更简单且这里每帧只比较两个 int，开销可忽略。</p>
+     * <p>창 크기가 바뀌면 다시 만든다 — {@code RenderTarget#resize}가 있지만,
+     * 다시 만드는 편이 더 단순하고 여기서는 매 프레임 int 두 개만 비교하므로 비용은 무시할 만하다.</p>
      *
-     * @return 可用的 target；失败或尺寸非法时返回 {@code null}
+     * @return 쓸 수 있는 target. 실패했거나 크기가 잘못되면 {@code null}
      */
     @Nullable
     public static TextureTarget getOrCreate() {
@@ -76,7 +76,7 @@ public final class ScopeMaskTarget {
             return null;
         }
         Minecraft mc = Minecraft.getInstance();
-        // 注意用帧缓冲的物理像素尺寸，不是 GUI 缩放后的尺寸。
+        // GUI 배율을 적용한 크기가 아니라 프레임 버퍼의 실제 픽셀 크기를 쓴다는 점에 주의한다.
         int w = Math.max(1, (int) (mc.getWindow().getWidth() * SCALE));
         int h = Math.max(1, (int) (mc.getWindow().getHeight() * SCALE));
         try {
@@ -84,8 +84,8 @@ public final class ScopeMaskTarget {
                 if (target != null) {
                     target.destroyBuffers();
                 }
-                // useDepth=false：掩码只关心「这个像素有没有被目镜盖到」，
-                // 不需要深度。少一张深度纹理也省显存。
+                // useDepth=false: 마스크는 "이 픽셀이 접안렌즈에 덮였는지"만 보면 되고
+                // 깊이는 필요 없다. 깊이 텍스처가 하나 줄어 그래픽 메모리도 아낀다.
                 target = new TextureTarget("tacz_scope_mask", w, h, false, GpuFormat.RGBA8_UNORM);
                 lastWidth = w;
                 lastHeight = h;
@@ -99,7 +99,7 @@ public final class ScopeMaskTarget {
         }
     }
 
-    /** 当前 target 是否可用（供调试叠加层判断要不要画）。 */
+    /** 현재 target을 쓸 수 있는지(디버그 겹침 화면이 그릴지 판단하는 데 쓴다). */
     public static boolean isAvailable() {
         return !failed && target != null;
     }
@@ -109,13 +109,13 @@ public final class ScopeMaskTarget {
         return target;
     }
 
-    /** 资源释放。目前没有接到任何生命周期回调上，留作后续 Step 使用。 */
+    /** 자원 해제. 지금은 어떤 수명 주기 콜백에도 연결하지 않았고 뒤 단계용으로 남겨 둔다. */
     public static void close() {
         if (target != null) {
             try {
                 target.destroyBuffers();
             } catch (Exception ignored) {
-                // 关闭失败没有补救手段，忽略即可
+                // 닫기에 실패해도 손쓸 방법이 없으므로 무시한다
             }
             target = null;
         }

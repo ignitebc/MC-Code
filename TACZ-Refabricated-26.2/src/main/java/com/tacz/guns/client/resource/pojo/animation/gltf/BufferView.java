@@ -2,47 +2,47 @@ package com.tacz.guns.client.resource.pojo.animation.gltf;
 
 public class BufferView {
     /**
-     * The index of the buffer. (required)
+     * 버퍼의 인덱스. (필수)
      */
     private Integer buffer;
     /**
-     * The offset into the buffer in bytes. (optional)<br>
-     * Default: 0<br>
-     * Minimum: 0 (inclusive)
+     * 버퍼 안 바이트 오프셋. (선택)<br>
+     * 기본값: 0<br>
+     * 최솟값: 0 (포함)
      */
     private Integer byteOffset;
     /**
-     * The length of the bufferView in bytes. (required)<br>
-     * Minimum: 1 (inclusive)
+     * bufferView의 바이트 길이. (필수)<br>
+     * 최솟값: 1 (포함)
      */
     private Integer byteLength;
     /**
-     * The stride, in bytes. (optional)<br>
-     * Minimum: 4 (inclusive)<br>
-     * Maximum: 252 (inclusive)
+     * 바이트 단위 간격(stride). (선택)<br>
+     * 최솟값: 4 (포함)<br>
+     * 최댓값: 252 (포함)
      */
     private Integer byteStride;
     /**
-     * The hint representing the intended GPU buffer type to use with this
-     * buffer view. (optional)<br>
-     * Valid values: [34962, 34963]
+     * 이 buffer view와 함께 쓸 GPU 버퍼 종류를 알려 주는
+     * 힌트. (선택)<br>
+     * 허용 값: [34962, 34963]
      */
     private Integer target;
 
     /**
-     * The index of the buffer. (required)
+     * 버퍼의 인덱스. (필수)
      *
-     * @return The buffer
+     * @return buffer
      */
     public Integer getBuffer() {
         return this.buffer;
     }
 
     /**
-     * The index of the buffer. (required)
+     * 버퍼의 인덱스. (필수)
      *
-     * @param buffer The buffer to set
-     * @throws NullPointerException If the given value is <code>null</code>
+     * @param buffer 설정할 buffer
+     * @throws NullPointerException 주어진 값이 <code>null</code>일 때
      */
     public void setBuffer(Integer buffer) {
         if (buffer == null) {
@@ -52,24 +52,23 @@ public class BufferView {
     }
 
     /**
-     * The offset into the buffer in bytes. (optional)<br>
-     * Default: 0<br>
-     * Minimum: 0 (inclusive)
+     * 버퍼 안 바이트 오프셋. (선택)<br>
+     * 기본값: 0<br>
+     * 최솟값: 0 (포함)
      *
-     * @return The byteOffset
+     * @return byteOffset
      */
     public Integer getByteOffset() {
         return this.byteOffset;
     }
 
     /**
-     * The offset into the buffer in bytes. (optional)<br>
-     * Default: 0<br>
-     * Minimum: 0 (inclusive)
+     * 버퍼 안 바이트 오프셋. (선택)<br>
+     * 기본값: 0<br>
+     * 최솟값: 0 (포함)
      *
-     * @param byteOffset The byteOffset to set
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param byteOffset 설정할 byteOffset
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setByteOffset(Integer byteOffset) {
         if (byteOffset == null) {
@@ -83,9 +82,9 @@ public class BufferView {
     }
 
     /**
-     * Returns the default value of the byteOffset<br>
+     * byteOffset의 기본값을 돌려준다<br>
      *
-     * @return The default byteOffset
+     * @return byteOffset 기본값
      * @see #getByteOffset
      */
     public Integer defaultByteOffset() {
@@ -93,23 +92,22 @@ public class BufferView {
     }
 
     /**
-     * The length of the bufferView in bytes. (required)<br>
-     * Minimum: 1 (inclusive)
+     * bufferView의 바이트 길이. (필수)<br>
+     * 최솟값: 1 (포함)
      *
-     * @return The byteLength
+     * @return byteLength
      */
     public Integer getByteLength() {
         return this.byteLength;
     }
 
     /**
-     * The length of the bufferView in bytes. (required)<br>
-     * Minimum: 1 (inclusive)
+     * bufferView의 바이트 길이. (필수)<br>
+     * 최솟값: 1 (포함)
      *
-     * @param byteLength The byteLength to set
-     * @throws NullPointerException     If the given value is <code>null</code>
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param byteLength 설정할 byteLength
+     * @throws NullPointerException     주어진 값이 <code>null</code>일 때
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setByteLength(Integer byteLength) {
         if (byteLength == null) {
@@ -122,24 +120,23 @@ public class BufferView {
     }
 
     /**
-     * The stride, in bytes. (optional)<br>
-     * Minimum: 4 (inclusive)<br>
-     * Maximum: 252 (inclusive)
+     * 바이트 단위 간격(stride). (선택)<br>
+     * 최솟값: 4 (포함)<br>
+     * 최댓값: 252 (포함)
      *
-     * @return The byteStride
+     * @return byteStride
      */
     public Integer getByteStride() {
         return this.byteStride;
     }
 
     /**
-     * The stride, in bytes. (optional)<br>
-     * Minimum: 4 (inclusive)<br>
-     * Maximum: 252 (inclusive)
+     * 바이트 단위 간격(stride). (선택)<br>
+     * 최솟값: 4 (포함)<br>
+     * 최댓값: 252 (포함)
      *
-     * @param byteStride The byteStride to set
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param byteStride 설정할 byteStride
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setByteStride(Integer byteStride) {
         if (byteStride == null) {
@@ -156,24 +153,23 @@ public class BufferView {
     }
 
     /**
-     * The hint representing the intended GPU buffer type to use with this
-     * buffer view. (optional)<br>
-     * Valid values: [34962, 34963]
+     * 이 buffer view와 함께 쓸 GPU 버퍼 종류를 알려 주는
+     * 힌트. (선택)<br>
+     * 허용 값: [34962, 34963]
      *
-     * @return The target
+     * @return target
      */
     public Integer getTarget() {
         return this.target;
     }
 
     /**
-     * The hint representing the intended GPU buffer type to use with this
-     * buffer view. (optional)<br>
-     * Valid values: [34962, 34963]
+     * 이 buffer view와 함께 쓸 GPU 버퍼 종류를 알려 주는
+     * 힌트. (선택)<br>
+     * 허용 값: [34962, 34963]
      *
-     * @param target The target to set
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param target 설정할 target
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setTarget(Integer target) {
         if (target == null) {

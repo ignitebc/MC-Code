@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * 26.2: 迁移到 DataComponents 系统。
- * 原来的 NBT tag 匹配改为使用 DataComponents.CUSTOM_DATA + CustomData.matchedBy()。
+ * 26.2: DataComponents 체계로 옮겼다.
+ * 예전 NBT 태그 비교는 DataComponents.CUSTOM_DATA + CustomData.matchedBy()로 바꿨다.
  */
 public class PartialNBTIngredient implements CustomIngredient {
     private final Set<Item> items;
@@ -42,14 +42,14 @@ public class PartialNBTIngredient implements CustomIngredient {
     }
 
     /**
-     * Creates a new ingredient matching any item from the list, containing the given NBT
+     * 목록의 아이템 중 하나이면서 주어진 NBT를 가진 아이템과 일치하는 재료를 만든다
      */
     public static PartialNBTIngredient of(CompoundTag nbt, ItemLike... items) {
         return new PartialNBTIngredient(Arrays.stream(items).map(ItemLike::asItem).collect(Collectors.toSet()), nbt);
     }
 
     /**
-     * Creates a new ingredient matching the given item, containing the given NBT
+     * 주어진 아이템이면서 주어진 NBT를 가진 아이템과 일치하는 재료를 만든다
      */
     public static PartialNBTIngredient of(ItemLike item, CompoundTag nbt) {
         return new PartialNBTIngredient(Set.of(item.asItem()), nbt);
@@ -61,7 +61,7 @@ public class PartialNBTIngredient implements CustomIngredient {
             return false;
         if (!items.contains(input.getItem()))
             return false;
-        // 26.2: 使用 CUSTOM_DATA component 进行 NBT 匹配
+        // 26.2: CUSTOM_DATA 컴포넌트로 NBT를 비교한다
         CustomData customData = input.get(DataComponents.CUSTOM_DATA);
         return customData != null && customData.matchedBy(nbt);
     }
@@ -72,15 +72,15 @@ public class PartialNBTIngredient implements CustomIngredient {
     }
 
     /**
-     * 让材料格显示<b>带上要求 NBT 的</b>物品，而不是光秃秃的基础物品。
+     * 재료 칸에 맨 기본 아이템이 아니라 <b>요구 NBT가 붙은</b> 아이템을 보여 준다.
      *
-     * <p>不覆写的话，父接口默认实现只会拿 {@link #items()} 里的裸物品去画 ——
-     * 对 TACZ 而言就是一把「空枪 ID」的 {@code tacz:modern_kinetic_gun}，
-     * 图标是缺省模型、名字也不对，玩家根本看不出要交什么。
+     * <p>재정의하지 않으면 부모 인터페이스의 기본 구현은 {@link #items()}의 맨 아이템만 그린다 —
+     * TACZ라면 "빈 총 ID"를 가진 {@code tacz:modern_kinetic_gun}이 되어
+     * 아이콘은 기본 모델이고 이름도 틀려, 플레이어는 무엇을 내야 하는지 알 수 없다.
      *
-     * <p>这里把 {@code nbt} 塞进 {@code CUSTOM_DATA} 再交给显示层，
-     * 于是材料格会正确渲染成「柯尔特 M1892」本身。
-     * 这只影响<b>显示</b>，匹配逻辑仍由 {@link #test} 负责，两者互不干扰。
+     * <p>여기서는 {@code nbt}를 {@code CUSTOM_DATA}에 넣어 표시층에 넘기므로,
+     * 재료 칸에 "콜트 M1892" 자체가 제대로 그려진다.
+     * 이것은 <b>표시</b>에만 영향을 주고, 일치 판정은 계속 {@link #test}가 맡아 서로 간섭하지 않는다.
      */
     @Override
     public SlotDisplay display() {

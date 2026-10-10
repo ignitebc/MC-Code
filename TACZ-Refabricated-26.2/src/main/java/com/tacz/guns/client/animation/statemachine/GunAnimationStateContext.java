@@ -77,9 +77,9 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 获取枪膛中是否有子弹。
+     * 약실에 탄이 있는지 얻는다.
      *
-     * @return 枪膛中是否有子弹。如果是开膛待击的枪械，则此方法返回 false。
+     * @return 약실에 탄이 있는지. 오픈 볼트 방식 총기면 false를 돌려준다.
      */
     public boolean hasBulletInBarrel() {
         return processGunData((iGun, gunIndex) -> {
@@ -98,9 +98,9 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 获取枪械的射击间隔，单位毫秒
+     * 총기의 사격 간격(밀리초)을 얻는다
      *
-     * @return 射击间隔
+     * @return 사격 간격
      */
     public long getShootInterval() {
         return processCameraEntity(entity -> {
@@ -118,27 +118,27 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 返回上次射击的 timestamp(系统时间)，单位为毫秒。此值在切枪时会重置为 -1。
+     * 마지막으로 사격한 timestamp(시스템 시각, 밀리초)를 돌려준다. 총기를 바꾸면 -1로 초기화된다.
      *
-     * @return 上次射击的 timestamp，在切枪时会重置为 -1。
+     * @return 마지막 사격 timestamp. 총기를 바꾸면 -1로 초기화된다.
      */
     public long getLastShootTimestamp() {
         return processGunOperator(operator -> operator.getDataHolder().clientLastShootTimestamp).orElse(-1L);
     }
 
     /**
-     * 获取当前系统时间，单位毫秒。
+     * 현재 시스템 시각(밀리초)을 얻는다.
      *
-     * @return 当前系统时间
+     * @return 현재 시스템 시각
      */
     public long getCurrentTimestamp() {
         return System.currentTimeMillis();
     }
 
     /**
-     * 调整射击间隔。(仅在客户端表现)
+     * 사격 간격을 조정한다(클라이언트 표시에만 적용).
      *
-     * @param alpha 需要加上或减少的射击间隔，单位为毫秒。正数即增加射击间隔，负数则是减少。
+     * @param alpha 더하거나 뺄 사격 간격(밀리초). 양수면 간격이 늘고 음수면 준다.
      */
     public void adjustClientShootInterval(long alpha) {
         processGunOperator(operator -> {
@@ -149,18 +149,18 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 获取弹匣中的备弹数。
+     * 탄창 안의 탄약 수를 얻는다.
      *
-     * @return 返回弹匣中的备弹数，不计算已在枪管中的弹药。
+     * @return 탄창 안의 탄약 수. 약실 안의 탄은 세지 않는다.
      */
     public int getAmmoCount() {
         return processGunData((iGun, gunIndex) -> iGun.getCurrentAmmoCount(currentGunItem)).orElse(0);
     }
 
     /**
-     * 获取枪械弹匣的最大备弹数。
+     * 총기 탄창의 최대 탄약 수를 얻는다.
      *
-     * @return 返回枪械弹匣的最大备弹数，不计算已在枪管中的弹药。
+     * @return 총기 탄창의 최대 탄약 수. 약실 안의 탄은 세지 않는다.
      */
     public int getMaxAmmoCount() {
         return processGunData(
@@ -170,10 +170,10 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 检查玩家身上（或者虚拟备弹）是否有弹药可以消耗，通常用于循环换弹的打断。
-     * 创造模式的玩家会直接返回 true
+     * 플레이어(또는 가상 예비 탄약)에게 소모할 탄약이 있는지 확인한다. 보통 반복 재장전을 끊을 때 쓴다.
+     * 크리에이티브 플레이어는 바로 true를 돌려준다
      *
-     * @return 玩家身上（或者虚拟备弹）是否有弹药可以消耗
+     * @return 플레이어(또는 가상 예비 탄약)에게 소모할 탄약이 있는지
      */
     public boolean hasAmmoToConsume() {
         if (!processRemoteGunOperator(IGunOperator::needCheckAmmo).orElse(true)) {
@@ -186,7 +186,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
                     if (entity instanceof LivingEntity livingEntity) {
                         return livingEntity.tacz$getItemHandler(null)
                                 .map(cap -> {
-                                    // 背包检查
+                                    // 인벤토리 확인
                                     for (int i = 0; i < cap.getSlots(); i++) {
                                         ItemStack checkAmmoStack = cap.getStackInSlot(i);
                                         if (checkAmmoStack.getItem() instanceof IAmmo iAmmo && iAmmo.isAmmoOfGun(currentGunItem, checkAmmoStack)) {
@@ -205,9 +205,9 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 获取枪械扩容等级。
+     * 총기 확장 탄창 단계를 얻는다.
      *
-     * @return 扩容等级，范围 0 ~ 3。0 表示没有安装扩容弹匣，1 ~ 3 表示安装了扩容等级 1 ~ 3 的扩容弹匣
+     * @return 확장 단계(0~3). 0은 확장 탄창 없음, 1~3은 해당 단계의 확장 탄창 장착
      */
     public int getMagExtentLevel() {
         return processGunData(
@@ -217,46 +217,46 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 获取枪械当前的开火模式。
+     * 총기의 현재 발사 모드를 얻는다.
      *
-     * @return FireMode 枚举的 ordinal 值
+     * @return FireMode 열거형의 ordinal 값
      */
     public int getFireMode() {
         return processGunData((iGun, gunIndex) -> iGun.getFireMode(currentGunItem).ordinal()).orElse(0);
     }
 
     /**
-     * 获取持枪玩家的瞄准进度。
+     * 총을 든 플레이어의 조준 진행도를 얻는다.
      *
-     * @return 持枪玩家的瞄准进度，取值范围：0 ~ 1。
-     * 0 代表没有喵准，1 代表喵准完成。
+     * @return 조준 진행도(0~1).
+     * 0은 조준 안 함, 1은 조준 완료.
      */
     public float getAimingProgress() {
         return processGunOperator(operator -> operator.getClientAimingProgress(partialTicks)).orElse(0f);
     }
 
     /**
-     * 获取玩家当前是否在瞄准。如果正在瞄准，aiming progress 会增加，否则减少。
+     * 플레이어가 지금 조준 중인지 얻는다. 조준 중이면 aiming progress가 늘고, 아니면 준다.
      *
-     * @return 玩家当前是否在瞄准
+     * @return 플레이어가 지금 조준 중인지
      */
     public boolean isAiming() {
         return processGunOperator(IClientPlayerGunOperator::isAim).orElse(false);
     }
 
     /**
-     * 获取玩家的射击冷却。
+     * 플레이어의 사격 대기 시간을 얻는다.
      *
-     * @return 玩家的射击冷却，单位为毫秒(ms)。
+     * @return 플레이어의 사격 대기 시간(밀리초, ms)
      */
     public long getShootCoolDown() {
         return processGunOperator(IClientPlayerGunOperator::getClientShootCoolDown).orElse(0L);
     }
 
     /**
-     * 获取玩家的换弹状态
+     * 플레이어의 재장전 상태를 얻는다
      *
-     * @return 玩家的换弹状态
+     * @return 플레이어의 재장전 상태
      */
     public int getReloadStateType() {
         return processCameraEntity(entity -> {
@@ -268,89 +268,89 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 获取玩家的按键输入是否为上。
+     * 플레이어 키 입력이 위쪽인지 얻는다.
      *
-     * @return 玩家的按键输入是否为上 (对应着移动中的前进按键，如 W)
+     * @return 플레이어 키 입력이 위쪽인지(이동의 앞으로 키, 예: W)
      */
     public boolean isInputUp() {
         return Optional.ofNullable(Minecraft.getInstance().player).map(player -> player.input.keyPresses.forward()).orElse(false);
     }
 
     /**
-     * 获取玩家的按键输入是否为下。
+     * 플레이어 키 입력이 아래쪽인지 얻는다.
      *
-     * @return 玩家的按键输入是否为下 (对应着移动中的后退按键，如 S)
+     * @return 플레이어 키 입력이 아래쪽인지(이동의 뒤로 키, 예: S)
      */
     public boolean isInputDown() {
         return Optional.ofNullable(Minecraft.getInstance().player).map(player -> player.input.keyPresses.backward()).orElse(false);
     }
 
     /**
-     * 获取玩家的按键输入是否为左。
+     * 플레이어 키 입력이 왼쪽인지 얻는다.
      *
-     * @return 玩家的按键输入是否为左 (对应着移动中的左移按键，如 A)
+     * @return 플레이어 키 입력이 왼쪽인지(이동의 왼쪽 키, 예: A)
      */
     public boolean isInputLeft() {
         return Optional.ofNullable(Minecraft.getInstance().player).map(player -> player.input.keyPresses.left()).orElse(false);
     }
 
     /**
-     * 获取玩家的按键输入是否为右。
+     * 플레이어 키 입력이 오른쪽인지 얻는다.
      *
-     * @return 玩家的按键输入是否为右 (对应着移动中的右移按键，如 D)
+     * @return 플레이어 키 입력이 오른쪽인지(이동의 오른쪽 키, 예: D)
      */
     public boolean isInputRight() {
         return Optional.ofNullable(Minecraft.getInstance().player).map(player -> player.input.keyPresses.right()).orElse(false);
     }
 
     /**
-     * 获取玩家的按键输入是否为跳跃。
+     * 플레이어 키 입력이 점프인지 얻는다.
      *
-     * @return 玩家的按键输入是否为跳跃 (对应着移动中的跳跃按键，如 Space)
+     * @return 플레이어 키 입력이 점프인지(이동의 점프 키, 예: Space)
      */
     public boolean isInputJumping() {
         return Optional.ofNullable(Minecraft.getInstance().player).map(player -> player.input.keyPresses.jump()).orElse(false);
     }
 
     /**
-     * 获取玩家当前是否正在匍匐
+     * 플레이어가 지금 엎드려 기는 중인지 얻는다
      *
-     * @return 玩家当前是否正在匍匐
+     * @return 플레이어가 지금 엎드려 기는 중인지
      */
     public boolean isCrawl() {
         return processGunOperator(IClientPlayerGunOperator::isCrawl).orElse(false);
     }
 
     /**
-     * 获取玩家是否接触地面
+     * 플레이어가 땅에 닿아 있는지 얻는다
      *
-     * @return 玩家是否接触地面
+     * @return 플레이어가 땅에 닿아 있는지
      */
     public boolean isOnGround() {
         return processCameraEntity(Entity::onGround).orElse(false);
     }
 
     /**
-     * 获取 玩家是否蹲伏
+     * 플레이어가 웅크렸는지 얻는다
      *
-     * @return 玩家是否蹲伏
+     * @return 플레이어가 웅크렸는지
      */
     public boolean isCrouching() {
         return processCameraEntity(Entity::isCrouching).orElse(false);
     }
 
     /**
-     * 获取 玩家当前是否应该斜握枪械
-     * 需要同时满足蹲伏和枪械允许斜握
+     * 플레이어가 지금 총을 비스듬히 들어야 하는지 얻는다
+     * 웅크린 상태이고 총기가 비스듬히 들기를 허용해야 한다
      *
-     * @return 玩家当前是否应该斜握枪械
+     * @return 플레이어가 지금 총을 비스듬히 들어야 하는지
      */
     public boolean shouldSlide() {
         return processCameraEntity(e -> e.isCrouching() && gunData.canSlide()).orElse(false);
     }
 
     /**
-     * 在玩家当前的行走距离打上锚点。此后，getWalkDist() 将返回与此锚点的相对值
+     * 플레이어의 현재 걷기 거리에 기준점을 찍는다. 이후 getWalkDist()는 이 기준점과의 상대값을 돌려준다
      */
     public void anchorWalkDist() {
         processCameraEntity(entity -> {
@@ -362,83 +362,83 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 取<b>与上游 1.21.1 语义等价</b>的行走距离（已按 partialTick 插值）。
+     * <b>원본 1.21.1과 같은 의미</b>의 걷기 거리를 얻는다(partialTick으로 보간함).
      *
-     * <p><b>26.2 修复：持枪行走动画“抖动”的真正根因 —— 动画速率快了约 6.7 倍。</b></p>
+     * <p><b>26.2 수정: 총 들고 걷는 애니메이션 "떨림"의 실제 원인 — 애니메이션 속도가 약 6.7배 빨랐다.</b></p>
      *
-     * <p>上游 1.21.1 用的是 {@code Entity#walkDist}：</p>
+     * <p>원본 1.21.1은 {@code Entity#walkDist}를 썼다:</p>
      * <pre>
      * entity.walkDist + (entity.walkDist - entity.walkDistO) * partialTicks
      * </pre>
      *
-     * <p>移植时误换成了 {@code livingEntity.walkAnimation.position(...)}。
-     * <b>这两者不是同一个量</b>（反编译确认）：</p>
+     * <p>이식할 때 잘못해서 {@code livingEntity.walkAnimation.position(...)}으로 바꿨다.
+     * <b>두 값은 같은 양이 아니다</b>(디컴파일 확인):</p>
      *
      * <table border="1">
-     *   <tr><th></th><th>每 tick 增量</th><th>走一个 2.0 周期</th></tr>
-     *   <tr><td>{@code moveDist}（= 旧 walkDist）</td>
-     *       <td>{@code += 水平位移 * 0.6}</td><td>约 33 tick ≈ 1.67s</td></tr>
+     *   <tr><th></th><th>틱당 증가량</th><th>2.0 주기 한 번 걷기</th></tr>
+     *   <tr><td>{@code moveDist}(= 예전 walkDist)</td>
+     *       <td>{@code += 수평 이동량 * 0.6}</td><td>약 33틱 ≈ 1.67초</td></tr>
      *   <tr><td>{@code walkAnimation.position}</td>
-     *       <td>{@code += min(位移 * 4.0, 1.0)}（0.4 缓动）</td><td>约 5 tick ≈ 0.25s</td></tr>
+     *       <td>{@code += min(이동량 * 4.0, 1.0)}(0.4 완화)</td><td>약 5틱 ≈ 0.25초</td></tr>
      * </table>
      *
-     * <p>以正常步行 0.1 格/tick 计算，后者约为前者的 <b>6.7 倍</b>。
-     * 而枪包 Lua 的驱动写法是 {@code setAnimationProgress(track, (getWalkDist() % 2.0) / 2.0)}，
-     * 即固定 2.0 为一个行走周期 —— 于是行走动画被以约 6.7 倍速播放。
-     * 因为两者都与移动速度<b>线性相关</b>，所以表现为“走得越快抖得越快、
-     * 喝缓慢药水后变慢”，本质上不是抖动，而是<b>被加速的持枪行走动画</b>。</p>
+     * <p>보통 걷기 속도 0.1칸/틱으로 계산하면 뒤쪽이 앞쪽의 약 <b>6.7배</b>다.
+     * 그런데 총기 팩 Lua는 {@code setAnimationProgress(track, (getWalkDist() % 2.0) / 2.0)}로 구동하므로,
+     * 2.0을 걷기 한 주기로 고정한다 — 그래서 걷기 애니메이션이 약 6.7배 속도로 재생됐다.
+     * 둘 다 이동 속도에 <b>비례</b>하므로 "빨리 걸을수록 빨리 떨리고,
+     * 느림 물약을 마시면 느려지는" 모습이 되었다. 본질은 떨림이 아니라 <b>빨라진 총 들고 걷기 애니메이션</b>이다.</p>
      *
-     * <p>26.2 中 {@code Entity.walkDist} 已更名为 {@code Entity.moveDist}
-     * （javap 确认：{@code public float moveDist}，且仍是 {@code += 水平位移 * 0.6}），
-     * 语义与旧 {@code walkDist} 完全一致，因此改用它。</p>
+     * <p>26.2에서 {@code Entity.walkDist}는 {@code Entity.moveDist}로 이름이 바뀌었고
+     * (javap 확인: {@code public float moveDist}, 여전히 {@code += 수평 이동량 * 0.6}),
+     * 의미가 예전 {@code walkDist}와 같으므로 이것으로 바꿨다.</p>
      *
-     * <p><b>关于插值（第 7 轮补充）</b>：{@code moveDist} 没有配套的 {@code moveDistO}。
-     * 第 6 轮曾判断"增量很小、直接取值不会有可见阶梯感" —— <b>这个判断是错的</b>，
-     * 实测动画明显发涩、像掉帧。现由 {@code EntityMixin} 在每 tick HEAD 记录上一 tick 的
-     * {@code moveDist}（见 {@link IMoveDistTracker}）重建出 {@code walkDistO}，
-     * 从而做与上游<b>完全一致</b>的线性插值，兼顾正确量纲与平滑度。</p>
+     * <p><b>보간에 대해(7차 보충)</b>: {@code moveDist}에는 짝이 되는 {@code moveDistO}가 없다.
+     * 6차에서는 "증가량이 작아 그대로 써도 계단 현상이 보이지 않을 것"이라 판단했는데 — <b>틀린 판단이었다</b>.
+     * 실제로는 애니메이션이 눈에 띄게 뻑뻑하고 프레임이 떨어진 것처럼 보였다. 지금은 {@code EntityMixin}이 매 틱 HEAD에서 직전 틱의
+     * {@code moveDist}를 기록해({@link IMoveDistTracker} 참고) {@code walkDistO}를 다시 만들고,
+     * 원본과 <b>똑같은</b> 선형 보간을 해 올바른 단위와 부드러움을 함께 얻는다.</p>
      */
     private float tacz$walkDistance(LivingEntity livingEntity) {
         // ------------------------------------------------------------------
-        // 【首选路径】26.2 官方的 walkDist/walkDistO 继任者：ClientAvatarState
+        // [우선 경로] 26.2 공식 walkDist/walkDistO 후계: ClientAvatarState
         //
-        // 第 20 轮修正：r6/r7 认定「26.2 把 walkDist 更名为 Entity.moveDist、
-        // 语义完全一致」——这个判断只对了一半，且在多人环境下是错的。
+        // 20차 수정: r6/r7은 "26.2가 walkDist를 Entity.moveDist로 이름만 바꿨고
+        // 의미가 완전히 같다"고 판단했는데 — 절반만 맞고, 멀티플레이 환경에서는 틀렸다.
         //
-        // 字节码事实（Entity.move，偏移 601~648）：
-        //     if (level.isClientSide() && !isLocalInstanceAuthoritative()) -> 整段跳过
+        // 바이트코드 사실(Entity.move, 오프셋 601~648):
+        //     if (level.isClientSide() && !isLocalInstanceAuthoritative()) -> 구간 전체 건너뜀
         //     ...
-        //     applyMovementEmissionAndPlaySound(...)   // moveDist 唯一的写入点
-        // 而门禁逐级展开为：
+        //     applyMovementEmissionAndPlaySound(...)   // moveDist를 쓰는 유일한 곳
+        // 이 조건을 단계별로 펼치면:
         //     Entity.isLocalInstanceAuthoritative() -> Player.isLocalClientAuthoritative()
-        //         -> Player.isLocalPlayer()      = iconst_0  (基类恒 false)
-        //            LocalPlayer.isLocalPlayer() = iconst_1  (只有本机玩家)
+        //         -> Player.isLocalPlayer()      = iconst_0  (기반 클래스는 항상 false)
+        //            LocalPlayer.isLocalPlayer() = iconst_1  (자기 플레이어만)
         //
-        // 即：客户端上 moveDist 只对 LocalPlayer 累加，RemotePlayer 恒为 0。
-        // 后果是**其他玩家的持枪行走动画完全静止**（(0 % 2.0)/2.0 恒为 0），
-        // 而本机自测发现不了——自己的动画是正常的。
+        // 즉 클라이언트에서 moveDist는 LocalPlayer만 쌓이고 RemotePlayer는 항상 0이다.
+        // 그 결과 **다른 플레이어의 총 들고 걷는 애니메이션이 완전히 멈춘다**((0 % 2.0)/2.0은 항상 0)
+        // 혼자 시험해서는 알 수 없다 — 자기 애니메이션은 정상이다.
         //
-        // 26.2 为此提供了专门的载体（均经字节码确认）：
-        //     ClientAvatarState.walkDist / walkDistO                （private 字段）
-        //     ClientAvatarState.addWalkDistance(float)              （walkDist += v）
-        //     ClientAvatarState.tick(Vec3,Vec3)                     （walkDistO = walkDist）
-        //     ClientAvatarState.getInterpolatedWalkDistance(float)  （Mth.lerp(pt, walkDistO, walkDist)）
-        // 驱动方 LocalPlayer.move 末尾：Mth.length(dx,dz) * 0.6F -> addWalkedDistance
+        // 26.2는 이를 위한 전용 수단을 제공한다(모두 바이트코드 확인):
+        //     ClientAvatarState.walkDist / walkDistO                (private 필드)
+        //     ClientAvatarState.addWalkDistance(float)              (walkDist += v)
+        //     ClientAvatarState.tick(Vec3,Vec3)                     (walkDistO = walkDist)
+        //     ClientAvatarState.getInterpolatedWalkDistance(float)  (Mth.lerp(pt, walkDistO, walkDist))
+        // 구동하는 쪽은 LocalPlayer.move 끝부분: Mth.length(dx,dz) * 0.6F -> addWalkedDistance
         //     -> AbstractClientPlayer.addWalkedDistance -> clientAvatarState.addWalkDistance
         //
-        // 关键点：量纲同为 **×0.6**，与上游 1.21.1 的 walkDist 完全一致；
-        // 且 getInterpolatedWalkDistance 就是上游那句手写插值的官方实现，
-        // 对本机与远程玩家**同样有效**（RemotePlayer 也是 AbstractClientPlayer）。
-        // vanilla 自己在 AvatarRenderer.extractCapeState 里就是这么用的。
+        // 핵심: 단위가 똑같이 **×0.6**이라 원본 1.21.1의 walkDist와 같다.
+        // 또 getInterpolatedWalkDistance가 바로 원본이 손으로 쓴 보간식의 공식 구현이며,
+        // 자기 플레이어와 원격 플레이어 **모두에 똑같이 동작**한다(RemotePlayer도 AbstractClientPlayer다).
+        // 바닐라도 AvatarRenderer.extractCapeState에서 이렇게 쓴다.
         if (livingEntity instanceof AbstractClientPlayer clientPlayer) {
             return clientPlayer.avatarState().getInterpolatedWalkDistance(this.partialTicks);
         }
 
         // ------------------------------------------------------------------
-        // 【回退路径】非玩家实体（僵尸等持枪生物）走 moveDist。
-        // 这类实体在客户端由服务端同步位置，moveDist 的门禁同样不通过，
-        // 但它们没有 ClientAvatarState，也没有更好的量可用。
-        // EntityMixin 重建的 moveDistO 在此仍有意义（服务端侧/单机场景）。
+        // [대체 경로] 플레이어가 아닌 엔티티(총을 든 좀비 등)는 moveDist를 쓴다.
+        // 이런 엔티티는 클라이언트에서 서버가 위치를 동기화하므로 moveDist 조건을 똑같이 통과하지 못하지만,
+        // ClientAvatarState도 없고 더 나은 값도 없다.
+        // EntityMixin이 다시 만든 moveDistO는 여기서 여전히 의미가 있다(서버 쪽·싱글플레이).
         float moveDist = livingEntity.moveDist;
         if (livingEntity instanceof IMoveDistTracker tracker) {
             float moveDistO = tracker.tacz$getMoveDistO();
@@ -448,15 +448,15 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 获取与锚点相对的行走距离。如果没有打锚点，则直接获取行走距离。
+     * 기준점 대비 걷기 거리를 얻는다. 기준점이 없으면 걷기 거리를 그대로 얻는다.
      *
-     * @return 与锚点相对的行走距离。如果没有打锚点，则直接返回行走距离。
+     * @return 기준점 대비 걷기 거리. 기준점이 없으면 걷기 거리를 그대로 돌려준다.
      */
 
     public float getWalkDist() {
         return processCameraEntity(entity -> {
             if (entity instanceof LivingEntity livingEntity) {
-                // 必须与上游同量纲（moveDist），否则动画速率会快约 6.7 倍。见 tacz$walkDistance。
+                // 원본과 같은 단위(moveDist)여야 한다. 아니면 애니메이션이 약 6.7배 빨라진다. tacz$walkDistance 참고.
                 float currentWalkDist = tacz$walkDistance(livingEntity);
                 return currentWalkDist - walkDistAnchor;
             }
@@ -465,9 +465,9 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 从指定序号的抛壳窗弹出一枚弹壳
+     * 지정한 번호의 탄피 배출구에서 탄피 하나를 내보낸다
      *
-     * @param index 抛壳窗序号
+     * @param index 탄피 배출구 번호
      */
     public void popShellFrom(int index) {
         if (display.getShellEjection() != null) {
@@ -491,9 +491,9 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 获取在枪械 display 中声明的状态机参数
+     * 총기 display에 선언한 상태 기계 매개변수를 얻는다
      *
-     * @return 状态机参数表
+     * @return 상태 기계 매개변수 표
      */
     public LuaTable getStateMachineParams() {
         LuaTable param = display.getStateMachineParam();
@@ -501,20 +501,20 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 获取当前枪械物品的 NBT 数据访问器。<br/>
-     * 注意，你不应该在客户端侧修改 NBT 数据，这可能会导致与服务端的数据不一致。<br/>
-     * 你应该确保在状态机脚本内仅进行读操作
+     * 현재 총기 아이템의 NBT 데이터 접근자를 얻는다.<br/>
+     * 클라이언트 쪽에서 NBT 데이터를 바꾸면 서버 데이터와 어긋날 수 있으므로 바꾸지 않는다.<br/>
+     * 상태 기계 스크립트에서는 읽기만 해야 한다
      *
-     * @return NBT 数据访问器
+     * @return NBT 데이터 접근자
      */
     public LuaNbtAccessor getNbtAccessor() {
         return nbtUtil;
     }
 
     /**
-     * 获取枪械的配件 ID
+     * 총기의 부착물 ID를 얻는다
      *
-     * @return 配件 ID, 如果类型错误或者对应的配件不存在则返回空配件 ID 'tacz:empty'
+     * @return 부착물 ID. 종류가 틀렸거나 해당 부착물이 없으면 빈 부착물 ID 'tacz:empty'
      */
     public String getAttachment(String type) {
         try {
@@ -526,16 +526,16 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 获取当前的蓄力进度
-     * @return 当前的蓄力进度
+     * 현재 충전 진행도를 얻는다
+     * @return 현재 충전 진행도
      */
     public float getChargeProgress() {
         return processGunOperator(IClientPlayerGunOperator::getChargeProgress).orElse(0f);
     }
 
     /**
-     * 获取当前枪械的最大蓄力值
-     * @return 当前枪械的最大蓄力值
+     * 현재 총기의 최대 충전 값을 얻는다
+     * @return 현재 총기의 최대 충전 값
      */
     public float getMaxCharge() {
         return processGunData((iGun, gunIndex) -> {
@@ -545,8 +545,8 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 获取当前枪械的蓄力触发阈值(仅hold模式有效)
-     * @return 当前枪械的蓄力触发阈值
+     * 현재 총기의 충전 발사 기준값을 얻는다(hold 모드에서만 유효)
+     * @return 현재 총기의 충전 발사 기준값
      */
     public float getChargeThreshold() {
         return processGunData((iGun, gunIndex) -> {
@@ -556,15 +556,15 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 获取当前是否正在蓄力
-     * @return 当前是否正在蓄力
+     * 지금 충전 중인지 얻는다
+     * @return 지금 충전 중인지
      */
     public boolean isCharging() {
         return processGunOperator(IClientPlayerGunOperator::isCharging).orElse(false);
     }
 
     /**
-     * 状态机脚本请不要调用此方法。此方法用于状态机更新时设置当前的物品对象。
+     * 상태 기계 스크립트에서 호출하지 않는다. 상태 기계를 갱신할 때 현재 아이템 객체를 설정하는 데 쓴다.
      */
     public void setCurrentGunItem(ItemStack currentGunItem) {
         this.currentGunItem = currentGunItem;

@@ -1,7 +1,7 @@
 accessWidener v2 official
 
-# Confirmed against the Minecraft 26.2 development jar by compileJava.
-# Keep entries minimal; the remaining 1.21.1 targets must be individually revalidated.
+# compileJava로 Minecraft 26.2 개발용 jar와 대조해 확인했다.
+# 항목은 최소로 유지한다. 남은 1.21.1 대상은 하나씩 다시 검증해야 한다.
 accessible field net/minecraft/world/entity/LivingEntity jumping Z
 accessible method net/minecraft/client/multiplayer/MultiPlayerGameMode ensureHasSentCarriedItem ()V
 accessible method net/minecraft/client/Minecraft startUseItem ()V

@@ -13,7 +13,7 @@ import java.util.function.Function;
 public final class PapiManager {
     private static final Map<String, Function<ItemStack, String>> PAPI = Maps.newHashMap();
 
-    // 注册，不知道放哪里，先放这
+    // 등록. 둘 곳을 몰라 우선 여기에 둔다
     static {
         addPapi(PlayerNamePapi.NAME, new PlayerNamePapi());
         addPapi(AmmoCountPapi.NAME, new AmmoCountPapi());

@@ -19,7 +19,7 @@ public class ObjectAnimationSoundChannel {
     }
 
     /**
-     * 播放区间内的所有声音。时间区间左开右闭
+     * 구간 안의 모든 소리를 재생한다. 구간은 왼쪽이 열리고 오른쪽이 닫혀 있다
      */
     public void playSound(double fromTimeS, double toTimeS, Entity entity, int distance, float volume, float pitch) {
         if (content == null) {
@@ -35,7 +35,7 @@ public class ObjectAnimationSoundChannel {
         int to = computeIndex(toTimeS, false);
         int from = computeIndex(fromTimeS, true);
         float mixVolume = volume;
-        // 根据实体位置计算音量
+        // 엔티티 위치에 따라 음량을 계산한다
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             mixVolume = mixVolume * (1.0F - Math.min(1.0F, (float) Math.sqrt(player.distanceToSqr(entity.getPosition(0))) / distance));

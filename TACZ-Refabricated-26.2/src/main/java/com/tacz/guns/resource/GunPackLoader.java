@@ -74,10 +74,10 @@ public enum GunPackLoader implements RepositorySource {
             }
         }
 
-        // 确保配置文件加载，这个阶段将比标准的forge配置文件加载早
+        // 설정 파일을 먼저 불러온다. 이 단계는 표준 Forge 설정 파일 로드보다 이르다
         PreLoadConfig.load(resourcePacksPath);
 
-        // 仅在第一次加载时复制默认资源包
+        // 처음 로드할 때만 기본 리소스 팩을 복사한다
         if (firstLoad) {
             if (!PreLoadConfig.override.get()) {
                 for (ResourceManager.ExtraEntry entry : ResourceManager.EXTRA_ENTRIES) {
@@ -153,28 +153,6 @@ public enum GunPackLoader implements RepositorySource {
 
         return null;
     }
-
-    // 检查路径中的config.json
-    // 应该不会在用这个了，先保留
-//    private static RepositoryConfig checkConfig(Path resourcePacksPath) {
-//        Path configPath = resourcePacksPath.resolve("config.json");
-//        if (Files.exists(configPath)) {
-//            try (InputStream stream = Files.newInputStream(configPath)) {
-//                return GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), RepositoryConfig.class);
-//            } catch (IOException | JsonSyntaxException | JsonIOException e) {
-//                GunMod.LOGGER.warn(MARKER, "Failed to read config json: {}", configPath);
-//            }
-//        }
-//        // 不存在或者出问题了，新建一个
-//        RepositoryConfig config = new RepositoryConfig(true);
-//        // 使用Gson写文件
-//        try (BufferedWriter writer = Files.newBufferedWriter(configPath, StandardCharsets.UTF_8)) {
-//            GSON.toJson(config, writer);
-//        } catch (IOException e) {
-//            GunMod.LOGGER.warn(MARKER, "Failed to init config json: {}", configPath);
-//        }
-//        return config;
-//    }
 
     private static GunPack fromDirPath(Path path) throws IOException {
         Path packInfoFilePath = path.resolve("gunpack.meta.json");

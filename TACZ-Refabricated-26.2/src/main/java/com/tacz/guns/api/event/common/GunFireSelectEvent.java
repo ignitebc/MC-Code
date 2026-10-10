@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * 生物切换枪械开火模式时触发的事件
+ * 생물이 총기 발사 모드를 바꿀 때 발생하는 이벤트
  */
 public class GunFireSelectEvent extends BaseEvent implements ICancellableEvent {
     private final LivingEntity shooter;

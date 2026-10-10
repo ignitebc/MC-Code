@@ -7,9 +7,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * 配件从 Json 读取的数据
+ * 부착물이 JSON에서 읽은 데이터
  *
- * @param <T> Json 读取后转换成的中间数据类型
+ * @param <T> JSON을 읽어 바꾼 중간 데이터 타입
  */
 public abstract class JsonProperty<T> {
     protected List<Component> components = Lists.newArrayList();
@@ -33,7 +33,7 @@ public abstract class JsonProperty<T> {
     }
 
     /**
-     * 初始化文本提示，用于配件的描述文本
+     * 부착물 설명 글자에 쓸 안내 문구를 초기화한다
      */
     public abstract void initComponents();
 }

@@ -44,10 +44,10 @@ public class HSVSliderGroup {
 
 
     public void apply() {
-        // 需要检查的实现
-        // 这里写往客户端写nbt其实是脏写，只为了确保能实时预览染色效果
-        // 需要在合适的时机向服务器发包通知改动
-        // 不在此直接向服务器发包是因为这个组件在滑动时会被非常频繁的调用，不希望频繁向服务器发包
+        // 확인이 필요한 구현
+        // 여기서 클라이언트에 nbt를 쓰는 것은 사실 임시 쓰기로, 염색 효과를 실시간으로 미리 보기 위해서다
+        // 알맞은 때 서버에 패킷을 보내 변경을 알려야 한다
+        // 이 컴포넌트는 슬라이더를 움직이는 동안 매우 자주 호출되므로, 서버에 자주 패킷을 보내지 않으려고 여기서 바로 보내지 않는다
         ItemStack gun = inventory.getItem(gunItemIndex);
         if (gun.getItem() instanceof IGun iGun) {
             int rgb_new = Color.HSBtoRGB((float) hueSlider.getValue(), (float) saturationSlider.getValue(), 1f);
@@ -57,33 +57,33 @@ public class HSVSliderGroup {
                 return;
             }
 
-            // 【必须改「枪上那份配件 NBT」，不能改 getAttachment() 返回的 ItemStack】
+            // [getAttachment()가 돌려준 ItemStack이 아니라 "총에 있는 부착물 NBT"를 고쳐야 한다]
             //
-            // getAttachment(gun, type) 内部是
+            // getAttachment(gun, type) 내부는
             //     ItemNbtUtils.loadItemStack(nbt.getCompoundOrEmpty(key))
-            // —— 每次调用都用 Codec【反序列化出一个全新的 ItemStack】，
-            // 与枪上真正存着的那份数据没有任何引用关系。
+            // 이며 — 호출할 때마다 Codec으로 [완전히 새 ItemStack을 역직렬화]해서,
+            // 총에 실제로 저장된 데이터와 아무런 참조 관계가 없다.
             //
-            // 原先这里写的是
+            // 예전에는 여기를 이렇게 썼다
             //     ItemStack laser = iGun.getAttachment(gun, type);
             //     iAttachment.setLaserColor(laser, rgb_new);
-            // 等于把颜色写进了一个临时副本，方法返回后即被丢弃。
-            // 后果是【客户端本地这份也没改成】，于是：
-            //   1. 拖动滑块时镭射颜色毫无变化（本方法本来就是为了实时预览而"脏写"客户端 NBT，
-            //      写不进去，预览自然不动）；
-            //   2. 界面上任何一次重新读取 NBT（点其他按钮触发重建、或关闭界面）
-            //      都会让显示回到默认色；
-            //   3. 更隐蔽的是，退出界面时发给服务端的 ClientMessageLaserColor
-            //      是遍历 hasCustomLaserColor(attachment) 来收集要同步的颜色的，
-            //      而这份 NBT 压根没被写过 -> colorMap 为空 -> 服务端什么也不会改。
-            //      所以上一轮只修服务端 handle 是不够的，两侧是同一个 bug。
+            // 임시 사본에 색을 쓴 셈이라 메서드가 끝나면 바로 버려졌다.
+            // 그 결과 [클라이언트 로컬 데이터도 바뀌지 않아] 다음과 같았다:
+            //   1. 슬라이더를 끌어도 레이저 색이 전혀 바뀌지 않았다(이 메서드는 원래 실시간 미리 보기를 위해 클라이언트 NBT에 "임시 쓰기"를 하는데,
+            //      써지지 않으니 미리 보기도 움직이지 않았다).
+            //   2. 화면에서 NBT를 다시 읽을 때마다(다른 버튼으로 다시 만들거나 화면을 닫을 때)
+            //      표시가 기본 색으로 돌아갔다.
+            //   3. 더 숨어 있던 문제는, 화면을 닫을 때 서버로 보내는 ClientMessageLaserColor가
+            //      hasCustomLaserColor(attachment)를 돌며 동기화할 색을 모으는데,
+            //      이 NBT가 한 번도 쓰이지 않았으니 -> colorMap이 비어 -> 서버는 아무것도 바꾸지 않았다.
+            //      그래서 지난번에 서버 handle만 고친 것으로는 부족했다. 양쪽이 같은 버그였다.
             //
-            // 上游 1.21.1 的写法（逐行对照）：
+            // 원본 1.21.1의 작성법(줄마다 대조):
             //     CompoundTag tag = iGun.getAttachmentTag(gun, type);
             //     if (tag != null) { AttachmentItemDataAccessor.setLaserColorToTag(tag, rgb_new); }
             //     iGun.setAttachmentTag(gun, type, tag);
-            // getAttachmentTag/setAttachmentTag 操作的是枪 NBT 里
-            // 「配件 ItemStack 的 components.custom_data」那一层，改动会真正生效。
+            // getAttachmentTag/setAttachmentTag는 총 NBT 안의
+            // "부착물 ItemStack의 components.custom_data" 층을 다루므로 변경이 실제로 적용된다.
             CompoundTag tag = iGun.getAttachmentTag(gun, type);
             if (tag != null) {
                 AttachmentItemDataAccessor.setLaserColorToTag(tag, rgb_new);

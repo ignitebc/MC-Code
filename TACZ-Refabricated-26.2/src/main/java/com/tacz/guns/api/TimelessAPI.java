@@ -109,13 +109,13 @@ public final class TimelessAPI {
     }
 
     /**
-     * 按 id 取出工作台配方。
+     * ID로 작업대 제작법을 꺼낸다.
      *
-     * <p>此前这里的注释写着「请用原版 RecipeManager 获取配方」，在 26.2 上<b>已经过时且会误导</b>：
-     * 本项目第 12 轮起工作台配方走 mod 自建的 {@code DataType.RECIPES} 通道
-     * （26.2 客户端没有完整配方表），原版 {@code RecipeManager} 既拿不到旧枪包
-     * {@code recipes/}（复数）目录里的配方，客户端上更是整个为空。
-     * 保留一个恒返回 {@code empty()} 的空壳只会让调用方以为「没有这条配方」。
+     * <p>예전에는 여기 주석에 "바닐라 RecipeManager로 제작법을 가져오라"고 적혀 있었는데, 26.2에서는 <b>낡고 오해를 부르는</b> 내용이다:
+     * 이 프로젝트는 12차부터 작업대 제작법을 모드가 직접 만든 {@code DataType.RECIPES} 경로로 다룬다
+     * (26.2 클라이언트에는 전체 제작법 표가 없다). 바닐라 {@code RecipeManager}로는 예전 총기 팩의
+     * {@code recipes/}(복수형) 폴더 제작법을 얻을 수 없고, 클라이언트에서는 아예 비어 있다.
+     * 항상 {@code empty()}만 돌려주는 빈 껍데기를 남기면 호출하는 쪽이 "그 제작법이 없다"고 오해할 뿐이다.
      *
      */
     public static Optional<GunSmithTableRecipe> getRecipe(Identifier recipeId) {
@@ -145,7 +145,7 @@ public final class TimelessAPI {
     }
 
     /**
-     * 全部工作台配方。与 {@link #getRecipe(Identifier)} 同源，理由见该方法注释。
+     * 모든 작업대 제작법. {@link #getRecipe(Identifier)}와 출처가 같으며, 이유는 그 메서드 주석을 참고한다.
      */
     public static Map<Identifier, GunSmithTableRecipe> getAllRecipes() {
         Map<Identifier, GunSmithTableRecipe> result = new java.util.LinkedHashMap<>();

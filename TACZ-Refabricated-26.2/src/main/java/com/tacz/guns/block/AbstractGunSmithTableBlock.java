@@ -41,7 +41,7 @@ public abstract class AbstractGunSmithTableBlock extends BaseEntityBlock {
         } else {
             BlockEntity blockEntity = level.getBlockEntity(getRootPos(pos, pState));
             if (blockEntity instanceof GunSmithTableBlockEntity gunSmithTable && player instanceof ServerPlayer serverPlayer) {
-                // 26.2: GunSmithTableBlockEntity 实现 ExtendedMenuProvider<Identifier>，必须直接传递以保留额外数据
+                // 26.2: GunSmithTableBlockEntity가 ExtendedMenuProvider<Identifier>를 구현하므로, 추가 데이터를 지키려면 그대로 넘겨야 한다
                 serverPlayer.openMenu(gunSmithTable);
             }
             return InteractionResult.CONSUME;

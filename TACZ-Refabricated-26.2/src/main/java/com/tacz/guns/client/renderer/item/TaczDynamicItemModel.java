@@ -32,16 +32,14 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Compile-level prototype for the 26.2 item model bridge.
+ * 26.2 아이템 모델 다리의 컴파일 수준 원형.
  *
- * <p>This replaces the removed BuiltinItemRendererRegistry integration with a
- * custom ItemModel type. ItemModel.update still has the ItemDisplayContext, so
- * it can freeze both the stack and context into an immutable argument before
- * the delayed SpecialModelRenderer submit phase.</p>
+ * <p>제거된 BuiltinItemRendererRegistry 연동을 사용자 정의 ItemModel 종류로 대신한다.
+ * ItemModel.update에는 아직 ItemDisplayContext가 있으므로, 지연된 SpecialModelRenderer
+ * 제출 단계 전에 스택과 문맥을 함께 변하지 않는 인자로 고정할 수 있다.</p>
  *
- * <p>Do not treat this class as a complete rendering migration. The existing
- * renderers still need to stop calling the deprecated no-op BedrockModel.render
- * path and must snapshot mutable Bedrock model state before deferred submission.</p>
+ * <p>이 클래스를 렌더링 이전이 끝난 것으로 보지 않는다. 기존 렌더러는 폐기되어 아무것도 하지 않는
+ * BedrockModel.render 경로 호출을 그만두고, 지연 제출 전에 변할 수 있는 Bedrock 모델 상태를 스냅숏해야 한다.</p>
  */
 public final class TaczDynamicItemModel implements ItemModel {
     public static final Identifier TYPE_ID = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "dynamic_item");
@@ -49,65 +47,65 @@ public final class TaczDynamicItemModel implements ItemModel {
     private static final TaczSpecialRenderer SPECIAL_RENDERER = new TaczSpecialRenderer();
 
     /**
-     * 模型包围盒的角点，供 {@code ItemStackRenderState#visitExtents} 计算
-     * {@code getModelBoundingBox()}。
+     * 모델 경계 상자의 꼭짓점. {@code ItemStackRenderState#visitExtents}가
+     * {@code getModelBoundingBox()}를 계산하는 데 쓴다.
      *
-     * <p><b>为什么是 0.5 而不是 1.5</b></p>
+     * <p><b>1.5가 아니라 0.5인 이유</b></p>
      *
-     * <p>26.2 的 GUI 物品渲染有两条路径，由 {@code GuiItemRenderState} 构造时决定：</p>
+     * <p>26.2의 GUI 아이템 렌더링에는 경로가 두 개 있고, {@code GuiItemRenderState}를 만들 때 정해진다:</p>
      * <pre>
      * oversizedItemBounds = itemStackRenderState.isOversizedInGui()
      *         ? calculateOversizedItemBounds() : null;
      * </pre>
-     * 而 {@code calculateOversizedItemBounds()} 的判定是：
+     * 그리고 {@code calculateOversizedItemBounds()}의 판정은 다음과 같다:
      * <pre>
-     * AABB aabb = itemStackRenderState.getModelBoundingBox();   // 来自 visitExtents
+     * AABB aabb = itemStackRenderState.getModelBoundingBox();   // visitExtents에서 옴
      * int actualXSize = Mth.ceil(aabb.getXsize() * 16.0);
      * int actualYSize = Mth.ceil(aabb.getYsize() * 16.0);
-     * if (actualXSize &lt;= 16 &amp;&amp; actualYSize &lt;= 16) return null;  // 走普通 GuiItemAtlas
-     * else ... // 走 OversizedItemRenderer(PIP，离屏 RT)
+     * if (actualXSize &lt;= 16 &amp;&amp; actualYSize &lt;= 16) return null;  // 일반 GuiItemAtlas로 감
+     * else ... // OversizedItemRenderer(PIP, 화면 밖 RT)로 감
      * </pre>
      *
-     * <p>原先写死 ±1.5 →  包围盒边长 3.0 →  {@code 3.0 * 16 = 48 px} ≫ 16，
-     * 于是所有 TACZ 物品都被判定为 "oversized"，强制走 {@code OversizedItemRenderer}
-     * 这条 picture-in-picture 离屏渲染路径。该路径按 48px 的包围盒去布局和裁剪，
-     * 而 TACZ 的 slot 贴图实际只有 1 格（16px），最终在 16×16 的槽位里被缩放/偏移到
-     * 看不见的位置 —— 表现就是<b>工作台界面、物品栏里图标全是空白</b>。
+     * <p>원래는 ±1.5로 고정해 → 경계 상자 한 변이 3.0 → {@code 3.0 * 16 = 48 px} ≫ 16이었다.
+     * 그래서 모든 TACZ 아이템이 "oversized"로 판정되어 {@code OversizedItemRenderer}라는
+     * 그림 속 그림 화면 밖 렌더링 경로로 강제로 갔다. 그 경로는 48px 경계 상자로 배치하고 잘라내는데,
+     * TACZ slot 텍스처는 실제로 1칸(16px)뿐이라 결국 16×16 칸 안에서
+     * 보이지 않는 위치로 줄거나 밀렸다 — 그래서 <b>작업대 화면과 인벤토리의 아이콘이 모두 비어</b> 보였다.
      *
-     * <p>改为 ±0.5（边长 1.0 →  正好 16 px）后判定为非 oversized，
-     * 走与原版物品一致的 {@code GuiItemAtlas} 路径。这也与 TACZ 自身的
-     * {@code renderSlotTexture} 语义吻合：它画的就是一个 1×1 格的四边形。</p>
+     * <p>±0.5(한 변 1.0 → 정확히 16 px)로 바꾸면 oversized가 아니라고 판정되어
+     * 바닐라 아이템과 같은 {@code GuiItemAtlas} 경로를 탄다. 이는 TACZ 자체의
+     * {@code renderSlotTexture} 의미와도 맞는다: 그것이 그리는 것이 바로 1×1칸 사각형이다.</p>
      *
-     * <p>注意 {@code items/*.json} 里的 {@code "oversized_in_gui": true} 只是允许
-     * 超框绘制，真正决定走哪条路径的是这里的包围盒尺寸。</p>
+     * <p>{@code items/*.json}의 {@code "oversized_in_gui": true}는 틀 밖으로 그리는 것을 허용할 뿐이고,
+     * 실제로 어느 경로로 갈지는 여기의 경계 상자 크기가 정한다는 점에 주의한다.</p>
      *
-     * <h2>为什么 Y 是 [0, 1] 而不是对称的 [-0.5, +0.5]</h2>
+     * <h2>Y가 대칭인 [-0.5, +0.5]가 아니라 [0, 1]인 이유</h2>
      *
-     * <p>这里同时受<b>两条互相冲突</b>的 26.2 约束，必须同时满足：</p>
+     * <p>여기서는 <b>서로 부딪히는</b> 26.2 제약 두 개를 동시에 만족해야 한다:</p>
      *
-     * <p><b>约束一（GUI）</b>：如上所述，{@code calculateOversizedItemBounds} 按
-     * {@code ceil(getXsize()*16) &gt; 16 || ceil(getYsize()*16) &gt; 16} 判定 oversized。
-     * 因此包围盒每条<b>边长</b>都必须 ≤ 1.0。</p>
+     * <p><b>제약 1(GUI)</b>: 위에서 말했듯 {@code calculateOversizedItemBounds}는
+     * {@code ceil(getXsize()*16) &gt; 16 || ceil(getYsize()*16) &gt; 16}으로 oversized를 판정한다.
+     * 그래서 경계 상자의 모든 <b>변 길이</b>가 1.0 이하여야 한다.</p>
      *
-     * <p><b>约束二（掉落物）</b>：{@code ItemEntityRenderer#submit} 里有
+     * <p><b>제약 2(떨어진 아이템)</b>: {@code ItemEntityRenderer#submit}에는 다음이 있다
      * <pre>
      * AABB aabb = state.item.getModelBoundingBox();
      * poseStack.translate(0, -aabb.minY() * ... + 0.0625F, 0);
      * </pre>
-     * 也就是掉落物的抬升高度<b>直接由 {@code minY} 决定</b>：
-     * vanilla 用它把模型底面顶到地面上方 1/16 格。</p>
+     * 즉 떨어진 아이템을 띄우는 높이가 <b>{@code minY}로 바로 정해진다</b>:
+     * 바닐라는 이것으로 모델 밑면을 땅 위 1/16칸에 올린다.</p>
      *
-     * <p>原先 Y 取 ±0.5 时 {@code minY = -0.5}，于是每个 TACZ 掉落物都被
-     * <b>无条件额外抬高 0.5 格（8 像素）</b>，与模型实际大小无关 ——
-     * 表现就是地上的枪、弹药盒等全都浮得过高。1.21.1 的
-     * {@code ItemEntityRenderer} 没有这个基于包围盒的补偿（它用固定的
-     * {@code 0.25F} 之类常量），所以这是一个纯粹由跨版本机制变化引入的回归，
-     * 而不是哪个数值被写错了。</p>
+     * <p>원래 Y가 ±0.5였을 때는 {@code minY = -0.5}라서 모든 TACZ 떨어진 아이템이
+     * <b>모델 실제 크기와 관계없이 0.5칸(8픽셀)씩 더 떠 있었다</b> —
+     * 땅 위의 총, 탄약 상자 등이 모두 너무 높이 떠 보였다. 1.21.1의
+     * {@code ItemEntityRenderer}에는 이런 경계 상자 기반 보정이 없었으므로(고정 상수
+     * {@code 0.25F} 등을 썼다), 이것은 숫자를 잘못 쓴 것이 아니라 버전 간 동작 변화 때문에 생긴
+     * 순수한 회귀였다.</p>
      *
-     * <p>把 Y 改成 {@code [0, 1]} 后：边长仍是 1.0（约束一继续满足，GUI 不变），
-     * 而 {@code minY = 0} 让抬升量回落到 vanilla 的 {@code 0.0625}（约束二满足）。
-     * XZ 保持 ±0.5 不动 —— 它们只参与约束一，且旋转时以模型原点为中心，
-     * 对称范围才是对的。</p>
+     * <p>Y를 {@code [0, 1]}로 바꾸면: 변 길이는 여전히 1.0이고(제약 1 만족, GUI 그대로),
+     * {@code minY = 0}이라 띄우는 양이 바닐라의 {@code 0.0625}로 돌아간다(제약 2 만족).
+     * XZ는 ±0.5 그대로 둔다 — 제약 1에만 관여하고, 회전할 때 모델 원점을 중심으로 하므로
+     * 대칭 범위가 맞다.</p>
      */
     private static final Supplier<Vector3fc[]> EXTENTS = () -> new Vector3fc[]{
             new Vector3f(-0.5F, 0.0F, -0.5F),
@@ -128,7 +126,7 @@ public final class TaczDynamicItemModel implements ItemModel {
         this.transformation = new Matrix4f(transformation);
     }
 
-    /** Must run during client initialization, before client item JSON files are decoded. */
+    /** 클라이언트 초기화 중, 클라이언트 아이템 JSON 파일을 해석하기 전에 실행해야 한다. */
     public static void registerType() {
         ItemModels.ID_MAPPER.put(TYPE_ID, Unbaked.MAP_CODEC);
     }
@@ -155,31 +153,31 @@ public final class TaczDynamicItemModel implements ItemModel {
         layer.setupSpecialModel(SPECIAL_RENDERER, argument);
         this.properties.applyToLayer(layer, displayContext);
 
-        // 26.2 修复：物品栏图标空白的根因。
+        // 26.2 수정: 인벤토리 아이콘이 비던 근본 원인.
         //
-        // GuiItemAtlas#getOrUpdate 用 TrackingItemStackRenderState#getModelIdentity()（即
-        // modelIdentityElements 这个 List）作为 key 去 DynamicAtlasAllocator 里分配/复用图标槽位，
-        // 靠的是 List.equals -> 逐元素 equals。
+        // GuiItemAtlas#getOrUpdate는 TrackingItemStackRenderState#getModelIdentity()(곧
+        // modelIdentityElements라는 List)를 키로 DynamicAtlasAllocator에서 아이콘 칸을 할당·재사용하며,
+        // List.equals -> 요소별 equals에 기댄다.
         //
-        // 原先这里直接把 RenderArgument 塞进 identity。record 的 equals 会逐字段比较，而
-        // ItemStack 在 26.2 中<b>没有覆写 equals/hashCode</b>（javap 已确认，只有静态的
-        // ItemStack.matches），走的是对象身份比较；上面又是 stack.copy() —— 每帧都是新对象。
-        // 结果 identity 每帧都不相等：atlas 认为这是一个全新物品，不断重新分配槽位、
-        // 反复 clear/重画，并很快耗尽/抖动，最终表现为<b>物品栏图标一片空白</b>。
+        // 원래는 여기서 RenderArgument를 identity에 바로 넣었다. record의 equals는 필드별로 비교하는데,
+        // ItemStack은 26.2에서 <b>equals/hashCode를 재정의하지 않아</b>(javap 확인, 정적
+        // ItemStack.matches만 있음) 객체 동일성으로 비교한다. 게다가 위에서 stack.copy()를 해 매 프레임 새 객체였다.
+        // 그 결과 identity가 매 프레임 달라 atlas가 완전히 새 아이템으로 보고 칸을 계속 다시 할당하며
+        // clear/다시 그리기를 반복해 금세 바닥나거나 흔들렸고, 결국 <b>인벤토리 아이콘이 텅 비어</b> 보였다.
         //
-        // 正确做法是只把"真正影响外观"的、具备值语义的量放进 identity：
-        //   - 物品本身（Item 是单例，可安全比较）
-        //   - display context
-        //   - 决定 TACZ 外观的 gun/attachment/ammo id 与关键组件
-        // 这样同一把枪在相邻帧能命中同一槽位，图标得以正常绘制。
+        // 올바른 방법은 "실제로 외형에 영향을 주는" 값 의미를 가진 것만 identity에 넣는 것이다:
+        //   - 아이템 자체(Item은 싱글턴이라 안전하게 비교할 수 있음)
+        //   - display 문맥
+        //   - TACZ 외형을 정하는 gun/attachment/ammo ID와 핵심 컴포넌트
+        // 그러면 같은 총이 이웃한 프레임에 같은 칸을 찾아 아이콘이 정상으로 그려진다.
         state.appendModelIdentityElement(identityKeyOf(stack, displayContext));
     }
 
     /**
-     * 生成具备<b>值语义</b>的 identity key（可安全参与 List.equals）。
+     * <b>값 의미</b>를 가진 identity 키를 만든다(List.equals에 안전하게 참여할 수 있음).
      *
-     * <p>只包含影响图标外观的信息；刻意<b>不</b>包含 ItemStack 本身（无 equals）与弹药数等
-     * 高频变化字段 —— 后者不影响 GUI 图标（GUI 走的是 slot 贴图），若纳入会再次导致每帧失效。</p>
+     * <p>아이콘 외형에 영향을 주는 정보만 담는다. ItemStack 자체(equals 없음)와 탄약 수처럼
+     * 자주 바뀌는 필드는 일부러 <b>넣지 않는다</b> — 후자는 GUI 아이콘에 영향이 없고(GUI는 slot 텍스처를 씀), 넣으면 다시 매 프레임 무효가 된다.</p>
      */
     private static Object identityKeyOf(ItemStack stack, ItemDisplayContext displayContext) {
         Identifier contentId = null;
@@ -228,7 +226,7 @@ public final class TaczDynamicItemModel implements ItemModel {
 
         @Override
         public RenderArgument extractArgument(ItemStack stack) {
-            // The custom ItemModel supplies the real display context via setupSpecialModel.
+            // 사용자 정의 ItemModel은 setupSpecialModel로 실제 display 문맥을 넘긴다.
             return new RenderArgument(stack.copy(), ItemDisplayContext.NONE);
         }
     }

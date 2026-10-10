@@ -299,14 +299,14 @@ public class AnimationStructure {
                                         Accessor accessor, AccessorModel accessorModel) {
         Integer bufferViewIndex = accessor.getBufferView();
         if (bufferViewIndex != null) {
-            // When there is a BufferView referenced from the accessor, then
-            // the corresponding BufferViewModel may be assigned directly
+            // 접근자가 BufferView를 참조하고 있으면
+            // 해당 BufferViewModel을 바로 넣을 수 있다
             BufferViewModel bufferViewModel =
                     bufferViewModels.get(bufferViewIndex);
             accessorModel.setBufferViewModel(bufferViewModel);
         } else {
-            // When there is no BufferView referenced from the accessor,
-            // then a NEW BufferViewModel (and Buffer) have to be created
+            // 접근자가 BufferView를 참조하지 않으면
+            // 새 BufferViewModel(과 Buffer)을 만들어야 한다
             int count = accessorModel.getCount();
             int elementSizeInBytes = accessorModel.getElementSizeInBytes();
             int byteLength = elementSizeInBytes * count;
@@ -329,9 +329,9 @@ public class AnimationStructure {
 
     private void initSparseAccessorModel(int accessorIndex,
                                          Accessor accessor, AccessorModel accessorModel) {
-        // When the (sparse!) Accessor already refers to a BufferView,
-        // then this BufferView has to be replaced with a new one,
-        // to which the data substitution will be applied
+        // (희소!) 접근자가 이미 BufferView를 참조하고 있으면
+        // 그 BufferView를 새것으로 바꾸고,
+        // 새것에 데이터 치환을 적용한다
         int count = accessorModel.getCount();
         int elementSizeInBytes = accessorModel.getElementSizeInBytes();
         int byteLength = elementSizeInBytes * count;
@@ -344,9 +344,9 @@ public class AnimationStructure {
 
         Integer bufferViewIndex = accessor.getBufferView();
         if (bufferViewIndex != null) {
-            // If the accessor refers to a BufferView, then the corresponding
-            // data serves as the basis for the initialization of the values,
-            // before the sparse substitution is applied
+            // 접근자가 BufferView를 참조하면 그 데이터가
+            // 희소 치환을 적용하기 전
+            // 값 초기화의 바탕이 된다
             Consumer<ByteBuffer> sparseSubstitutionCallback = denseByteBuffer ->
             {
                 BufferViewModel baseBufferViewModel =
@@ -363,8 +363,8 @@ public class AnimationStructure {
             denseBufferViewModel.setSparseSubstitutionCallback(
                     sparseSubstitutionCallback);
         } else {
-            // When the sparse accessor does not yet refer to a BufferView,
-            // then a new one is created,
+            // 희소 접근자가 아직 BufferView를 참조하지 않으면
+            // 새로 하나 만든다,
             Consumer<ByteBuffer> sparseSubstitutionCallback = denseByteBuffer ->
             {
                 AccessorData denseAccessorData =

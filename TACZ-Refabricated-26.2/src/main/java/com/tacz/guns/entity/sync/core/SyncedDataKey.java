@@ -47,25 +47,25 @@ public record SyncedDataKey<E extends Entity, T>(Pair<Identifier, Identifier> pa
 
     public enum SyncMode {
         /**
-         * Prevents the key from being synced entirely. The data will only be available on the server.
+         * 키를 아예 동기화하지 않는다. 데이터는 서버에서만 쓸 수 있다.
          */
         NONE(false, false),
 
         /**
-         * Syncs the key to all players including the player holding the data. If the entity the key
-         * is bound to is not a player, only the tracking players will receive the data.
+         * 데이터를 가진 플레이어를 포함한 모든 플레이어에게 키를 동기화한다. 키가 묶인
+         * 엔티티가 플레이어가 아니면 추적 중인 플레이어만 데이터를 받는다.
          */
         ALL(true, true),
 
         /**
-         * Only allows the key to be synced to players who are tracking the entity. The entity holding
-         * the data will not receive it on the client.
+         * 엔티티를 추적 중인 플레이어에게만 키를 동기화한다. 데이터를 가진
+         * 엔티티는 클라이언트에서 받지 않는다.
          */
         TRACKING_ONLY(true, false),
 
         /**
-         * Only allows the key to be synced to entity holding the data. Any players tracking the entity
-         * will not receive the data on their clients.
+         * 데이터를 가진 엔티티에게만 키를 동기화한다. 엔티티를 추적 중인 플레이어는
+         * 클라이언트에서 데이터를 받지 않는다.
          */
         SELF_ONLY(false, true);
 
@@ -108,7 +108,7 @@ public record SyncedDataKey<E extends Entity, T>(Pair<Identifier, Identifier> pa
         }
 
         /**
-         * Sets the id for the synced key. This is a required property.
+         * 동기화 키의 id를 설정한다. 필수 속성이다.
          */
         public Builder<E, T> id(Identifier id) {
             this.id = id;
@@ -116,7 +116,7 @@ public record SyncedDataKey<E extends Entity, T>(Pair<Identifier, Identifier> pa
         }
 
         /**
-         * Sets the id for the synced key using a String. This is a required property.
+         * String으로 동기화 키의 id를 설정한다. 필수 속성이다.
          */
         public Builder<E, T> id(String id) {
             this.id = Identifier.parse(id);
@@ -124,9 +124,9 @@ public record SyncedDataKey<E extends Entity, T>(Pair<Identifier, Identifier> pa
         }
 
         /**
-         * Sets the id for the synced key using a String. This is a required property.
+         * String으로 동기화 키의 id를 설정한다. 필수 속성이다.
          * <p>
-         * Please use {@link #id(String)} instead.
+         * 대신 {@link #id(String)}를 쓴다.
          */
         @Deprecated
         public Builder<E, T> key(String key) {
@@ -134,7 +134,7 @@ public record SyncedDataKey<E extends Entity, T>(Pair<Identifier, Identifier> pa
         }
 
         /**
-         * Sets the default value supplier for the synced key. This is a required property.
+         * 동기화 키의 기본값 공급자를 설정한다. 필수 속성이다.
          */
         public Builder<E, T> defaultValueSupplier(Supplier<T> defaultValueSupplier) {
             this.defaultValueSupplier = defaultValueSupplier;
@@ -142,8 +142,8 @@ public record SyncedDataKey<E extends Entity, T>(Pair<Identifier, Identifier> pa
         }
 
         /**
-         * Saves this synced key to the players file. This means that the data will persist even if
-         * the player reloads a world or joins back into the server.
+         * 이 동기화 키를 플레이어 파일에 저장한다. 플레이어가 월드를 다시 불러오거나
+         * 서버에 다시 들어와도 데이터가 유지된다.
          */
         public Builder<E, T> saveToFile() {
             this.save = true;
@@ -151,8 +151,8 @@ public record SyncedDataKey<E extends Entity, T>(Pair<Identifier, Identifier> pa
         }
 
         /**
-         * Stops this synced key from transferring over when a player dies and basically resets the
-         * data back to result from the default value supplier. This only has an effect on players.
+         * 플레이어가 죽었을 때 이 동기화 키가 넘어가지 않게 하고, 데이터를
+         * 기본값 공급자의 결과로 되돌린다. 플레이어에게만 효과가 있다.
          */
         public Builder<E, T> resetOnDeath() {
             this.persistent = false;
@@ -160,8 +160,8 @@ public record SyncedDataKey<E extends Entity, T>(Pair<Identifier, Identifier> pa
         }
 
         /**
-         * The syncing method to use when sending data to clients.
-         * See {@link SyncMode} for details
+         * 클라이언트에 데이터를 보낼 때 쓰는 동기화 방식.
+         * 자세한 내용은 {@link SyncMode} 참고
          */
         public Builder<E, T> syncMode(SyncMode mode) {
             this.syncMode = mode;

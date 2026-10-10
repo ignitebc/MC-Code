@@ -10,19 +10,19 @@ public class SyncConfig {
     public static ForgeConfigSpec.BooleanValue SERVER_SHOOT_NETWORK_V;
     public static ForgeConfigSpec.BooleanValue SERVER_SHOOT_COOLDOWN_V;
 
-    // 三个全局系数，用于客户端枪械文本提示，需要同步
+    // 클라이언트 총기 설명 문구에 쓰는 전역 계수 세 개. 동기화가 필요하다
     public static ForgeConfigSpec.DoubleValue DAMAGE_BASE_MULTIPLIER;
     public static ForgeConfigSpec.DoubleValue ARMOR_IGNORE_BASE_MULTIPLIER;
     public static ForgeConfigSpec.DoubleValue HEAD_SHOT_BASE_MULTIPLIER;
     public static ForgeConfigSpec.DoubleValue WEIGHT_SPEED_MULTIPLIER;
 
-    // 需要同步到客户端，方便客户端 debug 显示碰撞箱
+    // 클라이언트에서 충돌 상자를 디버그 표시하기 쉽도록 클라이언트로 동기화해야 한다
     public static ForgeConfigSpec.ConfigValue<List<String>> HEAD_SHOT_AABB;
-    // 子弹盒存储上限需要客户端显示支持
+    // 탄약 상자 저장 한도는 클라이언트 표시 지원이 필요하다
     public static ForgeConfigSpec.IntValue AMMO_BOX_STACK_SIZE;
-    // 客户端需要下载的枪械包
+    // 클라이언트가 내려받아야 하는 총기 팩
     public static ForgeConfigSpec.ConfigValue<List<List<String>>> CLIENT_GUN_PACK_DOWNLOAD_URLS;
-    // 禁用趴下战术动作
+    // 엎드리기 전술 동작 비활성화
     public static ForgeConfigSpec.BooleanValue ENABLE_CRAWL;
 
     public static void init(ForgeConfigSpec.Builder builder) {

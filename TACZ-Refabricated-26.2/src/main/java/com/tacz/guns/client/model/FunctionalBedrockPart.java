@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import java.util.function.Function;
 
 /**
- * visible的优先级低于FunctionalBedrockPart，当visible为false的时候，仍然会执行functionalRenderers
+ * visible은 FunctionalBedrockPart보다 우선순위가 낮다. visible이 false여도 functionalRenderers는 실행된다
  */
 public class FunctionalBedrockPart extends BedrockPart {
     public @Nullable Function<BedrockPart, IFunctionalRenderer> functionalRenderer;
@@ -46,7 +46,7 @@ public class FunctionalBedrockPart extends BedrockPart {
     public void render(PoseStack poseStack, ItemDisplayContext transformType, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha) {
         int cubePackedLight = light;
         if (illuminated) {
-            // 最大亮度
+            // 최대 밝기
             cubePackedLight = 15728880;
         }
 

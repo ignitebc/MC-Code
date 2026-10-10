@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/** 26.2 codec for the legacy TACZ gun-smith recipe JSON format. */
+/** 예전 TACZ 총기 작업대 레시피 JSON 형식용 26.2 codec. */
 public final class GunSmithTableSerializer {
     private static final Codec<GunSmithTableIngredient> INGREDIENT_CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
@@ -37,33 +37,33 @@ public final class GunSmithTableSerializer {
             Codec.unboundedMap(Codec.STRING, Identifier.CODEC);
 
     /**
-     * {@code result.group} 的编解码器：<b>无命名空间时补 {@code tacz:}，而不是原版的 {@code minecraft:}</b>。
+     * {@code result.group}의 코덱: <b>네임스페이스가 없으면 바닐라의 {@code minecraft:}가 아니라 {@code tacz:}를 붙인다</b>.
      *
-     * <h2>为什么不能直接用 {@code Identifier.CODEC}</h2>
-     * 枪包里 {@code group} 惯例写<b>裸名</b>（如 {@code "shotgun_shells"}）——默认枪包 24 条弹药配方
-     * 全都是这么写的。{@code Identifier.CODEC} 走
+     * <h2>{@code Identifier.CODEC}을 그대로 쓸 수 없는 이유</h2>
+     * 총기 팩의 {@code group}은 관례상 <b>맨 이름</b>(예: {@code "shotgun_shells"})으로 쓴다 — 기본 총기 팩의 탄약 레시피 24개가
+     * 모두 이렇게 적혀 있다. {@code Identifier.CODEC}은
      * {@code Codec.STRING.comapFlatMap(Identifier::read, ...)} →
-     * {@code Identifier.parse} → {@code bySeparator(s, ':')}，字节码确认：串里没有 {@code ':'} 时
-     * 落到 {@code withDefaultNamespace}，而该方法把命名空间<b>硬编码</b>成 {@code "minecraft"}
-     * （偏移 4/6 两处常量 {@code 'minecraft'}）。
-     * 于是 {@code "shotgun_shells"} 被解析成 {@code minecraft:shotgun_shells}，
-     * 而工作台页签 id 是 {@code tacz:shotgun_shells} —— 两者永不相等。
+     * {@code Identifier.parse} → {@code bySeparator(s, ':')}를 거치며, 바이트코드로 확인한 결과 문자열에 {@code ':'}가 없으면
+     * {@code withDefaultNamespace}로 가는데, 이 메서드는 네임스페이스를 {@code "minecraft"}로 <b>고정</b>한다
+     * (오프셋 4/6 두 곳의 상수 {@code 'minecraft'}).
+     * 그래서 {@code "shotgun_shells"}는 {@code minecraft:shotgun_shells}로 해석되고,
+     * 작업대 탭 id는 {@code tacz:shotgun_shells}라 — 둘은 영원히 같아지지 않는다.
      *
-     * <h2>这正是「弹药有配方、材料也够，但点合成毫无反应」的根因</h2>
-     * {@link com.tacz.guns.inventory.GunSmithTableMenu#getRecipe} 里有一道校验：
-     * 配方的 {@code getTab()}（即本 group）必须命中当前方块的某个页签，否则返回 {@code null}
-     * → {@code doCraft} 直接 return，<b>不报错、不提示、不扣材料</b>。
-     * 弹药配方的 group 变成 {@code minecraft:*} 后必然落空，因此<b>一颗子弹都合不出来</b>；
-     * 而枪械/配件配方<b>根本没有 group 字段</b>（默认包 53 把枪 + 95 个配件全部没有），
-     * 走 {@code init()} 从物品索引反推正确的 {@code tacz:rifle} 等，所以照常能合 ——
-     * 「唯独子弹不能合成」的现象由此完全解释。
+     * <h2>이것이 바로 "탄약에 레시피도 있고 재료도 충분한데 제작을 눌러도 아무 반응이 없음"의 근본 원인이다</h2>
+     * {@link com.tacz.guns.inventory.GunSmithTableMenu#getRecipe}에는 검사가 하나 있다:
+     * 레시피의 {@code getTab()}(곧 이 group)이 현재 블록의 탭 중 하나와 맞아야 하며, 아니면 {@code null}을 돌려준다
+     * → {@code doCraft}가 바로 return하며 <b>오류도, 안내도, 재료 차감도 없다</b>.
+     * 탄약 레시피의 group이 {@code minecraft:*}가 되면 반드시 빗나가므로 <b>탄 하나도 만들 수 없었다</b>.
+     * 반면 총기/부착물 레시피에는 <b>group 필드가 아예 없어</b>(기본 팩의 총 53정 + 부착물 95개 모두 없음)
+     * {@code init()}에서 아이템 인덱스로 올바른 {@code tacz:rifle} 등을 거꾸로 찾아내므로 평소대로 만들 수 있다 —
+     * "탄약만 제작할 수 없음" 현상이 이로써 완전히 설명된다.
      *
-     * <h2>与上游对照</h2>
-     * 上游 1.21.1 的 {@code GunSmithTableResult#decode} 明确写了这条归一化：
+     * <h2>원본과 비교</h2>
+     * 원본 1.21.1의 {@code GunSmithTableResult#decode}는 이 정규화를 분명히 적어 두었다:
      * <pre>{@code Codec.STRING.optionalFieldOf("group") ... .map(raw -> raw.contains(":") ? raw : GunMod.MOD_ID + ":" + raw)}</pre>
-     * 本项目移植成 {@code RecordCodecBuilder} 时把它漏掉了，属于<b>移植回归</b>。
-     * 一直保留着补 {@code tacz:} 的逻辑 —— 两条路径就此分叉：
-     * <b>界面按 {@code tacz:} 显示配方，服务端按 {@code minecraft:} 校验，于是「看得见、点不动」。</b>
+     * 이 프로젝트가 {@code RecordCodecBuilder}로 이식하면서 이를 빠뜨렸으므로 <b>이식 회귀</b>다.
+     * {@code tacz:}를 붙이는 로직은 계속 남아 있었다 — 그래서 두 경로가 갈라졌다:
+     * <b>화면은 {@code tacz:} 기준으로 레시피를 보여 주고, 서버는 {@code minecraft:} 기준으로 검사해 "보이는데 눌러도 안 됨"이 되었다.</b>
      */
     private static final Codec<Identifier> GROUP_CODEC = Codec.STRING.xmap(
             raw -> Identifier.parse(raw.contains(":") ? raw : GunMod.MOD_ID + ":" + raw),
@@ -120,8 +120,8 @@ public final class GunSmithTableSerializer {
     }
 
     /**
-     * Resource ids are owned by RecipeHolder in modern Minecraft and are not supplied to MapCodec.
-     * TACZ still expects an id on the recipe object, so the result id is used as a stable fallback.
+     * 최신 Minecraft에서는 자원 id를 RecipeHolder가 가지며 MapCodec에 넘겨주지 않는다.
+     * TACZ는 여전히 레시피 객체에 id가 있다고 기대하므로, 결과 id를 안정적인 대체값으로 쓴다.
      */
     public static final MapCodec<GunSmithTableRecipe> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(

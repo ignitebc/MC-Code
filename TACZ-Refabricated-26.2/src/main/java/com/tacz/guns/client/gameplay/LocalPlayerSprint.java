@@ -16,15 +16,15 @@ public class LocalPlayerSprint {
     }
 
     /**
-     * 根据情况返回玩家应当处于的冲刺状态，在玩家切换冲刺状态的时候调用。
-     * 这里的逻辑应该严格与服务端对应，如果不对应，会出现客户端表现和服务端不符的情况。
-     * （例如客户端的视觉效果是玩家在冲刺，而服务端玩家实际上没有冲刺）
+     * 상황에 따라 플레이어가 있어야 할 질주 상태를 돌려준다. 플레이어가 질주 상태를 바꿀 때 호출된다.
+     * 이 로직은 서버와 정확히 대응해야 하며, 다르면 클라이언트 표시와 서버 상태가 어긋난다.
+     * (예: 클라이언트에서는 질주하는 것처럼 보이지만 서버에서는 실제로 질주하지 않음)
      *
      * @see com.tacz.guns.entity.shooter.LivingEntitySprint#getProcessedSprintStatus
      */
     public boolean getProcessedSprintStatus(boolean sprinting) {
-        // 这里的逻辑应该严格与服务端对应，如果不对应，会出现客户端表现和服务端不符的情况。
-        // （例如客户端的视觉效果是玩家在冲刺，而服务端玩家实际上没有冲刺）
+        // 이 로직은 서버와 정확히 대응해야 하며, 다르면 클라이언트 표시와 서버 상태가 어긋난다.
+        // (예: 클라이언트에서는 질주하는 것처럼 보이지만 서버에서는 실제로 질주하지 않음)
         IGunOperator gunOperator = IGunOperator.fromLivingEntity(player);
         ReloadState.StateType reloadStateType = gunOperator.getSynReloadState().getStateType();
         if (gunOperator.getSynIsAiming() || (reloadStateType.isReloading() && !reloadStateType.isReloadFinishing()) || stopSprint) {

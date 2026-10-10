@@ -103,7 +103,7 @@ public class ShootKey {
             if (operator.chargeShoot(shouldCharge)) {
                 LocalPlayerSprint.stopSprint = true;
                 if (!canContinuouslyShoot && lastTimeShootSuccess) {
-                    // 非全自动情况，禁止连续开火，也不应在按住上一枪扳机时继续蓄力
+                    // 자동이 아니면 연속 발사를 막고, 직전 방아쇠를 누르고 있는 동안 충전을 이어가지도 않는다
                     return;
                 }
                 ShootResult result = operator.shoot();

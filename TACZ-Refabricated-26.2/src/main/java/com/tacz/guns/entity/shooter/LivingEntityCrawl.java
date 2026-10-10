@@ -23,27 +23,27 @@ public class LivingEntityCrawl {
     }
 
     public void tickCrawling() {
-        // currentGunItem 如果为 null，则取消趴下状态
+        // currentGunItem이 null이면 엎드린 상태를 취소한다
         if (data.currentGunItem == null || !(data.currentGunItem.get().getItem() instanceof IGun iGun)) {
             data.isCrawling = false;
             this.setCrawlPose();
             return;
         }
         ItemStack currentGunItem = data.currentGunItem.get();
-        // 不允许趴下的武器，则取消趴下状态
+        // 엎드릴 수 없는 무기면 엎드린 상태를 푼다
         if (!iGun.isCanCrawl(currentGunItem)) {
             data.isCrawling = false;
             this.setCrawlPose();
             return;
         }
-        // 如果获取不到 gunIndex，则取消趴下状态
+        // gunIndex를 얻지 못하면 엎드린 상태를 푼다
         Identifier gunId = iGun.getGunId(currentGunItem);
         if (TimelessAPI.getCommonGunIndex(gunId).isEmpty()) {
             data.isCrawling = false;
             this.setCrawlPose();
             return;
         }
-        // 如果是观察者模型、骑乘、跳跃、在游泳、不在地上，取消
+        // 관전자 모드, 탑승, 점프, 수영 중이거나 땅에 있지 않으면 취소한다
         if (shooter.isSpectator() || shooter.isPassenger() || shooter.jumping || shooter.isSwimming() || !shooter.onGround()) {
             data.isCrawling = false;
             this.setCrawlPose();

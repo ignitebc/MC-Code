@@ -82,7 +82,7 @@ import static com.tacz.guns.api.event.common.GunDamageSourcePart.ARMOR_PIERCING;
 import static com.tacz.guns.api.event.common.GunDamageSourcePart.NON_ARMOR_PIERCING;
 
 /**
- * 动能武器打出的子弹实体。
+ * 운동 에너지 무기가 쏜 탄환 엔티티.
  */
 public class EntityKineticBullet extends Projectile implements IEntityAdditionalSpawnData {
     public static final EntityType<EntityKineticBullet> TYPE = EntityType.Builder
@@ -97,12 +97,12 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
     public static final TagKey<EntityType<?>> PRETEND_MELEE_DAMAGE_ON = TagKey.create(Registries.ENTITY_TYPE, Identifier.parse("tacz:pretend_melee_damage_on"));
 
     /**
-     * 允许其他 mod 使用 persistent data（永久数据） 控制曳光弹的颜色和粗细。<p>
-     * 使用永久数据的好处是即使以后本类大改，使用了这个功能的其他 mod 也不会崩溃。<p>
-     * 下面两个字段是 persistent data 的 key。<p>
-     * 这个字段的值的类型是 int[4]。<p>
+     * 다른 mod가 persistent data(영구 데이터)로 예광탄의 색과 굵기를 조절할 수 있게 한다.<p>
+     * 영구 데이터를 쓰면 나중에 이 클래스가 크게 바뀌어도 이 기능을 쓰는 다른 mod가 충돌하지 않는다.<p>
+     * 아래 두 필드는 persistent data의 key다.<p>
+     * 이 필드 값의 타입은 int[4]다.<p>
      * <p>
-     * 使用例：
+     * 사용 예:
      * <pre>{@code
      *     bullet.getPersistentData().putIntArray(TRACER_COLOR_OVERRIDER_KEY, new int[]{255, 255, 255, 255});
      * }</pre>
@@ -110,8 +110,8 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
     public static final String TRACER_COLOR_OVERRIDER_KEY = GunMod.MOD_ID + ":tracer_override";
 
     /**
-     * 这个字段的值的类型是 float。
-     * 1 表示默认大小，0 表示 0 倍率粗细（不显示了）
+     * 이 필드 값의 타입은 float다.
+     * 1은 기본 크기, 0은 굵기 0배(표시하지 않음)를 뜻한다
      */
     public static final String TRACER_SIZE_OVERRIDER_KEY = GunMod.MOD_ID + ":tracer_size";
 
@@ -136,13 +136,13 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
     private boolean explosionKnockback = false;
     private boolean explosionDestroyBlock = false;
     private float damageModifier = 1;
-    // 穿透数
+    // 관통 수
     private int pierce = 1;
-    // 初始位置
+    // 초기 위치
     private Vec3 startPos;
-    // 曳光弹
+    // 예광탄
     private boolean isTracerAmmo;
-    // 以下几个是只对客户端有用的曳光弹数据
+    // 아래 몇 개는 클라이언트에서만 쓰는 예광탄 데이터다
     private float cameraXRot;
     private float cameraYRot;
     // 1인칭 예광탄을 총구에서 출발한 것처럼 옮겨 그리는 양. 월드 축 기준이다.
@@ -150,9 +150,9 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
     // 1인칭 예광탄을 처음 그릴 때의 카메라 위치와, 옮긴 양이 0이 되어 실제 탄도와 합쳐지는 탄착점
     private Vec3 firstPersonOrigin;
     private Vec3 firstPersonImpact;
-    // 发射的枪械 ID
+    // 발사한 총기 ID
     private Identifier gunId = DefaultAssets.EMPTY_GUN_ID;
-    // 枪械display ID
+    // 총기 display ID
     private Identifier gunDisplayId = DefaultAssets.DEFAULT_GUN_DISPLAY_ID;
     private float armorIgnore;
     private float headShot;
@@ -187,7 +187,7 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
                                   boolean isTracerAmmo, GunData gunData, BulletData bulletData) {
         this(type, throwerIn.getX(), throwerIn.getEyeY() - (double) 0.1F, throwerIn.getZ(), worldIn);
         this.setOwner(throwerIn);
-        // gunId 提前赋值，以让 modifyProperty 可以在构造函数中运行
+        // modifyProperty가 생성자 안에서 실행될 수 있도록 gunId를 먼저 대입한다
         this.gunId = gunId;
         this.gunLevelDamageMultiplier = (float) GunLevelManager.getDamageMultiplier(gunItem);
         this.gunLevelExplosionMultiplier = (float) GunLevelManager.getExplosionDamageMultiplier(gunItem);
@@ -201,10 +201,10 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         this.ammoId = ammoId;
         float lifeSecond = modifyProperty(BULLET_LIFE, Float.class, bulletData.getLifeSecond());
         this.life = Mth.clamp((int) (lifeSecond * 20), 1, Integer.MAX_VALUE);
-        // speed 字段是无效的，实际生效的速度是 shootOnce 里传给 doBulletSpread 的速度
+        // speed 필드는 쓰이지 않는다. 실제로 적용되는 속도는 shootOnce에서 doBulletSpread에 넘기는 속도다
         this.gravity = Mth.clamp(modifyProperty(BULLET_GRAVITY, Float.class, bulletData.getGravity()), 0f, Float.MAX_VALUE);
         this.friction = Mth.clamp(modifyProperty(BULLET_FRICTION, Float.class, bulletData.getFriction()), 0f, Float.MAX_VALUE);
-        // 点燃
+        // 점화
         Ignite ignite = cacheProperty.getCache(IgniteModifier.ID);
         this.igniteEntity = modifyProperty(IGNITE_ENTITY, Boolean.class, bulletData.getIgnite().isIgniteEntity() || ignite.isIgniteEntity());
         this.igniteEntityTime = Math.max(modifyProperty(IGNITE_ENTITY_TIME, Integer.class, bulletData.getIgniteEntityTime()), 0);
@@ -221,16 +221,16 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
             this.explosionDamage = (float) Mth.clamp(explosionDamage * SyncConfig.DAMAGE_BASE_MULTIPLIER.get(), 0, Float.MAX_VALUE);
             this.explosionRadius = Mth.clamp(explosionRadius, 0, Float.MAX_VALUE);
             this.explosionKnockback = modifyProperty(EXPLOSION_KNOCKBACK, Boolean.class, explosionData.isKnockback());
-            // 防止越界，提前判定
+            // 범위를 벗어나지 않도록 미리 판정한다
             int delayTickCount = (int) (modifyProperty(EXPLOSION_DELAY, Float.class, explosionData.getDelay()) * 20);
             if (delayTickCount < 0) {
                 delayTickCount = Integer.MAX_VALUE;
             }
-            // 配置文件关闭爆炸后忽略脚本对爆炸是否破坏方块的修改
+            // 설정 파일에서 폭발을 껐으면 스크립트가 바꾼 폭발 블록 파괴 여부를 무시한다
             this.explosionDestroyBlock = AmmoConfig.EXPLOSIVE_AMMO_DESTROYS_BLOCK.get() && modifyProperty(EXPLOSION_DESTROYS_BLOCK, Boolean.class, explosionData.isDestroyBlock());
             this.explosionDelayCount = Math.max(delayTickCount, 1);
         }
-        // 子弹初始位置重置
+        // 탄환 초기 위치 초기화
         double posX = throwerIn.xOld + (throwerIn.getX() - throwerIn.xOld) / 2.0;
         double posY = throwerIn.yOld + (throwerIn.getY() - throwerIn.yOld) / 2.0 + throwerIn.getEyeHeight();
         double posZ = throwerIn.zOld + (throwerIn.getZ() - throwerIn.zOld) / 2.0;
@@ -242,7 +242,7 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
 
     @ApiStatus.Internal
     public void applyShotgunDamageSpread(int bulletCount) {
-        // 霰弹情况，每个伤害要扣去
+        // 산탄일 때는 피해마다 깎아야 한다
         if (bulletCount > 1) {
             this.damageModifier = 1f / bulletCount;
         }
@@ -276,13 +276,13 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
     @Override
     public void tick() {
         super.tick();
-        // 调用 TaC 子弹服务器事件
+        // TaC 탄환 서버 이벤트 호출
         this.onBulletTick();
-        // 粒子效果
+        // 입자 효과
         if (this.level().isClientSide()) {
             AmmoParticleSpawner.addParticle(this);
         }
-        // 子弹模型的旋转与抛物线
+        // 탄환 모델의 회전과 포물선
         Vec3 movement = this.getDeltaMovement();
         double x = movement.x;
         double y = movement.y;
@@ -290,84 +290,84 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         double distance = movement.horizontalDistance();
         this.setYRot((float) Math.toDegrees(Mth.atan2(x, z)));
         this.setXRot((float) Math.toDegrees(Mth.atan2(y, distance)));
-        // 子弹初始的朝向设置
+        // 탄환 초기 방향 설정
         if (this.xRotO == 0.0F && this.yRotO == 0.0F) {
             this.yRotO = this.getYRot();
             this.xRotO = this.getXRot();
         }
-        // 子弹运动时的旋转（不包含自转）
+        // 탄환 이동 중 회전(자전 제외)
         this.setXRot(lerpRotation(this.xRotO, this.getXRot()));
         this.setYRot(lerpRotation(this.yRotO, this.getYRot()));
-        // 子弹位置更新
+        // 탄환 위치 갱신
         double nextPosX = this.getX() + x;
         double nextPosY = this.getY() + y;
         double nextPosZ = this.getZ() + z;
         this.setPos(nextPosX, nextPosY, nextPosZ);
         float friction = this.friction;
         float gravity = this.gravity;
-        // 子弹入水后的调整
+        // 탄환이 물에 들어간 뒤의 보정
         if (this.isInWater()) {
             for (int i = 0; i < 4; i++) {
                 this.level().addParticle(ParticleTypes.BUBBLE, nextPosX - x * 0.25F, nextPosY - y * 0.25F, nextPosZ - z * 0.25F, x, y, z);
             }
-            // 在水中的阻力
+            // 물속 저항
             friction = 0.4F;
             gravity *= 0.6F;
         }
-        // 重力与阻力更新速度状态
+        // 중력과 저항으로 속도 상태 갱신
         this.setDeltaMovement(this.getDeltaMovement().scale(1 - friction));
         this.setDeltaMovement(this.getDeltaMovement().add(0, -gravity, 0));
-        // 子弹生命结束
+        // 탄환 수명 종료
         if (this.tickCount >= this.life - 1) {
             this.discard();
         }
     }
 
-    // 子弹的逻辑处理
+    // 탄환 로직 처리
     protected void onBulletTick() {
-        // 服务器端子弹逻辑
+        // 서버 측 탄환 로직
         if (!this.level().isClientSide()) {
-            // 延迟爆炸判定
+            // 지연 폭발 판정
             if (this.explosion) {
                 if (this.explosionDelayCount > 0) {
                     this.explosionDelayCount--;
                 } else {
                     // 같은 사격의 다른 산탄이 이미 폭발했으면 터지지 않고 사라진다.
                     tryExplode(this.position());
-                    // 爆炸直接结束不留弹孔，不处理之后的逻辑
+                    // 폭발하면 탄흔을 남기지 않고 바로 끝내며 이후 로직을 처리하지 않는다
                     this.discard();
                     return;
                 }
             }
-            // 子弹在 tick 起始的位置
+            // tick 시작 시 탄환 위치
             Vec3 startVec = this.position();
-            // 子弹在 tick 结束的位置
+            // tick 끝 시 탄환 위치
             Vec3 endVec = startVec.add(this.getDeltaMovement());
-            // 子弹的碰撞检测
+            // 탄환 충돌 검사
             HitResult result = BlockRayTrace.rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
             BlockHitResult resultB = (BlockHitResult) result;
             if (resultB.getType() != HitResult.Type.MISS) {
-                // 子弹击中方块时，设置击中方块的位置为子弹的结束位置
+                // 탄환이 블록에 맞으면 맞은 블록 위치를 탄환의 끝 위치로 설정한다
                 endVec = resultB.getLocation();
             }
             // 플레이어의 탄이 몬스터 가까이를 스치면 제압한다. 블록에 막힌 탄은 막힌 지점까지만 본다.
             BulletSuppression.onBulletPath(this, startVec, endVec);
 
             List<EntityResult> hitEntities = null;
-            // 子弹的击中检测，穿透为 1 或者爆炸类弹药限制为一个实体穿透判定
+            // 탄환 명중 검사. 관통이 1이거나 폭발형 탄약이면 엔티티 하나만 관통 판정한다
             if (this.pierce <= 1 || this.explosion) {
                 EntityResult entityResult = EntityUtil.findEntityOnPath(this, startVec, endVec);
-                // 将单个命中是实体创建为单个内容的 list
+                // 단일 명중 엔티티를 요소 하나짜리 list로 만든다
                 if (entityResult != null) {
                     hitEntities = Collections.singletonList(entityResult);
                 }
             } else {
                 hitEntities = EntityUtil.findEntitiesOnPath(this, startVec, endVec);
             }
-            // 当子弹击中实体时，进行被命中的实体读取
+            // 탄환이 엔티티에 맞으면 맞은 엔티티를 읽는다
             if (hitEntities != null && !hitEntities.isEmpty()) {
                 EntityResult[] hitEntityResult = hitEntities.toArray(new EntityResult[0]);
-                // 对被命中的实体进行排序，按照距离子弹发射位置的距离进行升序排序
+                // 맞은 엔티티를 탄환 발사 위치에서 가까운 순으로 오름차순 정렬한다
                 for (int i = 0; (i < this.pierce || i < 1) && i < (hitEntityResult.length - 1); i++) {
                     int k = i;
                     for (int j = i + 1; j < hitEntityResult.length; j++) {
@@ -384,7 +384,7 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
                     this.onHitEntity((TacHitResult) result, startVec, endVec);
                     this.pierce--;
                     if (this.pierce < 1 || this.explosion) {
-                        // 子弹已经穿透所有实体，结束子弹的飞行
+                        // 탄환이 모든 엔티티를 관통했으면 비행을 끝낸다
                         this.discard();
                         return;
                     }
@@ -432,25 +432,25 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         if (result.getEntity() instanceof ITargetEntity targetEntity) {
             DamageSource source = this.damageSources().thrown(this, this.getOwner());
             targetEntity.onProjectileHit(this, result, source, this.getDamage(result.getLocation()));
-            // 打靶直接返回
+            // 표적이면 바로 돌아간다
             return;
         }
-        // 获取Pre事件必要的信息
+        // Pre 이벤트에 필요한 정보 가져오기
         Entity entity = result.getEntity();
         @Nullable Entity owner = this.getOwner();
-        // 攻击者
+        // 공격자
         LivingEntity attacker = owner instanceof LivingEntity ? (LivingEntity) owner : null;
         var sources = createDamageSources(MaybeMultipartEntity.of(entity));
         boolean headshot = result.isHeadshot();
         float damage = this.getDamage(result.getLocation());
         float headShotMultiplier = Math.max(this.headShot, 0);
-        // 发布Pre事件
+        // Pre 이벤트 발행
         var preEvent = new EntityHurtByGunEvent.Pre(this, entity, attacker, this.gunId, this.gunDisplayId, damage, sources, headshot, headShotMultiplier, LogicalSide.SERVER);
         EntityHurtByGunEvent.PRE.invoker().post(preEvent);
         if (preEvent.isCanceled()) {
             return;
         }
-        // 刷新由Pre事件修改后的参数
+        // Pre 이벤트가 바꾼 매개변수 새로 고치기
         entity = preEvent.getHurtEntity();
         attacker = preEvent.getAttacker();
         var newGunId = preEvent.getGunId();
@@ -461,50 +461,50 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         if (entity == null) {
             return;
         }
-        // 受击目标
+        // 맞은 대상
         var parts = MaybeMultipartEntity.of(entity);
-        // 点燃
+        // 점화
         if (this.igniteEntity && AmmoConfig.IGNITE_ENTITY.get()) {
             entity.igniteForSeconds(this.igniteEntityTime);
-            // 给予粒子效果
+            // 입자 효과 주기
             if (this.level() instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(ParticleTypes.LAVA, entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ(), 1, 0, 0, 0, 0);
             }
         }
-        // TODO 暴击判定（不是爆头）暴击判定内部逻辑，需要输出一个是否暴击的 flag
+        // TODO 치명타 판정(헤드샷 아님) 내부 로직. 치명타 여부 flag를 출력해야 한다
         if (headshot) {
-            // 默认爆头伤害是 1x
+            // 기본 헤드샷 피해는 1배
             damage *= headShotMultiplier;
         }
-        // 对 LivingEntity 进行击退强度的自定义
+        // LivingEntity의 넉백 세기를 사용자 정의한다
         if (parts.core() instanceof LivingEntity livingCore) {
             float healthBefore = livingCore.getHealth();
             float absorptionBefore = livingCore.getAbsorptionAmount();
-            // 取消击退效果，设定自己的击退强度
+            // 넉백 효과를 취소하고 자체 넉백 세기를 설정한다
             KnockBackModifier modifier = KnockBackModifier.fromLivingEntity(livingCore);
             modifier.setKnockBackStrength(this.knockback);
-            // 创建伤害
+            // 피해 생성
             tacAttackEntity(parts, damage, sources);
-            // 恢复原位
+            // 원래대로 되돌리기
             modifier.resetKnockBackStrength();
             // 폭발 전에 직접 타격으로 감소한 체력만 확인한다.
             awardShotExperience(livingCore, healthBefore, absorptionBefore);
         } else {
-            // 创建伤害
+            // 피해 생성
             tacAttackEntity(parts, damage, sources);
         }
-        // 爆炸逻辑
+        // 폭발 로직
         if (this.explosion) {
-            // 取消无敌时间
+            // 무적 시간 취소
             parts.core().invulnerableTime = 0;
             tryExplode(result.getLocation());
         }
-        // 只对 LivingEntity 执行击杀判定
+        // LivingEntity에만 처치 판정을 한다
         if (parts.core() instanceof LivingEntity livingCore) {
-            // 事件同步，从服务端到客户端
+            // 이벤트 동기화. 서버에서 클라이언트로
             if (!level().isClientSide()) {
                 int attackerId = attacker == null ? 0 : attacker.getId();
-                // 如果生物死了
+                // 생물이 죽었으면
                 if (livingCore.isDeadOrDying()) {
                     EntityKillByGunEvent killByGunEvent = new EntityKillByGunEvent(this, livingCore, attacker, newGunId, gunDisplayId, damage, sources, headshot, headShotMultiplier, LogicalSide.SERVER);
                     EntityKillByGunEvent.CALLBACK.invoker().post(killByGunEvent);
@@ -558,21 +558,21 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         }
         BlockPos pos = result.getBlockPos();
         Vec3 hitVec = result.getLocation();
-        // 触发事件
-        // 提前触发事件以让事件可以取消原版的命中行为（例如敲钟，打倒靶子等）
+        // 이벤트 발생
+        // 이벤트가 바닐라 명중 동작(예: 종 치기, 표적 쓰러뜨리기)을 취소할 수 있게 이벤트를 먼저 발생시킨다
         AmmoHitBlockEvent ammoHitBlockEvent = new AmmoHitBlockEvent(this.level(), result, this.level().getBlockState(pos), this);
         AmmoHitBlockEvent.CALLBACK.invoker().post(ammoHitBlockEvent);
         if (ammoHitBlockEvent.isCanceled()) {
             return;
         }
         super.onHitBlock(result);
-        // 爆炸。같은 사격의 다른 산탄이 이미 폭발했으면 일반 탄처럼 탄흔을 남긴다.
+        // 폭발. 같은 사격의 다른 산탄이 이미 폭발했으면 일반 탄처럼 탄흔을 남긴다.
         if (tryExplode(hitVec)) {
-            // 爆炸直接结束不留弹孔，不处理之后的逻辑
+            // 폭발하면 탄흔을 남기지 않고 바로 끝내며 이후 로직을 처리하지 않는다
             this.discard();
             return;
         }
-        // 弹孔与点燃特效
+        // 탄흔과 점화 효과
         if (this.level() instanceof ServerLevel serverLevel) {
             BulletHoleOption bulletHoleOption = new BulletHoleOption(result.getDirection(), result.getBlockPos(), this.ammoId.toString(), this.gunId.toString(), this.gunDisplayId.toString());
             serverLevel.sendParticles(bulletHoleOption, hitVec.x, hitVec.y, hitVec.z, 1, 0, 0, 0, 0);
@@ -591,11 +591,11 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
         this.discard();
     }
 
-    // 根据距离进行伤害衰减设计
+    // 거리에 따른 피해 감소 설계
     public float getDamage(Vec3 hitVec) {
-        // 如果忘记写最大值，那我就直接认为你伤害为 0
+        // 최댓값을 빠뜨렸으면 피해를 0으로 본다
         float base = 0;
-        // 遍历进行判断
+        // 하나씩 돌며 판단한다
         double playerDistance = hitVec.distanceTo(this.startPos);
         for (DistanceDamagePair pair : this.damageAmount) {
             float effectiveDistance = this.damageAmount.get(0).getDistance() == pair.getDistance() ? this.distanceAmount : pair.getDistance();
@@ -605,7 +605,7 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
                 break;
             }
         }
-        // 让脚本修改枪械伤害
+        // 스크립트가 총기 피해를 바꾸게 한다
         float modifiedDamage = modifyProperty(GunProperties.DAMAGE, Float.class, base);
         float finalDamage = modifiedDamage * this.shotDamageMultiplier * this.gunLevelDamageMultiplier;
         return Math.max(finalDamage, 0F);
@@ -633,13 +633,13 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
     }
 
     /**
-     * @return Pair<非穿甲伤害源 ， 穿甲伤害源>
+     * @return Pair<비관통 피해 원인, 방어 관통 피해 원인>
      */
     private Pair<DamageSource, DamageSource> createDamageSources(MaybeMultipartEntity parts) {
         DamageSource source1, source2;
         var hitPartType = parts.hitPart().getType();
         var directCause = hitPartType.builtInRegistryHolder().is(PRETEND_MELEE_DAMAGE_ON) ? this.getOwner() : this;
-        // 给末影人造成伤害
+        // 엔더맨에게 피해를 준다
         if (hitPartType.builtInRegistryHolder().is(USE_MAGIC_DAMAGE_ON)) {
             source1 = source2 = this.damageSources().indirectMagic(this, getOwner());
         } else if (hitPartType.builtInRegistryHolder().is(USE_VOID_DAMAGE_ON)) {
@@ -655,16 +655,16 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
     private void tacAttackEntity(MaybeMultipartEntity parts, float damage, Pair<DamageSource, DamageSource> sources) {
         var source1 = sources.getLeft();
         var source2 = sources.getRight();
-        // 穿甲伤害和普通伤害的比例计算
+        // 방어 관통 피해와 일반 피해의 비율 계산
         float armorDamagePercent = Mth.clamp(this.armorIgnore, 0.0F, 1.0F);
         float normalDamagePercent = 1 - armorDamagePercent;
-        // 取消无敌时间
+        // 무적 시간 취소
         parts.core().invulnerableTime = 0;
-        // 普通伤害
+        // 일반 피해
         parts.hitPart().hurt(source1, damage * normalDamagePercent);
-        // 取消无敌时间
+        // 무적 시간 취소
         parts.core().invulnerableTime = 0;
-        // 穿甲伤害
+        // 방어 관통 피해
         parts.hitPart().hurt(source2, damage * armorDamagePercent);
     }
 
@@ -789,8 +789,8 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
             return Optional.empty();
         }
         var ints = optInts.get();
-            // 请避免使用 1 或者 2 个值的数组。
-            // 此处 1~2 个值的分支仅为优雅地处理异常情况来代替崩溃所作的措施 :(
+            // 값이 1개나 2개인 배열은 쓰지 않는다.
+            // 여기서 값 1~2개 분기는 충돌 대신 예외 상황을 깔끔하게 처리하려는 조치일 뿐이다 :(
             switch (ints.length) {
                 case 0:
                     return Optional.empty();
@@ -843,17 +843,17 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
             this.headshot = headshot;
         }
 
-        // 子弹命中的实体
+        // 탄환이 맞힌 엔티티
         public Entity getEntity() {
             return this.entity;
         }
 
-        // 子弹命中的位置
+        // 탄환이 맞힌 위치
         public Vec3 getHitPos() {
             return this.hitVec;
         }
 
-        // 是否为爆头
+        // 헤드샷 여부
         public boolean isHeadshot() {
             return this.headshot;
         }

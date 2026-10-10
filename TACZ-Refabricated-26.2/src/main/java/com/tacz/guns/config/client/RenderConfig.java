@@ -21,7 +21,6 @@ public class RenderConfig {
     public static ForgeConfigSpec.BooleanValue DISABLE_MOVEMENT_ATTRIBUTE_FOV;
     public static ForgeConfigSpec.BooleanValue ENABLE_TACZ_ID_IN_TOOLTIP;
     public static ForgeConfigSpec.BooleanValue BLOCK_ENTITY_TRANSLUCENT;
-    /** 第 18 轮：PIP 镜内渲染 P1 验证开关，默认关闭。 */
 
     public static void init(ForgeConfigSpec.Builder builder) {
         builder.push("render");

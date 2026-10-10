@@ -37,12 +37,12 @@ public class SoundPlayManager {
     private static int soundCleanupTickCounter = 0;
 
     /**
-     * 用于阻止连发时，反复播放 DryFire 音效
+     * 연사 중 DryFire 효과음이 반복 재생되는 것을 막는 데 쓴다
      */
     private static boolean DRY_SOUND_TRACK = true;
 
     /**
-     * 临时缓存，用于停止播放的
+     * 재생을 멈추는 데 쓰는 임시 캐시
      */
     private static GunSoundInstance tmpSoundInstance = null;
 
@@ -67,7 +67,6 @@ public class SoundPlayManager {
         if (concurrencyLimit > 0) {
             trackGunSound(entity.getId(), entity.getUUID(), name, instance);
         }
-//        traceGunSoundPlay(minecraft, instance, entity, name, volume, pitch, distance, mono);
         return instance;
     }
 
@@ -149,7 +148,7 @@ public class SoundPlayManager {
     }
 
     /**
-     * 只有松开鼠标时，才会重置
+     * 마우스를 놓았을 때만 초기화한다
      */
     public static void resetDryFireSound() {
         DRY_SOUND_TRACK = true;
@@ -238,9 +237,7 @@ public class SoundPlayManager {
     }
 
     public static void onClientTick(Minecraft minecraft) {
-//        if (event.phase != TickEvent.Phase.END) {
-//            return;
-//        }
+
         if (minecraft.level == null) {
             cleanupInvalidEntitySounds(minecraft);
             return;

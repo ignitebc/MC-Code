@@ -57,10 +57,10 @@ public class LootInjectionManager extends SimplePreparableReloadListener<Map<Ide
     }
 
     /**
-     * 所有被声明为注入目标的战利品表 ID。
+     * 주입 대상으로 선언된 모든 전리품 표 ID.
      *
-     * <p>{@code injections} 本就以目标表 ID 为键，这里直接暴露键集即可，
-     * 无需额外维护状态。返回不可变视图，防止调用方误改。</p>
+     * <p>{@code injections}가 원래 대상 표 ID를 키로 하므로 키 집합을 그대로 내보내면 되며,
+     * 상태를 따로 관리할 필요가 없다. 호출하는 쪽이 잘못 고치지 않도록 바꿀 수 없는 보기를 돌려준다.</p>
      */
     public Set<Identifier> getInjectionTargets() {
         return Collections.unmodifiableSet(injections.keySet());

@@ -18,7 +18,7 @@ public class InventoryEvent {
     private static final int HOTBAR_WARM_UP_INTERVAL_TICKS = 7;
     private static final int BACKPACK_WARM_UP_INTERVAL_TICKS = 41;
 
-    // 用于切枪逻辑
+    // 총기 교체 로직에 쓴다
     private static int oldHotbarSelected = -1;
     private static ItemStack oldHotbarSelectItem = ItemStack.EMPTY;
 
@@ -28,7 +28,7 @@ public class InventoryEvent {
             return;
         }
         Inventory inventory = player.getInventory();
-        // 玩家切换选中框的情况
+        // 플레이어가 선택 칸을 바꾼 경우
         if (oldHotbarSelected != inventory.getSelectedSlot()) {
             ClientIndexManager.warmUpItem(inventory.getItem(inventory.getSelectedSlot()));
             if (oldHotbarSelected == -1) {
@@ -40,7 +40,7 @@ public class InventoryEvent {
             oldHotbarSelectItem = inventory.getItem(inventory.getSelectedSlot()).copy();
             return;
         }
-        // 玩家选中的物品改变的情况
+        // 플레이어가 고른 아이템이 바뀐 경우
         ItemStack currentItem = inventory.getItem(inventory.getSelectedSlot());
         if (currentItem.getItem() instanceof IAnimationItem item) {
             if (!item.isSame(oldHotbarSelectItem, currentItem)) {
@@ -74,7 +74,7 @@ public class InventoryEvent {
     }
 
     public static void onPlayerLoggedOut(ClientPlayerNetworkEvent.LoggingOut event) {
-        // 离开游戏时重置客户端 draw 状态
+        // 게임에서 나갈 때 클라이언트 draw 상태를 초기화한다
         oldHotbarSelected = -1;
         oldHotbarSelectItem = ItemStack.EMPTY;
     }

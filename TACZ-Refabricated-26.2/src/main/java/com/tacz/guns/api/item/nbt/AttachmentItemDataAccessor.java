@@ -17,7 +17,7 @@ public interface AttachmentItemDataAccessor extends IAttachment {
     String ZOOM_NUMBER_TAG = "ZoomNumber";
     String LASER_COLOR_TAG = "LaserColor";
 
-    // 仅检查给定的 CompoundTag 是否具有配件 ID ，不校验其是否存在
+    // 주어진 CompoundTag에 부착물 ID가 있는지만 확인하고, 그 부착물이 실제로 있는지는 검사하지 않는다
     static boolean isAttachmentLike(CompoundTag tag) {
         return tag.contains(ATTACHMENT_ID_TAG);
     }
@@ -97,17 +97,17 @@ public interface AttachmentItemDataAccessor extends IAttachment {
     }
 
     /**
-     * 直接把镭射颜色写进给定的配件 NBT 标签。
+     * 주어진 부착물 NBT 태그에 레이저 색을 바로 쓴다.
      *
-     * <p>与 {@link #setLaserColor(ItemStack, int)} 的区别：后者作用于一个
-     * {@code ItemStack} 对象，而<b>已安装在枪上的配件并不存在独立的 ItemStack</b> ——
-     * 它只是枪 NBT 里的一段数据，{@code IGun#getAttachment} 每次都会用 Codec
-     * 反序列化出一个临时副本，改副本不会回写到枪上。
+     * <p>{@link #setLaserColor(ItemStack, int)}와의 차이: 그쪽은
+     * {@code ItemStack} 객체에 쓰지만, <b>총에 장착한 부착물에는 독립된 ItemStack이 없다</b> —
+     * 총 NBT 안의 데이터 조각일 뿐이고, {@code IGun#getAttachment}는 매번 Codec으로
+     * 임시 사본을 역직렬화하므로 사본을 바꿔도 총에 다시 쓰이지 않는다.
      *
-     * <p>因此服务端处理「修改已安装配件的镭射颜色」时必须走
-     * {@code getAttachmentTag → setLaserColorToTag → setAttachmentTag} 这条路，
-     * 见 {@code ClientMessageLaserColor#handle}。本方法即上游同名静态工具，
-     * 移植时遗漏，导致改色无法持久化。
+     * <p>그래서 서버에서 "장착한 부착물의 레이저 색 변경"을 처리할 때는 반드시
+     * {@code getAttachmentTag → setLaserColorToTag → setAttachmentTag} 경로를 거쳐야 한다.
+     * {@code ClientMessageLaserColor#handle} 참고. 이 메서드는 원본에 있던 같은 이름의 정적 도구로,
+     * 이식할 때 빠져 색 변경이 저장되지 않았다.
      */
     static void setLaserColorToTag(CompoundTag nbt, int color) {
         nbt.putInt(LASER_COLOR_TAG, color);

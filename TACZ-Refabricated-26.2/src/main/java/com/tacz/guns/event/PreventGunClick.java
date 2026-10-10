@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 
 public class PreventGunClick {
     public static InteractionResult onLeftClickBlock(Player player, Level world, InteractionHand hand, BlockPos pos, Direction direction) {
-        // 只要主手有枪，那么禁止交互
+        // 주 손에 총이 있으면 상호작용을 막는다
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
         if (itemInHand.getItem() instanceof IGun) {
             return InteractionResult.FAIL;

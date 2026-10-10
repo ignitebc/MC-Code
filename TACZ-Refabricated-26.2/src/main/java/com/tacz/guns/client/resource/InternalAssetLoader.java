@@ -24,40 +24,40 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-// 这个理论上已经不需要了
+// 이론상 이제는 필요 없다
 public class InternalAssetLoader {
-    // 曳光弹模型
+    // 예광탄 모델
     public static final Identifier DEFAULT_BULLET_TEXTURE = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "textures/entity/basic_bullet.png");
     public static final Identifier DEFAULT_BULLET_MODEL = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "models/bedrock/basic_bullet.json");
-    // 射击标靶车
+    // 사격 표적 수레
     public static final Identifier TARGET_MINECART_MODEL_LOCATION = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "models/bedrock/target_minecart.json");
     public static final Identifier TARGET_MINECART_TEXTURE_LOCATION = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "textures/entity/target_minecart.png");
     public static final Identifier ENTITY_EMPTY_TEXTURE = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "textures/entity/empty.png");
-    // 射击标靶
+    // 사격 표적
     public static final Identifier TARGET_MODEL_LOCATION = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "models/bedrock/target.json");
     public static final Identifier TARGET_TEXTURE_LOCATION = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "textures/block/target.png");
-    // 雕像
+    // 조각상
     public static final Identifier STATUE_MODEL_LOCATION = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "models/bedrock/statue.json");
     public static final Identifier STATUE_TEXTURE_LOCATION = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "textures/block/statue.png");
-    // 改装台
+    // 개조 작업대
     public static final Identifier SMITH_TABLE_MODEL_LOCATION = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "models/bedrock/gun_smith_table.json");
     public static final Identifier SMITH_TABLE_TEXTURE_LOCATION = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "textures/block/gun_smith_table.png");
-    // 默认动画
+    // 기본 애니메이션
     private static final Identifier DEFAULT_PISTOL_ANIMATIONS_LOC = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "animations/pistol_default.animation.json");
     private static final Identifier DEFAULT_RIFLE_ANIMATIONS_LOC = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "animations/rifle_default.animation.json");
-    // 内部资源缓存
+    // 내부 자원 캐시
     private static final Map<Identifier, BedrockModel> BEDROCK_MODELS = Maps.newHashMap();
     private static List<ObjectAnimation> defaultPistolAnimations;
     private static List<ObjectAnimation> defaultRifleAnimations;
 
     public static void onResourceReload() {
-        // 加载默认动画文件
+        // 기본 애니메이션 파일 로드
         BedrockAnimationFile pistolAnimationFile = loadAnimations(DEFAULT_PISTOL_ANIMATIONS_LOC);
         BedrockAnimationFile rifleAnimationFile = loadAnimations(DEFAULT_RIFLE_ANIMATIONS_LOC);
         defaultPistolAnimations = Animations.createAnimationFromBedrock(pistolAnimationFile);
         defaultRifleAnimations = Animations.createAnimationFromBedrock(rifleAnimationFile);
 
-        // 加载代码直接调用的基岩版模型
+        // 코드에서 바로 호출하는 베드락 모델 로드
         BEDROCK_MODELS.clear();
         loadBedrockModels(InternalAssetLoader.SMITH_TABLE_MODEL_LOCATION);
         loadBedrockModels(InternalAssetLoader.TARGET_MODEL_LOCATION);

@@ -11,108 +11,108 @@ import java.util.function.Supplier;
 
 public class ShooterDataHolder {
     /**
-     * 基时间戳，用于一些需要精密计算时间的场景。目前只有 shoot 使用。
+     * 기준 타임스탬프. 시간을 정밀하게 계산해야 하는 상황에 쓴다. 지금은 shoot만 쓴다.
      */
     public long baseTimestamp = System.currentTimeMillis();
     /**
-     * 射击时间戳，射击成功时更新，单位 ms。
-     * 用于计算射击的冷却时间。
+     * 사격 타임스탬프. 사격에 성공하면 갱신하며 단위는 ms다.
+     * 사격 대기 시간을 계산하는 데 쓴다.
      */
     public long shootTimestamp = -1L;
     public long lastShootTimestamp = -1L;
     /**
-     * 近战时间戳，按下刺刀按键时更新，单位 ms
-     * 用于计算射击的冷却时间
+     * 근접 공격 타임스탬프. 총검 키를 누르면 갱신하며 단위는 ms다
+     * 사격 대기 시간을 계산하는 데 쓴다
      */
     public long meleeTimestamp = -1L;
     /**
-     * 近战有前摇，这个就是用于前摇的计数器
-     * > 0 时：开始前摇计数，每 tick 减一
-     * == 0 时：执行刺刀近战
-     * < 0 时，默认情况，什么也不做
+     * 근접 공격에는 준비 동작이 있으며, 이것은 준비 동작용 카운터다
+     * > 0일 때: 준비 동작 카운트를 시작하고 tick마다 1씩 줄인다
+     * == 0일 때: 총검 근접 공격을 실행한다
+     * < 0일 때: 기본 상태이며 아무것도 하지 않는다
      */
     public int meleePrepTickCount = -1;
     /**
-     * 切枪时间戳，在切枪开始时更新，单位 ms。
-     * 用于计算切枪进度。切枪进度完成后，才能进行各种操作。
+     * 총 바꾸기 타임스탬프. 총 바꾸기를 시작할 때 갱신하며 단위는 ms다.
+     * 총 바꾸기 진행도를 계산하는 데 쓴다. 총 바꾸기가 끝나야 각종 조작을 할 수 있다.
      */
     public long drawTimestamp = -1L;
     /**
-     * 拉栓时间戳，在拉栓开始时更新，单位 ms。
+     * 노리쇠 당기기 타임스탬프. 노리쇠 당기기를 시작할 때 갱신하며 단위는 ms다.
      */
     public long boltTimestamp = -1;
     public boolean isBolting = false;
     /**
-     * 瞄准的进度，范围 0 ~ 1
+     * 조준 진행도. 범위는 0~1
      */
     public float aimingProgress = 0;
     /**
-     * 瞄准时间戳，在每个 tick 更新，单位 ms。
-     * 用于在每个 tick 计算: 距离上一次更新 aimingProgress 的时长，并依此计算 aimingProgress 的增量。
+     * 조준 타임스탬프. tick마다 갱신하며 단위는 ms다.
+     * tick마다 마지막 aimingProgress 갱신 이후 지난 시간을 계산하고, 이를 바탕으로 aimingProgress 증가량을 계산하는 데 쓴다.
      */
     public long aimingTimestamp = -1L;
     /**
-     * 为 true 时表示正在 执行瞄准 状态，aimingProgress 会在每个 tick 叠加，
-     * 为 false 时表示正在 取消瞄准 状态，aimingProgress 会在每个 tick 递减。
+     * true이면 조준하는 중이라 aimingProgress가 tick마다 늘어나고,
+     * false이면 조준을 푸는 중이라 aimingProgress가 tick마다 줄어든다.
      */
     public boolean isAiming = false;
     /**
-     * 装弹时间戳，在开始装弹的瞬间更新，单位 ms。
-     * 用于在每个 tick 计算: 从开始装弹 到 当前时间点 的时长，并依此计算出换弹的状态和冷却。
+     * 장전 타임스탬프. 장전을 시작하는 순간 갱신하며 단위는 ms다.
+     * tick마다 장전 시작부터 현재 시점까지의 시간을 계산하고, 이를 바탕으로 재장전 상태와 대기 시간을 계산하는 데 쓴다.
      */
     public long reloadTimestamp = -1;
     /**
-     * 装填状态的缓存。会在每个 tick 进行更新。
+     * 장전 상태 캐시. tick마다 갱신한다.
      */
     @Nonnull
     public ReloadState.StateType reloadStateType = ReloadState.StateType.NOT_RELOADING;
     /**
-     * 当前操作的枪械物品的 Supplier。在切枪时 (draw 方法) 更新。
+     * 현재 조작하는 총기 아이템의 Supplier. 총을 바꿀 때(draw 메서드) 갱신한다.
      */
     @Nullable
     public Supplier<ItemStack> currentGunItem = null;
     /**
-     * 缓存当前枪械的收枪时间，以确保下一次切枪的时候使用此时间计算收枪。
-     * 此数值不会因 tacz$CurrentGunItem 提供的 ItemStack 改变而改变，因此应当在恰当的时机调用 updatePutAwayTime() 进行更新。
+     * 현재 총기의 집어넣기 시간을 캐시해, 다음 총 바꾸기 때 이 시간으로 집어넣기를 계산하게 한다.
+     * 이 값은 tacz$CurrentGunItem이 주는 ItemStack이 바뀌어도 바뀌지 않으므로, 알맞은 때에 updatePutAwayTime()을 호출해 갱신해야 한다.
      */
     public float currentPutAwayTimeS = 0;
     /**
-     * 与疾跑相关的参数，开镜时会阻止疾跑
+     * 질주 관련 매개변수. 조준경을 들여다보면 질주를 막는다
      */
     public float sprintTimeS = 0;
     public long sprintTimestamp = -1;
     /**
-     * 最近一次持枪疾跑的时间戳，用于判定“疾跑后立即射击”的散布惩罚，-1 表示还没有疾跑过
+     * 총을 든 채 마지막으로 질주한 타임스탬프. "질주 직후 사격"의 탄 퍼짐 불이익을 판정하는 데 쓴다. -1이면 아직 질주한 적이 없다
      */
     public long lastSprintTimestamp = -1;
     /**
-     * 用来记录子弹击退能力，负数表示使用原版击退
+     * 탄환 넉백 능력을 기록한다. 음수이면 바닐라 넉백을 쓴다
      */
     public double knockbackStrength = -1;
     /**
-     * 记录射击数，用以判定曳光弹
+     * 사격 수를 기록해 예광탄을 판정한다
      */
     public int shootCount = 0;
     public float chargeProgress = 0f;
     /**
-     * 是否处于趴下状态
+     * 엎드린 상태인지 여부
      */
     public boolean isCrawling = false;
     /**
-     * 用于缓存 lua 脚本的数据
+     * lua 스크립트 데이터를 캐시하는 데 쓴다
      */
     @Nullable
     public LuaValue scriptData = null;
 
     public long heatTimestamp = -1;
     /**
-     * 配件修改过的各种属性缓存
+     * 부착물이 바꾼 각종 속성 캐시
      */
     @Nullable
     public AttachmentCacheProperty cacheProperty = null;
 
     public void initialData() {
-        // 重置各个状态
+        // 각 상태 초기화
         shootTimestamp = -1;
         meleeTimestamp = -1;
         meleePrepTickCount = -1;

@@ -31,7 +31,7 @@ public class StatueRenderer implements BlockEntityRenderer<StatueBlockEntity, St
     public StatueRenderer(BlockEntityRendererProvider.Context context) {
     }
 
-    /** Custom render state for statue */
+    /** 조각상용 사용자 정의 렌더 상태 */
     public static class StatueRenderState extends BlockEntityRenderState {
         public Direction facing = Direction.NORTH;
         public ItemStack gunItem = ItemStack.EMPTY;
@@ -77,7 +77,7 @@ public class StatueRenderer implements BlockEntityRenderer<StatueBlockEntity, St
             double offset = Math.sin(Util.getMillis() / 500.0) * 0.1;
             poseStack.translate(0, offset, 0);
 
-            // Render gun item using ItemStackRenderState
+            // ItemStackRenderState로 총기 아이템을 그린다
             if (!state.gunItem.isEmpty()) {
                 ItemStackRenderState itemRenderState = new ItemStackRenderState();
                 Minecraft.getInstance().getItemModelResolver().updateForNonLiving(

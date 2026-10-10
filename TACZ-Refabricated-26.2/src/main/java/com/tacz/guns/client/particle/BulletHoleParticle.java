@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 
 /**
- * Author: Forked from MrCrayfish, continued by Timeless devs
+ * 원작자: MrCrayfish에서 갈라져 나와 Timeless 개발진이 이어 감
  * 26.2: TextureSheetParticle → SingleQuadParticle, render → extract
  */
 public class BulletHoleParticle extends SingleQuadParticle {
@@ -74,7 +74,7 @@ public class BulletHoleParticle extends SingleQuadParticle {
             BlockState state = world.getBlockState(pos);
             return minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(state).sprite();
         }
-        // Fallback: should not normally happen
+        // 대체: 보통은 일어나지 않는다
         return minecraft.getModelManager().getBlockStateModelSet().missingModel().particleMaterial().sprite();
     }
 
@@ -91,7 +91,7 @@ public class BulletHoleParticle extends SingleQuadParticle {
         super.setSprite(sprite);
         this.uOffset = this.random.nextInt(16);
         this.vOffset = this.random.nextInt(16);
-        // 材质应该都是方形
+        // 텍스처는 모두 정사각형이어야 한다
         this.textureDensity = (sprite.getU1() - sprite.getU0()) / 16.0F;
     }
 
@@ -124,47 +124,47 @@ public class BulletHoleParticle extends SingleQuadParticle {
     }
 
     /**
-     * <b>第 8 轮修复：击碎方块时天上出现会变大的怪异方片。</b>
+     * <b>8차 수정: 블록을 부술 때 하늘에 점점 커지는 이상한 사각 조각이 나타나던 문제.</b>
      *
-     * <p>原代码写的是：</p>
+     * <p>원래 코드는 다음과 같았다:</p>
      * <pre>
      * this.extractRotatedQuad(state, quaternion, red, green, blue, alphaFade);
      * </pre>
      *
-     * <p>看起来像是"传旋转 + 颜色"，但 26.2 的 {@code SingleQuadParticle} 里<b>没有</b>
-     * 接收颜色的重载（反编译确认，只有三个）：</p>
+     * <p>"회전 + 색"을 넘기는 것처럼 보이지만, 26.2의 {@code SingleQuadParticle}에는 색을 받는
+     * 오버로드가 <b>없다</b>(디컴파일 확인, 다음 것들뿐이다):</p>
      * <pre>
      * extractRotatedQuad(QuadParticleRenderState, Camera, Quaternionf, float partialTick)
      * extractRotatedQuad(QuadParticleRenderState, Quaternionf, float x, float y, float z, float partialTick)
      * </pre>
      *
-     * <p>于是这次调用被静默绑定到了第二个重载 —— <b>把 r/g/b 当成了 x/y/z 坐标</b>，
-     * 把 alpha 当成了 partialTick。颜色是 0~1 的浮点，所以四边形被画在
-     * "相对摄像机 (r, g, b)"这个<b>固定偏移</b>处（+x 偏东、+z 偏南、+y 在上方），
-     * 与实际弹孔位置完全无关 —— 这就是你看到的"固定出现在西-西南方向屏幕上方"。</p>
+     * <p>그래서 이 호출은 두 번째 오버로드에 조용히 묶여 — <b>r/g/b를 x/y/z 좌표로</b>,
+     * alpha를 partialTick으로 썼다. 색은 0~1 실수라 사각형이
+     * "카메라 기준 (r, g, b)"라는 <b>고정 오프셋</b>(+x 동쪽, +z 남쪽, +y 위쪽)에 그려졌고,
+     * 실제 탄흔 위치와 전혀 관계가 없었다 — 이것이 보고된 "서-남서 방향 화면 위쪽에 고정되어 나타남"이다.</p>
      *
-     * <p>而颜色取自枪械/弹药的 <b>tracerColor</b>，所以<b>不同枪械出现在不同位置</b>；
-     * 随着 {@code colorPercent} 衰减到 0，坐标也趋近摄像机原点，
-     * 视觉上就是"逐渐变大后消失"，生命周期约 60 tick ≈ 3 秒 —— 与反馈逐条吻合。</p>
+     * <p>그리고 색은 총기/탄약의 <b>tracerColor</b>에서 오므로 <b>총마다 다른 위치에 나타났고</b>,
+     * {@code colorPercent}가 0으로 줄면서 좌표도 카메라 원점에 가까워져
+     * 보기에는 "점점 커지다 사라지는" 모습이었다. 수명은 약 60틱 ≈ 3초로 — 보고 내용과 하나하나 맞는다.</p>
      *
-     * <p>正确做法：用带 Camera 的重载，让父类自己算出相机相对坐标；
-     * 颜色则通过 {@code rCol/gCol/bCol/alpha} 字段传递（父类 {@code extractRotatedQuad}
-     * 内部用 {@code ARGB.colorFromFloat(this.alpha, this.rCol, this.gCol, this.bCol)} 取值）。</p>
+     * <p>올바른 방법: Camera를 받는 오버로드를 써서 부모 클래스가 카메라 상대 좌표를 직접 계산하게 하고,
+     * 색은 {@code rCol/gCol/bCol/alpha} 필드로 넘긴다(부모 {@code extractRotatedQuad}는
+     * 안에서 {@code ARGB.colorFromFloat(this.alpha, this.rCol, this.gCol, this.bCol)}로 값을 읽는다).</p>
      */
     @Override
     public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
-        // 0 - 30 tick 内，从 15 亮度到 0 亮度
+        // 0~30틱 동안 밝기 15에서 0으로
         int light = Math.max(15 - this.age / 2, 0);
 
-        // 颜色，逐渐渐变到 0 0 0，也就是黑色
+        // 색은 점점 0 0 0, 곧 검은색으로 바뀐다
         float colorPercent = light / 15.0f;
 
-        // 透明度，逐渐变成 0，也就是透明
+        // 투명도는 점점 0, 곧 투명해진다
         double threshold = RenderConfig.BULLET_HOLE_PARTICLE_FADE_THRESHOLD.get() * this.lifetime;
         float fade = 1.0f - (float) (Math.max(this.age - threshold, 0) / (this.lifetime - threshold));
 
-        // 备份基色，渲染时临时写入父类字段（父类从这些字段取色），渲染完再还原，
-        // 避免把衰减后的颜色累积回基色。
+        // 기본 색을 백업해 두고, 렌더링할 때 부모 필드(부모가 이 필드에서 색을 읽음)에 잠시 쓴 뒤 렌더링 후 되돌린다.
+        // 줄어든 색이 기본 색에 쌓이지 않게 하기 위해서다.
         float baseR = this.rCol;
         float baseG = this.gCol;
         float baseB = this.bCol;
@@ -174,7 +174,7 @@ public class BulletHoleParticle extends SingleQuadParticle {
         this.bCol = baseB * colorPercent;
         this.alpha = baseA * fade;
         try {
-            // 使用方向四元数旋转四边形；位置交给带 Camera 的重载计算。
+            // 방향 사원수로 사각형을 돌리고, 위치는 Camera를 받는 오버로드가 계산하게 한다.
             Quaternionf quaternion = this.direction.getRotation();
             this.extractRotatedQuad(state, camera, quaternion, partialTicks);
         } finally {
@@ -200,7 +200,7 @@ public class BulletHoleParticle extends SingleQuadParticle {
         if (blockState.isAir()) {
             return true;
         } else {
-            // 阻止弹孔在与方块不构成有效附着时继续渲染
+            // 블록에 제대로 붙어 있지 않으면 탄흔을 더 그리지 않는다
             VoxelShape shape = blockState.getCollisionShape(this.level, this.pos);
             if (shape.isEmpty()) {
                 return true;

@@ -13,10 +13,9 @@ public class ReloadResourceEvent {
 
     public static void onTextureStitchEventPost(TextureStitchEvent.Post event) {
         if (BLOCK_ATLAS_TEXTURE.equals(event.getAtlas().location())) {
-            // InternalAssetLoader 需要加载一些默认的动画、模型，需要先于枪包加载。
+            // InternalAssetLoader는 기본 애니메이션·모델을 불러와야 하므로 총기 팩보다 먼저 불러온다.
             InternalAssetLoader.onResourceReload();
             SoundPlayManager.clearSoundResourceCache();
-//            ClientReloadManager.reloadAllPack();
         }
     }
 }

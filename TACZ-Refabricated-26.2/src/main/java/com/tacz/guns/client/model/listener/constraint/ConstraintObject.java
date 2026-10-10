@@ -15,11 +15,11 @@ public class ConstraintObject implements AnimationListenerSupplier {
     public Vector3f translationConstraint = new Vector3f(0, 0, 0);
     public Vector3f rotationConstraint = new Vector3f(0, 0, 0);
     /**
-     * 当相机的节点为根时，node为空
+     * 카메라 노드가 루트이면 node는 비어 있다
      */
     public BedrockPart node;
     /**
-     * 当相机的节点不为根时，bonesItem为空
+     * 카메라 노드가 루트가 아니면 bonesItem은 비어 있다
      */
     public BonesItem bonesItem;
 

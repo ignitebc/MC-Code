@@ -19,81 +19,81 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * 枪械工作台配方加载器。
+ * 총기 작업대 레시피 로더.
  *
- * <h2>为什么需要这个子类，而不是直接用 {@code CommonDataManager}</h2>
- * 工作台配方和原版配方<b>共用同一个目录</b>：{@code data/<ns>/recipe/**.json}。
- * 这是上游的既定布局（上游靠原版 {@code RecipeManager} 按 {@code "type"} 分发，
- * 天然只会拿到自己那一份），我们不能改目录，否则所有现存枪包都会失效。
+ * <h2>{@code CommonDataManager}를 그대로 쓰지 않고 이 하위 클래스가 필요한 이유</h2>
+ * 작업대 레시피와 바닐라 레시피는 <b>같은 디렉터리를 함께 쓴다</b>: {@code data/<ns>/recipe/**.json}.
+ * 이는 원본이 정한 배치이며(원본은 바닐라 {@code RecipeManager}가 {@code "type"}으로 나눠 주므로
+ * 자연히 자기 몫만 받는다), 디렉터리를 바꾸면 지금 있는 모든 총기 팩이 무효가 되므로 바꿀 수 없다.
  *
- * <p>但 26.2 客户端已经<b>没有</b>完整配方表（{@code ClientLevel#recipeAccess}
- * 只剩 {@code propertySet} 与 {@code stonecutterRecipes}），所以工作台配方改由
- * mod 自己走 {@code DataType.RECIPES} 通道同步。这条自建通道没有原版的类型分发，
- * 于是 {@code FileToIdConverter.json("recipe")} 会把<b>所有</b>命名空间下的
- * 所有配方一网打尽 —— 实测：原版 1585 条 + 本模组 20 条原版格式配方
- * （{@code crafting_shaped}/{@code crafting_shapeless}），全都被喂给了
- * {@code TableRecipe} 的 Gson 解析器。
+ * <p>그러나 26.2 클라이언트에는 완전한 레시피 표가 <b>없어서</b>({@code ClientLevel#recipeAccess}에는
+ * {@code propertySet}과 {@code stonecutterRecipes}만 남음), 작업대 레시피는
+ * mod가 직접 {@code DataType.RECIPES} 경로로 동기화한다. 이 자체 경로에는 바닐라의 종류별 분배가 없어서
+ * {@code FileToIdConverter.json("recipe")}가 <b>모든</b> 네임스페이스의
+ * 모든 레시피를 싹 긁어 온다 — 실측: 바닐라 1585개 + 이 모드의 바닐라 형식 레시피 20개
+ * ({@code crafting_shaped}/{@code crafting_shapeless})가 모두
+ * {@code TableRecipe}의 Gson 해석기로 들어갔다.
  *
- * <p>它们没有 {@code result.type} 字段，于是每一条都在
- * {@code GunSmithTableResultSerializer} 第 24 行
- * （{@code GsonHelper.getAsString(jsonObject, "type")}）抛
- * {@code JsonSyntaxException}，刷满整个日志。更糟的是这堆无关 JSON
- * 还会被<b>原样序列化进网络包</b>发给每个进服的客户端，客户端再解析一遍、再刷一遍日志
- * （崩溃日志里那串 {@code CommonNetworkCache.parse} 调用栈就是这么来的）。
+ * <p>그것들에는 {@code result.type} 필드가 없어 하나하나가
+ * {@code GunSmithTableResultSerializer} 24번째 줄
+ * ({@code GsonHelper.getAsString(jsonObject, "type")})에서
+ * {@code JsonSyntaxException}을 던져 로그 전체를 채웠다. 더 나쁜 것은 이 무관한 JSON 더미가
+ * <b>그대로 네트워크 패킷에 직렬화되어</b> 서버에 들어오는 모든 클라이언트에 보내지고, 클라이언트가 다시 해석해 로그를 또 채운 것이다
+ * (충돌 로그의 {@code CommonNetworkCache.parse} 호출 스택이 바로 여기서 왔다).
  *
- * <h2>做法</h2>
- * 在解析<b>之前</b>按顶层 {@code "type"} 过滤，只留下
- * {@code tacz:gun_smith_table_crafting}。过滤后的结果同时决定 {@code dataMap} 与
- * {@code networkCache}（父类的 {@code apply} 用同一份入参构造两者），
- * 因此日志噪声和网络包体积一起解决。
+ * <h2>방법</h2>
+ * 해석하기 <b>전에</b> 최상위 {@code "type"}으로 걸러
+ * {@code tacz:gun_smith_table_crafting}만 남긴다. 거른 결과가 {@code dataMap}과
+ * {@code networkCache}를 함께 정하므로(부모 클래스의 {@code apply}가 같은 입력으로 둘을 만든다)
+ * 로그 소음과 네트워크 패킷 크기가 함께 해결된다.
  *
- * <p>类型 id 不写字面量，而是从注册表反查 {@link ModRecipe#GUN_SMITH_TABLE_CRAFTING}，
- * 这样将来若改注册名，这里不会悄悄失配。
+ * <p>종류 id는 문자열 상수로 쓰지 않고 레지스트리에서 {@link ModRecipe#GUN_SMITH_TABLE_CRAFTING}을 거꾸로 찾는다.
+ * 그러면 나중에 등록 이름을 바꿔도 여기가 몰래 어긋나지 않는다.
  */
 public class TableRecipeManager extends CommonDataManager<TableRecipe> {
     /**
-     * 工作台配方的 {@code "type"} 值。取自注册表而非硬编码字符串
-     * —— 见类注释末段。回退值仅用于注册表异常时的兜底，正常路径走不到。
+     * 작업대 레시피의 {@code "type"} 값. 하드코딩한 문자열이 아니라 레지스트리에서 가져온다
+     * — 클래스 주석 마지막 단락 참고. 대체값은 레지스트리에 이상이 있을 때의 안전망일 뿐이며 정상 경로에서는 쓰이지 않는다.
      */
     private static final String RECIPE_TYPE_ID = resolveRecipeTypeId();
 
     /**
-     * 旧版枪包（1.20 及以前）使用的<b>复数</b>配方目录。
+     * 예전 총기 팩(1.20 이하)이 쓰는 <b>복수</b> 레시피 디렉터리.
      *
-     * <p>26.2 把原版数据包目录统一改成了单数 {@code recipe/}，但<b>工作台配方并不走
-     * 原版数据包加载器</b> —— 它走的是本 mod 自建的 {@link DataType#RECIPES} 通道
-     * （见类注释）。既然解析与同步全由我们自己负责，就<b>没有</b>必须单数的约束，
-     * 完全可以同时接纳两种历史布局。</p>
+     * <p>26.2는 바닐라 데이터 팩 디렉터리를 단수 {@code recipe/}로 통일했지만, <b>작업대 레시피는
+     * 바닐라 데이터 팩 로더를 타지 않는다</b> — 이 mod 자체의 {@link DataType#RECIPES} 경로를 탄다
+     * (클래스 주석 참고). 해석과 동기화를 모두 우리가 맡으므로 단수여야 한다는 제약이 <b>없으며</b>,
+     * 두 가지 과거 배치를 함께 받아들일 수 있다.</p>
      *
-     * 一个都搜不到」的根因：那些包的配方躺在 {@code data/<ns>/recipes/} 下，
-     * 而我们只扫了 {@code recipe/}，于是<b>整包配方被静默忽略</b>
-     * （没有任何报错，因为对加载器而言那就是一批不存在的文件）。</p>
+     * <p>이것이 "예전 총기 팩을 넣으면 작업대에서 그 팩의 레시피가 하나도 검색되지 않음"의 근본 원인이었다: 그 팩들의 레시피는 {@code data/<ns>/recipes/} 아래에 있는데
+     * 우리는 {@code recipe/}만 훑어서 <b>팩 전체 레시피가 조용히 무시되었다</b>
+     * (로더 입장에서는 존재하지 않는 파일 묶음이라 아무 오류도 없었다).</p>
      */
     private static final String LEGACY_RECIPE_DIRECTORY = "recipes";
 
-    /** 旧目录的扫描器。与父类那个 {@code recipe} 扫描器<b>并列</b>使用，不是替代。 */
+    /** 예전 디렉터리 탐색기. 부모 클래스의 {@code recipe} 탐색기와 <b>나란히</b> 쓰며, 대체하지 않는다. */
     private static final FileToIdConverter LEGACY_CONVERTER = FileToIdConverter.json(LEGACY_RECIPE_DIRECTORY);
 
     public TableRecipeManager() {
-        // 目录与原版数据包配方一致（data/<ns>/recipe），这是上游的既定布局，不能改。
-        // 旧枪包的 data/<ns>/recipes（复数）由下面的 prepare() 覆写额外扫描。
+        // 디렉터리는 바닐라 데이터 팩 레시피와 같다(data/<ns>/recipe). 원본이 정한 배치라 바꿀 수 없다.
+        // 예전 총기 팩의 data/<ns>/recipes(복수)는 아래 prepare() 재정의가 추가로 훑는다.
         super(DataType.RECIPES, TableRecipe.class, CommonAssetsManager.GSON, "recipe", "TableRecipeLoader");
     }
 
     /**
-     * 同时扫描 {@code recipe/}（当前布局）与 {@code recipes/}（旧枪包布局）。
+     * {@code recipe/}(현재 배치)와 {@code recipes/}(예전 총기 팩 배치)를 함께 훑는다.
      *
-     * <h2>为什么在 prepare 阶段合并，而不是加载后再补</h2>
-     * {@code prepare} 是唯一能决定「有哪些候选文件」的地方；
-     * 后续的 {@link #apply} 只能在既有集合上过滤。旧目录若不在这里加进来，
-     * 之后任何环节都无从补救。
+     * <h2>로드 뒤에 보충하지 않고 prepare 단계에서 합치는 이유</h2>
+     * {@code prepare}는 "어떤 후보 파일이 있는지"를 정할 수 있는 유일한 곳이며,
+     * 이후의 {@link #apply}는 기존 집합에서 거르기만 할 수 있다. 예전 디렉터리를 여기서 넣지 않으면
+     * 이후 어느 단계에서도 보충할 방법이 없다.
      *
-     * <h2>冲突处理</h2>
-     * 两个目录的文件会映射到<b>相同格式</b>的 Identifier（命名空间 + 相对路径），
-     * 因此同一个包若两处都放了同名配方，会发生键冲突。
-     * 这里让<b>新目录优先</b>：先放旧的，再用新的覆盖。
-     * 理由是若枪包作者已经做了 26.2 适配（写进 {@code recipe/}），
-     * 那份显然比遗留的旧文件更可信。
+     * <h2>충돌 처리</h2>
+     * 두 디렉터리의 파일은 <b>같은 형식</b>의 Identifier(네임스페이스 + 상대 경로)로 매핑되므로,
+     * 한 팩이 두 곳에 같은 이름의 레시피를 두면 키가 충돌한다.
+     * 여기서는 <b>새 디렉터리를 우선</b>한다: 예전 것을 먼저 넣고 새것으로 덮어쓴다.
+     * 총기 팩 작성자가 이미 26.2 대응을 했다면({@code recipe/}에 씀)
+     * 그쪽이 남아 있는 예전 파일보다 분명히 더 믿을 만하기 때문이다.
      */
     @NotNull
     @Override
@@ -104,7 +104,7 @@ public class TableRecipeManager extends CommonDataManager<TableRecipe> {
         if (legacy.isEmpty()) {
             return current;
         }
-        // 新目录优先覆盖同名项，见方法注释。
+        // 새 디렉터리가 같은 이름 항목을 우선 덮어쓴다. 메서드 주석 참고.
         Map<Identifier, JsonElement> merged = new LinkedHashMap<>(legacy);
         merged.putAll(current);
         GunMod.LOGGER.info(getMarker(),
@@ -120,7 +120,7 @@ public class TableRecipeManager extends CommonDataManager<TableRecipe> {
 
     @Override
     protected void apply(Map<Identifier, JsonElement> pObject, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
-        // LinkedHashMap 保序，便于复现问题时对照日志顺序。
+        // LinkedHashMap으로 순서를 지켜, 문제를 재현할 때 로그 순서와 맞춰 보기 쉽게 한다.
         Map<Identifier, JsonElement> ours = new LinkedHashMap<>();
         for (Map.Entry<Identifier, JsonElement> entry : pObject.entrySet()) {
             if (isGunSmithTableRecipe(entry.getValue())) {
@@ -129,7 +129,7 @@ public class TableRecipeManager extends CommonDataManager<TableRecipe> {
         }
         GunMod.LOGGER.debug(getMarker(), "Gun smith table recipes: {} accepted, {} foreign recipe files skipped",
                 ours.size(), pObject.size() - ours.size());
-        // 父类会用这一份（且仅这一份）同时构建 dataMap 与 networkCache。
+        // 부모 클래스는 이것 하나(이것만)로 dataMap과 networkCache를 함께 만든다.
         super.apply(ours, pResourceManager, pProfiler);
     }
 
@@ -139,8 +139,8 @@ public class TableRecipeManager extends CommonDataManager<TableRecipe> {
         }
         JsonObject object = element.getAsJsonObject();
         JsonElement type = object.get("type");
-        // 只认字符串型的顶层 type；非字符串（数组/对象）一律当外来文件跳过，
-        // 不抛异常 —— 这条路径上每帧都可能遇到别的模组的私有格式。
+        // 문자열형 최상위 type만 인정한다. 문자열이 아니면(배열/객체) 모두 외부 파일로 보고 건너뛰며
+        // 예외를 던지지 않는다 — 이 경로에서는 언제든 다른 모드의 자체 형식을 만날 수 있다.
         if (type == null || !type.isJsonPrimitive() || !type.getAsJsonPrimitive().isString()) {
             return false;
         }

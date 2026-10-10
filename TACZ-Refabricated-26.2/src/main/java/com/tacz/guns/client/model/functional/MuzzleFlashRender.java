@@ -24,7 +24,7 @@ import org.joml.Matrix4f;
 public class MuzzleFlashRender implements IFunctionalSubmitter {
     private static final SlotModel MUZZLE_FLASH_MODEL = new SlotModel(true);
     /**
-     * 50ms 显示时间
+     * 표시 시간 50ms
      */
     private static final long TIME_RANGE = 50;
     public static boolean isSelf = false;
@@ -41,11 +41,11 @@ public class MuzzleFlashRender implements IFunctionalSubmitter {
     }
 
     public static void onShoot() {
-        // 记录开火时间戳
+        // 발사 시각 기록
         shootTimeStamp = System.currentTimeMillis();
-        // 记录枪口火焰启动标记
+        // 총구 화염 시작 표시 기록
         muzzleFlashStartMark = true;
-        // 随机给予枪口火焰的旋转
+        // 총구 화염에 무작위 회전을 준다
         muzzleFlashRandomRotate = (float) (Math.random() * 360);
     }
 
@@ -67,10 +67,10 @@ public class MuzzleFlashRender implements IFunctionalSubmitter {
             float scaleTime = TIME_RANGE / 2.0f;
             scale = time < scaleTime ? (scale * (time / scaleTime)) : scale;
             muzzleFlashStartMark = false;
-            // 26.2: MultiBufferSource/renderBuffers() removed.
-            // Muzzle flash requires separate render type buffers which are not available
-            // in the new SubmitNodeCollector pipeline without a collector reference.
-            // TODO: Reimplement muzzle flash rendering when a proper approach is available.
+            // 26.2: MultiBufferSource/renderBuffers()는 제거되었다.
+            // 총구 화염은 별도 렌더 타입 버퍼가 필요한데, collector 참조 없이는
+            // 새 SubmitNodeCollector 파이프라인에서 쓸 수 없다.
+            // TODO: 알맞은 방법이 생기면 총구 화염 렌더링을 다시 구현한다.
         }
     }
 
@@ -161,7 +161,7 @@ public class MuzzleFlashRender implements IFunctionalSubmitter {
                 TimelessAPI.getCommonAttachmentIndex(attachmentId).ifPresent(index -> {
                     var modifier = index.getData().getModifier();
                     if (modifier.containsKey(SilenceModifier.ID) && modifier.get(SilenceModifier.ID).getValue() instanceof Pair<?, ?> pair) {
-                        // 如果安装了消音器，则不渲染枪口火光
+                        // 소음기를 달았으면 총구 화염을 그리지 않는다
                         if (((Pair<Integer, Boolean>) pair).right()) {
                             return;
                         }

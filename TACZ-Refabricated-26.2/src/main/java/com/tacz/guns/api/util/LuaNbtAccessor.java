@@ -7,8 +7,8 @@ import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * 一个简单的NBT包装，用于在Lua中访问NBT数据。<br/>
- * 暂时只支持基本数据类型的读写，不支持数组等复杂数据类型。
+ * Lua에서 NBT 데이터에 접근하기 위한 간단한 NBT 래퍼.<br/>
+ * 지금은 기본 데이터 타입 읽기·쓰기만 지원하고, 배열 같은 복잡한 타입은 지원하지 않는다.
  */
 @SuppressWarnings("unused")
 public record LuaNbtAccessor(CompoundTag nbt) {
@@ -91,10 +91,10 @@ public record LuaNbtAccessor(CompoundTag nbt) {
     }
 
     /**
-     * 向当前的NbtCompound中添加一个新的Compound
+     * 현재 NbtCompound에 새 Compound를 추가한다
      *
-     * @param key   键
-     * @param value 在脚本中请使用{@link LuaNbtAccessor#newCompoundTag()}创建一个新的LuaNbtAccessor对象
+     * @param key   키
+     * @param value 스크립트에서는 {@link LuaNbtAccessor#newCompoundTag()}로 새 LuaNbtAccessor 객체를 만들어 쓴다
      */
     public void putCompound(String key, LuaNbtAccessor value) {
         if (value != null) {

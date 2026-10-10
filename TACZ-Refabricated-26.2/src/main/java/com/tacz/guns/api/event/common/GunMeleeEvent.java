@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * 用枪近战时触发
+ * 총으로 근접 공격할 때 발생
  */
 public class GunMeleeEvent extends BaseEvent implements ICancellableEvent {
     private final LivingEntity shooter;

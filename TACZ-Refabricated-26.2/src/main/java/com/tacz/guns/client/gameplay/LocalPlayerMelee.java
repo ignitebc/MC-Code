@@ -31,11 +31,11 @@ public class LocalPlayerMelee {
     }
 
     public void melee() {
-        // 检查状态锁
+        // 상태 잠금 확인
         if (data.clientStateLock) {
             return;
         }
-        // 暂定为主手
+        // 우선 주 손으로 정한다
         ItemStack mainHandItem = player.getMainHandItem();
         if (!(mainHandItem.getItem() instanceof IGun iGun)) {
             return;
@@ -45,7 +45,7 @@ public class LocalPlayerMelee {
             return;
         }
         Identifier gunId = iGun.getGunId(mainHandItem);
-        // 先检查枪口有没有近战属性
+        // 먼저 총구에 근접 공격 속성이 있는지 확인한다
         Identifier muzzleId = iGun.getAttachmentId(mainHandItem, AttachmentType.MUZZLE);
         MeleeData muzzleMeleeData = getMeleeData(muzzleId);
         if (muzzleMeleeData != null) {
@@ -75,9 +75,9 @@ public class LocalPlayerMelee {
     }
 
     private boolean prepareMelee() {
-        // 锁上状态锁
+        // 상태 잠금을 건다
         data.lockState(operator -> operator.getSynMeleeCoolDown() > 0);
-        // 触发近战事件
+        // 근접 공격 이벤트 발생
         GunMeleeEvent gunMeleeEvent = new GunMeleeEvent(player, player.getMainHandItem(), LogicalSide.CLIENT);
         GunMeleeEvent.CALLBACK.invoker().post(gunMeleeEvent);
         return !gunMeleeEvent.isCanceled();
@@ -86,9 +86,9 @@ public class LocalPlayerMelee {
     private void doMuzzleMelee(GunDisplayInstance display) {
         if (prepareMelee()) {
             SoundPlayManager.playMeleeBayonetSound(player, display);
-            // 发送执行近战的数据包，通知服务器
+            // 근접 공격 실행 패킷을 보내 서버에 알린다
             ClientPlayNetworking.send(new ClientMessagePlayerMelee());
-            // 动画状态机转移状态
+            // 애니메이션 상태 기계 상태 전이
             AnimationStateMachine<?> animationStateMachine = display.getAnimationStateMachine();
             if (animationStateMachine != null) {
                 animationStateMachine.trigger(GunAnimationConstant.INPUT_BAYONET_MUZZLE);
@@ -99,9 +99,9 @@ public class LocalPlayerMelee {
     private void doStockMelee(GunDisplayInstance display) {
         if (prepareMelee()) {
             SoundPlayManager.playMeleeStockSound(player, display);
-            // 发送执行近战的数据包，通知服务器
+            // 근접 공격 실행 패킷을 보내 서버에 알린다
             ClientPlayNetworking.send(new ClientMessagePlayerMelee());
-            // 动画状态机转移状态
+            // 애니메이션 상태 기계 상태 전이
             AnimationStateMachine<?> animationStateMachine = display.getAnimationStateMachine();
             if (animationStateMachine != null) {
                 animationStateMachine.trigger(GunAnimationConstant.INPUT_BAYONET_STOCK);
@@ -111,11 +111,11 @@ public class LocalPlayerMelee {
 
     private void doPushMelee(GunDisplayInstance display) {
         if (prepareMelee()) {
-            // 播放音效
+            // 효과음 재생
             SoundPlayManager.playMeleePushSound(player, display);
-            // 发送执行近战的数据包，通知服务器
+            // 근접 공격 실행 패킷을 보내 서버에 알린다
             ClientPlayNetworking.send(new ClientMessagePlayerMelee());
-            // 动画状态机转移状态
+            // 애니메이션 상태 기계 상태 전이
             AnimationStateMachine<?> animationStateMachine = display.getAnimationStateMachine();
             if (animationStateMachine != null) {
                 animationStateMachine.trigger(GunAnimationConstant.INPUT_BAYONET_PUSH);

@@ -20,11 +20,11 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * 该类会在资源重新加载时一次性加载所有数据，可能会导致性能问题，在加载重资产时建议使用{@link LazyJsonDataManager}替代<br>
- * 通用数据管理器<br>
- * 从资源包/数据包中读取json文件并解析为数据
+ * 이 클래스는 자원을 다시 불러올 때 모든 데이터를 한 번에 로드하므로 성능 문제가 생길 수 있다. 무거운 자원을 로드할 때는 {@link LazyJsonDataManager}를 대신 쓰는 것을 권한다<br>
+ * 범용 데이터 관리자<br>
+ * 리소스 팩/데이터 팩에서 json 파일을 읽어 데이터로 해석한다
  *
- * @param <T> 数据类型
+ * @param <T> 데이터 종류
  */
 public class JsonDataManager<T> extends SimplePreparableReloadListener<Map<Identifier, JsonElement>> implements IdentifiableResourceReloadListener {
     protected final Map<Identifier, T> dataMap = Maps.newHashMap();

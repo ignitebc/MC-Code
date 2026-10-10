@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class GunSmithTableMenu extends AbstractContainerMenu {
-    // 26.2: 使用 ExtendedMenuType 配合 StreamCodec 传递 Identifier 数据
+    // 26.2: ExtendedMenuType과 StreamCodec으로 Identifier 데이터를 넘긴다
     public static final ExtendedMenuType<GunSmithTableMenu, Identifier> TYPE = new ExtendedMenuType<>(
             (windowId, inv, data) -> new GunSmithTableMenu(windowId, inv, data),
             Identifier.STREAM_CODEC);
@@ -57,30 +57,30 @@ public class GunSmithTableMenu extends AbstractContainerMenu {
     }
 
     /**
-     * 按 id 取出工作台配方并做权限校验。
+     * id로 작업대 레시피를 꺼내 권한을 검사한다.
      *
-     * <h2>为什么改用 {@code CommonAssetsManager}，不再走原版 {@code RecipeManager}</h2>
-     * 原先这里是 {@code recipeManager.byKey(...)}（照搬上游 1.21.1）。但本项目在第 12 轮
-     * 已经把工作台配方整体迁到 mod 自建的 {@code DataType.RECIPES} 通道
-     * （原因：26.2 客户端没有完整配方表，见 {@code ICommonResourceProvider#getTableRecipe}），
-     * 唯独这个真正执行合成的服务端方法还留在原版通道上</b> —— 两套数据源就此分叉。
+     * <h2>바닐라 {@code RecipeManager} 대신 {@code CommonAssetsManager}를 쓰는 이유</h2>
+     * 원래 여기는 {@code recipeManager.byKey(...)}였다(원본 1.21.1 그대로). 그런데 이 프로젝트는 12차에
+     * 작업대 레시피 전체를 mod 자체 {@code DataType.RECIPES} 경로로 옮겼고
+     * (이유: 26.2 클라이언트에는 완전한 레시피 표가 없음. {@code ICommonResourceProvider#getTableRecipe} 참고),
+     * 실제로 제작을 실행하는 이 서버 메서드만 바닐라 경로에 남아 있었다</b> — 그래서 두 데이터 원본이 갈라졌다.
      *
-     * <p>分叉的后果是「<b>看得见、点不动</b>」：只要一条配方存在于我们的通道、
-     * 却不存在于原版 {@code RecipeManager}，界面就会正常列出它、材料数量也正常统计，
-     * 但点合成时 {@code byKey} 返回空 → 本方法返回 {@code null} →
-     * {@code doCraft} 直接 return，<b>不报错、不提示、不扣材料</b>。
+     * <p>갈라진 결과는 "<b>보이는데 눌러도 안 됨</b>"이었다: 레시피가 우리 경로에는 있고
+     * 바닐라 {@code RecipeManager}에는 없으면, 화면은 정상으로 목록을 보여 주고 재료 수도 정상으로 세지만
+     * 제작을 누르면 {@code byKey}가 빈 값을 돌려준다 → 이 메서드가 {@code null}을 돌려준다 →
+     * {@code doCraft}가 바로 return하며 <b>오류도, 안내도, 재료 차감도 없다</b>.
      *
-     * <p>实测触发场景：旧枪包把配方放在 {@code data/<ns>/recipes/}（复数）。
-     * 我们的 {@code TableRecipeManager#prepare} 已特意兼容了这个旧目录，
-     * 但原版 {@code RecipeManager} 的 {@code RECIPE_LISTER} 是
-     * {@code FileToIdConverter.registry(Registries.RECIPE)}，字节码逐级确认其目录名取自
-     * {@code registryDirPath} → {@code ResourceKey.identifier().getPath()} = {@code "recipe"}
-     * （<b>单数，且是常量，无法扩展</b>）。于是这些配方对原版通道<b>永远不可见</b>，
-     * 旧枪包的每一条配方都合不出来。
+     * <p>실측한 발생 상황: 예전 총기 팩은 레시피를 {@code data/<ns>/recipes/}(복수)에 둔다.
+     * 우리 {@code TableRecipeManager#prepare}는 이 예전 디렉터리를 일부러 지원하지만,
+     * 바닐라 {@code RecipeManager}의 {@code RECIPE_LISTER}는
+     * {@code FileToIdConverter.registry(Registries.RECIPE)}이고, 바이트코드로 단계별 확인한 결과 디렉터리 이름은
+     * {@code registryDirPath} → {@code ResourceKey.identifier().getPath()} = {@code "recipe"}에서 온다
+     * (<b>단수이며 상수라 확장할 수 없음</b>). 그래서 이 레시피들은 바닐라 경로에서 <b>영원히 보이지 않고</b>,
+     * 예전 총기 팩의 레시피는 하나도 제작할 수 없었다.
      *
-     * <p>改成与界面同源后，两侧判据完全一致，旧目录/新目录、默认包/第三方包一视同仁。
-     * 校验逻辑（过滤器 + 页签归属）原样保留，<b>不放宽任何限制</b> ——
-     * 仍然只有「当前方块页签里真实存在」的配方才允许合成。
+     * <p>화면과 같은 원본으로 바꾼 뒤에는 양쪽 판정이 완전히 같아져, 예전/새 디렉터리와 기본/서드파티 팩을 똑같이 다룬다.
+     * 검사 로직(필터 + 탭 소속)은 그대로 두며 <b>어떤 제한도 완화하지 않는다</b> —
+     * 여전히 "현재 블록 탭에 실제로 있는" 레시피만 제작할 수 있다.
      */
     @Nullable
     private GunSmithTableRecipe getRecipe(Identifier recipeId) {
@@ -95,9 +95,9 @@ public class GunSmithTableMenu extends AbstractContainerMenu {
             return null;
         }
         GunSmithTableRecipe gunSmithTableRecipe = new GunSmithTableRecipe(recipeId, pojo);
-        // 必须 init()：Gson 反序列化只填了 raw 数据，
-        // 真正的 ItemStack 与 group(=页签) 要靠它解析出来。
-        // 少了这一步 getTab() 恒为 null，下面的页签校验必然失败。
+        // 반드시 init()해야 한다: Gson 역직렬화는 raw 데이터만 채우므로,
+        // 실제 ItemStack과 group(=탭)은 이것으로 해석해야 한다.
+        // 이 단계가 빠지면 getTab()이 항상 null이라 아래 탭 검사가 반드시 실패한다.
         gunSmithTableRecipe.init();
 
         boolean flag = TimelessAPI.getCommonBlockIndex(getBlockId()).map(blockIndex -> {
@@ -113,8 +113,8 @@ public class GunSmithTableMenu extends AbstractContainerMenu {
     }
 
     public void doCraft(Identifier recipeId, Player player) {
-        // 仍然要求服务端环境：合成必须由服务端权威执行（生成掉落物、扣材料）。
-        // 配方数据本身已改从 CommonAssetsManager 取，不再依赖 level 的 RecipeManager，见 getRecipe。
+        // 여전히 서버 환경을 요구한다: 제작은 서버가 권한을 갖고 실행해야 한다(드롭 생성, 재료 차감).
+        // 레시피 데이터 자체는 이제 CommonAssetsManager에서 가져오며 level의 RecipeManager에 기대지 않는다. getRecipe 참고.
         Level level = player.level();
         if (!(level instanceof ServerLevel)) {
             return;
@@ -124,15 +124,15 @@ public class GunSmithTableMenu extends AbstractContainerMenu {
             return;
         }
         player.tacz$getItemHandler(null).ifPresent(handler -> {
-            // 是创造模式，就不扣材料
+            // 크리에이티브 모드이면 재료를 차감하지 않는다
             if (!player.isCreative()) {
                 Int2IntArrayMap recordCount = new Int2IntArrayMap();
                 List<GunSmithTableIngredient> ingredients = recipe.getInputs();
 
                 for (GunSmithTableIngredient ingredient : ingredients) {
                     int count = 0;
-                    // 第 14 轮：材料延迟解析。若解析不出来（tag 缺失等），
-                    // 必须<b>拒绝合成</b>而不是跳过该材料 —— 否则玩家能白嫖成品。
+                    // 14차: 재료 지연 해석. 해석할 수 없으면(tag 없음 등)
+                    // 그 재료를 건너뛰지 말고 반드시 <b>제작을 거부</b>해야 한다 — 아니면 플레이어가 완성품을 공짜로 얻는다.
                     net.minecraft.world.item.crafting.Ingredient resolved = ingredient.getIngredient();
                     if (resolved == null) {
                         return;
@@ -142,37 +142,37 @@ public class GunSmithTableMenu extends AbstractContainerMenu {
                         int stackCount = stack.getCount();
                         if (!stack.isEmpty() && resolved.test(stack)) {
                             count = count + stackCount;
-                            // 记录扣除的 slot 和数量
+                            // 차감한 slot과 수량을 기록한다
                             if (count <= ingredient.getCount()) {
-                                // 如果数量不足，全扣
+                                // 수량이 모자라면 전부 차감한다
                                 recordCount.put(slotIndex, stackCount);
                             } else {
-                                //  数量够了，只扣需要的数量
+                                //  수량이 충분하면 필요한 수량만 차감한다
                                 int remaining = count - ingredient.getCount();
                                 recordCount.put(slotIndex, stackCount - remaining);
                                 break;
                             }
                         }
                     }
-                    // 数量不够，不执行后续逻辑，合成失败
+                    // 수량이 모자라면 이후 로직을 실행하지 않고 제작에 실패한다
                     if (count < ingredient.getCount()) {
                         return;
                     }
                 }
 
-                // 开始扣材料
+                // 재료 차감 시작
                 for (int slotIndex : recordCount.keySet()) {
                     handler.extractItem(slotIndex, recordCount.get(slotIndex), false);
                 }
             }
 
-            // 给玩家对应的物品
+            // 플레이어에게 해당 아이템을 준다
             if (!level.isClientSide()) {
                 ItemEntity itemEntity = new ItemEntity(level, player.getX(), player.getY() + 0.5, player.getZ(), recipe.getOutput().copy());
                 itemEntity.setPickUpDelay(0);
                 level.addFreshEntity(itemEntity);
             }
-            // 更新，否则客户端显示不正确
+            // 갱신한다. 아니면 클라이언트 표시가 틀린다
             player.inventoryMenu.broadcastFullState();
             if (player instanceof ServerPlayer serverPlayer)
                 NetworkHandler.sendToClientPlayer(new ServerMessageCraft(this.containerId), serverPlayer);

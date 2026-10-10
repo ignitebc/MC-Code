@@ -10,12 +10,12 @@ import static com.tacz.guns.client.model.BedrockAnimatedModel.CAMERA_NODE_NAME;
 
 public class CameraAnimationObject implements AnimationListenerSupplier {
     /**
-     * 存在这个四元数中的旋转是世界箱体的旋转，而不是摄像头的旋转（二者互为相反数）
+     * 이 사원수에 담긴 회전은 카메라가 아니라 월드 상자의 회전이다(둘은 서로 반대다)
      */
     public Quaternionf rotationQuaternion = new Quaternionf(0.0F, 0.0F, 0.0F, 1.0F);
 
     /**
-     * 当相机的节点为根时，cameraRenderer为空
+     * 카메라 노드가 루트이면 cameraRenderer는 비어 있다
      */
     public ModelRendererWrapper cameraRenderer;
 

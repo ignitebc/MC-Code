@@ -44,32 +44,32 @@ public class LivingEntityAim {
             TimelessAPI.getCommonAttachmentIndex(scopeId).ifPresent(index -> {
                 int zoomNumber = AttachmentItemDataAccessor.getZoomNumberFromTag(scopeTag);
                 ++zoomNumber;
-                // 避免上溢变成负的
+                // 넘쳐서 음수가 되지 않게 한다
                 zoomNumber = zoomNumber % (Integer.MAX_VALUE - 1);
                 AttachmentItemDataAccessor.setZoomNumberToTag(scopeTag, zoomNumber);
             });
-            // 第 18 轮修复：必须把修改后的 tag <b>写回枪械 NBT</b>。
+            // 18차 수정: 바꾼 tag를 <b>총기 NBT에 다시 써야</b> 한다.
             //
-            // getAttachmentTag() 返回的是 CustomData.copyTag() 的<b>副本</b>，
-            // 上面 setZoomNumberToTag 改的只是这份副本，不写回就等于什么都没做 ——
-            // 表现就是「可变倍瞄具按键切换倍率完全没反应」。
+            // getAttachmentTag()가 돌려주는 것은 CustomData.copyTag()의 <b>사본</b>이라,
+            // 위의 setZoomNumberToTag는 이 사본만 바꾼다. 다시 쓰지 않으면 아무것도 하지 않은 셈이다 —
+            // 그래서 "가변 배율 조준경의 배율 전환 키가 전혀 반응하지 않음"으로 나타났다.
             //
-            // 上游 1.21.1 的 LivingEntityAim#zoom 第 52 行有这一句，我们移植时漏了。
-            // setAttachmentTag 本身是第 16 轮才补回来的（当时也整个丢失），
-            // 补回后一直没有调用方，这里就是它唯一的用武之地。
+            // 원본 1.21.1의 LivingEntityAim#zoom 52번째 줄에 이 문장이 있었는데, 이식할 때 빠뜨렸다.
+            // setAttachmentTag 자체도 16차에야 되살렸고(그때도 통째로 사라져 있었다),
+            // 되살린 뒤로 호출하는 곳이 없었는데, 여기가 유일한 쓰임새다.
             iGun.setAttachmentTag(currentGunItem, AttachmentType.SCOPE, scopeTag);
         }
     }
 
     public void tickAimingProgress() {
-        // currentGunItem 如果为 null，则取消瞄准状态并将 aimingProgress 归零。
+        // currentGunItem이 null이면 조준 상태를 취소하고 aimingProgress를 0으로 만든다.
         if (data.currentGunItem == null || !(data.currentGunItem.get().getItem() instanceof IGun iGun)) {
             data.aimingProgress = 0;
             data.aimingTimestamp = System.currentTimeMillis();
             return;
         }
         ItemStack currentGunItem = data.currentGunItem.get();
-        // 如果获取不到 gunIndex，则取消瞄准状态并将 aimingProgress 归零，返回。
+        // gunIndex를 가져올 수 없으면 조준 상태를 취소하고 aimingProgress를 0으로 만든 뒤 돌아간다.
         Identifier gunId = iGun.getGunId(currentGunItem);
         Optional<CommonGunIndex> gunIndexOptional = TimelessAPI.getCommonGunIndex(gunId);
         if (gunIndexOptional.isEmpty()) {
@@ -84,13 +84,13 @@ public class LivingEntityAim {
         aimTime = Math.max(0, aimTime);
         float alphaProgress = (System.currentTimeMillis() - data.aimingTimestamp + 1) / (aimTime * 1000);
         if (data.isAiming) {
-            // 处于执行瞄准状态，增加 aimingProgress
+            // 조준하는 중이므로 aimingProgress를 늘린다
             data.aimingProgress += alphaProgress;
             if (data.aimingProgress > 1) {
                 data.aimingProgress = 1;
             }
         } else {
-            // 处于取消瞄准状态，减小 aimingProgress
+            // 조준을 푸는 중이므로 aimingProgress를 줄인다
             data.aimingProgress -= alphaProgress;
             if (data.aimingProgress < 0) {
                 data.aimingProgress = 0;

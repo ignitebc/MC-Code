@@ -51,12 +51,12 @@ public class ClientMessageRefitGun implements CustomPacketPayload {
         ItemStack gunItem = inventory.getItem(gunSlotIndex);
         IGun iGun = IGun.getIGunOrNull(gunItem);
         if (iGun != null) {
-            // 服务端校验配件锁
+            // 서버에서 부착물 잠금 검사
             if (iGun.hasAttachmentLock(gunItem)) {
                 return;
             }
             if (iGun.allowAttachment(gunItem, attachmentItem)) {
-                // 使用配件物品自身的真实类型，而非客户端传入的 attachmentType
+                // 클라이언트가 넘긴 attachmentType이 아니라 부착물 아이템 자체의 실제 종류를 쓴다
                 IAttachment iAttachment = IAttachment.getIAttachmentOrNull(attachmentItem);
                 if (iAttachment == null) {
                     return;
@@ -64,10 +64,10 @@ public class ClientMessageRefitGun implements CustomPacketPayload {
                 AttachmentType realType = iAttachment.getType(attachmentItem);
                 ItemStack oldAttachmentItem = iGun.getAttachment(gunItem, realType);
                 iGun.installAttachment(gunItem, attachmentItem);
-                // 刷新配件数据
+                // 부착물 데이터 새로 고침
                 AttachmentPropertyManager.postChangeEvent(player, gunItem);
                 inventory.setItem(attachmentSlotIndex, oldAttachmentItem);
-                // 如果卸载的是扩容弹匣，吐出所有子弹
+                // 떼어 낸 것이 확장 탄창이면 탄환을 모두 내놓는다
                 if (realType == AttachmentType.EXTENDED_MAG) {
                     iGun.dropAllAmmo(player, gunItem);
                 }

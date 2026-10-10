@@ -50,13 +50,13 @@ public class InaccuracyModifier implements IAttachmentModifier<Map<InaccuracyTyp
         Modifier sneakInaccuracy = data.getSneakInaccuracy();
         Modifier lieInaccuracy = data.getLieInaccuracy();
 
-        // 兼容旧版本
+        // 예전 버전 호환
         if (inaccuracy == null) {
             float inaccuracyAddendTime = data.getInaccuracyAddendTime();
             inaccuracy = new Modifier();
             inaccuracy.setAddend(inaccuracyAddendTime);
         }
-        // inaccuracy会影响除了aim(开镜)和sneak(战术姿态)之外的所有类型
+        // inaccuracy는 aim(조준)과 sneak(전술 자세)을 뺀 모든 종류에 영향을 준다
         Map<InaccuracyType, Modifier> jsonProperties = Maps.newHashMap();
         for (InaccuracyType type : InaccuracyType.values()) {
             switch (type) {
@@ -100,7 +100,7 @@ public class InaccuracyModifier implements IAttachmentModifier<Map<InaccuracyTyp
     public void eval(List<Map<InaccuracyType, Modifier>> modifiedValues, CacheValue<Map<InaccuracyType, Float>> cache) {
         Map<InaccuracyType, Float> result = Maps.newHashMap();
         Map<InaccuracyType, List<Modifier>> tmpModified = Maps.newHashMap();
-        // 先遍历，把配件的数据集中在一起
+        // 먼저 훑으며 부착물 데이터를 한데 모은다
         for (InaccuracyType type : InaccuracyType.values()) {
             List<Modifier> tmp = Lists.newArrayList();
             for (Map<InaccuracyType, Modifier> value : modifiedValues) {
@@ -111,12 +111,12 @@ public class InaccuracyModifier implements IAttachmentModifier<Map<InaccuracyTyp
             }
             tmpModified.put(type, tmp);
         }
-        // 一次性把配件的数据计算完
+        // 부착물 데이터를 한 번에 계산한다
         cache.getValue().forEach((type, value) -> {
             double eval = AttachmentPropertyManager.eval(tmpModified.get(type), cache.getValue().get(type));
             result.put(type, (float) eval);
         });
-        // 写入缓存
+        // 캐시에 쓰기
         cache.setValue(result);
     }
 
@@ -137,18 +137,18 @@ public class InaccuracyModifier implements IAttachmentModifier<Map<InaccuracyTyp
 
     private @NotNull DiagramsData buildNormal(GunData gunData, AttachmentCacheProperty cacheProperty, GunFireModeAdjustData fireModeAdjustData,
                                               InaccuracyType type, String titleKey, double referenceValue) {
-        // 腰射扩散
+        // 지향 사격 탄 퍼짐
         float inaccuracy = gunData.getInaccuracy(type);
         if (fireModeAdjustData != null) {
             inaccuracy += fireModeAdjustData.getOtherInaccuracy();
         }
 
         float modifiedValue = cacheProperty.<Map<InaccuracyType, Float>>getCache(InaccuracyModifier.ID).get(type);
-        // 差值
+        // 차이
         float inaccuracyModifier = modifiedValue - inaccuracy;
-        // 默认值百分比
+        // 기본값 백분율
         double standInaccuracyPercent = Math.min(inaccuracy / referenceValue, 1);
-        // 差值百分比
+        // 차이 백분율
         double inaccuracyModifierPercent = Math.min(inaccuracyModifier / referenceValue, 1);
 
         String positivelyString = String.format("%.2f §c(+%.2f)", modifiedValue, inaccuracyModifier);
@@ -210,11 +210,11 @@ public class InaccuracyModifier implements IAttachmentModifier<Map<InaccuracyTyp
             var value = this.getValue();
             float inaccuracyAddend = 0;
             if (value != null && value.containsKey(type)) {
-                // 随便传入个默认值进行测试，看看最终结果差值
+                // 아무 기본값이나 넣어 시험해 최종 결과의 차이를 본다
                 double eval = AttachmentPropertyManager.eval(value.get(type), 5);
                 inaccuracyAddend = (float) (eval - 5);
             }
-            // 添加文本提示
+            // 글자 안내 추가
             if (inaccuracyAddend > 0) {
                 components.add(ModifierText.line(decreaseKey, value == null ? null : value.get(type), "", 0xFF5555));
             } else if (inaccuracyAddend < 0) {

@@ -14,7 +14,7 @@ public class ModelTranslateListener implements AnimationListener {
 
     public ModelTranslateListener(BedrockAnimatedModel model, ModelRendererWrapper rendererWrapper, String nodeName) {
         this.rendererWrapper = rendererWrapper;
-        // 如果当前 node 是根 node（也就是包含于 shouldRender 中），则获取其 bonesItem，以便后续计算相对位移 offset。
+        // 현재 node가 루트 node(곧 shouldRender에 들어 있음)면 bonesItem을 얻어 뒤의 상대 이동 offset 계산에 쓴다.
         if (model.getShouldRender().contains(rendererWrapper.getModelRenderer())) {
             this.bonesItem = model.getIndexBones().get(nodeName);
         } else {
@@ -25,7 +25,7 @@ public class ModelTranslateListener implements AnimationListener {
     @Override
     public void update(float[] values, boolean blend) {
         if (blend) {
-            // 约束组动画是特殊值，不参与混合
+            // 구속 그룹 애니메이션은 특수한 값이라 섞지 않는다
             rendererWrapper.addOffsetX(values[0]);
             rendererWrapper.addOffsetY(-values[1]);
             rendererWrapper.addOffsetZ(values[2]);
@@ -38,7 +38,7 @@ public class ModelTranslateListener implements AnimationListener {
 
     @Override
     public float[] initialValue() {
-        // 目标是让 offset 过渡为 0
+        // offset이 0으로 전환되게 하는 것이 목표다
         float[] recover = new float[3];
         if (bonesItem != null) {
             recover[0] = bonesItem.getPivot().get(0) / 16f;

@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.Camera;
 
 /**
- * Stub for simplebedrockmodel ViewportEvent (library not yet available for 26.2)
+ * simplebedrockmodel ViewportEvent의 대체 구현(26.2용 라이브러리가 아직 없음)
  */
 public class ViewportEvent {
 

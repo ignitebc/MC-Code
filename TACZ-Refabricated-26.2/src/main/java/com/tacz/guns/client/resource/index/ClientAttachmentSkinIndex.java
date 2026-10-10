@@ -33,12 +33,12 @@ public class ClientAttachmentSkinIndex {
     }
 
     private static void checkTextureAndModel(AttachmentSkin skinPojo, ClientAttachmentSkinIndex index) {
-        // 检查模型
+        // 모델 확인
         Identifier modelLocation = skinPojo.getModel();
         Preconditions.checkArgument(modelLocation != null, "display object missing model field");
         index.model = ClientAttachmentIndex.getOrLoadAttachmentModel(modelLocation);
         Preconditions.checkArgument(index.model != null, "there is no model data in the model file");
-        // 检查默认材质
+        // 기본 텍스처 확인
         Identifier textureLocation = skinPojo.getTexture();
         Preconditions.checkArgument(textureLocation != null, "missing default texture");
         index.texture = textureLocation;

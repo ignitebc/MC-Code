@@ -23,7 +23,7 @@ public class AmmoParticle {
     @SerializedName("count")
     private int count = 1;
 
-    // 不进行序列化，而是需要 deco 的
+    // 직렬화하지 않고 deco가 필요한 값이다
     private transient ParticleOptions particleOptions;
 
     public String getName() {

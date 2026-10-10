@@ -151,10 +151,10 @@ public class PackConvertor {
             if (matcher.find()) {
                 String namespace = matcher.group(1);
                 String path = matcher.group(2);
-                // 26.2 的数据包目录是【单数】recipe/，不再是 1.20 时代的 recipes/
-                // （vanilla jar 里只有 data/minecraft/recipe/，已核实）。
-                // 旧枪包转换器若仍写 recipes/，产出的配方会被原版数据包加载器整个忽略 ——
-                // 表现为「转换成功但工作台里没有该枪包的任何配方」。
+                // 26.2의 데이터 팩 디렉터리는 [단수] recipe/이며, 1.20 시절의 recipes/가 아니다
+                // (바닐라 jar에는 data/minecraft/recipe/만 있음. 확인함).
+                // 예전 총기 팩 변환기가 여전히 recipes/에 쓰면 만든 레시피를 바닐라 데이터 팩 로더가 통째로 무시한다 —
+                // "변환은 성공했는데 작업대에 그 총기 팩의 레시피가 하나도 없음"으로 나타난다.
                 String newPath = "data/" + namespace + "/recipe/" + path;
 
                 try (InputStream stream = oldPack.getInputStream(entry)) {

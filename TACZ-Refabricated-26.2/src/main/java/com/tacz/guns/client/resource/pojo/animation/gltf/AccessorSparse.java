@@ -2,43 +2,42 @@ package com.tacz.guns.client.resource.pojo.animation.gltf;
 
 public class AccessorSparse {
     /**
-     * Number of deviating accessor values stored in the sparse array.
-     * (required)<br>
-     * Minimum: 1 (inclusive)
+     * 희소 배열에 저장된, 초깃값과 다른 accessor 값의 수.
+     * (필수)<br>
+     * 최솟값: 1 (포함)
      */
     private Integer count;
     /**
-     * An object pointing to a buffer view containing the indices of
-     * deviating accessor values. The number of indices is equal to `count`.
-     * Indices **MUST** strictly increase. (required)
+     * 초깃값과 다른 accessor 값의 인덱스를 담은 buffer view를 가리키는 객체.
+     * 인덱스 수는 `count`와 같다.
+     * 인덱스는 **반드시** 엄격하게 증가해야 한다. (필수)
      */
     private AccessorSparseIndices indices;
     /**
-     * An object pointing to a buffer view containing the deviating accessor
-     * values. (required)
+     * 초깃값과 다른 accessor 값을 담은 buffer view를 가리키는 객체.
+     * (필수)
      */
     private AccessorSparseValues values;
 
     /**
-     * Number of deviating accessor values stored in the sparse array.
-     * (required)<br>
-     * Minimum: 1 (inclusive)
+     * 희소 배열에 저장된, 초깃값과 다른 accessor 값의 수.
+     * (필수)<br>
+     * 최솟값: 1 (포함)
      *
-     * @return The count
+     * @return count
      */
     public Integer getCount() {
         return this.count;
     }
 
     /**
-     * Number of deviating accessor values stored in the sparse array.
-     * (required)<br>
-     * Minimum: 1 (inclusive)
+     * 희소 배열에 저장된, 초깃값과 다른 accessor 값의 수.
+     * (필수)<br>
+     * 최솟값: 1 (포함)
      *
-     * @param count The count to set
-     * @throws NullPointerException     If the given value is <code>null</code>
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param count 설정할 count
+     * @throws NullPointerException     주어진 값이 <code>null</code>일 때
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setCount(Integer count) {
         if (count == null) {
@@ -51,23 +50,23 @@ public class AccessorSparse {
     }
 
     /**
-     * An object pointing to a buffer view containing the indices of
-     * deviating accessor values. The number of indices is equal to `count`.
-     * Indices **MUST** strictly increase. (required)
+     * 초깃값과 다른 accessor 값의 인덱스를 담은 buffer view를 가리키는 객체.
+     * 인덱스 수는 `count`와 같다.
+     * 인덱스는 **반드시** 엄격하게 증가해야 한다. (필수)
      *
-     * @return The indices
+     * @return indices
      */
     public AccessorSparseIndices getIndices() {
         return this.indices;
     }
 
     /**
-     * An object pointing to a buffer view containing the indices of
-     * deviating accessor values. The number of indices is equal to `count`.
-     * Indices **MUST** strictly increase. (required)
+     * 초깃값과 다른 accessor 값의 인덱스를 담은 buffer view를 가리키는 객체.
+     * 인덱스 수는 `count`와 같다.
+     * 인덱스는 **반드시** 엄격하게 증가해야 한다. (필수)
      *
-     * @param indices The indices to set
-     * @throws NullPointerException If the given value is <code>null</code>
+     * @param indices 설정할 indices
+     * @throws NullPointerException 주어진 값이 <code>null</code>일 때
      */
     public void setIndices(AccessorSparseIndices indices) {
         if (indices == null) {
@@ -77,21 +76,21 @@ public class AccessorSparse {
     }
 
     /**
-     * An object pointing to a buffer view containing the deviating accessor
-     * values. (required)
+     * 초깃값과 다른 accessor 값을 담은 buffer view를 가리키는 객체.
+     * (필수)
      *
-     * @return The values
+     * @return values
      */
     public AccessorSparseValues getValues() {
         return this.values;
     }
 
     /**
-     * An object pointing to a buffer view containing the deviating accessor
-     * values. (required)
+     * 초깃값과 다른 accessor 값을 담은 buffer view를 가리키는 객체.
+     * (필수)
      *
-     * @param values The values to set
-     * @throws NullPointerException If the given value is <code>null</code>
+     * @param values 설정할 values
+     * @throws NullPointerException 주어진 값이 <code>null</code>일 때
      */
     public void setValues(AccessorSparseValues values) {
         if (values == null) {

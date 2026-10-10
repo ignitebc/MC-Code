@@ -9,45 +9,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 当帧待写入掩码的目镜几何清单。
+ * 이번 프레임에 마스크에 써야 할 접안렌즈 형상 목록.
  *
- * <h2>为什么需要一个「收集器」而不是直接画</h2>
- * 26.2 的绘制是<b>两阶段</b>的：模型代码在 {@code submit} 里只做「提交」，
- * 真正的绘制发生在稍后的 {@code FeatureRenderDispatcher#renderAllFeatures}。
- * 而我们的掩码 pass 必须开在<b>阶段边界</b>（这是 r51 撞设备丢失后
- * 唯一被证实安全的时机，已由上一轮的空 pass 探针实测确认）。
+ * <h2>바로 그리지 않고 "수집기"가 필요한 이유</h2>
+ * 26.2의 그리기는 <b>두 단계</b>다: 모델 코드는 {@code submit}에서 "제출"만 하고,
+ * 실제 그리기는 나중의 {@code FeatureRenderDispatcher#renderAllFeatures}에서 일어난다.
+ * 그런데 우리 마스크 pass는 <b>단계 경계</b>에서 열어야 한다(r51에서 장치 손실을 겪은 뒤
+ * 안전하다고 확인된 유일한 시점이며, 앞선 빈 pass 시험으로 실측 확인했다).
  *
- * <p>两者时机不同，中间就需要一个存放处：
- * {@code BedrockAttachmentModel#submit} 往这里<b>登记</b>目镜几何，
- * 阶段边界的掩码 pass 再<b>取走并画掉</b>。
+ * <p>두 시점이 다르므로 사이에 둘 곳이 필요하다:
+ * {@code BedrockAttachmentModel#submit}이 여기에 접안렌즈 형상을 <b>등록</b>하고,
+ * 단계 경계의 마스크 pass가 <b>꺼내서 그린다</b>.
  *
- * <p>这也顺带满足了 vanilla 的用法约束 ——「<b>成批地</b>、在阶段边界切 target」。
- * 一帧里可能有多个瞄具（主手/副手、组合镜两组目镜），全部攒齐后一次画完，
- * 只开一个 pass。r51 正是因为每个瞄具各自触发一次 target 切换才崩的。
+ * <p>이렇게 하면 바닐라 사용 제약 — "<b>한꺼번에</b>, 단계 경계에서 target을 바꾼다" — 도 함께 지킨다.
+ * 한 프레임에 조준경이 여러 개일 수 있지만(주 손/보조 손, 복합 조준경 두 그룹), 모두 모은 뒤 한 번에 그리며
+ * pass도 하나만 연다. r51은 조준경마다 target 전환을 한 번씩 일으켜 크래시가 났다.
  *
- * <h2>坐标空间</h2>
- * 登记进来的矩阵是<b>已经乘好的完整模型矩阵</b>（含 PoseStack 根变换与整条父级链），
- * 与 {@code BedrockRenderSnapshot.DrawCommand#pose} 同一空间。
- * 顶点写入时只做 {@code pos/16 → mul(matrix)}，与
- * {@code BedrockCubeBox#compile} 的算法逐行一致，避免两条路径产生偏差。
+ * <h2>좌표 공간</h2>
+ * 등록되는 행렬은 <b>이미 곱해진 전체 모델 행렬</b>(PoseStack 루트 변환과 부모 사슬 전체 포함)이며,
+ * {@code BedrockRenderSnapshot.DrawCommand#pose}와 같은 공간이다.
+ * 정점을 쓸 때는 {@code pos/16 → mul(matrix)}만 하며,
+ * {@code BedrockCubeBox#compile}의 계산법과 줄마다 같아 두 경로가 어긋나지 않는다.
  *
- * <h2>生命周期</h2>
- * 每帧 {@code clear()} 一次。**必须无条件清空**，哪怕掩码没画成 ——
- * 否则不开镜时会残留上一帧的几何，越积越多。
+ * <h2>수명</h2>
+ * 매 프레임 {@code clear()}를 한 번 한다. **마스크를 그리지 못했더라도 무조건 비워야 한다** —
+ * 아니면 조준하지 않을 때 직전 프레임 형상이 남아 점점 쌓인다.
  */
 @Environment(EnvType.CLIENT)
 public final class ScopeMaskGeometry {
 
     /**
-     * 一批待写入掩码的立方体，连同它们共用的模型矩阵。
+     * 마스크에 쓸 육면체 묶음과 그것들이 함께 쓰는 모델 행렬.
      *
-     * @param pose  完整模型矩阵（已含根变换与父级链）
-     * @param cubes 该矩阵下的立方体
+     * @param pose  전체 모델 행렬(루트 변환과 부모 사슬 포함)
+     * @param cubes 그 행렬 아래의 육면체
      */
     public record Entry(Matrix4f pose, List<BedrockCube> cubes) {
         public Entry {
-            // 防御性拷贝：BedrockPart 跨帧共享且会被动画改写，
-            // 而本清单要活到阶段边界才消费，中途被改会画错位置。
+            // 방어적 복사: BedrockPart는 여러 프레임이 함께 쓰고 애니메이션이 바꾸는데,
+            // 이 목록은 단계 경계에서 쓰일 때까지 살아 있어야 하므로 중간에 바뀌면 엉뚱한 위치에 그린다.
             pose = new Matrix4f(pose);
             cubes = List.copyOf(cubes);
         }

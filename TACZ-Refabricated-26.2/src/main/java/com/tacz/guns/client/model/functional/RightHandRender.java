@@ -49,7 +49,7 @@ public class RightHandRender implements IFunctionalSubmitter {
             poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
             Matrix3f normal = new Matrix3f(poseStack.last().normal());
             Matrix4f pose = new Matrix4f(poseStack.last().pose());
-            //和枪械模型共用顶点缓冲的都需要代理到渲染结束后渲染
+            //총기 모델과 정점 버퍼를 함께 쓰는 것은 모두 렌더링이 끝난 뒤로 미뤄 그려야 한다
             bedrockGunModel.delegateRender((poseStack1, vertexBuffer1, transformType1, light1, overlay1) -> {
                 PoseStack poseStack2 = new PoseStack();
                 poseStack2.last().normal().mul(normal);

@@ -32,7 +32,7 @@ public class TargetRenderer implements BlockEntityRenderer<TargetBlockEntity, Ta
     public TargetRenderer(BlockEntityRendererProvider.Context context) {
     }
 
-    /** Custom render state for target block entity */
+    /** 과녁 블록 엔티티용 사용자 정의 렌더 상태 */
     public static class TargetRenderState extends BlockEntityRenderState {
         public Direction facing = Direction.NORTH;
         public float rot;
@@ -72,7 +72,7 @@ public class TargetRenderer implements BlockEntityRenderer<TargetBlockEntity, Ta
         getModel().ifPresent(model -> {
             int combinedLightIn = state.lightCoords;
             int combinedOverlayIn = OverlayTexture.NO_OVERLAY;
-            // partialTick is not available in submit; use 1.0f (latest tick state)
+            // submit에서는 partialTick을 쓸 수 없어 1.0f(최신 틱 상태)를 쓴다
             float deg = -state.rot;
 
             BedrockPart headModel = model.getNode(HEAD_NAME);
@@ -93,7 +93,7 @@ public class TargetRenderer implements BlockEntityRenderer<TargetBlockEntity, Ta
                 poseStack.mulPose(Axis.XP.rotationDegrees(deg));
                 headModel.visible = true;
                 RenderType skullRenderType = RenderTypes.entityCutout(state.skinTexture);
-                // Use submitCustomGeometry to render the head part with a VertexConsumer
+                // VertexConsumer로 머리 부분을 그리기 위해 submitCustomGeometry를 쓴다
                 collector.submitCustomGeometry(poseStack, skullRenderType, (entryPose, consumer) -> {
                     PoseStack working = new PoseStack();
                     working.last().pose().set(entryPose.pose());

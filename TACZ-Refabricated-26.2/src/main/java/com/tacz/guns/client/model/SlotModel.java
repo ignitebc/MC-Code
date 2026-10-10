@@ -9,8 +9,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 
 
 /**
- * 26.2: EntityModel now requires EntityRenderState type param and Model requires ModelPart constructor.
- * SlotModel is a simple quad renderer, so we make it standalone.
+ * 26.2: EntityModel은 이제 EntityRenderState 타입 매개변수를, Model은 ModelPart 생성자를 요구한다.
+ * SlotModel은 단순한 사각형 렌더러이므로 독립적으로 만든다.
  */
 public class SlotModel {
     private final BedrockPart bone;

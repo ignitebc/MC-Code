@@ -13,11 +13,11 @@ public class BedrockAmmoModel extends BedrockModel {
     private static final String GROUND_ORIGIN_NODE = "ground";
     private static final String THIRD_PERSON_HAND_ORIGIN_NODE = "thirdperson_hand";
 
-    // 展示框渲染原点定位组的路径
+    // 아이템 액자 렌더링 원점 위치 그룹의 경로
     protected @Nullable List<BedrockPart> fixedOriginPath;
-    // 地面实体渲染原点定位组的路径
+    // 땅 위 엔티티 렌더링 원점 위치 그룹의 경로
     protected @Nullable List<BedrockPart> groundOriginPath;
-    // 第三人称手部实体渲染原点定位组的路径
+    // 3인칭 손 엔티티 렌더링 원점 위치 그룹의 경로
     protected @Nullable List<BedrockPart> thirdPersonHandOriginPath;
 
     public BedrockAmmoModel(BedrockModelPOJO pojo, BedrockVersion version) {

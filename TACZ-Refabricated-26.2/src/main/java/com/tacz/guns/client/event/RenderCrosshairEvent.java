@@ -36,7 +36,7 @@ public class RenderCrosshairEvent {
     private static long headShotTimestamp = -1L;
 
     /**
-     * 当玩家手上拿着枪时，播放特定动画、或瞄准时需要隐藏准心
+     * 플레이어가 총을 들고 있을 때 특정 애니메이션을 재생하거나 조준하면 조준선을 숨겨야 한다
      */
     public static void onRenderOverlay(GuiGraphicsExtractor guiGraphics, Window window) {
         LocalPlayer player = Minecraft.getInstance().player;
@@ -47,18 +47,18 @@ public class RenderCrosshairEvent {
             return;
         }
 
-        // 击中显示
+        // 명중 표시
         renderHitMarker(guiGraphics, window);
-        // 换弹进行时取消准心渲染
+        // 재장전 중에는 조준선을 그리지 않는다
         ReloadState reloadState = IGunOperator.fromLivingEntity(player).getSynReloadState();
         if (reloadState.getStateType().isReloading()) {
             return;
         }
-        // 打开枪械改装界面的时候，取消准心渲染
+        // 총기 개조 화면을 열면 조준선을 그리지 않는다
         if (isRefitScreen) {
             return;
         }
-        // 播放的动画需要隐藏准心时，取消准心渲染
+        // 재생 중인 애니메이션이 조준선을 숨겨야 하면 그리지 않는다
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof IGun)) {
             return;
@@ -66,12 +66,12 @@ public class RenderCrosshairEvent {
 
         IClientPlayerGunOperator playerGunOperator = IClientPlayerGunOperator.fromLocalPlayer(player);
         TimelessAPI.getGunDisplay(stack).ifPresent(gunIndex -> {
-            // 瞄准快要完成时，取消准心渲染
+            // 조준이 거의 끝나면 조준선을 그리지 않는다
             if (playerGunOperator.getClientAimingProgress(Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true)) > 0.9) {
-                // 枪包可以强制显示准星
+                // 총기 팩이 조준선 표시를 강제할 수 있다
                 boolean forceShow = gunIndex.isShowCrosshair();
-                // 越肩视角可以强制显示准星
-                // 两个强制都没有时，那么才允许隐藏
+                // 어깨 너머 시점은 조준선 표시를 강제할 수 있다
+                // 두 강제 조건이 모두 없을 때만 숨길 수 있다
                 if (!forceShow) {
                     return;
                 }
@@ -90,17 +90,17 @@ public class RenderCrosshairEvent {
     }
 
     public static void onRenderTick(RenderTickEvent event) {
-        // 奇迹的是，RenderGameOverlayEvent.PreLayer 事件中，screen 还未被赋值...
+        // 놀랍게도 RenderGameOverlayEvent.PreLayer 이벤트에서는 screen이 아직 정해지지 않았다...
         isRefitScreen = Minecraft.getInstance().gui.screen() instanceof GunRefitScreen;
     }
 
     private static void renderCrosshair(GuiGraphicsExtractor graphics, Window window) {
         Options options = Minecraft.getInstance().options;
-        // 越肩视角可以强制显示准星
+        // 어깨 너머 시점은 조준선 표시를 강제할 수 있다
         if (!options.getCameraType().isFirstPerson()) {
             return;
         }
-        // 26.2: options.hideGui removed; GUI visibility now managed by Hud render pipeline
+        // 26.2: options.hideGui는 제거되었고, GUI 표시 여부는 이제 Hud 렌더 파이프라인이 관리한다
         MultiPlayerGameMode gameMode = Minecraft.getInstance().gameMode;
         if (gameMode == null) {
             return;
@@ -115,7 +115,7 @@ public class RenderCrosshairEvent {
 
         float x = width / 2f - 8;
         float y = height / 2f - 8;
-        // 26.2: Blending now handled by RenderPipeline; color via last int param (ARGB)
+        // 26.2: 혼합은 이제 RenderPipeline이 처리하며, 색은 마지막 int 인자(ARGB)로 넘긴다
         graphics.blit(RenderPipelines.GUI_TEXTURED, location, (int) x, (int) y, 0, 0, 16, 16, 16, 16, 0xE6FFFFFF);
     }
 
@@ -133,7 +133,7 @@ public class RenderCrosshairEvent {
                 fadeTime = remainHitTime;
             }
         } else {
-            // 最大位移为 4 像素
+            // 최대 이동은 4픽셀이다
             offset += (remainKillTime * 4f) / KEEP_TIME;
             fadeTime = remainKillTime;
         }
@@ -143,7 +143,7 @@ public class RenderCrosshairEvent {
         float x = width / 2f - 8;
         float y = height / 2f - 8;
 
-        // 26.2: Blending now handled by RenderPipeline; color via last int param (ARGB)
+        // 26.2: 혼합은 이제 RenderPipeline이 처리하며, 색은 마지막 int 인자(ARGB)로 넘긴다
         int color;
         if (remainHeadShotTime > KEEP_TIME) {
             color = ((int) ((1 - fadeTime / KEEP_TIME) * 255) << 24) | 0x00FFFFFF;

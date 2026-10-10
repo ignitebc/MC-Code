@@ -50,8 +50,8 @@ public class GunSmithTableBlockEntity extends BlockEntity implements ExtendedMen
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    // In Minecraft 26.2+, getRenderBoundingBox() is handled differently
-    // Rendering bounds are now typically managed through BlockEntityRenderers
+    // Minecraft 26.2+에서는 getRenderBoundingBox()를 다르게 처리한다
+    // 렌더링 범위는 이제 보통 BlockEntityRenderer가 관리한다
 
     @Override
     public Component getDisplayName() {

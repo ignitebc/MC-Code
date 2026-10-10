@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class InnerThirdPersonManager {
     public static void setRotationAnglesHead(LivingEntity entityIn, ModelPart rightArm, ModelPart leftArm, ModelPart body, ModelPart head, float limbSwingAmount) {
-        // 游戏暂停时不进行动画计算，否则会 StackOverflow
+        // 게임이 멈춘 동안에는 애니메이션을 계산하지 않는다. 그렇지 않으면 StackOverflow가 난다
         if (Minecraft.getInstance().isPaused()) {
             return;
         }
@@ -23,7 +23,7 @@ public class InnerThirdPersonManager {
             if (iGun == null) {
                 return;
             }
-            // 睡觉、爬梯、游泳、鞘翅飞行不播放第三人称动画
+            // 잠자기, 사다리 오르기, 수영, 겉날개 비행 중에는 3인칭 애니메이션을 재생하지 않는다
             if (entityIn.getPose() == Pose.SLEEPING || entityIn.onClimbable() || entityIn.isSwimming() || entityIn.getPose() == Pose.FALL_FLYING) {
                 return;
             }

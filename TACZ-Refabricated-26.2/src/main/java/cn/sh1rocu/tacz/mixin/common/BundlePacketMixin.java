@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * this is needed for {@link IEntityAdditionalSpawnData} to work properly on dedicated servers, since it ends up nesting bundle packets.
+ * 전용 서버에서 {@link IEntityAdditionalSpawnData}가 제대로 동작하려면 필요하다. 번들 패킷이 중첩되기 때문이다.
  */
 @Mixin(BundlePacket.class)
 public class BundlePacketMixin {

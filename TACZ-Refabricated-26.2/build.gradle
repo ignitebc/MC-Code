@@ -21,7 +21,7 @@ loom {
 
     runs {
         client {
-            // The embedded default pack needs additional memory during its first resource reload.
+            // 내장 기본 팩은 첫 리소스 리로드 때 메모리가 더 필요하다.
             vmArg "-Xmx768m"
         }
         server {
@@ -73,7 +73,7 @@ dependencies {
         exclude group: 'org.apache.commons', module: 'commons-lang3'
     }
 
-    // TaCZ configuration classes use ForgeConfigSpec through its Fabric port.
+    // TaCZ 설정 클래스는 Fabric 포트를 통해 ForgeConfigSpec을 쓴다.
     implementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:26.2.1"
 }
 

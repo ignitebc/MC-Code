@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * 26.2 修复：icon 改为懒加载 Supplier。
- * 原因：MC 26.2 中 new ItemStack(item, count) 需要 item 的 Holder.Reference.components 已 bind。
- * 枪包创造标签 icon 在资源重载(apply)阶段解析，此时组件尚未 bind，直接构造会抛
- * "Components not bound yet" 导致服务端/客户端进世界崩溃。
- * 现在解析阶段只捕获原始 JSON，ItemStack 构造推迟到 GUI 运行时（届时组件已 bind）。
+ * 26.2 수정: icon을 지연 로드 Supplier로 바꿨다.
+ * 이유: MC 26.2에서 new ItemStack(item, count)는 item의 Holder.Reference.components가 bind되어 있어야 한다.
+ * 총기 팩 크리에이티브 탭 icon은 자원 다시 불러오기(apply) 단계에서 해석하는데, 이때는 컴포넌트가 아직 bind되지 않아 바로 만들면
+ * "Components not bound yet"을 던져 서버/클라이언트가 월드에 들어갈 때 충돌한다.
+ * 이제 해석 단계에서는 원본 JSON만 잡아 두고, ItemStack 생성은 GUI 실행 시점(그때는 컴포넌트가 bind됨)으로 미룬다.
  */
 public record TabConfig(Identifier id, String name, Supplier<ItemStack> icon) {
     public static final Identifier TAB_AMMO = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "ammo");
@@ -88,7 +88,7 @@ public record TabConfig(Identifier id, String name, Supplier<ItemStack> icon) {
                 throw new JsonParseException("TabConfig must have an id");
             }
             Identifier id = context.deserialize(object.get("id"), Identifier.class);
-            // 只捕获原始 JSON，不在重载阶段构造 ItemStack（避免 "Components not bound yet"）
+            // 원본 JSON만 잡아 두고 다시 불러오기 단계에서는 ItemStack을 만들지 않는다("Components not bound yet" 방지)
             final JsonObject iconObj = object.has("icon") && object.get("icon").isJsonObject()
                     ? object.getAsJsonObject("icon") : null;
             Supplier<ItemStack> icon = () -> {
@@ -98,7 +98,7 @@ public record TabConfig(Identifier id, String name, Supplier<ItemStack> icon) {
                 try {
                     return CraftingHelper.getItemStack(iconObj, true);
                 } catch (Exception e) {
-                    // 运行时若仍失败（例如枪包 icon 引用了不存在的物品），回退空栈，避免崩 GUI
+                    // 실행 중에도 실패하면(예: 총기 팩 icon이 없는 아이템을 참조) 빈 스택으로 대체해 GUI 충돌을 막는다
                     GunMod.LOGGER.error("Failed to build tab icon for {}", id, e);
                     return ItemStack.EMPTY;
                 }

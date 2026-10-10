@@ -13,54 +13,54 @@ import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * 工作台配方的一项材料。
+ * 작업대 레시피의 재료 하나.
  *
- * <h2>第 14 轮：为什么这里要「延迟解析」</h2>
+ * <h2>14차: 여기서 "지연 해석"을 하는 이유</h2>
  *
- * 原先 {@code GunSmithTableIngredientSerializer} 在 Gson 反序列化的当场就调用
- * {@code Ingredient.CODEC.parse(...)}。这在 26.2 上是<b>错误时机</b>，原因经反编译逐级确认：
+ * 원래 {@code GunSmithTableIngredientSerializer}는 Gson 역직렬화 그 자리에서
+ * {@code Ingredient.CODEC.parse(...)}를 호출했다. 이는 26.2에서 <b>잘못된 시점</b>이며, 원인은 디컴파일로 단계별 확인했다:
  *
  * <ol>
- *   <li>{@code Ingredient.CODEC = ExtraCodecs.nonEmptyHolderSet(NON_AIR_HOLDER_SET_CODEC)}，
- *       而 {@code NON_AIR_HOLDER_SET_CODEC = HolderSetCodec.create(Registries.ITEM, ...)}；</li>
- *   <li>{@code HolderSetCodec#decode} 碰到 {@code "#c:ingots/copper"} 这种 tag 写法时，
- *       会走 {@code lookupTag(registry, tag)}；该方法在 tag 尚未绑定时直接返回
- *       {@code DataResult.error("Missing tag: ...")}；</li>
- *   <li>{@code MappedRegistry#get(TagKey)} 读的是 {@code allTags}，而 {@code allTags}
- *       要等 {@code Registry.PendingTags#apply()} 之后才有内容；</li>
- *   <li>{@code ReloadableServerResources#loadResources} 把 {@code postponedTags} 存起来，
- *       真正的 {@code updateComponentsAndStaticRegistryTags()}
- *       （内部 {@code postponedTags.forEach(PendingTags::apply)}）
- *       是在 {@code MinecraftServer#reloadResources} 的 {@code thenAcceptAsync} 里执行的，
- *       <b>晚于所有 reload listener 跑完</b>。</li>
+ *   <li>{@code Ingredient.CODEC = ExtraCodecs.nonEmptyHolderSet(NON_AIR_HOLDER_SET_CODEC)}이고,
+ *       {@code NON_AIR_HOLDER_SET_CODEC = HolderSetCodec.create(Registries.ITEM, ...)}이다;</li>
+ *   <li>{@code HolderSetCodec#decode}는 {@code "#c:ingots/copper"} 같은 tag 표기를 만나면
+ *       {@code lookupTag(registry, tag)}로 가는데, 이 메서드는 tag가 아직 묶이지 않았으면 곧바로
+ *       {@code DataResult.error("Missing tag: ...")}를 돌려준다;</li>
+ *   <li>{@code MappedRegistry#get(TagKey)}는 {@code allTags}를 읽는데, {@code allTags}는
+ *       {@code Registry.PendingTags#apply()} 이후에야 내용이 생긴다;</li>
+ *   <li>{@code ReloadableServerResources#loadResources}는 {@code postponedTags}를 보관해 두고,
+ *       실제 {@code updateComponentsAndStaticRegistryTags()}
+ *       (내부에서 {@code postponedTags.forEach(PendingTags::apply)})
+ *       는 {@code MinecraftServer#reloadResources}의 {@code thenAcceptAsync} 안에서 실행되어
+ *       <b>모든 reload listener가 끝난 뒤</b>에 돈다.</li>
  * </ol>
  *
- * 我们的 {@code CommonDataManager}（配方加载器）正是一个 reload listener，
- * 所以它 {@code apply()} 的时候 item tag 一律查不到 → 每个含 {@code #tag} 的材料都抛异常 →
- * {@code JsonDataManager#apply} 把 {@code JsonParseException} catch 住只打一行 error →
- * <b>整条配方被静默丢弃</b>。
+ * 우리 {@code CommonDataManager}(레시피 로더)가 바로 reload listener이므로,
+ * 그것이 {@code apply()}할 때는 item tag를 하나도 찾지 못한다 → {@code #tag}가 든 재료마다 예외가 난다 →
+ * {@code JsonDataManager#apply}가 {@code JsonParseException}을 잡아 error 한 줄만 남긴다 →
+ * <b>레시피 전체가 조용히 버려진다</b>.
  *
- * <p>实测 172 个默认配方里只有 {@code attachments/ammo_mod_he.json}（高爆弹）不含 {@code #tag}，
- * 于是「有且仅有高爆弹能被查到」——与用户观察完全吻合。运行时实验亦已证实：
- * {@code "#c:ingots/copper"} → {@code FAIL: Missing tag: 'c:ingots/copper' in 'minecraft:item'}，
- * 而 {@code "minecraft:crying_obsidian"} → OK。
+ * <p>실측 결과 기본 레시피 172개 중 {@code attachments/ammo_mod_he.json}(고폭탄)만 {@code #tag}가 없어,
+ * "고폭탄 하나만 조회된다" — 사용자 관찰과 정확히 맞았다. 실행 중 실험으로도 확인했다:
+ * {@code "#c:ingots/copper"} → {@code FAIL: Missing tag: 'c:ingots/copper' in 'minecraft:item'},
+ * {@code "minecraft:crying_obsidian"} → OK.
  *
- * <p>对照上游 1.21.1：上游同样在反序列化当场解析，但上游配方走 vanilla {@code RecipeManager} 通道，
- * 其 ops 来自 {@code ReloadableServerResources} 的
- * {@code loadingContext = fullRegistries.lookupWithUpdatedTags()}——
- * <b>那是一份已经带上新 tag 的 lookup</b>，所以上游不触发本问题。
- * 我们在第 12 轮把配方改走自己的 {@code DataType.RECIPES} 同步通道后就失去了这份 lookup，
- * 必须自己把解析推迟到 tag 绑定之后。
+ * <p>원본 1.21.1과 비교: 원본도 역직렬화 그 자리에서 해석하지만, 원본 레시피는 바닐라 {@code RecipeManager} 경로를 타며
+ * 그 ops는 {@code ReloadableServerResources}의
+ * {@code loadingContext = fullRegistries.lookupWithUpdatedTags()}에서 온다 —
+ * <b>그것은 이미 새 tag가 반영된 lookup</b>이라 원본에서는 이 문제가 생기지 않는다.
+ * 12차에서 레시피를 자체 {@code DataType.RECIPES} 동기화 경로로 바꾸면서 이 lookup을 잃었으므로,
+ * 해석을 tag가 묶인 뒤로 직접 미뤄야 한다.
  */
 public class GunSmithTableIngredient {
     private final int count;
 
     @Nullable
     private Ingredient ingredient;
-    /** 尚未解析的 {@code "item"} 字段原文；解析成功后置空。 */
+    /** 아직 해석하지 않은 {@code "item"} 필드 원문. 해석에 성공하면 비운다. */
     @Nullable
     private JsonElement rawItem;
-    /** 只记录「是否已打过日志」，不缓存失败结果——避免过早的一次调用把材料永久毒化。 */
+    /** "이미 로그를 남겼는지"만 기록하고 실패 결과는 캐시하지 않는다 — 너무 이른 호출 한 번이 재료를 영구히 망가뜨리는 것을 막는다. */
     private boolean loggedFailure;
 
     public GunSmithTableIngredient(Ingredient ingredient, int count) {
@@ -68,15 +68,15 @@ public class GunSmithTableIngredient {
         this.count = count;
     }
 
-    /** 延迟解析用的构造器，见类注释。 */
+    /** 지연 해석용 생성자. 클래스 주석 참고. */
     public GunSmithTableIngredient(JsonElement rawItem, int count) {
         this.rawItem = rawItem;
         this.count = count;
     }
 
     /**
-     * @return 解析后的 {@link Ingredient}；若原始 JSON 至今仍无法解析（例如 tag 真的不存在）则返回 {@code null}。
-     *         调用方必须判空——这正是「配方整条消失」与「材料格空着但配方还在」的区别。
+     * @return 해석한 {@link Ingredient}. 원본 JSON을 아직도 해석할 수 없으면(예: tag가 정말 없음) {@code null}을 돌려준다.
+     *         호출하는 쪽은 반드시 null을 확인해야 한다 — 이것이 "레시피 전체가 사라짐"과 "재료 칸은 비었지만 레시피는 남음"의 차이다.
      */
     @Nullable
     public Ingredient getIngredient() {
@@ -100,75 +100,75 @@ public class GunSmithTableIngredient {
     }
 
     /**
-     * 把 1.20 及以前的<b>对象式</b> Ingredient 写法规范化为 26.2 的字符串写法。
+     * 1.20 이하의 <b>객체형</b> Ingredient 표기를 26.2의 문자열 표기로 정규화한다.
      *
      * <pre>
      * {"tag":  "forge:ingots/iron"}  ->  "#forge:ingots/iron"
      * {"item": "minecraft:flint"}    ->  "minecraft:flint"
      * </pre>
      *
-     * <h2>为什么必须转换</h2>
-     * 26.2 的 {@code Ingredient.CODEC} 是
+     * <h2>변환해야 하는 이유</h2>
+     * 26.2의 {@code Ingredient.CODEC}은
      * {@code ExtraCodecs.nonEmptyHolderSet(HolderSetCodec.create(Registries.ITEM, ...))}
-     * （字节码确认），{@code HolderSetCodec} <b>只接受字符串或字符串数组</b> ——
-     * {@code "#tag"} 表示 tag、裸 id 表示单个物品。
-     * 它<b>不认</b> {@code {"tag": ...}} / {@code {"item": ...}} 这种对象形式，
-     * 遇到对象会直接返回 {@code DataResult.error}。
+     * 이고(바이트코드 확인), {@code HolderSetCodec}은 <b>문자열 또는 문자열 배열만 받는다</b> —
+     * {@code "#tag"}는 tag, 맨 id는 아이템 하나를 뜻한다.
+     * {@code {"tag": ...}} / {@code {"item": ...}} 같은 객체 형식은 <b>인식하지 않으며</b>,
+     * 객체를 만나면 바로 {@code DataResult.error}를 돌려준다.
      *
-     * <p>而 1.20 及以前的枪包写的正是对象形式。实测第三方包
-     * GunpowderRevolution v1.2.7 的 68 个配方<b>全部</b>使用
-     * {@code {"tag": "forge:ingots/iron"}} 这种写法，于是每一项材料都解析失败，
-     * 表现为「配方条目在、材料数量也在，但材料格没有图标、且无法合成」
-     * —— 因为 {@code getIngredient()} 返回 null，走的是
-     * 「材料格空着但配方还在」那条分支（见类注释）。
+     * <p>그런데 1.20 이하의 총기 팩은 바로 객체 형식으로 적혀 있다. 실측 결과 서드파티 팩
+     * GunpowderRevolution v1.2.7의 레시피 68개가 <b>모두</b>
+     * {@code {"tag": "forge:ingots/iron"}} 표기를 써서 재료마다 해석에 실패했고,
+     * "레시피 항목도 있고 재료 수도 있지만 재료 칸에 아이콘이 없고 제작할 수 없음"으로 나타났다
+     * — {@code getIngredient()}가 null을 돌려줘
+     * "재료 칸은 비었지만 레시피는 남음" 분기를 탔기 때문이다(클래스 주석 참고).
      *
-     * <p>注意这与上一轮修的 {@code forge/tags/items → item} 是<b>两个独立问题</b>：
-     * 那次修的是「tag 定义文件加载不到」，这次修的是「引用 tag 的写法不被识别」。
-     * 两者都修好，旧枪包才能真正工作。
+     * <p>이는 지난 차수에 고친 {@code forge/tags/items → item}과 <b>별개의 문제</b>다:
+     * 그때는 "tag 정의 파일을 불러오지 못함"을 고쳤고, 이번에는 "tag를 참조하는 표기를 인식하지 못함"을 고친다.
+     * 둘 다 고쳐야 예전 총기 팩이 실제로 동작한다.
      *
-     * <h2>为什么放在这里而不是转换器里</h2>
-     * 该包已经是<b>新版布局</b>（自带 {@code gunpack.meta.json}），
-     * 直接放进 {@code tacz/} 即可加载，根本不会经过 {@code PackConvertor}。
-     * 也就是说这条路径必须自己兼容旧写法，不能指望「先转换一遍」。
+     * <h2>변환기가 아니라 여기에 두는 이유</h2>
+     * 이 팩은 이미 <b>새 배치</b>(자체 {@code gunpack.meta.json} 포함)라
+     * {@code tacz/}에 넣기만 하면 로드되고, {@code PackConvertor}를 전혀 거치지 않는다.
+     * 즉 이 경로는 예전 표기를 스스로 받아들여야 하며 "먼저 한 번 변환하기"를 기대할 수 없다.
      *
-     * <p>数组形式（{@code [{"tag":...},{"item":...}]}）同样逐项处理 ——
-     * 旧格式允许用数组表达「多选一」，新格式则是字符串数组。
+     * <p>배열 형식({@code [{"tag":...},{"item":...}]})도 항목마다 똑같이 처리한다 —
+     * 예전 형식은 배열로 "여럿 중 하나"를 나타냈고, 새 형식은 문자열 배열이다.
      *
-     * @return 规范化后的元素；本就是新写法时<b>原样返回</b>，不做任何改动
+     * @return 정규화한 요소. 이미 새 표기이면 아무것도 바꾸지 않고 <b>그대로 돌려준다</b>
      */
     private static JsonElement normalizeLegacy(JsonElement raw) {
         if (raw.isJsonObject()) {
             JsonObject obj = raw.getAsJsonObject();
-            // 【带 type 的自定义 Ingredient】改写成 Fabric 的自定义 Ingredient 格式。
+            // [type이 있는 사용자 정의 Ingredient] Fabric의 사용자 정의 Ingredient 형식으로 고쳐 쓴다.
             //
-            // 旧 Forge 生态有一批自定义 Ingredient 类型，本项目在 util/forge 下已实现了
-            // 对应的 Fabric 版（PartialNBTIngredient / StrictNBTIngredient），
-            // 并已在 TaCZFabric#onInitialize 注册。这里只负责把【JSON 写法】对齐：
+            // 예전 Forge 생태계에는 사용자 정의 Ingredient 종류가 여럿 있었고, 이 프로젝트는 util/forge 아래에
+            // 대응하는 Fabric판(PartialNBTIngredient / StrictNBTIngredient)을 구현해
+            // TaCZFabric#onInitialize에서 이미 등록했다. 여기서는 [JSON 표기]만 맞춘다:
             //
             //   Forge : {"type":"forge:partial_nbt","item":"tacz:modern_kinetic_gun",
             //            "nbt":{"GunId":"hamster:coltm1892"}}
             //   Fabric: {"fabric:type":"forge:partial_nbt","items":["tacz:modern_kinetic_gun"],
             //            "nbt":{"GunId":"hamster:coltm1892"}}
             //
-            // 两处差异都是硬性的（均经源码确认）：
-            //   1. 判别键必须是 "fabric:type"（CustomIngredientImpl.TYPE_KEY 常量），
-            //      Ingredient.CODEC 由 Fabric 的 IngredientMixin 用
-            //      CustomIngredientImpl.CODEC.dispatch(TYPE_KEY, ...) 接管；
-            //   2. 我们的 Serializer 声明的字段名是 "items" 且为【列表】
-            //      （holderByNameCodec().listOf().fieldOf("items")），而 Forge 写的是
-            //      单数 "item" 字符串。
+            // 두 차이 모두 강제 조건이다(모두 소스로 확인):
+            //   1. 판별 키는 반드시 "fabric:type"(CustomIngredientImpl.TYPE_KEY 상수)이어야 하며,
+            //      Ingredient.CODEC는 Fabric의 IngredientMixin이
+            //      CustomIngredientImpl.CODEC.dispatch(TYPE_KEY, ...)로 넘겨받는다;
+            //   2. 우리 Serializer가 선언한 필드 이름은 "items"이고 [목록]이다
+            //      (holderByNameCodec().listOf().fieldOf("items")). 반면 Forge는
+            //      단수 "item" 문자열로 쓴다.
             //
-            // 语义完全保持不变：仍然是「必须是带该 NBT 的那件物品」，
-            // 不放宽成「任意 TACZ 枪械」—— 这正是之前刻意不转换的理由，
-            // 现在既然有了等价实现，就能在不改变游戏行为的前提下真正支持它。
+            // 의미는 전혀 바뀌지 않는다: 여전히 "그 NBT를 가진 바로 그 아이템이어야 함"이며,
+            // "아무 TACZ 총기"로 완화하지 않는다 — 이것이 예전에 일부러 변환하지 않았던 이유이고,
+            // 이제 같은 구현이 생겼으니 게임 동작을 바꾸지 않고 실제로 지원할 수 있다.
             //
-            // 只改写我们【确实注册了】的类型；其余 type 一律原样返回，
-            // 让 CODEC 自己报错，避免我们猜出一个错误的等价写法掩盖真问题。
+            // 우리가 [실제로 등록한] 종류만 고쳐 쓴다. 나머지 type은 모두 그대로 돌려줘
+            // CODEC이 스스로 오류를 내게 한다. 잘못된 대체 표기를 짐작해 진짜 문제를 가리는 일을 막는다.
             if (obj.has("type")) {
                 return normalizeCustomIngredient(obj);
             }
-            // 只认这两个键，且必须是字符串；其余情况原样返回，交给 CODEC 自己报错，
-            // 避免我们「猜」出一个错误的等价写法而掩盖真正的问题。
+            // 이 두 키만 인정하며 반드시 문자열이어야 한다. 나머지 경우는 그대로 돌려줘 CODEC이 스스로 오류를 내게 하여,
+            // 잘못된 대체 표기를 "짐작"해 진짜 문제를 가리는 일을 막는다.
             JsonElement tag = obj.get("tag");
             if (tag != null && tag.isJsonPrimitive() && tag.getAsJsonPrimitive().isString()) {
                 return new JsonPrimitive("#" + tag.getAsString());
@@ -194,19 +194,19 @@ public class GunSmithTableIngredient {
     }
 
     /**
-     * 我们已注册 Fabric 版实现的 Forge 自定义 Ingredient 类型。
+     * Fabric판 구현을 등록해 둔 Forge 사용자 정의 Ingredient 종류.
      *
-     * <p>与 {@code util/forge} 下两个 Serializer 的 {@code ID} 一一对应。
-     * 不在此集合中的 type 不做任何改写 —— 宁可让它明确失败，
-     * 也不要「猜」一个近似语义悄悄改变配方要求。
+     * <p>{@code util/forge} 아래 두 Serializer의 {@code ID}와 하나씩 대응한다.
+     * 이 집합에 없는 type은 전혀 고쳐 쓰지 않는다 — 비슷한 의미를 "짐작"해
+     * 레시피 조건을 몰래 바꾸느니 분명하게 실패하는 편이 낫다.
      */
     private static final java.util.Set<String> SUPPORTED_CUSTOM_INGREDIENTS =
             java.util.Set.of("forge:partial_nbt", "forge:nbt");
 
     /**
-     * 把 Forge 写法的自定义 Ingredient 改写为 Fabric 写法。见 {@link #normalizeLegacy} 中的说明。
+     * Forge 표기의 사용자 정의 Ingredient를 Fabric 표기로 고쳐 쓴다. {@link #normalizeLegacy}의 설명 참고.
      *
-     * @return 改写后的对象；类型不受支持时<b>原样返回</b>
+     * @return 고쳐 쓴 객체. 지원하지 않는 종류이면 <b>그대로 돌려준다</b>
      */
     private static JsonElement normalizeCustomIngredient(JsonObject obj) {
         JsonElement typeElement = obj.get("type");
@@ -219,15 +219,15 @@ public class GunSmithTableIngredient {
         }
 
         JsonObject out = new JsonObject();
-        // Fabric 的判别键，见 CustomIngredientImpl.TYPE_KEY。
+        // Fabric의 판별 키. CustomIngredientImpl.TYPE_KEY 참고.
         out.add("fabric:type", new JsonPrimitive(type));
         for (java.util.Map.Entry<String, JsonElement> entry : obj.entrySet()) {
             String key = entry.getKey();
             if ("type".equals(key)) {
                 continue;
             }
-            // 单数 item(字符串) -> 复数 items(列表)，对齐 Serializer 声明的字段。
-            // 若原文已经写了 items，则原样保留，不重复包装。
+            // 단수 item(문자열) -> 복수 items(목록). Serializer가 선언한 필드에 맞춘다.
+            // 원문에 이미 items가 있으면 그대로 두고 다시 감싸지 않는다.
             if ("item".equals(key) && !obj.has("items")) {
                 JsonArray items = new JsonArray(1);
                 items.add(entry.getValue());
@@ -239,7 +239,7 @@ public class GunSmithTableIngredient {
         return out;
     }
 
-    /** 供必须拿到非空值的场合（如网络编码）使用。 */
+    /** 반드시 null이 아닌 값이 필요한 곳(예: 네트워크 인코딩)에서 쓴다. */
     public Ingredient getIngredientOrThrow() {
         Ingredient resolved = this.getIngredient();
         if (resolved == null) {
@@ -248,7 +248,7 @@ public class GunSmithTableIngredient {
         return resolved;
     }
 
-    /** 材料是否可用（tag 已绑定且解析成功）。 */
+    /** 재료를 쓸 수 있는지(tag가 묶였고 해석에 성공했는지). */
     public boolean isResolved() {
         return this.getIngredient() != null;
     }

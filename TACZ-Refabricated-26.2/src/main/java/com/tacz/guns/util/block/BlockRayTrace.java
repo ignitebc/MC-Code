@@ -28,13 +28,13 @@ public final class BlockRayTrace {
     public static BlockHitResult rayTraceBlocks(Level level, ClipContext context) {
         return performRayTrace(context, (rayTraceContext, blockPos) -> {
             BlockState blockState = level.getBlockState(blockPos);
-            // 这里添加判断方块是否可以穿透，如果可以穿透则返回 null
+            // 여기에 블록을 관통할 수 있는지 판단을 넣는다. 관통할 수 있으면 null을 돌려준다
             List<String> ids = AmmoConfig.PASS_THROUGH_BLOCKS.get();
             Identifier blockId = BuiltInRegistries.BLOCK.getKey(blockState.getBlock());
             if (blockId != null && ids.contains(blockId.toString())) {
                 return null;
             }
-            // tag
+            // 태그
             if (IGNORES.test(blockState)) {
                 return null;
             }

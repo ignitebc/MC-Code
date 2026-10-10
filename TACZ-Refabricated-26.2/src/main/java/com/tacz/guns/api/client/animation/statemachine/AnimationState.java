@@ -2,34 +2,34 @@ package com.tacz.guns.api.client.animation.statemachine;
 
 public interface AnimationState<T extends AnimationStateContext> {
     /**
-     * 每一帧渲染模型前都会调用。
+     * 매 프레임 모델을 그리기 전에 호출된다.
      *
-     * @param context 状态上下文，承载状态行为可能需要的各种参数。
+     * @param context 상태 문맥. 상태 동작에 필요한 여러 매개변수를 담는다.
      */
     void update(T context);
 
     /**
-     * 触发状态转移进入此状态时调用。
+     * 상태 전이로 이 상태에 들어올 때 호출된다.
      *
-     * @param context 状态上下文，承载状态行为可能需要的各种参数。
+     * @param context 상태 문맥. 상태 동작에 필요한 여러 매개변수를 담는다.
      * @see AnimationStateMachine#trigger(String)
      */
     void entryAction(T context);
 
     /**
-     * 触发状态转移退出此状态时调用。
+     * 상태 전이로 이 상태를 나갈 때 호출된다.
      *
-     * @param context 状态上下文，承载状态行为可能需要的各种参数。
+     * @param context 상태 문맥. 상태 동작에 필요한 여러 매개변수를 담는다.
      * @see AnimationStateMachine#trigger(String)
      */
     void exitAction(T context);
 
     /**
-     * 每当状态机接受输入时，调用此方法。
+     * 상태 기계가 입력을 받을 때마다 호출된다.
      *
-     * @param context   状态上下文，承载状态行为可能需要的各种参数
-     * @param condition 状态机接受的输入
-     * @return 返回转移后的状态，或者返回 Null 表示无需状态转移。
+     * @param context   상태 문맥. 상태 동작에 필요한 여러 매개변수를 담는다
+     * @param condition 상태 기계가 받은 입력
+     * @return 전이한 뒤의 상태. 전이할 필요가 없으면 null
      * @see AnimationStateMachine#trigger(String)
      */
     AnimationState<T> transition(T context, String condition);

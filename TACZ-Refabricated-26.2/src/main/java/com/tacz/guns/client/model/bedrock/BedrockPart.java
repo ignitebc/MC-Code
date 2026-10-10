@@ -32,7 +32,7 @@ public class BedrockPart {
     public boolean illuminated = false;
     public boolean mirror;
     /**
-     * 通常用于动画旋转。
+     * 보통 애니메이션 회전에 쓴다.
      */
     public Quaternionf additionalQuaternion = new Quaternionf(0, 0, 0, 1);
     public float xScale = 1;
@@ -60,7 +60,7 @@ public class BedrockPart {
     public void render(PoseStack poseStack, ItemDisplayContext transformType, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha) {
         int cubePackedLight = light;
         if (illuminated) {
-            // 最大亮度
+            // 최대 밝기
             cubePackedLight = 15728880;
         }
         if (this.visible) {

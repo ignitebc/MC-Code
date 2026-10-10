@@ -12,8 +12,8 @@ import java.util.regex.Pattern;
 
 public class HeadShotAABBConfigRead {
     private static final Map<Identifier, AABB> AABB_CHECK = Maps.newHashMap();
-    // 书写格式：touhou_little_maid:maid [-0.5, 1.0, -0.5, 0.5, 1.5, 0.5]
-    // 生物 ID + 碰撞箱
+    // 작성 형식: touhou_little_maid:maid [-0.5, 1.0, -0.5, 0.5, 1.5, 0.5]
+    // 생물 ID + 충돌 상자
     private static final Pattern REG = Pattern.compile("^([a-z0-9_.-]+:[a-z0-9/._-]+)\s*?\\[([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),*?\s*?]");
 
     public static void init() {

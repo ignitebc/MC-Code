@@ -41,31 +41,31 @@ public class TaCZFabricClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        // 26.2 client item JSONs use the custom tacz:dynamic_item ItemModel type.
+        // 26.2 클라이언트 아이템 JSON은 사용자 정의 ItemModel 종류인 tacz:dynamic_item을 쓴다.
         TaczDynamicItemModel.registerType();
-        // 弹药盒外观变体属性（tacz:ammo_statue），供 items/ammo_box.json 的 select 使用。
-        // 必须在客户端物品 JSON 解码之前注册，否则 select 会因为找不到属性类型而报错。
+        // 탄약 상자 외형 변형 속성(tacz:ammo_statue). items/ammo_box.json의 select가 쓴다.
+        // 클라이언트 아이템 JSON을 해석하기 전에 등록해야 한다. 그렇지 않으면 select가 속성 종류를 찾지 못해 오류가 난다.
         SelectItemModelProperties.ID_MAPPER.put(AmmoBoxStatueProperty.ID, AmmoBoxStatueProperty.TYPE);
         NetworkHandler.registerS2CPackets();
         ClientSetupEvent.init();
         ModContainerScreen.registerScreens();
         ModEntitiesRender.registerEntityRenderers();
         ParticleFactories.registerParticles();
-        // All three blocks return RenderShape.INVISIBLE, so registration is mandatory:
-        // without these renderers, placed tables/targets/statues are functional but invisible.
+        // 세 블록 모두 RenderShape.INVISIBLE을 돌려주므로 등록이 꼭 필요하다:
+        // 이 렌더러가 없으면 설치한 작업대·과녁·조각상이 동작은 해도 보이지 않는다.
         BlockEntityRendererRegistry.register(ModBlocks.GUN_SMITH_TABLE_BE, GunSmithTableRenderer::new);
         BlockEntityRendererRegistry.register(ModBlocks.TARGET_BE, TargetRenderer::new);
         BlockEntityRendererRegistry.register(ModBlocks.STATUE_BE, StatueRenderer::new);
-        // getCustomRenderer() 允许返回 null —— 表示「该物品走原版模型渲染」。
-        // 弹药盒就是这种情况（改用 items/ammo_box.json 的 select + 9 个变体模型）。
-        // 若把 null 塞进注册表，TaczSpecialRenderer 会拿到 null 渲染器而什么都不画。
+        // getCustomRenderer()는 null을 돌려줄 수 있다 — "이 아이템은 바닐라 모델로 렌더링"한다는 뜻이다.
+        // 탄약 상자가 그런 경우다(items/ammo_box.json의 select + 변형 모델 9개를 쓴다).
+        // null을 레지스트리에 넣으면 TaczSpecialRenderer가 null 렌더러를 받아 아무것도 그리지 않는다.
         BuiltInRegistries.ITEM.stream().filter(item -> item instanceof IItem).forEach(clientEx -> {
             BuiltinItemRendererRegistry.DynamicItemRenderer renderer = ((IItem) clientEx).getCustomRenderer();
             if (renderer != null) {
                 BuiltinItemRendererRegistry.INSTANCE.register(clientEx, renderer);
             }
         });
-        // 26.2 Feature Rendering: 注册 TACZ 自定义 FeatureRenderers
+        // 26.2 Feature Rendering: TACZ 사용자 정의 FeatureRenderer 등록
         TaczFeatureRenderers.register();
         subscribeEvents();
     }
@@ -90,11 +90,11 @@ public class TaCZFabricClient implements ClientModInitializer {
 
         ClientPlayConnectionEvents.DISCONNECT.register(CommonNetworkCacheEvent::onClientPlayerLoggingIn);
 
-        // 26.2: 第一人称入口不再走 SimpleBedrockModel 的 RenderHandEvent。
-        // 现在统一由客户端 ItemModel（tacz:dynamic_item）-> AnimateGeoItemRenderer#render 的
-        // mode.firstPerson() 分支进入，与其它 display context 完全一致。
-        // 原先被注释掉的 FirstPersonRenderEvent 注册与其 RenderHandEvent stub 均已删除，
-        // 以免再有人把它误当作第一人称链路来排查。
+        // 26.2: 1인칭 진입점은 더 이상 SimpleBedrockModel의 RenderHandEvent를 거치지 않는다.
+        // 이제 클라이언트 ItemModel(tacz:dynamic_item) -> AnimateGeoItemRenderer#render의
+        // mode.firstPerson() 분기로 들어오며, 다른 display context와 완전히 같다.
+        // 예전에 주석 처리돼 있던 FirstPersonRenderEvent 등록과 RenderHandEvent 대체 구현은 모두 지웠다.
+        // 다시 1인칭 경로로 착각해 조사하는 일이 없게 하기 위해서다.
 
         RenderItemInHandBobEvent.VIEW.register(FirstPersonRenderGunEvent::cancelItemInHandViewBobbing);
         GunFireEvent.CALLBACK.register(FirstPersonRenderGunEvent::onGunFire);
@@ -108,11 +108,11 @@ public class TaCZFabricClient implements ClientModInitializer {
 
         EntityHurtByGunEvent.POST.register(PlayerHurtByGunEvent::onPlayerHurtByGun);
 
-        // 【r42】原来这里还注册了 ClientPlayerNetworkEvent.CLONE ->
-        // RefreshClonePlayerDataEvent::onClientPlayerClone，但该事件在 26.2 永远发不出来
-        // （唯一发射点 ClientHooks#firePlayerRespawn 依赖的 ClientPacketListenerMixin
-        //   注入点 ClientLevel#addPlayer 已不存在）。
-        // 重生/换维度后的配件缓存刷新改由下面这个 tick 回调内部检测玩家实例变化来触发。
+        // [r42] 원래 여기서 ClientPlayerNetworkEvent.CLONE ->
+        // RefreshClonePlayerDataEvent::onClientPlayerClone도 등록했지만, 이 이벤트는 26.2에서 절대 발생하지 않는다
+        // (유일한 발생 지점인 ClientHooks#firePlayerRespawn이 의존하던 ClientPacketListenerMixin의
+        //   주입 지점 ClientLevel#addPlayer가 사라졌다).
+        // 부활·차원 이동 뒤 부착물 캐시 새로 고침은 아래 틱 콜백이 플레이어 인스턴스 변화를 감지해 처리한다.
         ClientTickEvents.START_CLIENT_TICK.register(RefreshClonePlayerDataEvent::onClientTick);
 
         TextureStitchEvent.POST.register(ReloadResourceEvent::onTextureStitchEventPost);

@@ -2,73 +2,73 @@ package com.tacz.guns.client.resource.pojo.animation.gltf;
 
 public class Accessor {
     /**
-     * The index of the bufferView. (optional)
+     * bufferView의 인덱스. (선택)
      */
     private Integer bufferView;
     /**
-     * The offset relative to the start of the buffer view in bytes.
-     * (optional)<br>
-     * Default: 0<br>
-     * Minimum: 0 (inclusive)
+     * buffer view 시작 위치 기준 바이트 오프셋.
+     * (선택)<br>
+     * 기본값: 0<br>
+     * 최솟값: 0 (포함)
      */
     private Integer byteOffset;
     /**
-     * The datatype of the accessor's components. (required)<br>
-     * Valid values: [5120, 5121, 5122, 5123, 5125, 5126]
+     * accessor 구성 요소의 데이터 형식. (필수)<br>
+     * 허용 값: [5120, 5121, 5122, 5123, 5125, 5126]
      */
     private Integer componentType;
     /**
-     * Specifies whether integer data values are normalized before usage.
-     * (optional)<br>
-     * Default: false
+     * 정수 데이터 값을 쓰기 전에 정규화할지 여부.
+     * (선택)<br>
+     * 기본값: false
      */
     private Boolean normalized;
     /**
-     * The number of elements referenced by this accessor. (required)<br>
-     * Minimum: 1 (inclusive)
+     * 이 accessor가 참조하는 요소 수. (필수)<br>
+     * 최솟값: 1 (포함)
      */
     private Integer count;
     /**
-     * Specifies if the accessor's elements are scalars, vectors, or
-     * matrices. (required)<br>
-     * Valid values: [SCALAR, VEC2, VEC3, VEC4, MAT2, MAT3, MAT4]
+     * accessor 요소가 스칼라, 벡터, 행렬 중 무엇인지 지정한다.
+     * (필수)<br>
+     * 허용 값: [SCALAR, VEC2, VEC3, VEC4, MAT2, MAT3, MAT4]
      */
     private String type;
     /**
-     * Maximum value of each component in this accessor. (optional)<br>
-     * Minimum number of items: 1<br>
-     * Maximum number of items: 16<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * 이 accessor의 구성 요소별 최댓값. (선택)<br>
+     * 최소 항목 수: 1<br>
+     * 최대 항목 수: 16<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      */
     private Number[] max;
     /**
-     * Minimum value of each component in this accessor. (optional)<br>
-     * Minimum number of items: 1<br>
-     * Maximum number of items: 16<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * 이 accessor의 구성 요소별 최솟값. (선택)<br>
+     * 최소 항목 수: 1<br>
+     * 최대 항목 수: 16<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      */
     private Number[] min;
     /**
-     * Sparse storage of elements that deviate from their initialization
-     * value. (optional)
+     * 초깃값과 다른 요소를 담는 희소 저장소.
+     * (선택)
      */
     private AccessorSparse sparse;
 
     /**
-     * The index of the bufferView. (optional)
+     * bufferView의 인덱스. (선택)
      *
-     * @return The bufferView
+     * @return bufferView
      */
     public Integer getBufferView() {
         return this.bufferView;
     }
 
     /**
-     * The index of the bufferView. (optional)
+     * bufferView의 인덱스. (선택)
      *
-     * @param bufferView The bufferView to set
+     * @param bufferView 설정할 bufferView
      */
     public void setBufferView(Integer bufferView) {
         if (bufferView == null) {
@@ -79,26 +79,25 @@ public class Accessor {
     }
 
     /**
-     * The offset relative to the start of the buffer view in bytes.
-     * (optional)<br>
-     * Default: 0<br>
-     * Minimum: 0 (inclusive)
+     * buffer view 시작 위치 기준 바이트 오프셋.
+     * (선택)<br>
+     * 기본값: 0<br>
+     * 최솟값: 0 (포함)
      *
-     * @return The byteOffset
+     * @return byteOffset
      */
     public Integer getByteOffset() {
         return this.byteOffset;
     }
 
     /**
-     * The offset relative to the start of the buffer view in bytes.
-     * (optional)<br>
-     * Default: 0<br>
-     * Minimum: 0 (inclusive)
+     * buffer view 시작 위치 기준 바이트 오프셋.
+     * (선택)<br>
+     * 기본값: 0<br>
+     * 최솟값: 0 (포함)
      *
-     * @param byteOffset The byteOffset to set
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param byteOffset 설정할 byteOffset
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setByteOffset(Integer byteOffset) {
         if (byteOffset == null) {
@@ -112,9 +111,9 @@ public class Accessor {
     }
 
     /**
-     * Returns the default value of the byteOffset<br>
+     * byteOffset의 기본값을 돌려준다<br>
      *
-     * @return The default byteOffset
+     * @return byteOffset 기본값
      * @see #getByteOffset
      */
     public Integer defaultByteOffset() {
@@ -122,23 +121,22 @@ public class Accessor {
     }
 
     /**
-     * The datatype of the accessor's components. (required)<br>
-     * Valid values: [5120, 5121, 5122, 5123, 5125, 5126]
+     * accessor 구성 요소의 데이터 형식. (필수)<br>
+     * 허용 값: [5120, 5121, 5122, 5123, 5125, 5126]
      *
-     * @return The componentType
+     * @return componentType
      */
     public Integer getComponentType() {
         return this.componentType;
     }
 
     /**
-     * The datatype of the accessor's components. (required)<br>
-     * Valid values: [5120, 5121, 5122, 5123, 5125, 5126]
+     * accessor 구성 요소의 데이터 형식. (필수)<br>
+     * 허용 값: [5120, 5121, 5122, 5123, 5125, 5126]
      *
-     * @param componentType The componentType to set
-     * @throws NullPointerException     If the given value is <code>null</code>
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param componentType 설정할 componentType
+     * @throws NullPointerException     주어진 값이 <code>null</code>일 때
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setComponentType(Integer componentType) {
         if (componentType == null) {
@@ -151,11 +149,11 @@ public class Accessor {
     }
 
     /**
-     * Specifies whether integer data values are normalized before usage.
-     * (optional)<br>
-     * Default: false
+     * 정수 데이터 값을 쓰기 전에 정규화할지 여부.
+     * (선택)<br>
+     * 기본값: false
      *
-     * @param normalized The normalized to set
+     * @param normalized 설정할 normalized
      */
     public void setNormalized(Boolean normalized) {
         if (normalized == null) {
@@ -166,20 +164,20 @@ public class Accessor {
     }
 
     /**
-     * Specifies whether integer data values are normalized before usage.
-     * (optional)<br>
-     * Default: false
+     * 정수 데이터 값을 쓰기 전에 정규화할지 여부.
+     * (선택)<br>
+     * 기본값: false
      *
-     * @return The normalized
+     * @return normalized
      */
     public Boolean isNormalized() {
         return this.normalized;
     }
 
     /**
-     * Returns the default value of the normalized<br>
+     * normalized의 기본값을 돌려준다<br>
      *
-     * @return The default normalized
+     * @return normalized 기본값
      * @see #isNormalized
      */
     public Boolean defaultNormalized() {
@@ -187,23 +185,22 @@ public class Accessor {
     }
 
     /**
-     * The number of elements referenced by this accessor. (required)<br>
-     * Minimum: 1 (inclusive)
+     * 이 accessor가 참조하는 요소 수. (필수)<br>
+     * 최솟값: 1 (포함)
      *
-     * @return The count
+     * @return count
      */
     public Integer getCount() {
         return this.count;
     }
 
     /**
-     * The number of elements referenced by this accessor. (required)<br>
-     * Minimum: 1 (inclusive)
+     * 이 accessor가 참조하는 요소 수. (필수)<br>
+     * 최솟값: 1 (포함)
      *
-     * @param count The count to set
-     * @throws NullPointerException     If the given value is <code>null</code>
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param count 설정할 count
+     * @throws NullPointerException     주어진 값이 <code>null</code>일 때
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setCount(Integer count) {
         if (count == null) {
@@ -216,25 +213,24 @@ public class Accessor {
     }
 
     /**
-     * Specifies if the accessor's elements are scalars, vectors, or
-     * matrices. (required)<br>
-     * Valid values: [SCALAR, VEC2, VEC3, VEC4, MAT2, MAT3, MAT4]
+     * accessor 요소가 스칼라, 벡터, 행렬 중 무엇인지 지정한다.
+     * (필수)<br>
+     * 허용 값: [SCALAR, VEC2, VEC3, VEC4, MAT2, MAT3, MAT4]
      *
-     * @return The type
+     * @return type
      */
     public String getType() {
         return this.type;
     }
 
     /**
-     * Specifies if the accessor's elements are scalars, vectors, or
-     * matrices. (required)<br>
-     * Valid values: [SCALAR, VEC2, VEC3, VEC4, MAT2, MAT3, MAT4]
+     * accessor 요소가 스칼라, 벡터, 행렬 중 무엇인지 지정한다.
+     * (필수)<br>
+     * 허용 값: [SCALAR, VEC2, VEC3, VEC4, MAT2, MAT3, MAT4]
      *
-     * @param type The type to set
-     * @throws NullPointerException     If the given value is <code>null</code>
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param type 설정할 type
+     * @throws NullPointerException     주어진 값이 <code>null</code>일 때
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setType(String type) {
         if (type == null) {
@@ -247,28 +243,27 @@ public class Accessor {
     }
 
     /**
-     * Maximum value of each component in this accessor. (optional)<br>
-     * Minimum number of items: 1<br>
-     * Maximum number of items: 16<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * 이 accessor의 구성 요소별 최댓값. (선택)<br>
+     * 최소 항목 수: 1<br>
+     * 최대 항목 수: 16<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      *
-     * @return The max
+     * @return max
      */
     public Number[] getMax() {
         return this.max;
     }
 
     /**
-     * Maximum value of each component in this accessor. (optional)<br>
-     * Minimum number of items: 1<br>
-     * Maximum number of items: 16<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * 이 accessor의 구성 요소별 최댓값. (선택)<br>
+     * 최소 항목 수: 1<br>
+     * 최대 항목 수: 16<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      *
-     * @param max The max to set
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param max 설정할 max
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setMax(Number[] max) {
         if (max == null) {
@@ -285,28 +280,27 @@ public class Accessor {
     }
 
     /**
-     * Minimum value of each component in this accessor. (optional)<br>
-     * Minimum number of items: 1<br>
-     * Maximum number of items: 16<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * 이 accessor의 구성 요소별 최솟값. (선택)<br>
+     * 최소 항목 수: 1<br>
+     * 최대 항목 수: 16<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      *
-     * @return The min
+     * @return min
      */
     public Number[] getMin() {
         return this.min;
     }
 
     /**
-     * Minimum value of each component in this accessor. (optional)<br>
-     * Minimum number of items: 1<br>
-     * Maximum number of items: 16<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * 이 accessor의 구성 요소별 최솟값. (선택)<br>
+     * 최소 항목 수: 1<br>
+     * 최대 항목 수: 16<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      *
-     * @param min The min to set
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param min 설정할 min
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setMin(Number[] min) {
         if (min == null) {
@@ -323,20 +317,20 @@ public class Accessor {
     }
 
     /**
-     * Sparse storage of elements that deviate from their initialization
-     * value. (optional)
+     * 초깃값과 다른 요소를 담는 희소 저장소.
+     * (선택)
      *
-     * @return The sparse
+     * @return sparse
      */
     public AccessorSparse getSparse() {
         return this.sparse;
     }
 
     /**
-     * Sparse storage of elements that deviate from their initialization
-     * value. (optional)
+     * 초깃값과 다른 요소를 담는 희소 저장소.
+     * (선택)
      *
-     * @param sparse The sparse to set
+     * @param sparse 설정할 sparse
      */
     public void setSparse(AccessorSparse sparse) {
         if (sparse == null) {

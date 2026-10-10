@@ -36,12 +36,12 @@ public class MathUtil {
     }
 
     /**
-     * 按照 z(roll) -> y(yaw) -> x(pitch) 的旋转顺序，求四元数。
+     * z(roll) -> y(yaw) -> x(pitch) 회전 순서로 사원수를 구한다.
      *
-     * @param pitch 绕 x 轴旋转的弧度
-     * @param yaw   绕 y 轴旋转的弧度
-     * @param roll  绕 z 轴旋转的弧度
-     * @return 四元数，前三个数是虚部，最后一个数是实部。
+     * @param pitch x축 기준 회전 라디안
+     * @param yaw   y축 기준 회전 라디안
+     * @param roll  z축 기준 회전 라디안
+     * @return 사원수. 앞의 세 수는 허수부, 마지막 수는 실수부다.
      */
     public static float[] toQuaternion(float pitch, float yaw, float roll) {
         double cy = Math.cos(roll * 0.5);
@@ -59,12 +59,12 @@ public class MathUtil {
     }
 
     /**
-     * 按照 z(roll) -> y(yaw) -> x(pitch) 的旋转顺序，求四元数。
+     * z(roll) -> y(yaw) -> x(pitch) 회전 순서로 사원수를 구한다.
      *
-     * @param pitch      绕 x 轴旋转的弧度
-     * @param yaw        绕 y 轴旋转的弧度
-     * @param roll       绕 z 轴旋转的弧度
-     * @param quaternion 求解的结果将写入这个四元数中。
+     * @param pitch      x축 기준 회전 라디안
+     * @param yaw        y축 기준 회전 라디안
+     * @param roll       z축 기준 회전 라디안
+     * @param quaternion 구한 결과를 이 사원수에 쓴다.
      */
     public static void toQuaternion(float pitch, float yaw, float roll, @Nonnull Quaternionf quaternion) {
         double cy = Math.cos(roll * 0.5);
@@ -83,26 +83,26 @@ public class MathUtil {
     }
 
     /**
-     * 将四元数转换为欧拉角，
+     * 사원수를 오일러 각으로 바꾼다.
      *
-     * @param q 四元数
-     * @return 按照 x(pitch) -> y(yaw) -> z(roll) 的顺序的三轴角数组。
+     * @param q 사원수
+     * @return x(pitch) -> y(yaw) -> z(roll) 순서의 세 축 각도 배열.
      */
     public static float[] toEulerAngles(Quaternionf q) {
         float[] angles = new float[3];
-        // pitch (x-axis rotation)
+        // pitch(x축 회전)
         double sinrCosp = 2 * (q.w() * q.x() + q.y() * q.z());
         double cosrCosp = 1 - 2 * (q.x() * q.x() + q.y() * q.y());
         angles[0] = (float) Math.atan2(sinrCosp, cosrCosp);
-        // yaw (y-axis rotation)
+        // yaw(y축 회전)
         double sinp = 2 * (q.w() * q.y() - q.x() * q.z());
         if (Math.abs(sinp) >= 1) {
-            // use 90 degrees if out of range
+            // 범위를 벗어나면 90도를 쓴다
             angles[1] = (float) copySign(Math.PI / 2, sinp);
         } else {
             angles[1] = (float) Math.asin(sinp);
         }
-        // roll (z-axis rotation)
+        // roll(z축 회전)
         double sinyCosp = 2 * (q.w() * q.z() + q.y() * q.x());
         double cosyCosp = 1 - 2 * (q.y() * q.y() + q.z() * q.z());
         angles[2] = (float) Math.atan2(sinyCosp, cosyCosp);
@@ -110,25 +110,25 @@ public class MathUtil {
     }
 
     /**
-     * 将四元数转换为欧拉角，
+     * 사원수를 오일러 각으로 바꾼다.
      *
-     * @param q 四元数，前三个数是虚部，最后一个数是实部。
-     * @return 按照 x(pitch) -> y(yaw) -> z(roll) 的顺序的三轴角数组。
+     * @param q 사원수. 앞의 세 수는 허수부, 마지막 수는 실수부다.
+     * @return x(pitch) -> y(yaw) -> z(roll) 순서의 세 축 각도 배열.
      */
     public static float[] toEulerAngles(float[] q) {
         float[] angles = new float[3];
-        // pitch (x-axis rotation)
+        // pitch(x축 회전)
         double sinrCosp = 2 * (q[3] * q[0] + q[1] * q[2]);
         double cosrCosp = 1 - 2 * (q[0] * q[0] + q[1] * q[1]);
         angles[0] = (float) Math.atan2(sinrCosp, cosrCosp);
-        // yaw (y-axis rotation)
+        // yaw(y축 회전)
         double sinp = 2 * (q[3] * q[1] - q[2] * q[0]);
         if (Math.abs(sinp) >= 1) {
-            angles[1] = (float) copySign(Math.PI / 2, sinp); // use 90 degrees if out of range
+            angles[1] = (float) copySign(Math.PI / 2, sinp); // 범위를 벗어나면 90도를 쓴다
         } else {
             angles[1] = (float) Math.asin(sinp);
         }
-        // roll (z-axis rotation)
+        // roll(z축 회전)
         double sinyCosp = 2 * (q[3] * q[2] + q[1] * q[0]);
         double cosyCosp = 1 - 2 * (q[1] * q[1] + q[2] * q[2]);
         angles[2] = (float) Math.atan2(sinyCosp, cosyCosp);
@@ -136,10 +136,10 @@ public class MathUtil {
     }
 
     /**
-     * 将负旋转角(弧度)转换为等效的正角(角度)
+     * 음의 회전각(라디안)을 같은 양의 각(도)으로 바꾼다
      *
-     * @param angle 弧度
-     * @return 等效正角(角度)
+     * @param angle 라디안
+     * @return 같은 양의 각(도)
      */
     public static double toDegreePositive(double angle) {
         while (angle < 0) {
@@ -149,19 +149,19 @@ public class MathUtil {
     }
 
     /**
-     * 求四元数的逆
+     * 사원수의 역을 구한다
      *
-     * @param quaternion 四元数，前三个数是虚部，最后一个数是实部。
-     * @return 四元数的逆
+     * @param quaternion 사원수. 앞의 세 수는 허수부, 마지막 수는 실수부다.
+     * @return 사원수의 역
      */
     public static float[] inverseQuaternion(float[] quaternion) {
         float[] result = new float[4];
-        // 求共轭
+        // 켤레 구하기
         result[0] = -quaternion[0];
         result[1] = -quaternion[1];
         result[2] = -quaternion[2];
         result[3] = quaternion[3];
-        // 求模长平方，进行归一化
+        // 크기의 제곱을 구해 정규화한다
         float m2 = quaternion[0] * quaternion[0] + quaternion[1] * quaternion[1] + quaternion[2] * quaternion[2] + quaternion[3] * quaternion[3];
         result[0] = result[0] / m2;
         result[1] = result[1] / m2;
@@ -320,7 +320,7 @@ public class MathUtil {
 
     public static float[] solveEquations(float[][] coefficients, float[] constants) {
         int n = constants.length;
-        // 高斯消元
+        // 가우스 소거
         for (int pivot = 0; pivot < n - 1; pivot++) {
             for (int row = pivot + 1; row < n; row++) {
                 float factor = coefficients[row][pivot] / coefficients[pivot][pivot];
@@ -330,7 +330,7 @@ public class MathUtil {
                 constants[row] -= constants[pivot] * factor;
             }
         }
-        // 回代求解
+        // 역대입으로 풀기
         float[] solution = new float[n];
         for (int i = n - 1; i >= 0; i--) {
             float sum = 0.0f;
@@ -344,8 +344,8 @@ public class MathUtil {
 
     public static float[] getRelativeQuaternion(float[] qa, float[] qb) {
         /*
-        Given two quaternions A and B, find the quaternion C such that the result of A multiplied by C is equal to B.
-        Solve the following equations:
+        두 사원수 A와 B가 주어질 때, A에 C를 곱한 결과가 B와 같아지는 사원수 C를 구한다.
+        다음 연립방정식을 푼다:
              aw*ci -ak*cj +aj*ck +ai*cw = bi
              ak*ci +aw*cj -ai*ck +aj*cw = bj
             -aj*ci +ai*cj +aw*ck +ak*cw = bk
@@ -363,8 +363,8 @@ public class MathUtil {
 
     public static Quaternionf getRelativeQuaternion(Quaternionf qa, Quaternionf qb) {
         /*
-        Given two quaternions A and B, find the quaternion C such that the result of A multiplied by C is equal to B.
-        Solve the following equations:
+        두 사원수 A와 B가 주어질 때, A에 C를 곱한 결과가 B와 같아지는 사원수 C를 구한다.
+        다음 연립방정식을 푼다:
              aw*ci -ak*cj +aj*ck +ai*cw = bi
              ak*ci +aw*cj -ai*ck +aj*cw = bj
             -aj*ci +ai*cj +aw*ck +ak*cw = bk
@@ -382,22 +382,22 @@ public class MathUtil {
     }
 
     /**
-     * 在两个变换矩阵之间旋转、位移的插值。
+     * 두 변환 행렬 사이의 회전, 이동 보간.
      *
-     * @param resultMatrix 输出结果将乘进此矩阵
+     * @param resultMatrix 출력 결과를 이 행렬에 곱한다
      */
     public static void applyMatrixLerp(Matrix4f fromMatrix, Matrix4f toMatrix, Matrix4f resultMatrix, float alpha) {
-        // 计算位移的插值
+        // 이동 보간 계산
         Vector3f translation = new Vector3f(toMatrix.m30() - fromMatrix.m30(), toMatrix.m31() - fromMatrix.m31(), toMatrix.m32() - fromMatrix.m32());
         translation.mul(alpha);
-        // 计算旋转的插值
+        // 회전 보간 계산
         Vector3f fromRotation = MathUtil.getEulerAngles(fromMatrix);
         float[] qFrom = MathUtil.toQuaternion(fromRotation.x(), fromRotation.y(), fromRotation.z());
         Vector3f toRotation = MathUtil.getEulerAngles(toMatrix);
         float[] qTo = MathUtil.toQuaternion(toRotation.x(), toRotation.y(), toRotation.z());
         float[] qRelative = getRelativeQuaternion(qFrom, qTo);
         Quaternionf qLerped = MathUtil.toQuaternion(MathUtil.slerp(QUATERNION_ONE, qRelative, alpha));
-        // 应用位移和旋转
+        // 이동과 회전 적용
         resultMatrix.m30(resultMatrix.m30() + translation.x);
         resultMatrix.m31(resultMatrix.m31() + translation.y);
         resultMatrix.m32(resultMatrix.m32() + translation.z);
@@ -407,7 +407,7 @@ public class MathUtil {
     public static Pair<Float, Vector3f> getAngleAndAxis(Quaternionf quaternion) {
         double angle = 2 * Math.acos(quaternion.w());
         double sin = Math.sin(angle / 2);
-        // 旋转角为 0 或者 2*PI，旋转结果与旋转轴无关
+        // 회전각이 0이거나 2*PI이면 회전 결과가 회전축과 관계없다
         if (sin == 0) {
             return Pair.of(0f, new Vector3f(0, 0, 0));
         }
@@ -419,7 +419,7 @@ public class MathUtil {
     public static Pair<Float, Vector3f> getAngleAndAxis(float[] quaternion) {
         double angle = 2 * Math.acos(quaternion[3]);
         double sin = Math.sin(angle / 2);
-        // 旋转角为 0 或者 2*PI，旋转结果与旋转轴无关
+        // 회전각이 0이거나 2*PI이면 회전 결과가 회전축과 관계없다
         if (sin == 0) {
             return Pair.of(0f, new Vector3f(0, 0, 0));
         }

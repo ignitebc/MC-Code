@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * 这个字段使用modifier还是太奇怪了，姑且只用于缓存
+ * 이 필드에 modifier를 쓰는 것은 아무래도 어색해서 우선 캐시 용도로만 쓴다
  */
 public class ExtraMovementModifier implements IAttachmentModifier<MoveSpeed, MoveSpeed> {
     public static final String ID = GunProperties.MOVE_SPEED.name();

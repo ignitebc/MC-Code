@@ -7,7 +7,7 @@ public class LoadingConfigEvent {
     private static final String CONFIG_NAME = "tacz-server.toml";
 
     /**
-     * 客户端和服务端启动时，会触发此事件
+     * 클라이언트와 서버가 시작할 때 이 이벤트가 발생한다
      */
     public static void onLoadingConfig(ModConfig config) {
         String fileName = config.getFileName();
@@ -17,13 +17,12 @@ public class LoadingConfigEvent {
     }
 
     /**
-     * 玩家进入服务端，或者服务端自动重置配置时，会触发此方法
+     * 플레이어가 서버에 들어오거나 서버가 설정을 자동으로 초기화할 때 이 메서드가 호출된다
      */
     public static void onReloadingConfig(ModConfig config) {
         String fileName = config.getFileName();
         if (CONFIG_NAME.equals(fileName)) {
             HeadShotAABBConfigRead.init();
-//            if (FabricLoader.getInstance().getEnvironmentType()== EnvType.CLIENT) ClientGunPackDownloadManager::downloadClientGunPack;
         }
     }
 }

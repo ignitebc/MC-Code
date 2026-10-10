@@ -54,7 +54,7 @@ public class GunAttachmentSlot extends Button implements IStackTooltip {
             return;
         }
 
-        // 渲染外框
+        // 바깥 테두리 그리기
         int x = this.getX();
         int y = this.getY();
         if (isHoveredOrFocused() || selected) {
@@ -62,7 +62,7 @@ public class GunAttachmentSlot extends Button implements IStackTooltip {
         } else {
             graphics.blit(RenderPipelines.GUI_TEXTURED, GunRefitScreen.SLOT_TEXTURE, x + 1, y + 1, 1, 1, width - 2, height - 2, GunRefitScreen.SLOT_SIZE, GunRefitScreen.SLOT_SIZE);
         }
-        // 渲染内部物品，或者空置时的icon
+        // 안쪽 아이템, 또는 비어 있을 때의 아이콘 그리기
         this.attachmentItem = iGun.getAttachment(gunItem, type);
         if (!attachmentItem.isEmpty()) {
             graphics.item(attachmentItem, x + 1, y + 1);

@@ -20,8 +20,8 @@ public class CameraRotateListener implements AnimationListener {
         float xRot = values[0];
         float yRot = values[1];
         float zRot = -values[2];
-        // 在关键帧中储存的旋转数值并不是摄像头的旋转数值，是世界箱体的旋转数值
-        // 最终需要存入rotationQuaternion的是摄像机的旋转（即世界箱体旋转的反相）
+        // 키프레임에 저장된 회전 값은 카메라가 아니라 월드 상자의 회전 값이다
+        // 결국 rotationQuaternion에 넣어야 하는 것은 카메라의 회전(곧 월드 상자 회전의 반대)이다
         if (blend) {
             float[] q = MathUtil.toQuaternion(xRot, yRot, zRot);
             Quaternionf quaternion = MathUtil.toQuaternion(q);

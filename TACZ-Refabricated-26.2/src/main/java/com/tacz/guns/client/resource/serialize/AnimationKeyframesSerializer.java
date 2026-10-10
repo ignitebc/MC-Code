@@ -15,7 +15,7 @@ public class AnimationKeyframesSerializer implements JsonDeserializer<AnimationK
     @Override
     public AnimationKeyframes deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
         Double2ObjectRBTreeMap<AnimationKeyframes.Keyframe> keyframes = new Double2ObjectRBTreeMap<>();
-        // 如果是数字
+        // 숫자이면
         if (json.isJsonPrimitive()) {
             if (json.getAsJsonPrimitive().isString()) {
                 GunMod.LOGGER.debug("Molang is not supported: \"{}\"", json.getAsString());
@@ -28,14 +28,14 @@ public class AnimationKeyframesSerializer implements JsonDeserializer<AnimationK
                 return new AnimationKeyframes(keyframes);
             }
         }
-        // 如果是数组
+        // 배열이면
         if (json.isJsonArray()) {
             Vector3f data = this.readVector3f(json.getAsJsonArray());
             var keyframe = new AnimationKeyframes.Keyframe(null, null, data, null);
             keyframes.put(0, keyframe);
             return new AnimationKeyframes(keyframes);
         }
-        // 如果是对象
+        // 객체이면
         if (json.isJsonObject()) {
             JsonObject jsonObject = json.getAsJsonObject();
             for (Map.Entry<String, JsonElement> entrySet : jsonObject.entrySet()) {
@@ -55,12 +55,12 @@ public class AnimationKeyframesSerializer implements JsonDeserializer<AnimationK
     }
 
     private AnimationKeyframes.Keyframe readKeyFrames(JsonElement element) {
-        // 如果是数组
+        // 배열이면
         if (element.isJsonArray()) {
             Vector3f data = this.readVector3f(element.getAsJsonArray());
             return new AnimationKeyframes.Keyframe(null, null, data, null);
         }
-        // 如果是对象
+        // 객체이면
         if (element.isJsonObject()) {
             JsonObject jsonObject = element.getAsJsonObject();
             String lerpMode = null;

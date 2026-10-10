@@ -41,7 +41,7 @@ public class AmmoItemRenderer implements BuiltinItemRendererRegistry.DynamicItem
         if (scale == null) {
             scale = new Vector3f(1, 1, 1);
         }
-        // 应用定位组的反向位移、旋转，使定位组的位置就是渲染中心
+        // 위치 그룹의 반대 이동·회전을 적용해 위치 그룹의 위치가 렌더링 중심이 되게 한다
         poseStack.translate(0, 1.5, 0);
         for (int i = nodePath.size() - 1; i >= 0; i--) {
             BedrockPart t = nodePath.get(i);
@@ -69,17 +69,17 @@ public class AmmoItemRenderer implements BuiltinItemRendererRegistry.DynamicItem
         Identifier ammoId = iAmmo.getAmmoId(stack);
         poseStack.pushPose();
         TimelessAPI.getClientAmmoIndex(ammoId).ifPresentOrElse(ammoIndex -> {
-            // 先获取 3D 模型，如果为空，统一使用 GUI 渲染
+            // 먼저 3D 모델을 얻고, 비어 있으면 모두 GUI 렌더링을 쓴다
             BedrockAmmoModel ammoModel = ammoIndex.getAmmoModel();
             Identifier modelTexture = ammoIndex.getModelTextureLocation();
-            // GUI 特殊渲染
+            // GUI 특수 렌더링
             if (transformType == GUI || ammoModel == null || modelTexture == null) {
                 poseStack.translate(0.5, 1.5, 0.5);
                 poseStack.mulPose(Axis.ZN.rotationDegrees(180));
                 collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(ammoIndex.getSlotTextureLocation()), (pose, buffer) -> {
-                    // 26.2: 必须使用回调参数 pose（= 提交那一刻 poseStack.last().copy() 的快照），
-                    // 而不是外层 poseStack —— 回调执行时它早已被 popPose/复用，
-                    // 结果就是图标被画到错误位置（物品栏一片空白）。
+                    // 26.2: 바깥 poseStack이 아니라 콜백 인자 pose(= 제출하는 순간 poseStack.last().copy()의 스냅숏)를 써야 한다.
+                    // 콜백이 실행될 때 바깥 poseStack은 이미 popPose되었거나 다시 쓰이고 있어,
+                    // 그러면 아이콘이 엉뚱한 위치에 그려진다(인벤토리가 텅 빔).
                     PoseStack tacz$snapshotPose = new PoseStack();
                     tacz$snapshotPose.last().pose().set(pose.pose());
                     tacz$snapshotPose.last().normal().set(pose.normal());
@@ -87,26 +87,26 @@ public class AmmoItemRenderer implements BuiltinItemRendererRegistry.DynamicItem
                 });
                 return;
             }
-            // 剩下的渲染
-            // 移动到模型原点
+            // 나머지 렌더링
+            // 모델 원점으로 이동
             poseStack.translate(0.5, 2, 0.5);
-            // 反转模型
+            // 모델 뒤집기
             poseStack.scale(-1, -1, 1);
-            // 应用定位组的变换（位移和旋转，不包括缩放）
+            // 위치 그룹의 변환 적용(이동과 회전, 크기는 제외)
             applyPositioningTransform(transformType, ammoIndex.getTransform().getScale(), ammoModel, poseStack);
-            // 应用 display 数据中的缩放
+            // display 데이터의 크기 적용
             applyScaleTransform(transformType, ammoIndex.getTransform().getScale(), poseStack);
-            // 渲染子弹盒模型
+            // 탄약 상자 모델 렌더링
             RenderType renderType = RenderTypes.entityCutout(modelTexture);
             ammoModel.submit(poseStack, transformType, collector, renderType, pPackedLight, pPackedOverlay);
         }, () -> {
-            // 没有这个 ammoID，渲染个错误材质提醒别人
+            // 이 ammoID가 없으면 오류 텍스처를 그려 알린다
             poseStack.translate(0.5, 1.5, 0.5);
             poseStack.mulPose(Axis.ZN.rotationDegrees(180));
             collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(MissingTextureAtlasSprite.getLocation()), (pose, buffer) -> {
-                // 26.2: 必须使用回调参数 pose（= 提交那一刻 poseStack.last().copy() 的快照），
-                // 而不是外层 poseStack —— 回调执行时它早已被 popPose/复用，
-                // 结果就是图标被画到错误位置（物品栏一片空白）。
+                // 26.2: 바깥 poseStack이 아니라 콜백 인자 pose(= 제출하는 순간 poseStack.last().copy()의 스냅숏)를 써야 한다.
+                // 콜백이 실행될 때 바깥 poseStack은 이미 popPose되었거나 다시 쓰이고 있어,
+                // 그러면 아이콘이 엉뚱한 위치에 그려진다(인벤토리가 텅 빔).
                 PoseStack tacz$snapshotPose = new PoseStack();
                 tacz$snapshotPose.last().pose().set(pose.pose());
                 tacz$snapshotPose.last().normal().set(pose.normal());

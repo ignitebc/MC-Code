@@ -51,8 +51,8 @@ public class AttachmentRender implements IFunctionalSubmitter {
                     model = lodModel.getLeft();
                     texture = lodModel.getRight();
                 }
-                // 多传一个 texture：瞄具镜身可能要换成「被目镜掩码裁剪」的 RenderType，
-                // 而那需要按贴图构造。model 内部会自行判断要不要用（见 resolveBodyRenderType）。
+                // 텍스처를 하나 더 넘긴다: 조준경 몸체는 "접안렌즈 마스크로 잘리는" RenderType으로 바뀔 수 있고,
+                // 그것은 텍스처로 만들어야 한다. 쓸지 말지는 model 안에서 판단한다(resolveBodyRenderType 참고).
                 model.submit(attachmentItem, gunItem, poseStack, transformType, collector,
                         RenderTypes.entityCutout(texture), texture, light, overlay);
             }
@@ -86,23 +86,23 @@ public class AttachmentRender implements IFunctionalSubmitter {
     }
 
     /**
-     * 【r44】legacy VertexConsumer 路径，在 26.2 <b>已无实际作用</b>，故清空实现。
+     * [r44] 예전 VertexConsumer 경로. 26.2에서는 <b>실제로 하는 일이 없어</b> 구현을 비웠다.
      *
-     * <p>它原先经 {@code bedrockGunModel.delegateRender(...)} 把配件渲染排到枪械模型之后。
-     * 但 26.2 的 {@code BedrockModel#submit}（现行路径）里，{@code delegateRenderers}
-     * 是被<b>直接清空、从不执行</b>的（该方法自带注释说明：legacy delegate renderer
-     * 无法安全地从 VertexConsumer 回调里提交嵌套 RenderType）。
-     * 唯一还会消费 delegate 的 {@code renderInto(...)} 属于旧 render 链，
-     * 而该链的入口 {@code BedrockGunModel#render} 已随本轮清理一并删除。</p>
+     * <p>원래는 {@code bedrockGunModel.delegateRender(...)}로 부착물 렌더링을 총기 모델 뒤로 미뤘다.
+     * 하지만 26.2의 {@code BedrockModel#submit}(현재 경로)에서 {@code delegateRenderers}는
+     * <b>바로 비워지고 한 번도 실행되지 않는다</b>(그 메서드 주석에 따르면 예전 위임 렌더러는
+     * VertexConsumer 콜백에서 중첩 RenderType을 안전하게 제출할 수 없다).
+     * delegate를 아직 쓰는 유일한 {@code renderInto(...)}는 예전 render 사슬에 속하며,
+     * 그 사슬의 입구 {@code BedrockGunModel#render}는 이번 정리에서 함께 지웠다.</p>
      *
-     * <p>配件的实际渲染走 {@link #submitAttachment}，由 {@code IFunctionalCollectorRenderer}
-     * 的 {@code submit(...)} 驱动 —— 见本类上方那个方法。</p>
+     * <p>부착물의 실제 렌더링은 {@link #submitAttachment}가 맡고, {@code IFunctionalCollectorRenderer}의
+     * {@code submit(...)}이 구동한다 — 이 클래스 위쪽의 그 메서드 참고.</p>
      *
-     * <p>保留空实现是因为本方法是 {@code IFunctionalRenderer} 的接口约定，
-     * 直接删掉会破坏实现关系。</p>
+     * <p>빈 구현을 남긴 것은 이 메서드가 {@code IFunctionalRenderer}의 인터페이스 약속이라
+     * 지우면 구현 관계가 깨지기 때문이다.</p>
      */
     @Override
     public void render(PoseStack poseStack, VertexConsumer vertexBuffer, ItemDisplayContext transformType, int light, int overlay) {
-        // no-op：见上方 javadoc。配件渲染统一走 submitAttachment。
+        // 아무것도 하지 않음: 위 javadoc 참고. 부착물 렌더링은 submitAttachment로 통일한다.
     }
 }

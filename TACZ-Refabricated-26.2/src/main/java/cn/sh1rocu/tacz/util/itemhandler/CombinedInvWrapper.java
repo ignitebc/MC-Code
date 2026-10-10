@@ -3,9 +3,9 @@ package cn.sh1rocu.tacz.util.itemhandler;
 import net.minecraft.world.item.ItemStack;
 
 public class CombinedInvWrapper implements IItemHandlerModifiable {
-    protected final IItemHandlerModifiable[] itemHandler; // the handlers
-    protected final int[] baseIndex; // index-offsets of the different handlers
-    protected final int slotCount; // number of total slots
+    protected final IItemHandlerModifiable[] itemHandler; // 핸들러 목록
+    protected final int[] baseIndex; // 각 핸들러의 인덱스 오프셋
+    protected final int slotCount; // 전체 칸 수
 
     public CombinedInvWrapper(IItemHandlerModifiable... itemHandler) {
         this.itemHandler = itemHandler;
@@ -18,7 +18,7 @@ public class CombinedInvWrapper implements IItemHandlerModifiable {
         this.slotCount = index;
     }
 
-    // returns the handler index for the slot
+    // 칸 번호에 해당하는 핸들러 인덱스를 돌려준다
     protected int getIndexForSlot(int slot) {
         if (slot < 0)
             return -1;

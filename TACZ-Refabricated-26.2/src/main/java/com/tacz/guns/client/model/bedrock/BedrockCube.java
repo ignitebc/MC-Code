@@ -7,22 +7,22 @@ public interface BedrockCube {
     void compile(PoseStack.Pose pose, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha);
 
     /**
-     * 只读访问构成本立方体的六个面。
+     * 이 육면체를 이루는 여섯 면에 읽기 전용으로 접근한다.
      *
-     * <p><b>为什么放在接口上而不是某个实现类上：</b>
-     * 两个实现 {@code BedrockCubeBox} 与 {@code BedrockCubePerFace} 都持有
-     * 完全同构的 {@code BedrockPolygon[6]} 字段，只是 UV 来源不同
-     * （前者按整体 uv 偏移推算，后者按 face_uv 逐面指定）。
-     * 几何顶点坐标的算法两者完全一致。</p>
+     * <p><b>구현 클래스가 아니라 인터페이스에 둔 이유:</b>
+     * 두 구현 {@code BedrockCubeBox}와 {@code BedrockCubePerFace}는 모두
+     * 구조가 똑같은 {@code BedrockPolygon[6]} 필드를 갖고, UV 출처만 다르다
+     * (앞쪽은 전체 uv 오프셋으로 계산, 뒤쪽은 face_uv로 면마다 지정).
+     * 형상 정점 좌표 계산법은 둘이 완전히 같다.</p>
      *
-     * <p>瞄具掩码（{@code ScopeMaskRenderer}）需要绕开 {@code VertexConsumer}
-     * 自建顶点缓冲，因此不能用 {@link #compile}，但必须复用<b>完全相同</b>的顶点数据，
-     * 否则掩码会与画面错位。</p>
+     * <p>조준경 마스크({@code ScopeMaskRenderer})는 {@code VertexConsumer}를 거치지 않고
+     * 정점 버퍼를 직접 만들어야 해서 {@link #compile}을 쓸 수 없지만, <b>완전히 같은</b> 정점 데이터를 다시 써야 한다.
+     * 아니면 마스크와 화면이 어긋난다.</p>
      *
-     * <p>第一版把访问器只加在 {@code BedrockCubeBox} 上并用 {@code instanceof} 过滤，
-     * 结果实测目镜掩码全黑 —— 因为默认枪包 <b>161 个目镜立方体
-     * 无一例外全是 {@code BedrockCubePerFace}</b>（它们都带 {@code face_uv}），
-     * 被那个 {@code instanceof} 百分之百滤掉了。教训：不要用实现类做能力判断。</p>
+     * <p>첫 판은 접근자를 {@code BedrockCubeBox}에만 두고 {@code instanceof}로 걸렀는데,
+     * 실측해 보니 접안렌즈 마스크가 온통 검었다 — 기본 총기 팩의 <b>접안렌즈 육면체 161개가
+     * 하나도 빠짐없이 {@code BedrockCubePerFace}</b>였기 때문이다(모두 {@code face_uv}를 가짐).
+     * 그 {@code instanceof}가 100% 걸러 냈다. 교훈: 구현 클래스로 능력을 판단하지 않는다.</p>
      */
     BedrockPolygon[] getPolygons();
 }

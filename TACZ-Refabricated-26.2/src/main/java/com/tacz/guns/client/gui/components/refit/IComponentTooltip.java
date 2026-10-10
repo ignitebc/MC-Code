@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public interface IComponentTooltip {
     /**
-     * 获取物品的文本提示
+     * 아이템의 안내 문구를 얻는다
      */
     static List<Component> getTooltipFromItem(ItemStack stack) {
         Options options = Minecraft.getInstance().options;
@@ -22,9 +22,9 @@ public interface IComponentTooltip {
     }
 
     /**
-     * 添加此接口，会调用此渲染文本提示
+     * 이 인터페이스를 붙이면 이 메서드로 안내 문구를 그린다
      *
-     * @param consumer 需要渲染的文本提示
+     * @param consumer 그릴 안내 문구
      */
     void renderTooltip(Consumer<List<Component>> consumer);
 }

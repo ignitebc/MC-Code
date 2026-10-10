@@ -29,60 +29,60 @@ import java.nio.ByteBuffer;
 import java.util.Objects;
 
 /**
- * Package-private abstract base implementation of an {@link AccessorData}
+ * {@link AccessorData}의 패키지 내부용 추상 기반 구현
  */
 abstract class AbstractAccessorData implements AccessorData {
     /**
-     * The component type
+     * 성분 종류
      */
     private final Class<?> componentType;
 
     /**
-     * The byte buffer of the buffer view that the accessor
-     * refers to
+     * 접근자가 참조하는 버퍼 뷰의
+     * 바이트 버퍼
      */
     private final ByteBuffer bufferViewByteBuffer;
 
     /**
-     * The offset for the accessor inside the byte buffer of
-     * the buffer view
+     * 버퍼 뷰의 바이트 버퍼 안에서
+     * 접근자가 시작하는 오프셋
      */
     private final int byteOffset;
 
     /**
-     * The number of elements
+     * 요소 수
      */
     private final int numElements;
 
     /**
-     * The number of components per element
+     * 요소당 성분 수
      */
     private final int numComponentsPerElement;
 
     /**
-     * The number of bytes per component
+     * 성분당 바이트 수
      */
     private final int numBytesPerComponent;
 
     /**
-     * The stride, in number of bytes, between two consecutive elements
+     * 연속한 두 요소 사이의 간격(바이트 수)
      */
     private final int byteStridePerElement;
 
     /**
-     * Default constructor
+     * 기본 생성자
      *
-     * @param componentType           The component type
-     * @param bufferViewByteBuffer    The byte buffer of the buffer view
-     * @param byteOffset              The byte offset in the buffer view
-     * @param numElements             The number of elements
-     * @param numComponentsPerElement The number of components per element
-     * @param numBytesPerComponent    The number of bytes per component
-     * @param byteStride              The byte stride between two elements. If this
-     *                                is <code>null</code> or <code>0</code>, then the stride will
-     *                                be the size of one element.
-     * @throws NullPointerException If the bufferViewByteBuffer is
-     *                              <code>null</code>
+     * @param componentType           성분 종류
+     * @param bufferViewByteBuffer    버퍼 뷰의 바이트 버퍼
+     * @param byteOffset              버퍼 뷰 안의 바이트 오프셋
+     * @param numElements             요소 수
+     * @param numComponentsPerElement 요소당 성분 수
+     * @param numBytesPerComponent    성분당 바이트 수
+     * @param byteStride              두 요소 사이의 바이트 간격. 이 값이
+     *                                <code>null</code>이나 <code>0</code>이면 간격은
+     *                                요소 하나의 크기가 된다.
+     * @throws NullPointerException bufferViewByteBuffer가
+     *                              <code>null</code>일 때
      */
     AbstractAccessorData(Class<?> componentType,
                          ByteBuffer bufferViewByteBuffer, int byteOffset,
@@ -126,12 +126,12 @@ abstract class AbstractAccessorData implements AccessorData {
     }
 
     /**
-     * Returns the index of the byte in the byte buffer where the specified
-     * component starts
+     * 지정한 성분이 시작하는 바이트 버퍼 안의
+     * 바이트 인덱스를 돌려준다
      *
-     * @param elementIndex   The element index
-     * @param componentIndex The component index
-     * @return The byte index
+     * @param elementIndex   요소 인덱스
+     * @param componentIndex 성분 인덱스
+     * @return 바이트 인덱스
      */
     protected final int getByteIndex(int elementIndex, int componentIndex) {
         return byteOffset + elementIndex * byteStridePerElement + componentIndex * numBytesPerComponent;
@@ -139,27 +139,27 @@ abstract class AbstractAccessorData implements AccessorData {
 
 
     /**
-     * Returns the underlying byte buffer
+     * 바탕 바이트 버퍼를 돌려준다
      *
-     * @return The byte buffer
+     * @return 바이트 버퍼
      */
     protected final ByteBuffer getBufferViewByteBuffer() {
         return bufferViewByteBuffer;
     }
 
     /**
-     * Returns the byte stride per element
+     * 요소당 바이트 간격을 돌려준다
      *
-     * @return The byte stride
+     * @return 바이트 간격
      */
     protected final int getByteStridePerElement() {
         return byteStridePerElement;
     }
 
     /**
-     * Returns the number of bytes per component
+     * 성분당 바이트 수를 돌려준다
      *
-     * @return The number of bytes per component
+     * @return 성분당 바이트 수
      */
     protected final int getNumBytesPerComponent() {
         return numBytesPerComponent;

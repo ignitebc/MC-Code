@@ -6,58 +6,57 @@ import java.util.List;
 public class Animation {
     private String name;
     /**
-     * An array of animation channels. An animation channel combines an
-     * animation sampler with a target property being animated. Different
-     * channels of the same animation **MUST NOT** have the same targets.
-     * (required)<br>
-     * Minimum number of items: 1<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;An animation channel combines an animation sampler with a
-     * target property being animated. (optional)
+     * 애니메이션 채널 배열. 애니메이션 채널은 애니메이션 샘플러와
+     * 애니메이션 대상 속성을 묶는다. 같은 애니메이션의 서로 다른
+     * 채널은 같은 대상을 가지면 **안 된다**.
+     * (필수)<br>
+     * 최소 항목 수: 1<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;애니메이션 샘플러와 애니메이션 대상 속성을 묶는
+     * 애니메이션 채널. (선택)
      */
     private List<AnimationChannel> channels;
 
     /**
-     * An array of animation samplers. An animation sampler combines
-     * timestamps with a sequence of output values and defines an
-     * interpolation algorithm. (required)<br>
-     * Minimum number of items: 1<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;An animation sampler combines timestamps with a sequence
-     * of output values and defines an interpolation algorithm. (optional)
+     * 애니메이션 샘플러 배열. 애니메이션 샘플러는 타임스탬프와
+     * 출력 값 시퀀스를 묶고 보간 알고리즘을
+     * 정의한다. (필수)<br>
+     * 최소 항목 수: 1<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;타임스탬프와 출력 값 시퀀스를 묶고
+     * 보간 알고리즘을 정의하는 애니메이션 샘플러. (선택)
      */
     private List<AnimationSampler> samplers;
 
     /**
-     * An array of animation channels. An animation channel combines an
-     * animation sampler with a target property being animated. Different
-     * channels of the same animation **MUST NOT** have the same targets.
-     * (required)<br>
-     * Minimum number of items: 1<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;An animation channel combines an animation sampler with a
-     * target property being animated. (optional)
+     * 애니메이션 채널 배열. 애니메이션 채널은 애니메이션 샘플러와
+     * 애니메이션 대상 속성을 묶는다. 같은 애니메이션의 서로 다른
+     * 채널은 같은 대상을 가지면 **안 된다**.
+     * (필수)<br>
+     * 최소 항목 수: 1<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;애니메이션 샘플러와 애니메이션 대상 속성을 묶는
+     * 애니메이션 채널. (선택)
      *
-     * @return The channels
+     * @return channels
      */
     public List<AnimationChannel> getChannels() {
         return this.channels;
     }
 
     /**
-     * An array of animation channels. An animation channel combines an
-     * animation sampler with a target property being animated. Different
-     * channels of the same animation **MUST NOT** have the same targets.
-     * (required)<br>
-     * Minimum number of items: 1<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;An animation channel combines an animation sampler with a
-     * target property being animated. (optional)
+     * 애니메이션 채널 배열. 애니메이션 채널은 애니메이션 샘플러와
+     * 애니메이션 대상 속성을 묶는다. 같은 애니메이션의 서로 다른
+     * 채널은 같은 대상을 가지면 **안 된다**.
+     * (필수)<br>
+     * 최소 항목 수: 1<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;애니메이션 샘플러와 애니메이션 대상 속성을 묶는
+     * 애니메이션 채널. (선택)
      *
-     * @param channels The channels to set
-     * @throws NullPointerException     If the given value is <code>null</code>
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param channels 설정할 channels
+     * @throws NullPointerException     주어진 값이 <code>null</code>일 때
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setChannels(List<AnimationChannel> channels) {
         if (channels == null) {
@@ -70,12 +69,12 @@ public class Animation {
     }
 
     /**
-     * Add the given channels. The channels of this instance will be replaced
-     * with a list that contains all previous elements, and additionally the
-     * new element.
+     * 주어진 channels를 추가한다. 이 인스턴스의 channels는 이전 요소 전체에
+     * 새 요소를 더한 목록으로
+     * 바뀐다.
      *
-     * @param element The element
-     * @throws NullPointerException If the given element is <code>null</code>
+     * @param element 요소
+     * @throws NullPointerException 주어진 요소가 <code>null</code>일 때
      */
     public void addChannels(AnimationChannel element) {
         if (element == null) {
@@ -91,12 +90,12 @@ public class Animation {
     }
 
     /**
-     * Remove the given channels. The channels of this instance will be
-     * replaced with a list that contains all previous elements, except for
-     * the removed one.
+     * 주어진 channels를 제거한다. 이 인스턴스의 channels는 제거한 요소를 뺀
+     * 이전 요소 전체를 담은 목록으로
+     * 바뀐다.
      *
-     * @param element The element
-     * @throws NullPointerException If the given element is <code>null</code>
+     * @param element 요소
+     * @throws NullPointerException 주어진 요소가 <code>null</code>일 때
      */
     public void removeChannels(AnimationChannel element) {
         if (element == null) {
@@ -112,33 +111,32 @@ public class Animation {
     }
 
     /**
-     * An array of animation samplers. An animation sampler combines
-     * timestamps with a sequence of output values and defines an
-     * interpolation algorithm. (required)<br>
-     * Minimum number of items: 1<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;An animation sampler combines timestamps with a sequence
-     * of output values and defines an interpolation algorithm. (optional)
+     * 애니메이션 샘플러 배열. 애니메이션 샘플러는 타임스탬프와
+     * 출력 값 시퀀스를 묶고 보간 알고리즘을
+     * 정의한다. (필수)<br>
+     * 최소 항목 수: 1<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;타임스탬프와 출력 값 시퀀스를 묶고
+     * 보간 알고리즘을 정의하는 애니메이션 샘플러. (선택)
      *
-     * @return The samplers
+     * @return samplers
      */
     public List<AnimationSampler> getSamplers() {
         return this.samplers;
     }
 
     /**
-     * An array of animation samplers. An animation sampler combines
-     * timestamps with a sequence of output values and defines an
-     * interpolation algorithm. (required)<br>
-     * Minimum number of items: 1<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;An animation sampler combines timestamps with a sequence
-     * of output values and defines an interpolation algorithm. (optional)
+     * 애니메이션 샘플러 배열. 애니메이션 샘플러는 타임스탬프와
+     * 출력 값 시퀀스를 묶고 보간 알고리즘을
+     * 정의한다. (필수)<br>
+     * 최소 항목 수: 1<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;타임스탬프와 출력 값 시퀀스를 묶고
+     * 보간 알고리즘을 정의하는 애니메이션 샘플러. (선택)
      *
-     * @param samplers The samplers to set
-     * @throws NullPointerException     If the given value is <code>null</code>
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param samplers 설정할 samplers
+     * @throws NullPointerException     주어진 값이 <code>null</code>일 때
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setSamplers(List<AnimationSampler> samplers) {
         if (samplers == null) {
@@ -151,12 +149,12 @@ public class Animation {
     }
 
     /**
-     * Add the given samplers. The samplers of this instance will be replaced
-     * with a list that contains all previous elements, and additionally the
-     * new element.
+     * 주어진 samplers를 추가한다. 이 인스턴스의 samplers는 이전 요소 전체에
+     * 새 요소를 더한 목록으로
+     * 바뀐다.
      *
-     * @param element The element
-     * @throws NullPointerException If the given element is <code>null</code>
+     * @param element 요소
+     * @throws NullPointerException 주어진 요소가 <code>null</code>일 때
      */
     public void addSamplers(AnimationSampler element) {
         if (element == null) {
@@ -172,12 +170,12 @@ public class Animation {
     }
 
     /**
-     * Remove the given samplers. The samplers of this instance will be
-     * replaced with a list that contains all previous elements, except for
-     * the removed one.
+     * 주어진 samplers를 제거한다. 이 인스턴스의 samplers는 제거한 요소를 뺀
+     * 이전 요소 전체를 담은 목록으로
+     * 바뀐다.
      *
-     * @param element The element
-     * @throws NullPointerException If the given element is <code>null</code>
+     * @param element 요소
+     * @throws NullPointerException 주어진 요소가 <code>null</code>일 때
      */
     public void removeSamplers(AnimationSampler element) {
         if (element == null) {

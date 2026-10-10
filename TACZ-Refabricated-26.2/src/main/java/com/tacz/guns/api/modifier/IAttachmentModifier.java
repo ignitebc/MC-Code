@@ -11,55 +11,55 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 配件属性修改器
+ * 부착물 속성 수정자
  *
- * @param <T> Json 读取后处理的数据类型
- * @param <K> 配件缓存属性值
+ * @param <T> JSON을 읽은 뒤 처리한 데이터 타입
+ * @param <K> 부착물 캐시 속성 값
  */
 public interface IAttachmentModifier<T, K> {
     /**
-     * 配件属性修改器，同时也用于 Json 读取时作为字段名进行识别
+     * 부착물 속성 수정자. JSON을 읽을 때 필드 이름으로도 쓴다
      *
-     * @return Json 读取时的字段名
+     * @return JSON을 읽을 때의 필드 이름
      */
     String getId();
 
     /**
-     * 可选字段，为了兼容旧版本 json 文件设立此方法
+     * 선택 필드. 예전 버전 JSON 파일과 호환하려고 둔 메서드다
      *
-     * @return 旧版本的配件属性修改的 json 字段名
+     * @return 예전 버전의 부착물 속성 수정 JSON 필드 이름
      */
     default String getOptionalFields() {
         return StringUtils.EMPTY;
     }
 
     /**
-     * 从 Json 读取数据
+     * JSON에서 데이터를 읽는다
      *
-     * @param json 输入的 json 字符串
-     * @return 读取后经过处理的 json 对象
+     * @param json 입력 JSON 문자열
+     * @return 읽고 처리한 JSON 객체
      */
     JsonProperty<T> readJson(String json);
 
     /**
-     * 初始化缓存，用于填入枪械的默认数据
+     * 캐시를 초기화한다. 총기의 기본 데이터를 채울 때 쓴다
      *
-     * @param gunItem 当前枪械物品
-     * @param gunData 枪械数据
-     * @return 初始化读取的数据
+     * @param gunItem 현재 총기 아이템
+     * @param gunData 총기 데이터
+     * @return 초기화해 읽은 데이터
      */
     CacheValue<K> initCache(ItemStack gunItem, GunData gunData);
 
     /**
-     * 计算，用于将各个配件的数据与枪械数据求值，最终计算出来
+     * 계산. 각 부착물의 데이터와 총기 데이터를 함께 계산해 최종 값을 낸다
      *
-     * @param modifiedValues 各个配件的数据值
-     * @param cache          缓存的枪械默认数值
+     * @param modifiedValues 각 부착물의 데이터 값
+     * @param cache          캐시한 총기 기본값
      */
     void eval(List<T> modifiedValues, CacheValue<K> cache);
 
     /**
-     * 获取改装界面的配置属性条相关数据
+     * 개조 화면의 속성 막대 관련 데이터를 얻는다
      */
     @Environment(EnvType.CLIENT)
     default List<DiagramsData> getPropertyDiagramsData(ItemStack gunItem, GunData gunData, AttachmentCacheProperty cacheProperty) {
@@ -67,7 +67,7 @@ public interface IAttachmentModifier<T, K> {
     }
 
     /**
-     * 用于获取改装界面的配置属性条个数，用于按钮的偏移
+     * 개조 화면의 속성 막대 수를 얻는다. 버튼 위치를 옮기는 데 쓴다
      */
     @Environment(EnvType.CLIENT)
     default int getDiagramsDataSize() {
@@ -75,16 +75,16 @@ public interface IAttachmentModifier<T, K> {
     }
 
     /**
-     * 属性条数据
+     * 속성 막대 데이터
      *
-     * @param defaultPercent   默认枪械值百分比
-     * @param modifierPercent  修改值百分比
-     * @param modifier         修改值，用于与默认值做对比判断
-     * @param titleKey         属性名称语言文件 key
-     * @param positivelyString 大于默认数值时，显示的文本
-     * @param negativeString   小于默认数值时，显示的文本
-     * @param defaultString    等于默认数值时，显示的文本
-     * @param positivelyBetter true 时，大于默认数值显示为绿色，否则显示红色
+     * @param defaultPercent   기본 총기 값 백분율
+     * @param modifierPercent  보정 값 백분율
+     * @param modifier         보정 값. 기본값과 비교해 판단하는 데 쓴다
+     * @param titleKey         속성 이름 언어 파일 키
+     * @param positivelyString 기본값보다 클 때 표시할 글자
+     * @param negativeString   기본값보다 작을 때 표시할 글자
+     * @param defaultString    기본값과 같을 때 표시할 글자
+     * @param positivelyBetter true면 기본값보다 클 때 초록색, 아니면 빨간색으로 표시한다
      */
     @Environment(EnvType.CLIENT)
     record DiagramsData(double defaultPercent, double modifierPercent, Number modifier,

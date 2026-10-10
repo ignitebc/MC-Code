@@ -121,7 +121,7 @@ public class StatueBlock extends BaseEntityBlock {
 
         if (facing.getAxis() == Direction.Axis.Y) {
             if (half.equals(DoubleBlockHalf.LOWER) && facing == Direction.UP || half.equals(DoubleBlockHalf.UPPER) && facing == Direction.DOWN) {
-                // 拆一半另外一半跟着没
+                // 절반을 부수면 나머지 절반도 함께 사라진다
                 if (!facingState.is(this)) {
                     return Blocks.AIR.defaultBlockState();
                 }
@@ -131,8 +131,8 @@ public class StatueBlock extends BaseEntityBlock {
         return state;
     }
 
-    // 26.2: onRemove 已移除，方块实体移除时自动清理
-    // 如需掉落物品，在 StatueBlockEntity.setRemoved() 中处理
+    // 26.2: onRemove는 제거되었고, 블록 엔티티를 제거하면 자동으로 정리된다
+    // 아이템을 떨어뜨려야 하면 StatueBlockEntity.setRemoved()에서 처리한다
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
@@ -140,37 +140,37 @@ public class StatueBlock extends BaseEntityBlock {
     }
 
     /**
-     * 【第 39 轮】从自建的 {@code IBlockExtension#tacz$onBlockExploded} + {@code ExplosionMixin}
-     * 迁移到 <b>26.2 原版官方扩展点</b>。
+     * [39차] 직접 만든 {@code IBlockExtension#tacz$onBlockExploded} + {@code ExplosionMixin}에서
+     * <b>26.2 바닐라 공식 확장 지점</b>으로 옮겼다.
      *
-     * <h2>为什么原来的 mixin 必须废弃</h2>
-     * 旧实现 {@code @Mixin(Explosion.class)} 注入 {@code finalizeExplosion}，
-     * 但 26.2 里 {@code net.minecraft.world.level.Explosion} <b>已经变成接口</b>
-     * （{@code extends Object}、零字段、方法全是 {@code level()}/{@code radius()} 这类访问器）：
+     * <h2>예전 mixin을 버려야 했던 이유</h2>
+     * 예전 구현은 {@code @Mixin(Explosion.class)}로 {@code finalizeExplosion}에 주입했지만,
+     * 26.2에서 {@code net.minecraft.world.level.Explosion}은 <b>인터페이스가 되었다</b>
+     * ({@code extends Object}, 필드 0개, 메서드는 모두 {@code level()}/{@code radius()} 같은 접근자):
      * <ul>
-     *   <li>{@code finalizeExplosion} —— 不存在；</li>
-     *   <li>{@code @Shadow @Final public Level level} —— 接口没有字段，无从 shadow。</li>
+     *   <li>{@code finalizeExplosion} — 없다.</li>
+     *   <li>{@code @Shadow @Final public Level level} — 인터페이스에는 필드가 없어 shadow할 수 없다.</li>
      * </ul>
-     * 真正干活的实现类是新增的 {@code ServerExplosion}。
+     * 실제로 일을 하는 구현 클래스는 새로 생긴 {@code ServerExplosion}이다.
      *
-     * <h2>为什么不改注入 {@code ServerExplosion}，而是直接覆写</h2>
-     * 反汇编 {@code ServerExplosion#interactWithBlocks} 可见它对每个方块调用的是：
+     * <h2>{@code ServerExplosion}에 주입하지 않고 재정의한 이유</h2>
+     * {@code ServerExplosion#interactWithBlocks}를 역어셈블하면 블록마다 다음을 호출한다:
      * <pre>
      *   BlockState.onExplosionHit(ServerLevel, BlockPos, Explosion, BiConsumer&lt;ItemStack,BlockPos&gt;)
      * </pre>
-     * 而 {@code onExplosionHit} 正是 {@code BlockBehaviour} 上的 <b>public 可覆写方法</b>，
-     * 原版已有 9 个方块在用它做同类定制（{@code DoorBlock}、{@code BellBlock}、
-     * {@code BeehiveBlock}、{@code AbstractCandleBlock} 等）。
-     * 也就是说 26.2 已经<b>官方提供</b>了这个扩展点，再用 mixin 属于多此一举
-     * —— 少一个 mixin 就少一处版本升级时会断的地方。
+     * 그리고 {@code onExplosionHit}는 {@code BlockBehaviour}의 <b>public 재정의 가능 메서드</b>이며,
+     * 바닐라 블록 9개({@code DoorBlock}, {@code BellBlock},
+     * {@code BeehiveBlock}, {@code AbstractCandleBlock} 등)가 이미 같은 용도로 쓰고 있다.
+     * 즉 26.2가 이 확장 지점을 <b>공식으로 제공</b>하므로 mixin을 또 쓰는 것은 군더더기다
+     * — mixin이 하나 줄면 버전을 올릴 때 깨질 곳도 하나 준다.
      *
-     * <p>行为等价性：旧的 {@code tacz$onBlockExploded} 默认实现做的是
-     * 「设为空气 + {@code wasExploded}」，而这正是父类默认实现的核心部分
-     * （{@code BlockBehaviour#onExplosionHit} 会按 {@code dropFromExplosion} /
-     * {@code hasBlockEntity} 处理掉落后置空方块并回调 {@code wasExploded}）。
-     * 因此这里直接调 {@code super} 即可，语义不变。</p>
+     * <p>동작 동등성: 예전 {@code tacz$onBlockExploded} 기본 구현은
+     * "공기로 바꾸기 + {@code wasExploded}"였고, 이것이 바로 부모 기본 구현의 핵심이다
+     * ({@code BlockBehaviour#onExplosionHit}는 {@code dropFromExplosion} /
+     * {@code hasBlockEntity}에 따라 드롭을 처리한 뒤 블록을 비우고 {@code wasExploded}를 호출한다).
+     * 그래서 여기서는 {@code super}만 호출하면 되고 의미는 바뀌지 않는다.</p>
      *
-     * <p>雕像的物品掉落仍由 {@code StatueBlockEntity#setRemoved()} 负责，与本方法无关。</p>
+     * <p>조각상의 아이템 드롭은 계속 {@code StatueBlockEntity#setRemoved()}가 맡으며 이 메서드와는 관계없다.</p>
      */
     @Override
     protected void onExplosionHit(BlockState state, ServerLevel level, BlockPos pos, Explosion explosion,

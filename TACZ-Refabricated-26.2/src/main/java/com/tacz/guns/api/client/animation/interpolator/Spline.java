@@ -17,7 +17,7 @@ public class Spline implements Interpolator {
             return new float[]{0, 0, 0, 1};
         }
         
-        // 简单线性插值作为基础实现
+        // 기본 구현으로 단순 선형 보간을 쓴다
         float[] start = content.values[indexFrom];
         float[] end = content.values[indexTo];
         

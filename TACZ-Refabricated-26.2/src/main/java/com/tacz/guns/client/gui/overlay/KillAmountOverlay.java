@@ -11,29 +11,29 @@ import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix3x2fStack;
 
 /**
- * 击杀数提示。<b>已按上游 1.21.1 逐项对齐</b>。
+ * 처치 수 안내. <b>원본 1.21.1과 항목별로 맞췄다</b>.
  *
- * <h2>此前与上游的差异（用户实测对照图 57 / 01）</h2>
- * 旧实现只是「把功能做出来」，样式与上游完全不同：
+ * <h2>원본과 달랐던 점(사용자 실측 대조 그림 57 / 01)</h2>
+ * 예전 구현은 "기능만 만든" 것이라 모양이 원본과 전혀 달랐다:
  * <table border="1">
- *   <tr><th></th><th>旧实现</th><th>上游（现已对齐）</th></tr>
- *   <tr><td>文本</td><td>{@code × 1}</td><td>{@code ☠ x 01}（骷髅符号 + 个位补零）</td></tr>
- *   <tr><td>位置</td><td>屏幕正中偏下</td><td><b>右下角</b>，准星右侧</td></tr>
- *   <tr><td>缩放</td><td>无（原始字号）</td><td>{@code 0.5} 倍</td></tr>
- *   <tr><td>颜色</td><td>固定红 {@code 0xFF5555}</td><td>按连杀数做 <b>HSV 渐变</b>（黄→红）</td></tr>
- *   <tr><td>淡出</td><td>全程线性</td><td>前 2/3 全不透明，后 1/3 才淡出</td></tr>
- *   <tr><td>前置条件</td><td>仅看计数</td><td>还要求<b>主手持枪</b></td></tr>
+ *   <tr><th></th><th>예전 구현</th><th>원본(지금은 맞춤)</th></tr>
+ *   <tr><td>글자</td><td>{@code × 1}</td><td>{@code ☠ x 01}(해골 기호 + 한 자리 앞 0 채움)</td></tr>
+ *   <tr><td>위치</td><td>화면 정중앙 약간 아래</td><td><b>오른쪽 아래</b>, 조준선 오른쪽</td></tr>
+ *   <tr><td>크기</td><td>없음(원래 글자 크기)</td><td>{@code 0.5}배</td></tr>
+ *   <tr><td>색</td><td>고정 빨강 {@code 0xFF5555}</td><td>연속 처치 수에 따른 <b>HSV 그라데이션</b>(노랑→빨강)</td></tr>
+ *   <tr><td>사라짐</td><td>처음부터 선형</td><td>앞 2/3는 완전 불투명, 뒤 1/3만 사라짐</td></tr>
+ *   <tr><td>조건</td><td>수만 확인</td><td><b>주 손에 총을 들고 있어야</b> 함</td></tr>
  * </table>
  *
- * <h2>26.2 移植要点</h2>
+ * <h2>26.2 이식 요점</h2>
  * <ul>
- *   <li>{@code PoseStack} → {@code Matrix3x2fStack}，{@code pushPose/popPose} →
- *       {@code pushMatrix/popMatrix}（与 {@code GunSmithTableScreen} 已验证的写法一致）；</li>
- *   <li>{@code RenderSystem.enableBlend()} 等已移除 —— 26.2 的 GUI 文本走
- *       {@code GuiRenderState}，混合由管线自带，不需要手动开关；</li>
- *   <li>颜色<b>必须带 alpha</b>：{@code GuiGraphicsExtractor#text} 的第一条指令就是
- *       {@code if (ARGB.alpha(color) == 0) return;}，上游的
- *       {@code Mth.hsvToRgb(...) + (alpha << 24)} 天然满足，这里原样保留。</li>
+ *   <li>{@code PoseStack} → {@code Matrix3x2fStack}, {@code pushPose/popPose} →
+ *       {@code pushMatrix/popMatrix}({@code GunSmithTableScreen}에서 이미 검증한 방식과 같다).</li>
+ *   <li>{@code RenderSystem.enableBlend()} 등은 제거되었다 — 26.2의 GUI 글자는
+ *       {@code GuiRenderState}를 거치고 혼합은 파이프라인이 알아서 하므로 직접 켜고 끌 필요가 없다.</li>
+ *   <li>색은 <b>반드시 알파를 포함</b>해야 한다: {@code GuiGraphicsExtractor#text}의 첫 명령이
+ *       {@code if (ARGB.alpha(color) == 0) return;}이다. 원본의
+ *       {@code Mth.hsvToRgb(...) + (alpha << 24)}는 이를 자연히 만족하므로 그대로 둔다.</li>
  * </ul>
  */
 public class KillAmountOverlay {
@@ -47,7 +47,7 @@ public class KillAmountOverlay {
         int width = graphics.guiWidth();
         int height = graphics.guiHeight();
         int timeout = (int) (RenderConfig.KILL_AMOUNT_DURATION_SECOND.get() * 1000);
-        // 连杀数达到该值时颜色变到最红；上游取 30。
+        // 연속 처치 수가 이 값에 이르면 가장 빨간색이 된다. 원본은 30이다.
         float colorCount = 30;
 
         long remainTime = System.currentTimeMillis() - killTimestamp;
@@ -59,7 +59,7 @@ public class KillAmountOverlay {
         if (!(player instanceof IClientPlayerGunOperator)) {
             return;
         }
-        // 上游语义：只有主手持枪时才显示击杀提示。
+        // 원본 의미: 주 손에 총을 들고 있을 때만 처치 안내를 표시한다.
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof IGun)) {
             return;
@@ -72,7 +72,7 @@ public class KillAmountOverlay {
             text = "\u2620 x " + killAmount;
         }
         int fontWith = mc.font.width(text);
-        // 前 2/3 时间保持不透明，最后 1/3 才开始淡出。
+        // 앞 2/3 시간은 불투명하게 두고 마지막 1/3에서 사라지기 시작한다.
         double fadeOutTime = timeout / 3.0 * 2;
         float hue = (1 - Math.min((killAmount / colorCount), 1)) * 0.15f;
         int alpha = 0xFF;
@@ -84,8 +84,8 @@ public class KillAmountOverlay {
         Matrix3x2fStack poseStack = graphics.pose();
         poseStack.pushMatrix();
         {
-            // 先缩放再用 2 倍坐标定位 —— 与上游逐字一致：
-            // 缩放 0.5 后，屏幕像素 (x, y) 对应的绘制坐标是 (2x, 2y)。
+            // 먼저 크기를 줄이고 2배 좌표로 위치를 잡는다 — 원본과 글자 그대로 같다:
+            // 0.5배로 줄인 뒤에는 화면 픽셀 (x, y)가 그리기 좌표 (2x, 2y)에 대응한다.
             poseStack.scale(0.5f, 0.5f);
             graphics.text(mc.font, text, (int) (width - fontWith / 2.0f), (height - 45) * 2 - 1, color, false);
         }

@@ -5,24 +5,24 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 /**
- * 创建一个 {@link ObjectAnimationRunner} 实例以运行 {@link ObjectAnimation}
+ * {@link ObjectAnimation}을 실행할 {@link ObjectAnimationRunner} 인스턴스를 만든다
  */
 public class ObjectAnimation {
     /**
-     * 动画名称
+     * 애니메이션 이름
      */
     public final String name;
     /**
-     * 此 map 的 key 是节点名称
+     * 이 맵의 키는 노드 이름이다
      */
     private final Map<String, List<ObjectAnimationChannel>> channels = new HashMap<>();
     private @Nullable ObjectAnimationSoundChannel soundChannel;
     /**
-     * 播放类型
+     * 재생 방식
      */
     public @Nonnull PlayType playType = PlayType.PLAY_ONCE_HOLD;
     /**
-     * 所有轨道的最大结束时间 {@link ObjectAnimationChannel#getEndTimeS()}
+     * 모든 트랙의 최대 종료 시간 {@link ObjectAnimationChannel#getEndTimeS()}
      */
     private float maxEndTimeS = 0f;
 
@@ -31,9 +31,9 @@ public class ObjectAnimation {
     }
 
     /**
-     * 创建源对象动画的拷贝，
-     * 新对象动画的值与源动画的值相同，
-     * 但新对象动画不会包含任何动画监听器。
+     * 원본 객체 애니메이션의 복사본을 만든다.
+     * 새 애니메이션의 값은 원본과 같지만,
+     * 애니메이션 리스너는 하나도 들어 있지 않다.
      */
     public ObjectAnimation(ObjectAnimation source) {
         this.name = source.name;
@@ -95,7 +95,7 @@ public class ObjectAnimation {
     }
 
     /**
-     * 触发所有监听器，通知它们更新相关数值
+     * 모든 리스너를 호출해 관련 값을 갱신하게 한다
      */
     public void update(boolean blend, float timeNs) {
         for (List<ObjectAnimationChannel> channels : channels.values()) {
@@ -111,15 +111,15 @@ public class ObjectAnimation {
 
     public enum PlayType {
         /**
-         * 播放一次，停留在最后一帧
+         * 한 번 재생하고 마지막 프레임에 멈춘다
          */
         PLAY_ONCE_HOLD,
         /**
-         * 播放一次后停止
+         * 한 번 재생하고 정지한다
          */
         PLAY_ONCE_STOP,
         /**
-         * 循环播放
+         * 반복 재생
          */
         LOOP
     }

@@ -28,61 +28,61 @@ package com.tacz.guns.api.client.animation.gltf.accessor;
 import java.nio.ByteBuffer;
 
 /**
- * Interface for classes that provide typed access to raw accessor data.
- * The exact type of the data (and thus, the implementing class) is
- * defined by the {@link #getComponentType() component type}:<br>
+ * 원시 접근자 데이터에 타입별로 접근하게 해 주는 클래스의 인터페이스.
+ * 데이터의 정확한 종류(곧 구현 클래스)는
+ * {@link #getComponentType() 성분 종류}가 정한다:<br>
  * <ul>
- *   <li>For <code>byte.class</code>, the implementation is an
+ *   <li><code>byte.class</code>면 구현은
  *   {@link AccessorByteData}</li>
- *   <li>For <code>short.class</code>, the implementation is an
+ *   <li><code>short.class</code>면 구현은
  *   {@link AccessorShortData}</li>
- *   <li>For <code>int.class</code>, the implementation is an
+ *   <li><code>int.class</code>면 구현은
  *   {@link AccessorIntData}</li>
- *   <li>For <code>float.class</code>, the implementation is an
+ *   <li><code>float.class</code>면 구현은
  *   {@link AccessorFloatData}</li>
  * </ul>
  */
 public interface AccessorData {
     /**
-     * Returns the type of the components that this class provides access to.
-     * This will usually be a primitive type, like <code>float.class</code>
-     * or <code>short.class</code>.
+     * 이 클래스가 접근하게 해 주는 성분의 종류를 돌려준다.
+     * 보통 <code>float.class</code>나 <code>short.class</code> 같은
+     * 기본 타입이다.
      *
-     * @return The component type
+     * @return 성분 종류
      */
     Class<?> getComponentType();
 
     /**
-     * Returns the number of elements in this data (for example, the number
-     * of 3D vectors)
+     * 이 데이터의 요소 수(예: 3차원 벡터의 개수)를
+     * 돌려준다
      *
-     * @return The number of elements
+     * @return 요소 수
      */
     int getNumElements();
 
     /**
-     * Returns the number of components per element (for example, 3 if the
-     * elements are 3D vectors)
+     * 요소당 성분 수(예: 요소가 3차원 벡터면 3)를
+     * 돌려준다
      *
-     * @return The number of components per element
+     * @return 요소당 성분 수
      */
     int getNumComponentsPerElement();
 
     /**
-     * Returns the total number of components (that is, the number of elements
-     * multiplied with the number of components per element)
+     * 전체 성분 수(요소 수에 요소당 성분 수를
+     * 곱한 값)를 돌려준다
      *
-     * @return The total number of components
+     * @return 전체 성분 수
      */
     int getTotalNumComponents();
 
     /**
-     * Creates a new, direct byte buffer (with native byte order) that
-     * contains the data for the accessor, in a compact form,
-     * without any offset, and without any additional stride (that is,
-     * all elements will be tightly packed).
+     * 접근자의 데이터를 오프셋과 추가 간격 없이
+     * 빽빽하게(모든 요소를 붙여서) 담은
+     * 새 다이렉트 바이트 버퍼(네이티브 바이트 순서)를
+     * 만든다.
      *
-     * @return The byte buffer
+     * @return 바이트 버퍼
      */
     ByteBuffer createByteBuffer();
 

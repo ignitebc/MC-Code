@@ -23,15 +23,15 @@ public class EntityMixin implements IEntityPersistentData, IMoveDistTracker {
     private Level level;
 
     /**
-     * 重建 26.2 已移除的 {@code walkDistO}。
+     * 26.2에서 제거된 {@code walkDistO}를 다시 만든다.
      *
-     * <p>上游 1.21.1 用 {@code walkDist} / {@code walkDistO} 做插值来驱动持枪行走动画；
-     * 26.2 把 {@code walkDist} 更名 {@code moveDist} 且<b>未</b>保留 {@code walkDistO}。
-     * 若直接取 {@code moveDist}，驱动量每游戏刻（20Hz）才跳变一次，
-     * 渲染按帧跑（60~144Hz）就会出现阶梯感 —— 观感就是"掉帧/被抽帧"。</p>
+     * <p>원본 1.21.1은 {@code walkDist} / {@code walkDistO}를 보간해 총 들고 걷는 애니메이션을 움직였다.
+     * 26.2는 {@code walkDist}를 {@code moveDist}로 바꾸면서 {@code walkDistO}를 <b>남기지 않았다</b>.
+     * {@code moveDist}를 그대로 쓰면 구동 값이 게임 틱(20Hz)마다 한 번만 바뀌고,
+     * 렌더링은 프레임(60~144Hz)마다 돌아 계단처럼 끊긴다 — 보기에는 "프레임 저하"처럼 느껴진다.</p>
      *
-     * <p>这里在每个 tick 的 HEAD 记录<b>上一 tick 结束时</b>的 moveDist，
-     * 供 {@code GunAnimationStateContext#getWalkDist()} 做与上游等价的线性插值。</p>
+     * <p>그래서 매 틱 HEAD에서 <b>직전 틱이 끝났을 때의</b> moveDist를 기록해,
+     * {@code GunAnimationStateContext#getWalkDist()}가 원본과 같은 선형 보간을 하게 한다.</p>
      */
     @Unique
     private float tacz$moveDistO;
@@ -42,7 +42,7 @@ public class EntityMixin implements IEntityPersistentData, IMoveDistTracker {
     @Unique
     @Override
     public float tacz$getMoveDistO() {
-        // 未初始化时返回当前值，使增量为 0，避免第一帧出现跳变。
+        // 초기화 전에는 현재 값을 돌려줘 증가량을 0으로 만들고, 첫 프레임이 튀지 않게 한다.
         return this.tacz$moveDistInit ? this.tacz$moveDistO : ((Entity) (Object) this).moveDist;
     }
 
@@ -54,8 +54,8 @@ public class EntityMixin implements IEntityPersistentData, IMoveDistTracker {
 
     @Inject(method = "remove", at = @At("TAIL"))
     private void remove(Entity.RemovalReason reason, CallbackInfo ci) {
-        // The data-holder lifecycle exists on both logical sides. Restricting this event to the
-        // client leaked server-side providers for every removed non-player entity.
+        // 데이터 홀더 수명 주기는 양쪽 논리 측면 모두에 있다. 이 이벤트를 클라이언트로 한정하면
+        // 제거된 비플레이어 엔티티마다 서버 쪽 provider가 새어 나갔다.
         EntityRemoveEvent event = new EntityRemoveEvent((Entity) (Object) this);
         EntityRemoveEvent.EVENT.invoker().onEntityRemove(event);
     }
@@ -83,37 +83,37 @@ public class EntityMixin implements IEntityPersistentData, IMoveDistTracker {
     }
 
     /**
-     * <h2>刷怪笼极度掉帧修复（第 27 轮）</h2>
+     * <h2>몬스터 스포너 극심한 프레임 저하 수정(27차)</h2>
      *
-     * <p><b>症状</b>：装本 mod 后看向刷怪笼 → 帧数暴跌、GPU 占用居高不下，
-     * 且笼内旋转实体与烟雾/火焰粒子<b>全部不渲染</b>。</p>
+     * <p><b>증상</b>: 이 모드를 설치한 뒤 스포너를 보면 프레임이 급락하고 GPU 사용률이 높게 유지되며,
+     * 스포너 안의 회전하는 엔티티와 연기·불꽃 입자가 <b>전혀 그려지지 않았다</b>.</p>
      *
-     * <p><b>vanilla 侧的放大器</b>（26.2 字节码确认）：
-     * {@code BaseSpawner#getOrCreateDisplayEntity} 只在 {@code displayEntity == null}
-     * 时才创建；而 {@code EntityType.loadEntityRecursive} 失败会返回 null，
-     * 于是 {@code displayEntity} 一直为 null → {@code SpawnerRenderer#extractRenderState}
-     * <b>每帧重试一次完整的实体反序列化</b>。
-     * 并且 {@code clientTick} 的粒子发射也在同一个 {@code displayEntity != null}
-     * 分支里（偏移 20-24），null 就<b>一个粒子都不发</b> —— 这正是「不渲染特效」与
-     * 掉帧同源的原因。</p>
+     * <p><b>바닐라 쪽 증폭 요인</b>(26.2 바이트코드 확인):
+     * {@code BaseSpawner#getOrCreateDisplayEntity}는 {@code displayEntity == null}일 때만
+     * 엔티티를 만든다. 그런데 {@code EntityType.loadEntityRecursive}가 실패하면 null을 돌려주므로
+     * {@code displayEntity}가 계속 null로 남고 → {@code SpawnerRenderer#extractRenderState}가
+     * <b>매 프레임 엔티티 역직렬화를 처음부터 다시 시도</b>한다.
+     * 게다가 {@code clientTick}의 입자 발생도 같은 {@code displayEntity != null}
+     * 분기 안(오프셋 20-24)에 있어서, null이면 <b>입자를 하나도 내지 않는다</b> — 이것이 "효과가 안 그려지는" 현상과
+     * 프레임 저하의 원인이 같은 이유다.</p>
      *
-     * <p><b>我们这边的成本来源</b>：每次 {@code Entity#load()} 都无条件调用
-     * {@code DataHolderCapabilityProvider.get()}，那是
-     * {@code Collections.synchronizedMap(WeakHashMap)} 上的 {@code computeIfAbsent} ——
-     * 抢<b>全局锁</b> + 每次访问都要扫 {@code ReferenceQueue} 清理失效弱引用。
-     * 配合上面「每帧重试」，就变成每帧一次全局锁争用。</p>
+     * <p><b>이 모드 쪽 비용 원인</b>: {@code Entity#load()}마다 무조건
+     * {@code DataHolderCapabilityProvider.get()}을 호출했는데, 이것은
+     * {@code Collections.synchronizedMap(WeakHashMap)}에 대한 {@code computeIfAbsent}다 —
+     * <b>전역 잠금</b>을 잡고, 접근할 때마다 {@code ReferenceQueue}를 훑어 사라진 약한 참조를 정리한다.
+     * 위의 "매 프레임 재시도"와 겹쳐 매 프레임 전역 잠금 경합이 생겼다.</p>
      *
-     * <p>更糟的是：display entity <b>从不触发</b> {@code Entity#remove}
-     * （它只是渲染用的临时对象，不会进入世界），所以
-     * {@code CapabilityRegistry} 里注册的 {@code EntityRemoveEvent} 清理逻辑
-     * <b>永远不会执行</b> —— 条目只能等 GC 回收弱引用，进一步加重 map 负担。</p>
+     * <p>더 나쁜 점: display entity는 {@code Entity#remove}를 <b>절대 호출하지 않는다</b>
+     * (렌더링용 임시 객체라 월드에 들어가지 않는다). 그래서
+     * {@code CapabilityRegistry}에 등록한 {@code EntityRemoveEvent} 정리 로직이
+     * <b>한 번도 실행되지 않고</b> — 항목은 GC가 약한 참조를 회수할 때까지 남아 맵 부담을 더 키운다.</p>
      *
-     * <p><b>修复</b>：改为<b>惰性创建</b> —— 只有当存档里确实存过 DataHolder 数据时
-     * 才建 provider。绝大多数实体（包括每帧重建的 display entity）根本没有这段 NBT，
-     * 于是完全不碰那张全局 map，锁争用归零。</p>
+     * <p><b>수정</b>: <b>지연 생성</b>으로 바꿨다 — 저장 데이터에 DataHolder 데이터가 실제로 있을 때만
+     * provider를 만든다. 대부분의 엔티티(매 프레임 다시 만드는 display entity 포함)는 이 NBT 구역이 아예 없으므로,
+     * 그 전역 맵을 전혀 건드리지 않아 잠금 경합이 사라진다.</p>
      *
-     * <p>注意 {@code hasSyncedDataKey} 判定<b>保留</b>：它是纯 {@code HashMap} 缓存查询，
-     * 开销可忽略，且能挡掉绝大多数无关实体。真正贵的是它后面的 {@code get()}。</p>
+     * <p>{@code hasSyncedDataKey} 판정은 <b>그대로 둔다</b>. 순수 {@code HashMap} 캐시 조회라
+     * 비용이 거의 없고 관계없는 엔티티 대부분을 걸러 준다. 정말 비싼 것은 그 뒤의 {@code get()}이다.</p>
      */
     @Inject(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;readAdditionalSaveData(Lnet/minecraft/world/level/storage/ValueInput;)V"))
     private void tacz$loadPersistentData(ValueInput input, CallbackInfo ci) {
@@ -122,8 +122,8 @@ public class EntityMixin implements IEntityPersistentData, IMoveDistTracker {
         if (!SyncedEntityData.instance().hasSyncedDataKey(self.getClass())) {
             return;
         }
-        // 惰性：没有已持久化的 DataHolder 就不要创建 provider。
-        // tacz$persistentData 为 null 表示这个实体压根没有 ForgeData 段。
+        // 지연 생성: 저장된 DataHolder가 없으면 provider를 만들지 않는다.
+        // tacz$persistentData가 null이면 이 엔티티에는 ForgeData 구역이 아예 없다는 뜻이다.
         CompoundTag persisted = this.tacz$persistentData;
         if (persisted == null || persisted.getListOrEmpty("DataHolder").isEmpty()) {
             return;

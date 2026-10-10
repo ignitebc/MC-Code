@@ -9,15 +9,15 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import java.nio.file.Path;
 
 /**
- * 26.2 重构版 PreLoadConfig
+ * 26.2 재구성판 PreLoadConfig
  * <p>
- * 旧实现: 继承 {@code ModConfig} 然后从 {@code ConfigTracker} 中 hack 移除
+ * 예전 구현: {@code ModConfig}를 상속한 뒤 {@code ConfigTracker}에서 꼼수로 제거
  * <p>
- * 26.2.x 问题: {@code net.neoforged.fml.config.ModConfig} 构造函数是 package-private,
- * 无法被子类调用 {@code super(type, spec, modId, fileName)}
+ * 26.2.x 문제: {@code net.neoforged.fml.config.ModConfig} 생성자가 package-private이라
+ * 하위 클래스에서 {@code super(type, spec, modId, fileName)}를 호출할 수 없다
  * <p>
- * 新实现: 直接用 nightconfig 加载自定义路径的配置文件, 通过 {@link ConfigRegistry} 注册 ForgeConfigSpec
- * 用于配置事件通知. 不再 hack ConfigTracker.
+ * 새 구현: nightconfig로 사용자 지정 경로의 설정 파일을 바로 로드하고, {@link ConfigRegistry}로 ForgeConfigSpec을 등록해
+ * 설정 이벤트 알림에 쓴다. 더는 ConfigTracker를 꼼수로 건드리지 않는다.
  */
 public class PreLoadConfig {
     public static ForgeConfigSpec spec;
@@ -34,14 +34,14 @@ public class PreLoadConfig {
     }
 
     public static void init() {
-        // 注册到 ConfigRegistry (触发正常的 ModConfigEvents)
+        // ConfigRegistry에 등록(정상적인 ModConfigEvents를 발생시킨다)
         ConfigRegistry.INSTANCE.register(GunMod.MOD_ID, ModConfig.Type.COMMON, spec, "tacz-pre.toml");
     }
 
     /**
-     * 26.2 重构: 直接用 nightconfig 加载, 不再走 ModConfig 继承
+     * 26.2 재구성: ModConfig 상속을 거치지 않고 nightconfig로 바로 로드한다
      *
-     * @param configBasePath 配置文件基础路径
+     * @param configBasePath 설정 파일 기본 경로
      */
     public static void load(Path configBasePath) {
         if (spec.isLoaded()) return;
@@ -53,7 +53,7 @@ public class PreLoadConfig {
                 .build();
         configData.load();
 
-        // 解析到 spec
+        // spec으로 해석
         spec.acceptConfig(configData);
     }
 }

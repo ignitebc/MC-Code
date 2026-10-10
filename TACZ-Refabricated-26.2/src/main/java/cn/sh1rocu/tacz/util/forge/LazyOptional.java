@@ -37,9 +37,9 @@ public class LazyOptional<T> {
 
     private final NonNullSupplier<T> supplier;
     private final Object lock = new Object();
-    // null -> not resolved yet
-    // non-null and contains non-null value -> resolved
-    // non-null and contains null -> resolved, but supplier returned null (contract violation)
+    // null -> 아직 계산 전
+    // null이 아니고 값도 null이 아님 -> 계산 완료
+    // null이 아니지만 값이 null -> 계산했지만 공급자가 null을 돌려줌(계약 위반)
     private Mutable<T> resolved;
     private final Set<NonNullConsumer<LazyOptional<T>>> listeners = new HashSet<>();
     private boolean isValid = true;
@@ -69,7 +69,7 @@ public class LazyOptional<T> {
             return null;
         if (resolved == null) {
             synchronized (lock) {
-                // resolved == null: Double checked locking to prevent two threads from resolving
+                // resolved == null: 두 스레드가 동시에 계산하지 않도록 이중 검사 잠금을 쓴다
                 if (resolved == null) {
                     T temp = supplier.get();
                     if (temp == null)
@@ -111,7 +111,7 @@ public class LazyOptional<T> {
 
     public Optional<T> filter(NonNullPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate);
-        final T value = getValue(); // To keep the non-null contract we have to evaluate right now. Should we allow this function at all?
+        final T value = getValue(); // null이 아니라는 계약을 지키려면 지금 바로 계산해야 한다. 이 함수를 허용하는 것이 맞는지는 의문이다.
         return value != null && predicate.test(value) ? Optional.of(value) : Optional.empty();
     }
 

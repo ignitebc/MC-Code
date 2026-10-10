@@ -14,8 +14,8 @@ import net.minecraft.world.item.component.CustomData;
 import java.util.function.Consumer;
 
 /**
- * Utility class for accessing ItemStack custom data in MC 26.2+.
- * Replaces the removed getOrCreateTag()/getTag()/hasTag() methods.
+ * MC 26.2+에서 ItemStack 사용자 정의 데이터에 접근하는 도구 클래스.
+ * 제거된 getOrCreateTag()/getTag()/hasTag() 메서드를 대신한다.
  */
 public final class ItemNbtUtils {
     private static RegistryOps<Tag> nbtOps;
@@ -32,7 +32,7 @@ public final class ItemNbtUtils {
     }
 
     /**
-     * Get a copy of the item's custom data tag. Returns an empty CompoundTag if none exists.
+     * 아이템의 사용자 정의 데이터 tag 사본을 가져온다. 없으면 빈 CompoundTag를 돌려준다.
      */
     public static CompoundTag getTag(ItemStack stack) {
         CustomData data = stack.get(DataComponents.CUSTOM_DATA);
@@ -43,30 +43,30 @@ public final class ItemNbtUtils {
     }
 
     /**
-     * Update the item's custom data tag in-place.
+     * 아이템의 사용자 정의 데이터 tag를 그 자리에서 갱신한다.
      */
     public static void updateTag(ItemStack stack, Consumer<CompoundTag> consumer) {
         CustomData.update(DataComponents.CUSTOM_DATA, stack, consumer);
     }
 
     /**
-     * Serialize an ItemStack to a CompoundTag using Codec.
+     * Codec으로 ItemStack을 CompoundTag로 직렬화한다.
      *
-     * <p><b>第 15 轮修复</b>：必须用 {@link ItemStack#OPTIONAL_CODEC} 而非 {@code ItemStack.CODEC}。
-     * 26.2 的 {@code ItemStack.MAP_CODEC} 里 count 字段是
-     * {@code ExtraCodecs.optionalAlwaysPresentFieldOf(ExtraCodecs.intRange(1, 99), "count", 1)}，
-     * 而 {@code ItemStack.EMPTY} 的 count 为 0，<b>超出 [1,99] 范围</b>，
-     * 于是 {@code CODEC.encodeStart(ops, ItemStack.EMPTY)} 直接失败：
+     * <p><b>15차 수정</b>: {@code ItemStack.CODEC}이 아니라 반드시 {@link ItemStack#OPTIONAL_CODEC}을 써야 한다.
+     * 26.2의 {@code ItemStack.MAP_CODEC}에서 count 필드는
+     * {@code ExtraCodecs.optionalAlwaysPresentFieldOf(ExtraCodecs.intRange(1, 99), "count", 1)}이고,
+     * {@code ItemStack.EMPTY}의 count는 0이라 <b>[1,99] 범위를 벗어나</b>
+     * {@code CODEC.encodeStart(ops, ItemStack.EMPTY)}가 바로 실패한다:
      * <pre>Value must be within range [1;99]: 0</pre>
-     * 再经 {@code getOrThrow()} 抛出 IllegalStateException。
+     * 그리고 {@code getOrThrow()}를 거쳐 IllegalStateException을 던진다.
      *
-     * <p>这正是「卸除配件会复制配件」的根因：{@code ClientMessageUnloadAttachment#handle} 先
-     * {@code inventory.add(attachmentItem)} 把配件给了玩家，随后
-     * {@code unloadAttachment} → {@code saveItemStack(ItemStack.EMPTY)} 抛异常，
-     * 枪上的配件 NBT <b>没被清空</b> —— 物品到手、配件还在 = 无限复制。
+     * <p>이것이 바로 "부착물을 떼어 내면 부착물이 복제됨"의 근본 원인이다: {@code ClientMessageUnloadAttachment#handle}이 먼저
+     * {@code inventory.add(attachmentItem)}로 부착물을 플레이어에게 주고, 이어서
+     * {@code unloadAttachment} → {@code saveItemStack(ItemStack.EMPTY)}가 예외를 던져
+     * 총의 부착물 NBT가 <b>지워지지 않았다</b> — 아이템은 손에 들어오고 부착물은 남음 = 무한 복제.
      *
-     * <p>{@code OPTIONAL_CODEC} 对 EMPTY 编码为 {@code {}}，回读得到 {@code ItemStack.EMPTY}，
-     * 双向都正确（已实测验证）。
+     * <p>{@code OPTIONAL_CODEC}은 EMPTY를 {@code {}}로 인코딩하고 다시 읽으면 {@code ItemStack.EMPTY}를 얻어
+     * 양방향 모두 올바르다(실측 검증함).
      */
     public static CompoundTag saveItemStack(ItemStack stack) {
         DataResult<Tag> result = ItemStack.OPTIONAL_CODEC.encodeStart(getOps(), stack);
@@ -74,10 +74,10 @@ public final class ItemNbtUtils {
     }
 
     /**
-     * Deserialize an ItemStack from a CompoundTag using Codec.
+     * Codec으로 CompoundTag에서 ItemStack을 역직렬화한다.
      *
-     * <p>与 {@link #saveItemStack} 对称使用 {@code OPTIONAL_CODEC}，
-     * 这样空标签 {@code {}} 能正确回读为 {@link ItemStack#EMPTY}。
+     * <p>{@link #saveItemStack}과 짝을 맞춰 {@code OPTIONAL_CODEC}을 쓴다.
+     * 그러면 빈 태그 {@code {}}를 {@link ItemStack#EMPTY}로 올바르게 다시 읽는다.
      */
     public static ItemStack loadItemStack(CompoundTag tag) {
         DataResult<ItemStack> result = ItemStack.OPTIONAL_CODEC.parse(getOps(), tag);

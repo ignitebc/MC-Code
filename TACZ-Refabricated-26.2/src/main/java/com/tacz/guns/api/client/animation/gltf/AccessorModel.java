@@ -6,51 +6,51 @@ import com.tacz.guns.api.client.animation.gltf.accessor.Accessors;
 
 public class AccessorModel {
     /**
-     * The component type, as a GL constant
+     * GL 상수로 나타낸 성분 종류
      */
     private final int componentType;
     /**
-     * The {@link ElementType} of this accessor
+     * 이 접근자의 {@link ElementType}
      */
     private final ElementType elementType;
     /**
-     * The number of elements
+     * 요소 수
      */
     private final int count;
     /**
-     * The offset in bytes, referring to the buffer view
+     * 버퍼 뷰 기준 바이트 오프셋
      */
     private int byteOffset;
     /**
-     * The {@link BufferViewModel} for this model
+     * 이 모델의 {@link BufferViewModel}
      */
     private BufferViewModel bufferViewModel;
     /**
-     * The stride between the start of one element and the next
+     * 한 요소의 시작과 다음 요소 시작 사이의 간격
      */
     private int byteStride;
 
     /**
-     * The {@link AccessorData}
+     * {@link AccessorData}
      */
     private AccessorData accessorData;
 
     /**
-     * The minimum components
+     * 최소 성분 값
      */
     private Number[] max;
 
     /**
-     * The maximum components
+     * 최대 성분 값
      */
     private Number[] min;
 
     /**
-     * Creates a new instance
+     * 새 인스턴스를 만든다
      *
-     * @param componentType The component type GL constant
-     * @param count         The number of elements
-     * @param elementType   The element type
+     * @param componentType 성분 종류 GL 상수
+     * @param count         요소 수
+     * @param elementType   요소 종류
      */
     public AccessorModel(
             int componentType,
@@ -66,9 +66,9 @@ public class AccessorModel {
     }
 
     /**
-     * Set the {@link BufferViewModel} for this model
+     * 이 모델의 {@link BufferViewModel}을 설정한다
      *
-     * @param bufferViewModel The {@link BufferViewModel}
+     * @param bufferViewModel {@link BufferViewModel}
      */
     public void setBufferViewModel(BufferViewModel bufferViewModel) {
         this.bufferViewModel = bufferViewModel;
@@ -96,9 +96,9 @@ public class AccessorModel {
     }
 
     /**
-     * Set the byte offset, referring to the {@link BufferViewModel}
+     * {@link BufferViewModel} 기준 바이트 오프셋을 설정한다
      *
-     * @param byteOffset The byte offset
+     * @param byteOffset 바이트 오프셋
      */
     public void setByteOffset(int byteOffset) {
         this.byteOffset = byteOffset;
@@ -117,10 +117,10 @@ public class AccessorModel {
     }
 
     /**
-     * Set the byte stride, indicating the number of bytes between the start
-     * of one element and the start of the next element
+     * 한 요소의 시작과 다음 요소 시작 사이의 바이트 수인
+     * 바이트 간격을 설정한다
      *
-     * @param byteStride The byte stride
+     * @param byteStride 바이트 간격
      */
     public void setByteStride(int byteStride) {
         this.byteStride = byteStride;

@@ -29,24 +29,24 @@ public class BedrockAnimatedModel extends BedrockModel implements AnimationListe
     public static final String CONSTRAINT_NODE = "constraint";
     private final CameraAnimationObject cameraAnimationObject = new CameraAnimationObject();
     /**
-     * 动画约束组的路径
+     * 애니메이션 구속 그룹의 경로
      */
     protected @Nullable List<BedrockPart> constraintPath;
     private @Nullable ConstraintObject constraintObject;
 
-    // 根组
+    // 루트 그룹
     protected @Nullable BedrockPart root;
-    // 第一人称idle状态摄像机定位组的路径
+    // 1인칭 idle 상태 카메라 위치 그룹의 경로
     protected @Nullable List<BedrockPart> idleSightPath;
 
     public BedrockAnimatedModel(BedrockModelPOJO pojo, BedrockVersion version) {
         super(pojo, version);
-        // 初始化相机动画对象
+        // 카메라 애니메이션 객체 초기화
         ModelRendererWrapper cameraRendererWrapper = modelMap.get(CAMERA_NODE_NAME);
         if (cameraRendererWrapper != null) {
             cameraAnimationObject.cameraRenderer = cameraRendererWrapper;
         }
-        // 初始化动画约束对象
+        // 애니메이션 구속 객체 초기화
         constraintPath = getPath(modelMap.get(CONSTRAINT_NODE));
         if (constraintPath != null) {
             constraintObject = new ConstraintObject();
@@ -88,8 +88,8 @@ public class BedrockAnimatedModel extends BedrockModel implements AnimationListe
     }
 
     /**
-     * @param node     想要进行编程渲染流程的 node 名称
-     * @param function 输入为 BedrockPart，返回 IModelRenderer 以替换渲染
+     * @param node     프로그램으로 렌더링 흐름을 처리할 node 이름
+     * @param function BedrockPart를 받아 렌더링을 대신할 IModelRenderer를 돌려준다
      */
     public void setFunctionalRenderer(String node, Function<BedrockPart, IFunctionalRenderer> function) {
         ModelRendererWrapper wrapper = modelMap.get(node);
@@ -119,7 +119,7 @@ public class BedrockAnimatedModel extends BedrockModel implements AnimationListe
             return;
         }
         for (BonesItem bones : pojo.getGeometryModelNew().getBones()) {
-            // 将 FunctionalBedrockPart 先塞入 modelMap 中，以支持 functionalRender 操作
+            // functionalRender를 지원하도록 FunctionalBedrockPart를 먼저 modelMap에 넣는다
             FunctionalBedrockPart bedrockPart = new FunctionalBedrockPart(null, bones.getName());
             modelMap.putIfAbsent(bones.getName(), new ModelRendererWrapper(bedrockPart));
         }
@@ -134,7 +134,7 @@ public class BedrockAnimatedModel extends BedrockModel implements AnimationListe
             return;
         }
         for (BonesItem bones : pojo.getGeometryModelLegacy().getBones()) {
-            // 将 FunctionalBedrockPart 先塞入 modelMap 中，以支持 functionalRender 操作
+            // functionalRender를 지원하도록 FunctionalBedrockPart를 먼저 modelMap에 넣는다
             FunctionalBedrockPart bedrockPart = new FunctionalBedrockPart(null, bones.getName());
             modelMap.putIfAbsent(bones.getName(), new ModelRendererWrapper(bedrockPart));
         }

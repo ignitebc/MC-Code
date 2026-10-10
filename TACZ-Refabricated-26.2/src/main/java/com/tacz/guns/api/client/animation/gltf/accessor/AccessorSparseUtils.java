@@ -4,29 +4,29 @@ import java.util.logging.Logger;
 
 public class AccessorSparseUtils {
     /**
-     * The logger used in this class
+     * 이 클래스에서 쓰는 로거
      */
     private static final Logger logger =
             Logger.getLogger(AccessorSparseUtils.class.getName());
 
     /**
-     * Private constructor to prevent instantiation
+     * 인스턴스를 만들지 못하게 막는 비공개 생성자
      */
     private AccessorSparseUtils() {
-        // Private constructor to prevent instantiation
+        // 인스턴스를 만들지 못하게 막는 비공개 생성자
     }
 
     /**
-     * Extract indices from the given {@link AccessorData}. The given
-     * {@link AccessorData} must contain an integral type. That is,
-     * its {@link AccessorData#getComponentType() component type} must
-     * be <code>byte.class</code>, <code>short.class</code> or
-     * <code>int.class</code>.
+     * 주어진 {@link AccessorData}에서 인덱스를 꺼낸다. 주어진
+     * {@link AccessorData}는 정수 타입이어야 한다. 즉
+     * {@link AccessorData#getComponentType() 성분 종류}가
+     * <code>byte.class</code>, <code>short.class</code>,
+     * <code>int.class</code> 중 하나여야 한다.
      *
-     * @param accessorData The {@link AccessorData}
-     * @return The indices
-     * @throws IllegalArgumentException If the given data does not contain
-     *                                  an integral type
+     * @param accessorData {@link AccessorData}
+     * @return 인덱스
+     * @throws IllegalArgumentException 주어진 데이터가
+     *                                  정수 타입이 아닐 때
      */
     private static int[] extractIndices(AccessorData accessorData) {
         if (accessorData.getComponentType() == byte.class) {
@@ -64,32 +64,30 @@ public class AccessorSparseUtils {
     }
 
     /**
-     * Substitute the data in the given dense {@link AccessorData} with the
-     * (sparse) data that is provided by the given {@link AccessorData}
-     * objects. <br>
+     * 주어진 밀집 {@link AccessorData}의 데이터를, 주어진
+     * {@link AccessorData} 객체들이 제공하는 (희소) 데이터로 치환한다. <br>
      * <br>
-     * The <code>baseAccessorData</code> is the data that the dense data
-     * will be initialized with, <b>before</b> applying the substitution
-     * that is defined by the given sparse indices and values.<br>
+     * <code>baseAccessorData</code>는 주어진 희소 인덱스와 값으로 치환을
+     * 적용하기 <b>전에</b> 밀집 데이터를 초기화할 데이터다.<br>
      * <br>
-     * The <code>sparseIndicesAccessorData</code> is an {@link AccessorData}
-     * that was created from the <code>accessor.sparse.indices</code>
-     * structure.<br>
+     * <code>sparseIndicesAccessorData</code>는
+     * <code>accessor.sparse.indices</code> 구조로 만든
+     * {@link AccessorData}다.<br>
      * <br>
-     * The <code>sparseValuesAccessorData</code> is an {@link AccessorData}
-     * that was created from the <code>accessor.sparse.values</code>
-     * structure.<br>
+     * <code>sparseValuesAccessorData</code>는
+     * <code>accessor.sparse.values</code> 구조로 만든
+     * {@link AccessorData}다.<br>
      * <br>
-     * This method does very few sanity checks. The caller is responsible
-     * for calling it only with arguments that are valid (in terms of
-     * indices and data types).
+     * 이 메서드는 유효성 검사를 거의 하지 않는다. 호출하는 쪽이
+     * (인덱스와 데이터 타입 면에서) 올바른 인자로만 호출해야
+     * 한다.
      *
-     * @param denseAccessorData         The dense {@link AccessorData} to be filled
-     * @param baseAccessorData          The optional "base" {@link AccessorData}
-     * @param sparseIndicesAccessorData The sparse indices {@link AccessorData}
-     * @param sparseValuesAccessorData  The sparse values {@link AccessorData}
-     * @throws IllegalArgumentException If the sparseIndicesAccessorData does
-     *                                  not contain data with an integral type (byte, short, int).
+     * @param denseAccessorData         채울 밀집 {@link AccessorData}
+     * @param baseAccessorData          선택적 "기반" {@link AccessorData}
+     * @param sparseIndicesAccessorData 희소 인덱스 {@link AccessorData}
+     * @param sparseValuesAccessorData  희소 값 {@link AccessorData}
+     * @throws IllegalArgumentException sparseIndicesAccessorData가
+     *                                  정수 타입(byte, short, int) 데이터가 아닐 때
      */
     public static void substituteAccessorData(
             AccessorData denseAccessorData,
@@ -153,14 +151,14 @@ public class AccessorSparseUtils {
     }
 
     /**
-     * See {@link #substituteAccessorData}
+     * {@link #substituteAccessorData} 참고
      *
-     * @param denseAccessorData         The dense {@link AccessorData} to be filled
-     * @param baseAccessorData          The optional "base" {@link AccessorData}
-     * @param sparseIndicesAccessorData The sparse indices {@link AccessorData}
-     * @param sparseValuesAccessorData  The sparse values {@link AccessorData}
-     * @throws IllegalArgumentException If the sparseIndicesAccessorData does
-     *                                  not contain data with an integral type (byte, short, int).
+     * @param denseAccessorData         채울 밀집 {@link AccessorData}
+     * @param baseAccessorData          선택적 "기반" {@link AccessorData}
+     * @param sparseIndicesAccessorData 희소 인덱스 {@link AccessorData}
+     * @param sparseValuesAccessorData  희소 값 {@link AccessorData}
+     * @throws IllegalArgumentException sparseIndicesAccessorData가
+     *                                  정수 타입(byte, short, int) 데이터가 아닐 때
      */
     private static void substituteByteAccessorData(
             AccessorByteData denseAccessorData,
@@ -172,7 +170,7 @@ public class AccessorSparseUtils {
                 denseAccessorData.getNumComponentsPerElement();
 
         if (baseAccessorData != null) {
-            // Fill the dense AccessorData with the base data
+            // 밀집 AccessorData를 기반 데이터로 채운다
             for (int e = 0; e < numElements; e++) {
                 for (int c = 0; c < numComponentsPerElement; c++) {
                     byte value = baseAccessorData.get(e, c);
@@ -181,7 +179,7 @@ public class AccessorSparseUtils {
             }
         }
 
-        // Apply the substitution based on the sparse indices and values
+        // 희소 인덱스와 값으로 치환을 적용한다
         int indices[] = extractIndices(sparseIndicesAccessorData);
         for (int i = 0; i < indices.length; i++) {
             int targetElementIndex = indices[i];
@@ -193,14 +191,14 @@ public class AccessorSparseUtils {
     }
 
     /**
-     * See {@link #substituteAccessorData}
+     * {@link #substituteAccessorData} 참고
      *
-     * @param denseAccessorData         The dense {@link AccessorData} to be filled
-     * @param baseAccessorData          The optional "base" {@link AccessorData}
-     * @param sparseIndicesAccessorData The sparse indices {@link AccessorData}
-     * @param sparseValuesAccessorData  The sparse values {@link AccessorData}
-     * @throws IllegalArgumentException If the sparseIndicesAccessorData does
-     *                                  not contain data with an integral type (byte, short, int).
+     * @param denseAccessorData         채울 밀집 {@link AccessorData}
+     * @param baseAccessorData          선택적 "기반" {@link AccessorData}
+     * @param sparseIndicesAccessorData 희소 인덱스 {@link AccessorData}
+     * @param sparseValuesAccessorData  희소 값 {@link AccessorData}
+     * @throws IllegalArgumentException sparseIndicesAccessorData가
+     *                                  정수 타입(byte, short, int) 데이터가 아닐 때
      */
     private static void substituteShortAccessorData(
             AccessorShortData denseAccessorData,
@@ -212,7 +210,7 @@ public class AccessorSparseUtils {
                 denseAccessorData.getNumComponentsPerElement();
 
         if (baseAccessorData != null) {
-            // Fill the dense AccessorData with the base data
+            // 밀집 AccessorData를 기반 데이터로 채운다
             for (int e = 0; e < numElements; e++) {
                 for (int c = 0; c < numComponentsPerElement; c++) {
                     short value = baseAccessorData.get(e, c);
@@ -221,7 +219,7 @@ public class AccessorSparseUtils {
             }
         }
 
-        // Apply the substitution based on the sparse indices and values
+        // 희소 인덱스와 값으로 치환을 적용한다
         int indices[] = extractIndices(sparseIndicesAccessorData);
         for (int i = 0; i < indices.length; i++) {
             int targetElementIndex = indices[i];
@@ -233,14 +231,14 @@ public class AccessorSparseUtils {
     }
 
     /**
-     * See {@link #substituteAccessorData}
+     * {@link #substituteAccessorData} 참고
      *
-     * @param denseAccessorData         The dense {@link AccessorData} to be filled
-     * @param baseAccessorData          The optional "base" {@link AccessorData}
-     * @param sparseIndicesAccessorData The sparse indices {@link AccessorData}
-     * @param sparseValuesAccessorData  The sparse values {@link AccessorData}
-     * @throws IllegalArgumentException If the sparseIndicesAccessorData does
-     *                                  not contain data with an integral type (byte, short, int).
+     * @param denseAccessorData         채울 밀집 {@link AccessorData}
+     * @param baseAccessorData          선택적 "기반" {@link AccessorData}
+     * @param sparseIndicesAccessorData 희소 인덱스 {@link AccessorData}
+     * @param sparseValuesAccessorData  희소 값 {@link AccessorData}
+     * @throws IllegalArgumentException sparseIndicesAccessorData가
+     *                                  정수 타입(byte, short, int) 데이터가 아닐 때
      */
     private static void substituteIntAccessorData(
             AccessorIntData denseAccessorData,
@@ -252,7 +250,7 @@ public class AccessorSparseUtils {
                 denseAccessorData.getNumComponentsPerElement();
 
         if (baseAccessorData != null) {
-            // Fill the dense AccessorData with the base data
+            // 밀집 AccessorData를 기반 데이터로 채운다
             for (int e = 0; e < numElements; e++) {
                 for (int c = 0; c < numComponentsPerElement; c++) {
                     int value = baseAccessorData.get(e, c);
@@ -261,7 +259,7 @@ public class AccessorSparseUtils {
             }
         }
 
-        // Apply the substitution based on the sparse indices and values
+        // 희소 인덱스와 값으로 치환을 적용한다
         int indices[] = extractIndices(sparseIndicesAccessorData);
         for (int i = 0; i < indices.length; i++) {
             int targetElementIndex = indices[i];
@@ -273,14 +271,14 @@ public class AccessorSparseUtils {
     }
 
     /**
-     * See {@link #substituteAccessorData}
+     * {@link #substituteAccessorData} 참고
      *
-     * @param denseAccessorData         The dense {@link AccessorData} to be filled
-     * @param baseAccessorData          The optional "base" {@link AccessorData}
-     * @param sparseIndicesAccessorData The sparse indices {@link AccessorData}
-     * @param sparseValuesAccessorData  The sparse values {@link AccessorData}
-     * @throws IllegalArgumentException If the sparseIndicesAccessorData does
-     *                                  not contain data with an integral type (byte, short, int).
+     * @param denseAccessorData         채울 밀집 {@link AccessorData}
+     * @param baseAccessorData          선택적 "기반" {@link AccessorData}
+     * @param sparseIndicesAccessorData 희소 인덱스 {@link AccessorData}
+     * @param sparseValuesAccessorData  희소 값 {@link AccessorData}
+     * @throws IllegalArgumentException sparseIndicesAccessorData가
+     *                                  정수 타입(byte, short, int) 데이터가 아닐 때
      */
     private static void substituteFloatAccessorData(
             AccessorFloatData denseAccessorData,
@@ -292,7 +290,7 @@ public class AccessorSparseUtils {
                 denseAccessorData.getNumComponentsPerElement();
 
         if (baseAccessorData != null) {
-            // Fill the dense AccessorData with the base data
+            // 밀집 AccessorData를 기반 데이터로 채운다
             for (int e = 0; e < numElements; e++) {
                 for (int c = 0; c < numComponentsPerElement; c++) {
                     float value = baseAccessorData.get(e, c);
@@ -301,7 +299,7 @@ public class AccessorSparseUtils {
             }
         }
 
-        // Apply the substitution based on the sparse indices and values
+        // 희소 인덱스와 값으로 치환을 적용한다
         int indices[] = extractIndices(sparseIndicesAccessorData);
         for (int i = 0; i < indices.length; i++) {
             int targetElementIndex = indices[i];

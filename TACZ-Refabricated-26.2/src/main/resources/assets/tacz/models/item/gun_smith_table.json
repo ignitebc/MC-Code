@@ -1,5 +1,5 @@
 {
-  "_comment": "26.2 alignment: upstream used builtin/entity (identity transforms). See modern_kinetic_gun.json.",
+  "_comment": "26.2 맞춤: 원본은 builtin/entity(항등 변환)를 썼다. modern_kinetic_gun.json 참고.",
   "textures": {
     "particle": "minecraft:item/barrier"
   }

@@ -52,8 +52,8 @@ import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 /**
- * 客户端资源管理器<br/>
- * 所有枪包资源缓存在此
+ * 클라이언트 자원 관리자<br/>
+ * 모든 총기 팩 자원을 여기에 캐시한다
  */
 @Environment(EnvType.CLIENT)
 public enum ClientAssetsManager {
@@ -69,25 +69,25 @@ public enum ClientAssetsManager {
             .registerTypeAdapter(SoundEffectKeyframes.class, new SoundEffectKeyframesSerializer())
             .create();
 
-    // 枪械展示数据
+    // 총기 표시 데이터
     private DisplayManager<GunDisplay> gunDisplay;
-    // 弹药展示数据
+    // 탄약 표시 데이터
     private DisplayManager<AmmoDisplay> ammoDisplay;
-    // 配件展示数据
+    // 부착물 표시 데이터
     private DisplayManager<AttachmentDisplay> attachmentDisplay;
-    // 方块展示数据
+    // 블록 표시 데이터
     private DisplayManager<BlockDisplay> blockDisplay;
-    // 原始基岩版模型
+    // 원본 베드락 모델
     private LazyJsonDataManager<BedrockModelPOJO> bedrockModel;
-    // 基岩版模型动画
+    // 베드락 모델 애니메이션
     private LazyJsonDataManager<BedrockAnimationFile> bedrockAnimation;
-    // gltf 动画
+    // gltf 애니메이션
     private GltfManager gltfAnimation;
-    // 客户端脚本
+    // 클라이언트 스크립트
     private final List<LuaLibrary> libList = List.of(new LuaAnimationConstant(), new LuaGunAnimationConstant());
     private ScriptManager scriptManager;
-    // 音效
-    // 枪包元数据
+    // 효과음
+    // 총기 팩 메타데이터
     private PackInfoManager packInfo;
 
     private List<IdentifiableResourceReloadListener> listeners;
@@ -195,7 +195,7 @@ public enum ClientAssetsManager {
         try {
             Minecraft.getInstance().reloadResourcePacks().get();
             if (TaCZFabric.getServer() != null) {
-                // 直接刷新data
+                // data를 바로 새로 고친다
                 CommonAssetsManager.reloadAllPack();
             }
         } catch (Exception e) {

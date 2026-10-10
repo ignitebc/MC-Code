@@ -37,7 +37,7 @@ public class ClientSetupEvent {
     }
 
     public static void registerKeyMappings() {
-        // 注册键位 (26.2: MKB 不可用，直接注册 KeyMapping)
+        // 키 등록(26.2: MKB를 쓸 수 없어 KeyMapping을 직접 등록한다)
         KeyMappingHelper.registerKeyMapping(InspectKey.INSPECT_KEY);
         KeyMappingHelper.registerKeyMapping(ReloadKey.RELOAD_KEY);
         KeyMappingHelper.registerKeyMapping(ShootKey.SHOOT_KEY);
@@ -50,7 +50,7 @@ public class ClientSetupEvent {
     }
 
     public static void registerClientTooltips() {
-        // 注册文本提示 (26.2: TooltipComponentCallback → ClientTooltipComponentCallback)
+        // 안내 문구 등록(26.2: TooltipComponentCallback → ClientTooltipComponentCallback)
         ClientTooltipComponentCallback.EVENT.register(tooltip -> {
             if (tooltip instanceof GunTooltip gunTooltip) {
                 return new ClientGunTooltip(gunTooltip);
@@ -79,16 +79,15 @@ public class ClientSetupEvent {
     }
 
     public static void onClientSetup() {
-        // 注册自己的的硬编码第三人称动画
+        // 직접 만든 고정 3인칭 애니메이션 등록
         ThirdPersonManager.registerDefault();
 
-        // 26.2 已解决: ColorProviderRegistry.ITEM 与 ItemProperties 均已移除。
-        // 弹药箱染色改由 items/ammo_box.json 模型里的 minecraft:dye tint 完成；
-        // 变体选择改由 minecraft:select + tacz:ammo_statue 属性完成
-        // （属性实现见 AmmoBoxStatueProperty，注册点在 TaCZFabricClient）。
+        // 26.2에서 해결: ColorProviderRegistry.ITEM과 ItemProperties는 모두 제거되었다.
+        // 탄약 상자 염색은 items/ammo_box.json 모델의 minecraft:dye tint가 맡고,
+        // 변형 선택은 minecraft:select + tacz:ammo_statue 속성이 맡는다
+        // (속성 구현은 AmmoBoxStatueProperty, 등록은 TaCZFabricClient에 있다).
 
-        // 初始化自己的枪包下载器
-//       ClientGunPackDownloadManager.init();
+        // 자체 총기 팩 내려받기 관리자 초기화
 
 
 

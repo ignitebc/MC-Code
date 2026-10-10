@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nullable;
 
 /**
- * Stub for simplebedrockmodel IFPGeoItemRenderer (library not yet available for 26.2).
+ * simplebedrockmodel IFPGeoItemRenderer의 대체 구현(26.2용 라이브러리가 아직 없음).
  */
 public interface IFPGeoItemRenderer {
     long getPutAwayDuration(ItemStack stack);

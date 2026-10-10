@@ -8,21 +8,21 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 public interface IItem {
-    // 【第 39 轮】移除 tacz$getMaxStackSize(ItemStack)。
+    // [39차] tacz$getMaxStackSize(ItemStack)를 제거했다.
     //
-    // 它是 1.21.1 时代为「每种弹药各自的堆叠上限」自建的扩展点，靠
-    // compat/tweakeroo/ItemMixin 注入 Item#getMaxStackSize(ItemStack) 生效。
-    // 但在 26.2 下这条路已彻底断掉：
-    //   1. Item 上【没有】getMaxStackSize(ItemStack) 这个重载（字节码确认，
-    //      只剩无参的 getDefaultMaxStackSize()）—— 该 mixin 一旦注册就会因
-    //      找不到目标而崩溃，这也是它长期未被注册的真正原因；
-    //   2. 真正的上限现在由 DataComponents.MAX_STACK_SIZE 组件决定
-    //      （ItemInstance#getMaxStackSize 的实现就是
-    //       getOrDefault(MAX_STACK_SIZE, 1)），第 34 轮已改为在
-    //      AmmoItemDataAccessor#applyMaxStackSize 与 AmmoItem#inventoryTick
-    //      里写该组件，不再需要任何 mixin。
+    // 1.21.1 시절 "탄약마다 다른 최대 묶음 수"를 위해 만든 확장 지점으로,
+    // compat/tweakeroo/ItemMixin이 Item#getMaxStackSize(ItemStack)에 주입해 동작했다.
+    // 하지만 26.2에서는 이 경로가 완전히 끊겼다:
+    //   1. Item에 getMaxStackSize(ItemStack) 오버로드가 [없다](바이트코드 확인,
+    //      인자 없는 getDefaultMaxStackSize()만 남음) — 그 mixin을 등록하면
+    //      대상을 찾지 못해 크래시가 나며, 오랫동안 등록하지 않은 실제 이유이기도 하다.
+    //   2. 실제 상한은 이제 DataComponents.MAX_STACK_SIZE 컴포넌트가 정한다
+    //      (ItemInstance#getMaxStackSize 구현이 곧
+    //       getOrDefault(MAX_STACK_SIZE, 1)이다). 34차에서
+    //      AmmoItemDataAccessor#applyMaxStackSize와 AmmoItem#inventoryTick이
+    //      이 컴포넌트를 쓰도록 바꿨으므로 mixin이 더는 필요 없다.
     //
-    // 删除 ItemMixin 后本方法失去唯一调用方，留着只会误导后来者以为它还有用。
+    // ItemMixin을 지우면서 이 메서드는 유일한 호출처를 잃었고, 남겨 두면 아직 쓰이는 것처럼 오해하게 만든다.
 
     default boolean tacz$onEntitySwing(ItemStack stack, LivingEntity entity) {
         return false;

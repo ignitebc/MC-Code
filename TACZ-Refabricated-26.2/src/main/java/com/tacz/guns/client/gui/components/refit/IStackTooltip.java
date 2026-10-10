@@ -6,9 +6,9 @@ import java.util.function.Consumer;
 
 public interface IStackTooltip {
     /**
-     * 添加此接口，会调用此渲染文本提示
+     * 이 인터페이스를 붙이면 이 메서드로 안내 문구를 그린다
      *
-     * @param consumer 需要渲染文本提示的物品
+     * @param consumer 안내 문구를 그릴 아이템
      */
     void renderTooltip(Consumer<ItemStack> consumer);
 }

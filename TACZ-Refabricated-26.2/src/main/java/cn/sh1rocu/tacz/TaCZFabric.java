@@ -61,7 +61,7 @@ public class TaCZFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        // 确保配置文件加载，这个阶段将比标准的forge配置文件加载早
+        // 설정 파일을 먼저 불러온다. 이 단계는 표준 Forge 설정 파일 로드보다 이르다
         PreLoadConfig.init();
 
         ConfigRegistry.INSTANCE.register(GunMod.MOD_ID, ModConfig.Type.COMMON, CommonConfig.init());
@@ -70,17 +70,17 @@ public class TaCZFabric implements ModInitializer {
 
         GunMod.setup();
         CommandRegistry.onServerStaring();
-        // 注册 Forge 遗留的自定义 Ingredient 类型。
+        // Forge 시절의 사용자 정의 Ingredient 종류를 등록한다.
         //
-        // 这两个类一直躺在 util/forge 下但【从未被注册过】—— 上游 1.21.1 在本方法
-        // 对应位置有一行 CustomIngredientSerializer.register(NBTIngredient.Serializer.INSTANCE)，
-        // 移植时漏掉了。没注册的后果不是报错，而是 Fabric 的 CustomIngredientImpl.CODEC
-        // 在 REGISTERED_SERIALIZERS 里查不到该 id、返回
-        // "Unknown custom ingredient serializer" -> 整条配方解析失败。
+        // 이 두 클래스는 계속 util/forge 아래 있었지만 [한 번도 등록된 적이 없었다] — 원본 1.21.1은 이 메서드의
+        // 같은 위치에서 CustomIngredientSerializer.register(NBTIngredient.Serializer.INSTANCE)를 호출했는데,
+        // 이식할 때 빠졌다. 등록하지 않으면 오류가 나는 대신 Fabric의 CustomIngredientImpl.CODEC이
+        // REGISTERED_SERIALIZERS에서 해당 ID를 찾지 못하고
+        // "Unknown custom ingredient serializer"를 돌려줘 제작법 전체 해석이 실패한다.
         //
-        // 实测症状：第三方包里用 forge:partial_nbt 写的 2 条配方
-        //（「迈卡的佩枪」= 2 把柯尔特 M1892、「m1887_hc」= m1887 + 斧头）
-        // 材料格空白且无法合成。
+        // 실제 증상: 외부 팩에서 forge:partial_nbt로 쓴 제작법 2개
+        // ("마이카의 권총" = 콜트 M1892 2자루, "m1887_hc" = m1887 + 도끼)의
+        // 재료 칸이 비어 제작할 수 없었다.
         CustomIngredientSerializer.register(PartialNBTIngredient.Serializer.INSTANCE);
         CustomIngredientSerializer.register(StrictNBTIngredient.Serializer.INSTANCE);
 

@@ -35,11 +35,11 @@ public class LivingEntityMelee {
         if (data.currentGunItem == null) {
             return;
         }
-        // 检查是否在切枪
+        // 총을 바꾸는 중인지 확인한다
         if (draw.getDrawCoolDown() != 0) {
             return;
         }
-        // 检查是否在拉栓
+        // 노리쇠를 당기는 중인지 확인한다
         if (data.isBolting) {
             return;
         }
@@ -48,7 +48,7 @@ public class LivingEntityMelee {
             return;
         }
         ItemStack currentGunItem = data.currentGunItem.get();
-        // 触发近战事件
+        // 근접 공격 이벤트 발생
         GunMeleeEvent gunMeleeEvent = new GunMeleeEvent(shooter, currentGunItem, LogicalSide.SERVER);
         GunMeleeEvent.CALLBACK.invoker().post(gunMeleeEvent);
         if (gunMeleeEvent.isCanceled()) {
@@ -115,14 +115,14 @@ public class LivingEntityMelee {
         Optional<CommonGunIndex> gunIndex = TimelessAPI.getCommonGunIndex(gunId);
         return gunIndex.map(index -> {
             GunMeleeData meleeData = index.getGunData().getMeleeData();
-            // 获取枪口，看看有没有近战数据
+            // 총구를 가져와 근접 공격 데이터가 있는지 본다
             Identifier muzzleId = iGun.getAttachmentId(currentGunItem, AttachmentType.MUZZLE);
             MeleeData muzzleMeleeData = getMeleeData(muzzleId);
             if (muzzleMeleeData != null) {
                 return getTotalCooldownTime(meleeData, muzzleMeleeData.getCooldown());
             }
 
-            // 枪托
+            // 개머리판
             Identifier stockId = iGun.getAttachmentId(currentGunItem, AttachmentType.STOCK);
             MeleeData stockMeleeData = getMeleeData(stockId);
             if (stockMeleeData != null) {
@@ -138,7 +138,7 @@ public class LivingEntityMelee {
     private long getTotalCooldownTime(GunMeleeData meleeData, float extraCooldownTime) {
         float totalCooldownTime = meleeData.getCooldown() + extraCooldownTime;
         long coolDown = (long) (totalCooldownTime * 1000) - (System.currentTimeMillis() - data.meleeTimestamp);
-        // 给 5 ms 的窗口时间，以平衡延迟
+        // 지연을 상쇄하려고 5 ms 여유 시간을 준다
         coolDown = coolDown - 5;
         if (coolDown < 0) {
             return 0L;

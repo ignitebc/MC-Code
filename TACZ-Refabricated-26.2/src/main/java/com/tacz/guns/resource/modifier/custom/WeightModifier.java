@@ -32,7 +32,7 @@ public class WeightModifier implements IAttachmentModifier<Modifier, Float> {
     public JsonProperty<Modifier> readJson(String json) {
         Data data = CommonAssetsManager.GSON.fromJson(json, Data.class);
         Modifier weightModifier = data.getWeightModifier();
-        // 兼容旧版本写法
+        // 예전 버전 표기 호환
         if (weightModifier == null) {
             weightModifier = new Modifier();
             weightModifier.setAddend(data.getWeightAddend());
@@ -92,11 +92,11 @@ public class WeightModifier implements IAttachmentModifier<Modifier, Float> {
             Modifier value = this.getValue();
             float adsAddendTime = 0;
             if (value != null) {
-                // 传入默认值 0.2 进行测试，看看最终结果差值
+                // 기본값 0.2를 넣어 시험해 최종 결과의 차이를 본다
                 double eval = AttachmentPropertyManager.eval(value, 0.2);
                 adsAddendTime = (float) (eval - 0.2);
             }
-            // 添加文本提示
+            // 글자 안내 추가
             if (adsAddendTime > 0) {
                 components.add(ModifierText.line("tooltip.tacz.attachment.weight.increase", value, "kg", 0xFF5555));
             } else if (adsAddendTime < 0) {

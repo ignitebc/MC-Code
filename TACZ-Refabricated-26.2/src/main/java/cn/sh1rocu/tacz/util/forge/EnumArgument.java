@@ -21,13 +21,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * 26.2 重构版 - {@link ArgumentTypeInfo} API 适配
+ * 26.2 재구성판 - {@link ArgumentTypeInfo} API 대응
  * <p>
- * 26.1+ Mojang 重构:
+ * 26.1+ Mojang 재구성:
  * <ul>
- *   <li>{@code ArgumentTypeInfo.Template} 改为独立泛型, 之前是 {@code ArgumentTypeInfo<T>.Template} 内部类</li>
- *   <li>新签名: {@code ArgumentTypeInfo<A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>>}</li>
- *   <li>Template 现在是 {@code ArgumentTypeInfo.Template<A>}, 提供 {@code instantiate(CommandBuildContext)}</li>
+ *   <li>{@code ArgumentTypeInfo.Template}이 독립 제네릭이 되었다. 예전에는 {@code ArgumentTypeInfo<T>.Template} 내부 클래스였다</li>
+ *   <li>새 시그니처: {@code ArgumentTypeInfo<A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>>}</li>
+ *   <li>Template은 이제 {@code ArgumentTypeInfo.Template<A>}이며 {@code instantiate(CommandBuildContext)}를 제공한다</li>
  * </ul>
  */
 public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
@@ -69,12 +69,12 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
     }
 
     /**
-     * 26.2 ArgumentTypeInfo 实现
+     * 26.2 ArgumentTypeInfo 구현
      * <p>
-     * 签名: {@code ArgumentTypeInfo<A, T>} 其中:
+     * 시그니처: {@code ArgumentTypeInfo<A, T>}, 여기서:
      * <ul>
-     *   <li>A = EnumArgument (具体类, 但因为泛型擦除, 实际使用时 cast)</li>
-     *   <li>T = Info.Template (具体内部类)</li>
+     *   <li>A = EnumArgument (구체 클래스지만 제네릭 소거 때문에 실제 사용 시 형변환)</li>
+     *   <li>T = Info.Template (구체 내부 클래스)</li>
      * </ul>
      */
     public static class Info implements ArgumentTypeInfo<EnumArgument<?>, Info.Template> {
@@ -108,7 +108,7 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
         }
 
         /**
-         * 26.2 Template 类 - 独立泛型, 实现 {@code ArgumentTypeInfo.Template<EnumArgument<?>>}
+         * 26.2 Template 클래스 - 독립 제네릭, {@code ArgumentTypeInfo.Template<EnumArgument<?>>} 구현
          */
         public static class Template implements ArgumentTypeInfo.Template<EnumArgument<?>> {
             final Class<? extends Enum<?>> enumClass;

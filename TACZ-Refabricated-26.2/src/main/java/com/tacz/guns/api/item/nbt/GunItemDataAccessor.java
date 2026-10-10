@@ -30,12 +30,12 @@ public interface GunItemDataAccessor extends IGun {
     String GUN_CURRENT_AMMO_COUNT_TAG = "GunCurrentAmmoCount";
     String GUN_ATTACHMENT_BASE = "Attachment";
     /**
-     * 第 16 轮：26.2 的 ItemStack NBT 布局为 {@code {id, count, components:{...}}}。
-     * 已安装配件自身的数据存在 components 下的 minecraft:custom_data 里。
-     * 旧代码沿用 1.20.x 的 {@code "tag"} 子键，在 26.2 上恒查不到。
+     * 16차: 26.2의 ItemStack NBT 구조는 {@code {id, count, components:{...}}}다.
+     * 장착한 부착물 자신의 데이터는 components 아래 minecraft:custom_data에 있다.
+     * 예전 코드는 1.20.x의 {@code "tag"} 하위 키를 그대로 써서 26.2에서는 항상 찾지 못했다.
      */
     String COMPONENTS_TAG = "components";
-    /** {@code DataComponents.CUSTOM_DATA.toString()} 的值，已实测确认。 */
+    /** {@code DataComponents.CUSTOM_DATA.toString()}의 값. 실제로 확인했다. */
     String CUSTOM_DATA_KEY = "minecraft:custom_data";
     String GUN_EXP_TAG = "GunLevelExp";
     String GUN_DUMMY_AMMO = "DummyAmmo";
@@ -227,7 +227,7 @@ public interface GunItemDataAccessor extends IGun {
 
     @Override
     default void reduceCurrentAmmoCount(ItemStack gun) {
-        // 只在不使用背包直读的情况下减少 AmmoCount
+        // 인벤토리 급탄을 쓰지 않을 때만 AmmoCount를 줄인다
         if (!useInventoryAmmo(gun)) {
             setCurrentAmmoCount(gun, getCurrentAmmoCount(gun) - 1);
         }
@@ -235,28 +235,28 @@ public interface GunItemDataAccessor extends IGun {
 
     @Override
     /**
-     * 读取已安装配件自身的 custom_data 标签。
+     * 장착한 부착물 자신의 custom_data 태그를 읽는다.
      *
-     * <h2>第 16 轮修复：{@code "tag"} 是 1.20.x 的旧 NBT 布局</h2>
+     * <h2>16차 수정: {@code "tag"}는 1.20.x의 예전 NBT 구조다</h2>
      *
-     * 原实现找的是 {@code allItemStackTag.contains("tag")}，那是<b>物品组件化之前</b>
-     * （1.20.4 及更早）的 ItemStack NBT 结构 {@code {id, Count, tag:{...}}}。
+     * 원래 구현은 {@code allItemStackTag.contains("tag")}를 찾았는데, 이것은 <b>아이템 컴포넌트화 이전</b>
+     * (1.20.4 이하)의 ItemStack NBT 구조 {@code {id, Count, tag:{...}}}다.
      *
-     * <p>26.2 的 {@code ItemStack} 序列化结果是 {@code {id, count, components:{...}}}，
-     * <b>顶层根本没有 "tag" 键</b>（已实测：顶层键为 {@code [count, id]}）。
-     * 于是本方法<b>恒返回 null</b> → {@link #getAttachmentId} 恒返回
-     * {@code EMPTY_ATTACHMENT_ID} → <b>所有已安装的配件都被判定为「没装」</b>。
+     * <p>26.2의 {@code ItemStack} 직렬화 결과는 {@code {id, count, components:{...}}}이며,
+     * <b>최상위에 "tag" 키가 아예 없다</b>(실측: 최상위 키는 {@code [count, id]}).
+     * 그래서 이 메서드는 <b>항상 null을 돌려줬고</b> → {@link #getAttachmentId}는 항상
+     * {@code EMPTY_ATTACHMENT_ID}를 돌려줘 → <b>장착한 모든 부착물이 "미장착"으로 판정됐다</b>.
      *
-     * <p>这一处 bug 同时解释了第 16 轮反馈的多个现象：
+     * <p>이 버그 하나가 16차에서 보고된 여러 현상을 한꺼번에 설명한다:
      * <ul>
-     *   <li>瞄准镜装上去不被承认（{@code FirstPersonRenderGunEvent} 判定 scopeId 为空 → 走机瞄）</li>
-     *   <li>扩容弹匣完全不生效（{@code getMagExtendLevel} 拿不到 id → 恒为 0 级）</li>
-     *   <li>各类特殊弹匣插件（燃烧弹等）不生效（同上）</li>
+     *   <li>조준경을 달아도 인정되지 않음({@code FirstPersonRenderGunEvent}가 scopeId를 비었다고 판정 → 가늠쇠 조준)</li>
+     *   <li>확장 탄창이 전혀 적용되지 않음({@code getMagExtendLevel}이 ID를 못 얻어 → 항상 0단계)</li>
+     *   <li>각종 특수 탄창 부착물(소이탄 등)이 적용되지 않음(위와 같음)</li>
      * </ul>
-     * 而镭射之所以「看起来生效」，是因为它走的是独立的模型渲染路径，不依赖本方法。
+     * 레이저가 "적용되는 것처럼 보였던" 이유는 이 메서드에 기대지 않는 별도의 모델 렌더링 경로를 쓰기 때문이다.
      *
-     * <p>正确布局（与上游 1.21.1 一致）：
-     * {@code <配件槽键> -> "components" -> "minecraft:custom_data"}。
+     * <p>올바른 구조(원본 1.21.1과 같음):
+     * {@code <부착물 칸 키> -> "components" -> "minecraft:custom_data"}.
      */
     @Nullable
     default CompoundTag getAttachmentTag(ItemStack gun, AttachmentType type) {
@@ -280,11 +280,11 @@ public interface GunItemDataAccessor extends IGun {
     }
 
     /**
-     * 写回已安装配件自身的 custom_data 标签（用于切换瞄具倍率等）。
+     * 장착한 부착물 자신의 custom_data 태그를 다시 쓴다(조준경 배율 전환 등에 쓴다).
      *
-     * <p>第 16 轮新增：本方法在移植时<b>整个丢失了</b>（上游 1.21.1 有），
-     * 导致任何需要修改「已安装配件」自身数据的功能都无法持久化，
-     * 典型表现就是瞄具倍率切换后不生效 / 切枪后复原。
+     * <p>16차 추가: 이 메서드는 이식할 때 <b>통째로 빠졌다</b>(원본 1.21.1에는 있다).
+     * 그래서 "장착한 부착물" 자신의 데이터를 바꿔야 하는 기능이 모두 저장되지 않았고,
+     * 대표 증상이 조준경 배율을 바꿔도 적용되지 않거나 총을 바꾸면 되돌아가는 것이었다.
      */
     @Override
     default void setAttachmentTag(ItemStack gun, AttachmentType type, CompoundTag attachmentTag) {
@@ -449,7 +449,7 @@ public interface GunItemDataAccessor extends IGun {
     }
 
     /**
-     * Heat Data
+     * 열량 데이터
      */
     @Override
     default boolean hasHeatData(ItemStack gun) {

@@ -45,7 +45,7 @@ public class ServerMessageRefreshRefitScreen implements CustomPacketPayload {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null && Minecraft.getInstance().gui.screen() instanceof GunRefitScreen screen) {
             screen.init();
-            // 刷新配件数据，客户端的
+            // 클라이언트의 부착물 데이터를 새로 고친다
             AttachmentPropertyManager.postChangeEvent(player, player.getMainHandItem());
         }
     }

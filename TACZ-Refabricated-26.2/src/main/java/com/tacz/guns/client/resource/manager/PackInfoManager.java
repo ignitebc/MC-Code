@@ -31,8 +31,8 @@ public class PackInfoManager extends SimplePreparableReloadListener<Map<String, 
         for (String namespaces : manager.getNamespaces()) {
             manager.getResource(Identifier.fromNamespaceAndPath(namespaces, PACK_INFO_NAME)).ifPresent(rl -> {
                 try (Reader reader = rl.openAsReader()) {
-                    // Gun packs are documented and shipped as JSON-with-comments. Gson 2.14 is
-                    // strict by default, unlike the older runtime this code was ported from.
+                    // 총기 팩은 주석이 들어간 JSON으로 문서화·배포된다. Gson 2.14는
+                    // 이 코드를 이식해 온 예전 런타임과 달리 기본값이 엄격 모드다.
                     JsonReader jsonReader = CommonAssetsManager.GSON.newJsonReader(reader);
                     jsonReader.setStrictness(Strictness.LENIENT);
                     PackInfo packInfo = CommonAssetsManager.GSON.fromJson(jsonReader, PackInfo.class);

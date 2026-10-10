@@ -28,48 +28,48 @@ public class LocalPlayerDraw {
     }
 
     public void draw(ItemStack lastItem) {
-        // 重置各种参数
+        // 여러 매개변수 초기화
         this.resetData();
 
-        // 获取各种数据
+        // 여러 데이터 얻기
         ItemStack currentItem = player.getMainHandItem();
         long drawTime = System.currentTimeMillis() - data.clientDrawTimestamp;
         IGun currentGun = IGun.getIGunOrNull(currentItem);
         IGun lastGun = IGun.getIGunOrNull(lastItem);
 
-        // 计算 draw 时长和 putAway 时长
+        // draw 시간과 putAway 시간을 계산한다
         if (drawTime >= 0) {
             drawTime = getDrawTime(lastItem, lastGun, drawTime);
         }
         long putAwayTime = Math.abs(drawTime);
 
-        // 发包通知服务器
+        // 패킷을 보내 서버에 알린다
         if (Minecraft.getInstance().gameMode != null) {
             Minecraft.getInstance().gameMode.ensureHasSentCarriedItem();
         }
         ClientPlayNetworking.send(new ClientMessagePlayerDrawGun());
         GunDrawEvent.CALLBACK.invoker().post(new GunDrawEvent(player, lastItem, currentItem, LogicalSide.CLIENT));
 
-        // 不处于收枪状态时才能收枪
+        // 집어넣는 중이 아닐 때만 집어넣을 수 있다
         if (drawTime >= 0) {
             doPutAway(lastItem, putAwayTime);
         }
 
-        // 异步放映抬枪动画
+        // 총 드는 애니메이션을 비동기로 재생한다
         if (currentGun != null) {
             doDraw(currentItem, putAwayTime);
-            // 刷新配件数据
+            // 부착물 데이터 새로 고침
             AttachmentPropertyManager.postChangeEvent(player, currentItem);
         }
     }
 
     private void doDraw(ItemStack currentItem, long putAwayTime) {
         TimelessAPI.getGunDisplay(currentItem).ifPresent(display -> {
-            // 取消预定中的 draw 行为
+            // 예약된 draw 동작 취소
             if (data.drawFuture != null) {
                 data.drawFuture.cancel(false);
             }
-            // 根据 put away time 预定 draw 行为（仅播放音效，状态机的初始化为了保证一致性已经移动）
+            // put away 시간에 맞춰 draw 동작을 예약한다(효과음만 재생하며, 일관성을 위해 상태 기계 초기화는 옮겼다)
             data.drawFuture = LocalPlayerDataHolder.SCHEDULED_EXECUTOR_SERVICE.schedule(() -> {
                 ((BlockableEventLoopAccessor) Minecraft.getInstance()).tacz$submitAsync(() -> {
                     SoundPlayManager.stopPlayGunSound();
@@ -85,7 +85,7 @@ public class LocalPlayerDraw {
         }
         TimelessAPI.getGunDisplay(lastItem).ifPresent(display -> {
             ((BlockableEventLoopAccessor) Minecraft.getInstance()).tacz$submitAsync(() -> {
-                // 播放收枪音效
+                // 총 집어넣기 효과음 재생
                 SoundPlayManager.stopPlayGunSound();
                 SoundPlayManager.playPutAwaySound(player, display);
             });
@@ -107,19 +107,19 @@ public class LocalPlayerDraw {
     }
 
     private void resetData() {
-        // 锁上状态锁
+        // 상태 잠금을 건다
         data.lockState(operator -> operator.getSynDrawCoolDown() > 0);
-        // 重置客户端的 shoot 时间戳
+        // 클라이언트 shoot 시각 초기화
         data.isShootRecorded = true;
         data.clientShootTimestamp = -1;
         data.chargeProgress = 0;
-        // 重置客户端瞄准状态
+        // 클라이언트 조준 상태 초기화
         data.clientIsAiming = false;
         data.clientAimingProgress = 0;
         LocalPlayerDataHolder.oldAimingProgress = 0;
-        // 重置拉栓状态
+        // 노리쇠 당기기 상태 초기화
         data.isBolting = false;
-        // 更新切枪时间戳
+        // 총기 교체 시각 갱신
         if (data.clientDrawTimestamp == -1) {
             data.clientDrawTimestamp = System.currentTimeMillis();
         }

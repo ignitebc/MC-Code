@@ -31,7 +31,7 @@ public class TargetMinecartItem extends Item {
         } else {
             ItemStack itemstack = context.getItemInHand();
             if (!level.isClientSide()) {
-                RailShape railshape = blockstate.getBlock() instanceof BaseRailBlock baseRailBlock ? blockstate.getValue(baseRailBlock.getShapeProperty()) /*baseRailBlock.getRailDirection(blockstate, level, blockpos, null)*/ : RailShape.NORTH_SOUTH;
+                RailShape railshape = blockstate.getBlock() instanceof BaseRailBlock baseRailBlock ? blockstate.getValue(baseRailBlock.getShapeProperty()) : RailShape.NORTH_SOUTH;
                 double yOffset = 0;
                 if (railshape == RailShape.ASCENDING_EAST || railshape == RailShape.ASCENDING_WEST || railshape == RailShape.ASCENDING_NORTH || railshape == RailShape.ASCENDING_SOUTH) {
                     yOffset = 0.5;

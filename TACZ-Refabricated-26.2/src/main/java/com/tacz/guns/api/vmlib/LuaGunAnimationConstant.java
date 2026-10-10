@@ -12,19 +12,19 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 
 /**
- * 功能和 {@link LuaAnimationConstant} 类似。
+ * 기능은 {@link LuaAnimationConstant}와 비슷하다.
  */
 public class LuaGunAnimationConstant implements LuaLibrary {
     private final Map<String, Object> constantMap = Maps.newHashMap();
 
     public LuaGunAnimationConstant() {
-        // 获取 GunAnimationConstant 的所有 public 字段
+        // GunAnimationConstant의 public 필드를 모두 얻는다
         Field[] fields = GunAnimationConstant.class.getFields();
-        // 将 static final 的常量字段提取到 constantMap
+        // static final 상수 필드를 constantMap에 뽑아낸다
         for (Field field : fields) {
             if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
                 try {
-                    // 获取变量名和值
+                    // 변수 이름과 값을 얻는다
                     String name = field.getName();
                     Object value = field.get(null);
                     constantMap.put(name, value);
@@ -34,12 +34,12 @@ public class LuaGunAnimationConstant implements LuaLibrary {
             }
         }
 
-        // 映射 ReloadState.StateType 枚举
+        // ReloadState.StateType 열거형 대응
         for (ReloadState.StateType stateType : ReloadState.StateType.values()) {
             constantMap.put(stateType.name(), stateType.ordinal());
         }
 
-        // 映射 FireMode 枚举
+        // FireMode 열거형 대응
         for (var fireMode : FireMode.values()) {
             constantMap.put(fireMode.name(), fireMode.ordinal());
         }

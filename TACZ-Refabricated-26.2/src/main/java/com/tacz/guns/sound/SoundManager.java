@@ -10,93 +10,89 @@ import net.minecraft.world.level.ChunkPos;
 
 public class SoundManager {
     /**
-     * 射击音效，自己能听见
+     * 사격 효과음. 자신이 듣는다
      */
     public static String SHOOT_SOUND = "shoot";
     /**
-     * 其他玩家听到的枪声
+     * 다른 플레이어가 듣는 총소리
      */
     public static String SHOOT_3P_SOUND = "shoot_3p";
     /**
-     * 消音器音效
+     * 소음기 효과음
      */
     public static String SILENCE_SOUND = "silence";
     /**
-     * 其他玩家听到的消音器枪声
+     * 다른 플레이어가 듣는 소음기 총소리
      */
     public static String SILENCE_3P_SOUND = "silence_3p";
     /**
-     * 近战刺刀音效
+     * 근접 총검 효과음
      */
     public static String MELEE_BAYONET = "melee_bayonet";
     /**
-     * 近战推人音效
+     * 근접 밀치기 효과음
      */
     public static String MELEE_PUSH = "melee_push";
     /**
-     * 近战枪拖砸人音效
+     * 근접 개머리판 치기 효과음
      */
     public static String MELEE_STOCK = "melee_stock";
     /**
-     * 没有子弹时，空击的声音
+     * 탄환이 없을 때 빈 격발 소리
      */
     public static String DRY_FIRE_SOUND = "dry_fire";
     /**
-     * 空仓换弹声音
+     * 빈 탄창 재장전 소리
      */
     public static String RELOAD_EMPTY_SOUND = "reload_empty";
     /**
-     * 战术换弹声音
+     * 전술 재장전 소리
      */
     public static String RELOAD_TACTICAL_SOUND = "reload_tactical";
     /**
-     * 空仓检视声音
+     * 빈 탄창 점검 소리
      */
     public static String INSPECT_EMPTY_SOUND = "inspect_empty";
     /**
-     * 普通检视声音
+     * 일반 점검 소리
      */
     public static String INSPECT_SOUND = "inspect";
     /**
-     * 切枪切入声音
+     * 총 꺼내기 소리
      */
     public static String DRAW_SOUND = "draw";
     /**
-     * 切枪切出的声音
+     * 총 집어넣기 소리
      */
     public static String PUT_AWAY_SOUND = "put_away";
     /**
-     * 拉栓声音
+     * 노리쇠 당기기 소리
      */
     public static String BOLT_SOUND = "bolt";
     /**
-     * 切换开关模式的声音
+     * 발사 방식 전환 소리
      */
     public static String FIRE_SELECT = "fire_select";
     /**
-     * 爆头击中声音
+     * 헤드샷 명중 소리
      */
     public static String HEAD_HIT_SOUND = "head_hit";
     /**
-     * 普通击中声音
+     * 일반 명중 소리
      */
     public static String FLESH_HIT_SOUND = "flesh_hit";
     /**
-     * 击杀的声音
+     * 처치 소리
      */
     public static String KILL_SOUND = "kill";
     /**
-     * 卸载配件的声音，用于配件的
+     * 부착물을 떼어 내는 소리. 부착물에 쓴다
      */
     public static String UNINSTALL_SOUND = "uninstall";
     /**
-     * 装载配件的声音，用于配件的
+     * 부착물을 다는 소리. 부착물에 쓴다
      */
     public static String INSTALL_SOUND = "install";
-
-//    public static void sendSoundToNearby(LivingEntity sourceEntity, int distance, Identifier gunId, String soundName, float volume, float pitch) {
-//        sendSoundToNearby(sourceEntity, distance, gunId, DefaultAssets.DEFAULT_GUN_DISPLAY_ID, soundName, volume, pitch);
-//    }
 
     public static void sendSoundToNearby(LivingEntity sourceEntity, int distance, Identifier gunId, Identifier gunDisplayId, String soundName, float volume, float pitch) {
         if (sourceEntity.level() instanceof ServerLevel serverLevel) {

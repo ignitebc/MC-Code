@@ -19,26 +19,26 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * 26.2 对齐说明（对照 1.21.1 上游同名 mixin 与反编译的 {@code ItemInHandLayer}）。
+ * 26.2 맞춤 설명(1.21.1 원본의 같은 이름 mixin과 디컴파일한 {@code ItemInHandLayer}를 대조).
  *
- * <p><b>澄清一个长期被误传的结论</b>：取消 {@code submitArmWithItem} <em>不会</em>让手臂消失。
- * 反编译源显示该方法只负责把<b>手里的物品</b>提交渲染（{@code item.submit(...)}），
- * 手臂本身由 {@code PlayerModel}/{@code HumanoidModel} 在实体模型阶段绘制，两者互不相干。
- * 因此把"第三人称手臂消失"归因于本 mixin 是不准确的；本 mixin 取消后真正丢失的是
- * <b>副手物品</b>，而这正是上游刻意为之（主手持枪时不渲染副手物品），并由
- * {@link HumanoidOffhandRender} 以"背在身上"的姿态补画回来。</p>
+ * <p><b>오랫동안 잘못 퍼진 결론 하나를 바로잡는다</b>: {@code submitArmWithItem}을 취소해도 팔이 사라지지 <em>않는다</em>.
+ * 디컴파일 소스를 보면 이 메서드는 <b>손에 든 아이템</b>을 렌더링에 제출하는 것({@code item.submit(...)})만 맡고,
+ * 팔 자체는 {@code PlayerModel}/{@code HumanoidModel}이 엔티티 모델 단계에서 그리므로 둘은 서로 관계가 없다.
+ * 그래서 "3인칭 팔이 사라짐"을 이 mixin 탓으로 돌리는 것은 정확하지 않다. 이 mixin을 취소했을 때 실제로 사라지는 것은
+ * <b>보조 손 아이템</b>이며, 이는 원본이 일부러 그렇게 한 것이다(주 손에 총을 들면 보조 손 아이템을 그리지 않음). 그리고
+ * {@link HumanoidOffhandRender}가 "몸에 멘" 자세로 다시 그려 준다.</p>
  *
- * <p>本轮修正的三处实际缺陷：</p>
+ * <p>이번 차수에 고친 실제 결함 세 가지:</p>
  * <ol>
- *   <li><b>取消条件写错。</b> 旧代码判断 {@code arm == HumanoidArm.LEFT}，但 {@code LEFT}
- *       并不等于副手 —— 左利手玩家的主手就是 {@code LEFT}。上游用的是
- *       "主手持枪 &amp;&amp; 当前 arm 不是主手"。这里改为按 {@code state.mainArm} 判定，
- *       修复左利手玩家<b>主手枪械不渲染</b>的问题。</li>
- *   <li><b>{@code isSelf} 只置 false 从不置 true。</b> 上游在 {@code renderArmWithItem} 的 HEAD
- *       会对"渲染对象是本地玩家"置 {@code true}，旧移植把这段丢了，导致第三人称下
- *       抛壳/枪口火焰的自机判定恒为 false。已按上游补回。</li>
- *   <li><b>{@code HumanoidOffhandRender.renderGun} 是空实现。</b> 已按 26.2 的
- *       extract → submit 两段式重新实现，见该类注释。</li>
+ *   <li><b>취소 조건이 틀렸다.</b> 예전 코드는 {@code arm == HumanoidArm.LEFT}로 판단했지만 {@code LEFT}가
+ *       보조 손과 같지는 않다 — 왼손잡이 플레이어의 주 손이 바로 {@code LEFT}다. 원본은
+ *       "주 손에 총을 들었고 &amp;&amp; 현재 arm이 주 손이 아님"을 썼다. 여기서는 {@code state.mainArm}으로 판정하도록 바꿔
+ *       왼손잡이 플레이어의 <b>주 손 총기가 그려지지 않는</b> 문제를 고쳤다.</li>
+ *   <li><b>{@code isSelf}를 false로만 두고 true로 두지 않았다.</b> 원본은 {@code renderArmWithItem}의 HEAD에서
+ *       "그리는 대상이 로컬 플레이어"이면 {@code true}로 두는데, 예전 이식본이 이 부분을 빠뜨려 3인칭에서
+ *       탄피 배출/총구 화염의 자기 판정이 항상 false였다. 원본대로 되살렸다.</li>
+ *   <li><b>{@code HumanoidOffhandRender.renderGun}이 빈 구현이었다.</b> 26.2의
+ *       extract → submit 두 단계 방식으로 다시 구현했다. 그 클래스 주석 참고.</li>
  * </ol>
  */
 @Mixin(ItemInHandLayer.class)
@@ -52,15 +52,15 @@ public class ItemInHandLayerMixin {
 
     @Inject(method = "submitArmWithItem", at = @At(value = "HEAD"), cancellable = true)
     private void submitArmWithItemHead(ArmedEntityRenderState state, ItemStackRenderState itemState, ItemStack itemStack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
-        // 上游语义：渲染本地玩家时，开启自机抛壳/枪口火焰判定。
+        // 원본 의미: 로컬 플레이어를 그릴 때 자기 탄피 배출/총구 화염 판정을 켠다.
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player != null && state instanceof AvatarRenderState avatarState && avatarState.id == minecraft.player.getId()) {
             MuzzleFlashRender.isSelf = true;
             ShellRender.isSelf = true;
         }
 
-        // 上游语义：主手持枪时，取消“副手”物品的常规渲染，改由 HumanoidOffhandRender 以背挂姿态绘制。
-        // 注意必须用 mainArm 判定副手，不能硬编码 LEFT（左利手玩家主手即为 LEFT）。
+        // 원본 의미: 주 손에 총을 들면 "보조 손" 아이템의 일반 렌더링을 취소하고, HumanoidOffhandRender가 등에 멘 자세로 그린다.
+        // 보조 손은 반드시 mainArm으로 판정해야 하며 LEFT로 고정하면 안 된다(왼손잡이 플레이어의 주 손이 LEFT다).
         ItemStack mainHand = state.getMainHandItemStack();
         if (mainHand != null && IGun.getIGunOrNull(mainHand) != null && arm != state.mainArm) {
             ci.cancel();

@@ -46,20 +46,20 @@ public class DamageModifier implements IAttachmentModifier<Modifier, LinkedList<
 
     @Override
     public CacheValue<LinkedList<DistanceDamagePair>> initCache(ItemStack gunItem, GunData gunData) {
-        // 必要数据获取
+        // 필요한 데이터 가져오기
         IGun iGun = Objects.requireNonNull(IGun.getIGunOrNull(gunItem));
         FireMode fireMode = iGun.getFireMode(gunItem);
         BulletData bulletData = gunData.getBulletData();
         GunFireModeAdjustData fireModeAdjustData = gunData.getFireModeAdjustData(fireMode);
 
-        // 获取最原始的数值
+        // 가장 원래의 수치 가져오기
         float rawDamage = bulletData.getDamageAmount();
-        // 额外伤害
+        // 추가 피해
         ExtraDamage extraDamage = bulletData.getExtraDamage();
-        // 开火模式调整
+        // 발사 방식 조정
         float fireAdjustDamageAmount = fireModeAdjustData != null ? fireModeAdjustData.getDamageAmount() : 0;
 
-        // 开始存入我们的数据
+        // 우리 데이터를 넣기 시작한다
         LinkedList<DistanceDamagePair> cacheValue = Lists.newLinkedList();
         if (extraDamage != null && extraDamage.getDamageAdjust() != null) {
             for (DistanceDamagePair pair : extraDamage.getDamageAdjust()) {
@@ -88,19 +88,19 @@ public class DamageModifier implements IAttachmentModifier<Modifier, LinkedList<
     @Override
     @Environment(EnvType.CLIENT)
     public List<DiagramsData> getPropertyDiagramsData(ItemStack gunItem, GunData gunData, AttachmentCacheProperty cacheProperty) {
-        // 必要数据获取
+        // 필요한 데이터 가져오기
         LinkedList<DistanceDamagePair> damagePairModifier = cacheProperty.getCache(DamageModifier.ID);
         IGun iGun = Objects.requireNonNull(IGun.getIGunOrNull(gunItem));
         FireMode fireMode = iGun.getFireMode(gunItem);
         BulletData bulletData = gunData.getBulletData();
         GunFireModeAdjustData fireModeAdjustData = gunData.getFireModeAdjustData(fireMode);
 
-        // 获取最原始的数值
+        // 가장 원래의 수치 가져오기
         float rawDamage = bulletData.getDamageAmount();
-        // 额外伤害
+        // 추가 피해
         ExtraDamage extraDamage = bulletData.getExtraDamage();
-        // 开火模式调整
-        // 最终的 base 伤害
+        // 발사 방식 조정
+        // 최종 base 피해
         float finalBase = fireModeAdjustData != null ? fireModeAdjustData.getDamageAmount() : 0f;
         if (extraDamage != null && extraDamage.getDamageAdjust() != null) {
             finalBase += extraDamage.getDamageAdjust().get(0).getDamage();

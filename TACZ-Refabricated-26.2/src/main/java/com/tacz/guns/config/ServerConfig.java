@@ -5,7 +5,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 
 public class ServerConfig {
     /**
-     * 因为 Forge 配置文件的加载时间窗口问题，导致有些地方会提前调用配置文件，故缓存一下检查是否已经加载了
+     * Forge 설정 파일의 로드 시점 문제로 일부 위치에서 설정을 미리 호출하므로, 이미 로드되었는지 캐시해 확인한다
      */
     public static ForgeConfigSpec SERVER_CONFIG_SPEC;
 

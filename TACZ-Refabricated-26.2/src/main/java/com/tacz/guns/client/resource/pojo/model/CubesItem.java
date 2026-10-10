@@ -61,7 +61,7 @@ public class CubesItem {
     }
 
     /**
-     * 基岩版这货居然可以为浮点数，服了
+     * 베드락 모델은 이 값이 부동소수점일 수도 있다
      */
     public List<Float> getSize() {
         return size;

@@ -9,43 +9,43 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * 无限动画状态机的实现。
+ * 무한 애니메이션 상태 기계 구현.
  *
- * @param <T> 状态机上下文类型
+ * @param <T> 상태 기계 문맥 타입
  */
 public class AnimationStateMachine<T extends AnimationStateContext> {
     /**
-     * 状态机当前的状态列表
+     * 상태 기계의 현재 상태 목록
      */
     private List<AnimationState<T>> currentStates;
 
     /**
-     * 状态机上下文，承载动画状态更新可能需要的各种参数
+     * 상태 기계 문맥. 애니메이션 상태 갱신에 필요한 여러 매개변수를 담는다
      */
     protected T context;
 
     /**
-     * 初始状态 Supplier
+     * 초기 상태 Supplier
      */
     private Supplier<Iterable<? extends AnimationState<T>>> statesSupplier;
 
     /**
-     * 状态机控制的动画控制器
+     * 상태 기계가 조종하는 애니메이션 컨트롤러
      */
     private final @Nonnull AnimationController animationController;
 
     protected long exitingTime = -1;
 
     /**
-     * @param animationController 动画状态机控制的动画控制器
+     * @param animationController 애니메이션 상태 기계가 조종하는 애니메이션 컨트롤러
      */
     public AnimationStateMachine(@Nonnull AnimationController animationController) {
         this.animationController = Objects.requireNonNull(animationController);
     }
 
     /**
-     * 每一次每一次渲染模型之前调用。
-     * 会同时更新状态列表中的所有状态，并更新动画控制器。
+     * 모델을 그리기 전마다 호출된다.
+     * 상태 목록의 모든 상태와 애니메이션 컨트롤러를 함께 갱신한다.
      *
      * @see AnimationState#update(AnimationStateContext)
      * @see AnimationController#update()
@@ -58,8 +58,8 @@ public class AnimationStateMachine<T extends AnimationStateContext> {
     }
 
     /**
-     * 非第一人称渲染时调用调用，不会讲动画数据写入模型，但是仍会更新状态
-     * 也会播放声音
+     * 1인칭이 아닌 렌더링에서 호출된다. 애니메이션 데이터를 모델에 쓰지는 않지만 상태는 갱신하고
+     * 소리도 재생한다
      *
      * @see AnimationState#update(AnimationStateContext)
      * @see AnimationController#updateSoundOnly()
@@ -72,15 +72,15 @@ public class AnimationStateMachine<T extends AnimationStateContext> {
     }
 
     /**
-     * 对状态机进行一次输入，可能触发状态转移。
+     * 상태 기계에 입력을 한 번 넣는다. 상태 전이가 일어날 수 있다.
      *
-     * @param condition 输入
+     * @param condition 입력
      */
     public void trigger(String condition) {
         if (context == null || currentStates == null) {
             return;
         }
-        // 迭代状态列表，如果需要状态转移，则将转移后的状态替换进列表
+        // 상태 목록을 돌면서 전이가 필요하면 전이한 상태로 목록을 바꾼다
         ListIterator<AnimationState<T>> iterator = currentStates.listIterator();
         while (iterator.hasNext()) {
             AnimationState<T> state = iterator.next();
@@ -94,10 +94,10 @@ public class AnimationStateMachine<T extends AnimationStateContext> {
     }
 
     /**
-     * 调用此方法对状态机进行初始化。会触发状态的 entry action.<p>
-     * 调用此方法之前，需要满足以下条件：<p>
-     * 1. context 已经被初始化<p>
-     * 2. 状态机处于未初始化状态（首次创建或者调用 exit 方法可进入此状态）
+     * 상태 기계를 초기화한다. 상태의 entry action이 실행된다.<p>
+     * 호출하기 전에 다음 조건을 만족해야 한다:<p>
+     * 1. context가 초기화되어 있다<p>
+     * 2. 상태 기계가 초기화되지 않은 상태다(처음 만들었거나 exit를 호출하면 이 상태가 된다)
      *
      * @see AnimationState#entryAction(AnimationStateContext)
      */
@@ -109,7 +109,7 @@ public class AnimationStateMachine<T extends AnimationStateContext> {
             throw new IllegalStateException("State machine is already initialized");
         }
         this.currentStates = new LinkedList<>();
-        // 将提供的初始状态加入状态列表，并调用它们的 entryAction 方法。
+        // 주어진 초기 상태를 상태 목록에 넣고 각각의 entryAction을 호출한다.
         Optional.ofNullable(statesSupplier)
                 .map(Supplier::get)
                 .ifPresent(list -> list.forEach(state -> {
@@ -119,37 +119,37 @@ public class AnimationStateMachine<T extends AnimationStateContext> {
     }
 
     /**
-     * 调用此方法使状态机退出，会触发状态的 exit action.
+     * 상태 기계를 종료한다. 상태의 exit action이 실행된다.
      *
      * @see AnimationState#exitAction(AnimationStateContext)
      */
     public void exit() {
         checkNullPointer();
-        // 调用状态列表内所有状态的 exit action。
+        // 상태 목록에 있는 모든 상태의 exit action을 호출한다.
         currentStates.forEach(state -> state.exitAction(context));
         this.currentStates = null;
     }
 
     /**
-     * 设置状态机的建议退出时间，单位为毫秒。<br/>
-     * 用于在切换至同一个物品时，建议延迟重新初始化状态机，以便让动画播放完毕。
+     * 상태 기계의 권장 종료 시간(밀리초)을 설정한다.<br/>
+     * 같은 아이템으로 바꿀 때 애니메이션이 끝나도록 상태 기계 재초기화를 늦추는 데 쓴다.
      */
     public void setExitingTime(long keepTime) {
         this.exitingTime = System.currentTimeMillis() + keepTime;
     }
 
     /**
-     * 获取状态机的建议退出时间，单位为毫秒。<br/>
-     * 用于在切换至同一个物品时，建议延迟重新初始化状态机，以便让动画播放完毕。<br/>
+     * 상태 기계의 권장 종료 시간(밀리초)을 얻는다.<br/>
+     * 같은 아이템으로 바꿀 때 애니메이션이 끝나도록 상태 기계 재초기화를 늦추는 데 쓴다.<br/>
      *
-     * @return 建议退出时间
+     * @return 권장 종료 시간
      */
     public long getExitingTime() {
         return exitingTime;
     }
 
     /**
-     * @return 状态机控制的动画控制器
+     * @return 상태 기계가 조종하는 애니메이션 컨트롤러
      */
     public @Nonnull AnimationController getAnimationController() {
         return animationController;
@@ -160,7 +160,7 @@ public class AnimationStateMachine<T extends AnimationStateContext> {
     }
 
     /**
-     * @return 当前的状态上下文
+     * @return 현재 상태 문맥
      */
     public @Nullable T getContext() {
         return context;
@@ -173,9 +173,9 @@ public class AnimationStateMachine<T extends AnimationStateContext> {
     }
 
     /**
-     * 设置状态机的上下文。在状态机进行其他操作之前，务必调用此方法将 context 初始化。
-     * 在状态机 initialize 执行之后，无法执行本方法，必须先调用 exit 方法退出状态机.
-     * 这么做是因为需要确保状态机在一个运行周期内使用的 context 是唯一的。
+     * 상태 기계의 문맥을 설정한다. 상태 기계로 다른 일을 하기 전에 반드시 이 메서드로 context를 초기화한다.
+     * 상태 기계 initialize 뒤에는 이 메서드를 쓸 수 없고, 먼저 exit로 상태 기계를 종료해야 한다.
+     * 한 실행 주기 동안 상태 기계가 쓰는 context가 하나뿐이도록 하기 위해서다.
      */
     public void setContext(@Nonnull T context) {
         AnimationStateMachine<?> stateMachine = context.getStateMachine();
@@ -193,10 +193,10 @@ public class AnimationStateMachine<T extends AnimationStateContext> {
     }
 
     /**
-     * 状态机初始化时调用，将提供的状态加入状态机的当前状态列表，作为初始状态。
-     * 注意，这些状态的 entryAction 会被调用。
+     * 상태 기계를 초기화할 때 호출되며, 주어진 상태를 현재 상태 목록에 초기 상태로 넣는다.
+     * 이 상태들의 entryAction이 호출된다는 점에 주의한다.
      *
-     * @param statesSupplier 初始状态列表的 Supplier
+     * @param statesSupplier 초기 상태 목록 Supplier
      */
     public void setStatesSupplier(Supplier<Iterable<? extends AnimationState<T>>> statesSupplier) {
         this.statesSupplier = statesSupplier;

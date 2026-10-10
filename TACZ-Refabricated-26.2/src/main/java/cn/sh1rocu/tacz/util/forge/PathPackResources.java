@@ -25,23 +25,22 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Defines a resource pack from an arbitrary Path.
+ * 임의의 Path로 리소스 팩을 정의한다.
  * <p>
- * This is primarily intended to support including optional resource packs inside a mod,
- * such as to have alternative textures to use along with Programmer Art, or optional
- * alternative recipes for compatibility ot to replace vanilla recipes.
+ * 주로 모드 안에 선택적 리소스 팩을 넣을 때 쓴다. 예를 들어 Programmer Art와 함께 쓸
+ * 대체 텍스처나, 호환성을 위한 선택적 대체 제작법, 바닐라 제작법을 바꾸는 제작법 등이다.
  */
 public class PathPackResources extends AbstractPackResources {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final Path source;
 
     /**
-     * Constructs a java.nio.Path-based resource pack.
+     * java.nio.Path 기반 리소스 팩을 만든다.
      *
-     * @param packId    the identifier of the pack.
-     *                  This identifier should be unique within the pack finder, preferably the name of the file or folder containing the resources.
-     * @param isBuiltin whether this pack resources should be considered builtin
-     * @param source    the root path of the pack. This needs to point to the folder that contains "assets" and/or "data", not the asset folder itself!
+     * @param packId    팩 식별자.
+     *                  팩 탐색기 안에서 고유해야 하며, 리소스가 든 파일이나 폴더 이름을 쓰는 것이 좋다.
+     * @param isBuiltin 이 팩 리소스를 내장으로 볼지
+     * @param source    팩의 루트 경로. assets 폴더 자체가 아니라 "assets"·"data"가 들어 있는 폴더를 가리켜야 한다!
      */
     public PathPackResources(String packId, boolean isBuiltin, final Path source) {
         super(new PackLocationInfo(packId, Component.literal(packId), PackSource.DEFAULT, Optional.empty()));
@@ -49,20 +48,20 @@ public class PathPackResources extends AbstractPackResources {
     }
 
     /**
-     * Returns the source path containing the resource pack.
-     * This is used for error display.
+     * 리소스 팩이 든 원본 경로를 돌려준다.
+     * 오류 표시에 쓴다.
      *
-     * @return the root path of the resources.
+     * @return 리소스의 루트 경로
      */
     public Path getSource() {
         return this.source;
     }
 
     /**
-     * Implement to return a file or folder path for the given set of path components.
+     * 주어진 경로 조각들에 대한 파일·폴더 경로를 돌려주도록 구현한다.
      *
-     * @param paths One or more path strings to resolve. Can include slash-separated paths.
-     * @return the resulting path, which may not exist.
+     * @param paths 해석할 경로 문자열 하나 이상. 슬래시로 구분한 경로를 넣을 수 있다.
+     * @return 결과 경로. 실제로 없을 수도 있다.
      */
     protected Path resolve(String... paths) {
         Path path = getSource();
@@ -100,13 +99,13 @@ public class PathPackResources extends AbstractPackResources {
                 return walker
                         .filter(Files::isDirectory)
                         .map(root::relativize)
-                        .filter(p -> p.getNameCount() > 0) // Skip the root entry
-                        .map(p -> p.toString().replaceAll("/$", "")) // Remove the trailing slash, if present
-                        .filter(s -> !s.isEmpty()) // Filter empty strings, otherwise empty strings default to minecraft namespace in ResourceLocations
+                        .filter(p -> p.getNameCount() > 0) // 루트 항목은 건너뛴다
+                        .map(p -> p.toString().replaceAll("/$", "")) // 끝의 슬래시가 있으면 뺀다
+                        .filter(s -> !s.isEmpty()) // 빈 문자열은 거른다. 그렇지 않으면 ResourceLocation에서 빈 문자열이 minecraft 네임스페이스로 처리된다
                         .collect(Collectors.toSet());
             }
         } catch (IOException e) {
-            if (type == PackType.SERVER_DATA) // We still have to add the resource namespace if client resources exist, as we load langs (which are in assets) on server
+            if (type == PackType.SERVER_DATA) // 서버에서도 assets에 든 언어 파일을 불러오므로, 클라이언트 리소스가 있으면 리소스 네임스페이스를 추가해야 한다
             {
                 return this.getNamespaces(PackType.CLIENT_RESOURCES);
             } else {

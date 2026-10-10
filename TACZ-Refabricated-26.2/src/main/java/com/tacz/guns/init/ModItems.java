@@ -18,7 +18,6 @@ public class ModItems {
 
     public static ModernKineticGunItem MODERN_KINETIC_GUN = register("modern_kinetic_gun", new ModernKineticGunItem(itemProps("modern_kinetic_gun")));
 
-//    public static ThrowableItem M67 = register("m67", new ThrowableItem());
 
     public static Item AMMO = register("ammo", new AmmoItem(itemProps("ammo")));
     public static AttachmentItem ATTACHMENT = register("attachment", new AttachmentItem(itemProps("attachment")));
@@ -39,34 +38,34 @@ public class ModItems {
     }
 
     /**
-     * 方块物品（{@link BlockItem} 及其子类）专用的 Properties。
+     * 블록 아이템({@link BlockItem}과 그 하위 클래스) 전용 Properties.
      *
-     * <h2>为什么必须显式调用 {@code useBlockDescriptionPrefix()}</h2>
-     * 26.2 之前，{@code BlockItem} 自己覆写了 {@code getDescriptionId()}，
-     * 直接返回所属方块的 {@code block.<ns>.<name>}，所以注册时什么都不用做。
+     * <h2>{@code useBlockDescriptionPrefix()}를 명시적으로 호출해야 하는 이유</h2>
+     * 26.2 이전에는 {@code BlockItem}이 {@code getDescriptionId()}를 스스로 재정의해
+     * 소속 블록의 {@code block.<ns>.<name>}을 바로 돌려줬으므로 등록할 때 아무것도 할 필요가 없었다.
      *
-     * <p>26.2 把这套机制改成了「<b>在 Properties 上声明</b>」：
+     * <p>26.2는 이 방식을 "<b>Properties에 선언하는</b>" 방식으로 바꿨다:
      * <ul>
-     *   <li>{@code BlockItem} <b>不再覆写</b> {@code getDescriptionId()}（字节码确认，
-     *       该类里已没有这个方法），统一继承 {@code Item#getDescriptionId}，
-     *       返回构造时算好的 {@code descriptionId} 字段；</li>
-     *   <li>该字段来自 {@code Properties#effectiveDescriptionId()}，
-     *       其前缀由 {@code Properties.descriptionId} 这个 {@code DependantName} 决定，
-     *       <b>默认是 {@code ITEM_DESCRIPTION_ID}</b>（即 {@code item.} 前缀）；</li>
-     *   <li>要拿到 {@code block.} 前缀，必须显式调用
-     *       {@code useBlockDescriptionPrefix()} 把它换成 {@code BLOCK_DESCRIPTION_ID}。</li>
+     *   <li>{@code BlockItem}은 {@code getDescriptionId()}를 <b>더는 재정의하지 않고</b>(바이트코드 확인,
+     *       이 클래스에 그 메서드가 없음) {@code Item#getDescriptionId}를 그대로 상속해
+     *       생성할 때 계산해 둔 {@code descriptionId} 필드를 돌려준다;</li>
+     *   <li>이 필드는 {@code Properties#effectiveDescriptionId()}에서 오며,
+     *       접두사는 {@code Properties.descriptionId}라는 {@code DependantName}이 정하고
+     *       <b>기본값은 {@code ITEM_DESCRIPTION_ID}</b>(곧 {@code item.} 접두사)다;</li>
+     *   <li>{@code block.} 접두사를 얻으려면 반드시
+     *       {@code useBlockDescriptionPrefix()}를 명시적으로 호출해 {@code BLOCK_DESCRIPTION_ID}로 바꿔야 한다.</li>
      * </ul>
-     * vanilla 自己的 {@code Items#registerBlock} 正是这么做的（字节码确认）。
+     * 바닐라 자체의 {@code Items#registerBlock}도 바로 이렇게 한다(바이트코드 확인).
      *
-     * <p>移植时沿用了旧写法（只 {@code setId}），于是标靶与石像的名字变成了
-     * {@code item.tacz.target} / {@code item.tacz.statue} —— 语言文件里只有
-     * {@code block.tacz.target} / {@code block.tacz.statue}，键对不上就直接显示原始键名。
-     * 这与上游语言文件一致（上游同样只有 {@code block.} 那一份），
-     * 因此正确修法是让代码去适配 26.2 的新约定，而不是去改语言文件。
+     * <p>이식할 때 예전 표기({@code setId}만)를 그대로 써서 표적과 조각상의 이름이
+     * {@code item.tacz.target} / {@code item.tacz.statue}가 되었다 — 언어 파일에는
+     * {@code block.tacz.target} / {@code block.tacz.statue}만 있어 키가 맞지 않으니 원래 키 이름이 그대로 표시되었다.
+     * 이는 원본 언어 파일과 같으므로(원본도 {@code block.} 쪽만 있음),
+     * 올바른 수정은 언어 파일을 고치는 것이 아니라 코드를 26.2의 새 규약에 맞추는 것이다.
      *
-     * <p>枪械工作台与三个工作台同为 {@code BlockItem} 子类，一并改用本方法：
-     * {@code gun_smith_table} 的 {@code block.} 键本就存在（此前同样显示错误），
-     * 三个 workbench 上下游都没有对应键（属枪包/上游自身缺失，不在本轮范围）。
+     * <p>총기 작업대와 작업대 세 개도 {@code BlockItem} 하위 클래스이므로 함께 이 메서드로 바꿨다:
+     * {@code gun_smith_table}의 {@code block.} 키는 원래 있었고(이전에는 마찬가지로 잘못 표시됨),
+     * workbench 세 개는 원본과 이식본 모두 해당 키가 없다(총기 팩/원본 자체의 누락이라 이번 범위가 아님).
      */
     private static Item.Properties blockItemProps(String name) {
         return new Item.Properties().setId(itemKey(name)).useBlockDescriptionPrefix();

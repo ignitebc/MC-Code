@@ -5,13 +5,13 @@ import java.util.Arrays;
 public class AnimationChannelContent {
     public float[] keyframeTimeS;
     /**
-     * 动画数值。该数组的第一维每个元素都与上面的 keyframeTime 顺序对应，
-     * 第二维可以是位移、旋转或缩放的值，其中如果是四元数，数组长度可以为 8 或 4。(长度为 8 时，前四位存 Pre 数值，后四位存 Post 数值)
-     * 如果是三轴数值，数组长度可以为 6 或 3，Pre 和 Post 与上同理。
+     * 애니메이션 값. 배열의 첫 번째 차원은 위의 keyframeTime 순서와 하나씩 대응하고,
+     * 두 번째 차원은 이동·회전·크기 값이다. 사원수라면 배열 길이가 8 또는 4다(8이면 앞 넷은 Pre 값, 뒤 넷은 Post 값).
+     * 세 축 값이라면 배열 길이가 6 또는 3이며, Pre와 Post는 위와 같다.
      */
     public float[][] values;
     /**
-     * 对于使用一般插值器的 Channel，这个动画值没有意义。它专门用于 CustomInterpolator
+     * 일반 보간기를 쓰는 Channel에서는 이 애니메이션 값이 의미가 없다. CustomInterpolator 전용이다
      */
     public LerpMode[] lerpModes;
 
@@ -23,7 +23,7 @@ public class AnimationChannelContent {
             this.keyframeTimeS = Arrays.copyOf(source.keyframeTimeS, source.keyframeTimeS.length);
         }
         if (source.values != null) {
-            // 深拷贝动画数值
+            // 애니메이션 값을 깊은 복사한다
             this.values = Arrays.stream(source.values)
                     .map(values -> Arrays.copyOf(values, values.length))
                     .toArray(float[][]::new);

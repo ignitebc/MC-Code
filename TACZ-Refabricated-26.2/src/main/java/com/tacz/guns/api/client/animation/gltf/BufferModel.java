@@ -4,12 +4,12 @@ import java.nio.ByteBuffer;
 
 public class BufferModel {
     /**
-     * The URI of the buffer data
+     * 버퍼 데이터의 URI
      */
     private String uri;
 
     /**
-     * The actual data of the buffer
+     * 버퍼의 실제 데이터
      */
     private ByteBuffer bufferData;
 
@@ -18,9 +18,9 @@ public class BufferModel {
     }
 
     /**
-     * Set the URI for the buffer data
+     * 버퍼 데이터의 URI를 설정한다
      *
-     * @param uri The URI of the buffer data
+     * @param uri 버퍼 데이터의 URI
      */
     public void setUri(String uri) {
         this.uri = uri;
@@ -35,9 +35,9 @@ public class BufferModel {
     }
 
     /**
-     * Set the data of this buffer
+     * 이 버퍼의 데이터를 설정한다
      *
-     * @param bufferData The buffer data
+     * @param bufferData 버퍼 데이터
      */
     public void setBufferData(ByteBuffer bufferData) {
         this.bufferData = bufferData;

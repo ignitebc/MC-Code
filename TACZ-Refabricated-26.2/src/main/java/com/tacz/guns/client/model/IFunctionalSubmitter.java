@@ -8,22 +8,22 @@ import net.minecraft.world.item.ItemDisplayContext;
 import java.util.function.Consumer;
 
 /**
- * Collector-aware replacement for legacy IFunctionalRenderer.
+ * 예전 IFunctionalRenderer를 대신하는 collector 대응 구현.
  *
- * <p>Implementations run during extraction and emit immutable tasks. They must not retain the
- * mutable PoseStack or read mutable BedrockPart/GunDisplayInstance state when the task executes.</p>
+ * <p>구현체는 추출 단계에서 실행되어 변하지 않는 작업을 내보낸다. 작업이 실행될 때 변할 수 있는
+ * PoseStack을 붙잡거나 변할 수 있는 BedrockPart/GunDisplayInstance 상태를 읽으면 안 된다.</p>
  */
 public interface IFunctionalSubmitter extends IFunctionalRenderer {
     void extract(ExtractionContext context);
 
-    /** Prevent accidental use from the old same-buffer immediate rendering path. */
+    /** 예전 같은 버퍼 즉시 렌더링 경로에서 실수로 쓰지 못하게 막는다. */
     @Override
     default void render(PoseStack poseStack,
                         VertexConsumer vertexBuffer,
                         ItemDisplayContext transformType,
                         int light,
                         int overlay) {
-        // Collector-only implementation.
+        // collector 전용 구현.
     }
 
     @FunctionalInterface

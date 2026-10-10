@@ -24,11 +24,11 @@ public class LocalPlayerFireSelect {
     }
 
     public void fireSelect() {
-        // 检查状态锁
+        // 상태 잠금 확인
         if (data.clientStateLock) {
             return;
         }
-        // 暂定为主手
+        // 우선 주 손으로 정한다
         ItemStack mainHandItem = player.getMainHandItem();
         if (!(mainHandItem.getItem() instanceof IGun iGun)) {
             return;
@@ -40,16 +40,16 @@ public class LocalPlayerFireSelect {
         }
 
         TimelessAPI.getGunDisplay(mainHandItem).ifPresent(gunIndex -> {
-            // 播放音效
+            // 효과음 재생
             SoundPlayManager.playFireSelectSound(player, gunIndex);
-            // 发送切换开火模式的数据包，通知服务器
+            // 발사 모드 전환 패킷을 보내 서버에 알린다
             ClientPlayNetworking.send(new ClientMessagePlayerFireSelect());
-            // 客户端切换开火模式
+            // 클라이언트 발사 모드 전환
             if (iGun instanceof AbstractGunItem logicGun) {
                 logicGun.fireSelect(null, mainHandItem);
             }
             AttachmentPropertyManager.postChangeEvent(player, mainHandItem);
-            // 动画状态机转移状态
+            // 애니메이션 상태 기계 상태 전이
             AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
             if (animationStateMachine != null) {
                 animationStateMachine.trigger(GunAnimationConstant.INPUT_FIRE_SELECT);

@@ -70,7 +70,7 @@ public class InvWrapper implements IItemHandlerModifiable {
 
                 return ItemStack.EMPTY;
             } else {
-                // copy the stack to not modify the original one
+                // 원본이 바뀌지 않도록 스택을 복사한다
                 stack = stack.copy();
                 if (!simulate) {
                     ItemStack copy = stack.split(m);
@@ -89,7 +89,7 @@ public class InvWrapper implements IItemHandlerModifiable {
 
             m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot));
             if (m < stack.getCount()) {
-                // copy the stack to not modify the original one
+                // 원본이 바뀌지 않도록 스택을 복사한다
                 stack = stack.copy();
                 if (!simulate) {
                     getInv().setItem(slot, stack.split(m));

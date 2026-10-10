@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 文档性质的注解。被注解的枪械属性在配件缓存中的值可以被逻辑脚本修改。
+ * 문서용 어노테이션. 이 어노테이션이 붙은 총기 속성은 부착물 캐시 안의 값을 로직 스크립트가 바꿀 수 있다.
  *
  * @author ChloePrime
  * @see com.tacz.guns.resource.modifier.AttachmentPropertyManager#postChangeEvent(LivingEntity, ItemStack)

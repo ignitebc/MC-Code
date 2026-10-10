@@ -31,7 +31,7 @@
     "client.PlayerModelMixin",
     "client.SoundManagerPreparationsMixin"
   ],
-  "_comment": "26.2: ItemInHandRendererMixin and ItemInHandLayerMixin restored against SubmitNodeCollector signatures; PlayerModelMixin applies TACZ/PAL third-person poses from AvatarRenderState.",
+  "_comment": "26.2: ItemInHandRendererMixin과 ItemInHandLayerMixin은 SubmitNodeCollector 시그니처에 맞춰 되살렸다. PlayerModelMixin은 AvatarRenderState에서 TACZ/PAL 3인칭 자세를 적용한다.",
   "injectors": {
     "defaultRequire": 1
   }

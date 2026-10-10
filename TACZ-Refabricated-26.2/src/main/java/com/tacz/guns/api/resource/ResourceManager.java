@@ -8,20 +8,20 @@ import java.nio.file.Paths;
 import java.util.List;
 
 /**
- * 用于注册需要解压释放的枪包，为其他附属模组使用
+ * 압축을 풀어 내보내야 하는 총기 팩을 등록할 때 쓴다. 다른 애드온 모드용이다
  */
 public final class ResourceManager {
     /**
-     * 存放所有待解压枪包路径
+     * 압축을 풀 총기 팩 경로를 모두 담는다
      */
     public static final List<ExtraEntry> EXTRA_ENTRIES = Lists.newArrayList();
 
 
     /**
-     * @param modMainClass    附属模组的主类
-     * @param extraFolderPath 需要解压的文件夹，比如 TACZ 自己就是 /assets/tacz/custom/tacz_default_gun <br>
-     *                        这表示把 tacz_default_gun 文件夹解压出来，放置到枪械包安装目录下
-     * @deprecated 不再使用旧的文件入口。现在你可以直接将assets和data内置在模组中，或者使用下面的新方法导出
+     * @param modMainClass    애드온 모드의 메인 클래스
+     * @param extraFolderPath 압축을 풀 폴더. 예를 들어 TACZ 자신은 /assets/tacz/custom/tacz_default_gun 이다 <br>
+     *                        tacz_default_gun 폴더를 풀어 총기 팩 설치 폴더에 둔다는 뜻이다
+     * @deprecated 예전 파일 입구는 더 이상 쓰지 않는다. 이제 assets와 data를 모드에 바로 넣거나 아래의 새 방법으로 내보낸다
      */
     @Deprecated
     public static void registerExtraGunPack(Class<?> modMainClass, String extraFolderPath) {
@@ -33,7 +33,7 @@ public final class ResourceManager {
     }
 
     /**
-     * 解压条目
+     * 압축 해제 항목
      */
     public record ExtraEntry(Class<?> modMainClass, String srcPath, String extraDirName) {
     }

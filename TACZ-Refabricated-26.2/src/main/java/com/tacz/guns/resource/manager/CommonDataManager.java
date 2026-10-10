@@ -14,10 +14,10 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * 服务端侧数据管理器<br>
- * 该类型的数据管理器用于服务端数据加载并向客户端同步
+ * 서버 쪽 데이터 관리자<br>
+ * 이 종류의 데이터 관리자는 서버 데이터를 로드하고 클라이언트에 동기화하는 데 쓴다
  *
- * @param <T> 数据类型
+ * @param <T> 데이터 종류
  */
 public class CommonDataManager<T> extends JsonDataManager<T> implements INetworkCacheReloadListener {
     private final DataType type;

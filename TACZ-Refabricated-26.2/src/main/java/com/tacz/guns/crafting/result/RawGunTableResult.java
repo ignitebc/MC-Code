@@ -22,8 +22,8 @@ import java.util.Locale;
 
 
 /**
- * 配方加载时部分物品的上下文还未完成初始化<br/>
- * 等待到实际需要使用配方时再进行初始化
+ * 레시피를 로드할 때는 일부 아이템의 문맥이 아직 초기화되지 않았다<br/>
+ * 실제로 레시피를 써야 할 때까지 기다렸다가 초기화한다
  */
 public class RawGunTableResult {
     private final String type;

@@ -17,7 +17,7 @@ import net.minecraft.world.entity.Entity;
 
 import java.util.List;
 
-// Porting_Lib
+// Porting_Lib 유래
 public interface IEntityAdditionalSpawnData {
     Identifier EXTRA_DATA_PACKET_ID = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "extra_entity_spawn_data");
     CustomPacketPayload.Type<ExtraSpawnDataPayload> EXTRA_DATA_TYPE = new CustomPacketPayload.Type<>(EXTRA_DATA_PACKET_ID);
@@ -46,10 +46,10 @@ public interface IEntityAdditionalSpawnData {
     static Packet<ClientGamePacketListener> getEntitySpawningPacket(Entity entity, Packet<ClientGamePacketListener> base) {
         if (entity instanceof IEntityAdditionalSpawnData extra) {
             FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-            // BUG FIX: Do NOT write entity.getId() here — the EXTRA_DATA_CODEC already
-            // encodes entityId separately. Writing it again corrupts readSpawnData() which
-            // reads the redundant varint as its first float field (xRot), causing every
-            // subsequent field to desync and eventually "Not enough bytes in buffer".
+            // 버그 수정: 여기서 entity.getId()를 쓰지 않는다 — EXTRA_DATA_CODEC이 이미
+            // entityId를 따로 인코딩한다. 한 번 더 쓰면 readSpawnData()가
+            // 중복된 varint를 첫 float 필드(xRot)로 읽어 이후 필드가 모두
+            // 어긋나고, 결국 "Not enough bytes in buffer"가 난다.
             extra.writeSpawnData(buf);
             byte[] data = new byte[buf.readableBytes()];
             buf.readBytes(data);

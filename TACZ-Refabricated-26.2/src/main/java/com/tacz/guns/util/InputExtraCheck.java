@@ -8,19 +8,19 @@ import net.minecraft.client.Minecraft;
 public final class InputExtraCheck {
     public static boolean isInGame() {
         Minecraft mc = Minecraft.getInstance();
-        // 不能是加载界面
+        // 로딩 화면이면 안 된다
         if (mc.gui.overlay() != null) {
             return false;
         }
-        // 不能打开任何 GUI - 26.2 GUI重组: screen -> gui.screen()
+        // 어떤 GUI도 열려 있으면 안 된다 - 26.2 GUI 재구성: screen -> gui.screen()
         if (mc.gui.screen() != null) {
             return false;
         }
-        // 当前窗口捕获鼠标操作
+        // 현재 창이 마우스 조작을 잡고 있다
         if (!mc.mouseHandler.isMouseGrabbed()) {
             return false;
         }
-        // 选择了当前窗口
+        // 현재 창이 선택되어 있다
         return mc.isWindowActive();
     }
 }

@@ -87,7 +87,7 @@ public interface AmmoBoxItemDataAccessor extends IAmmoBox {
     }
 
     private static void clearLegacyCreativeData(CompoundTag tag) {
-        // Retired infinite boxes must not retain their synthetic ammo count when reused.
+        // 폐기된 무한 상자를 다시 쓸 때 가상 탄약 수가 남아 있으면 안 된다.
         if (hasLegacyCreativeData(tag)) {
             tag.remove(AMMO_ID_TAG);
             tag.remove(AMMO_COUNT_TAG);

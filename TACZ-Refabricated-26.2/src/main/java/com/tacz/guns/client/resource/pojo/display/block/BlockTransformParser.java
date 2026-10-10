@@ -12,36 +12,36 @@ import org.joml.Vector3f;
 import javax.annotation.Nullable;
 
 /**
- * 把枪包 {@code display/blocks/*.json} 里的 {@code transforms} 段解析成 26.2 的
- * {@link ItemTransforms}。
+ * 총기 팩 {@code display/blocks/*.json}의 {@code transforms} 부분을 26.2의
+ * {@link ItemTransforms}로 해석한다.
  *
- * <p><b>为什么需要这个类</b></p>
+ * <p><b>이 클래스가 필요한 이유</b></p>
  *
- * <p>1.21.1 里 {@code BlockDisplay#getTransforms()} 直接返回 {@code ItemTransforms}，
- * 由 Minecraft 自己的 Gson 适配器（注册在 {@code BlockModel.GSON} 上）反序列化。
- * 26.2 把这套模型 JSON 解析迁走了，{@code ItemTransform.Deserializer} 变成
- * {@code protected static} 内部类、{@code ItemTransforms} 也不再暴露公开 Codec，
- * 外部无法再直接复用。</p>
+ * <p>1.21.1에서는 {@code BlockDisplay#getTransforms()}가 {@code ItemTransforms}를 바로 돌려주고,
+ * Minecraft 자체 Gson 어댑터({@code BlockModel.GSON}에 등록됨)가 역직렬화했다.
+ * 26.2는 이 모델 JSON 해석을 다른 곳으로 옮겼고, {@code ItemTransform.Deserializer}는
+ * {@code protected static} 내부 클래스가 되었으며 {@code ItemTransforms}도 공개 Codec을 더는 노출하지 않아
+ * 바깥에서 그대로 재사용할 수 없다.</p>
  *
- * <p>移植时的处理是：把 {@code BlockDisplay.transforms} 的类型退化成裸
- * {@code JsonObject}，并把 {@code ClientBlockIndex} 里的 {@code checkTransforms(...)}
- * 与 {@code getTransforms()} <b>整段删掉</b>，于是 {@code GunSmithTableItemRenderer}
- * 中原本"应用 transforms"的那一段也一并消失 —— 结果就是三种工作台/装配台的手持模型
- * <b>完全不缩放</b>，按方块原始尺寸（1×1×1 米）渲染，看起来巨大。
- * 默认包里 {@code gun_smith_table.json} 声明的是 {@code scale: [0.25, 0.25, 0.25]}，
- * 也就是说实际显示尺寸是应有尺寸的 <b>4 倍</b>。</p>
+ * <p>이식할 때의 처리는 이랬다: {@code BlockDisplay.transforms}의 타입을 맨
+ * {@code JsonObject}로 낮추고, {@code ClientBlockIndex}의 {@code checkTransforms(...)}와
+ * {@code getTransforms()}를 <b>통째로 지웠다</b>. 그래서 {@code GunSmithTableItemRenderer}
+ * 에 있던 "transforms 적용" 부분도 함께 사라졌다 — 결과적으로 세 종류 작업대/조립대의 손에 든 모델이
+ * <b>전혀 축소되지 않고</b> 블록 원래 크기(1×1×1 m)로 그려져 거대하게 보였다.
+ * 기본 팩의 {@code gun_smith_table.json}은 {@code scale: [0.25, 0.25, 0.25]}를 선언하므로
+ * 실제 표시 크기가 원래 크기의 <b>4배</b>였다.</p>
  *
- * <p>本类按 26.2 反编译源 {@code ItemTransform.Deserializer} 的<b>逐行语义</b>重实现解析：</p>
+ * <p>이 클래스는 26.2 디컴파일 소스 {@code ItemTransform.Deserializer}의 <b>줄 단위 의미</b>대로 해석을 다시 구현한다:</p>
  * <ul>
- *   <li>{@code translation} 乘 {@code 0.0625}（1/16，像素→米），再 clamp 到 ±5</li>
- *   <li>{@code scale} clamp 到 ±4</li>
- *   <li>{@code rotation} 原样保留（角度制）</li>
- *   <li>缺省值：rotation/translation 为 0，scale 为 1</li>
+ *   <li>{@code translation}에 {@code 0.0625}(1/16, 픽셀→미터)를 곱한 뒤 ±5로 clamp</li>
+ *   <li>{@code scale}은 ±4로 clamp</li>
+ *   <li>{@code rotation}은 그대로 유지(도 단위)</li>
+ *   <li>기본값: rotation/translation은 0, scale은 1</li>
  * </ul>
  *
- * <p>注意 {@link ItemTransform#apply(boolean, com.mojang.blaze3d.vertex.PoseStack.Pose)}
- * 在 26.2 里接收的是 {@code PoseStack.Pose} 而不是 {@code PoseStack}，且它自带
- * {@code translate(-0.5, -0.5, -0.5)} 的回中操作 —— 调用方无需再手动补。</p>
+ * <p>{@link ItemTransform#apply(boolean, com.mojang.blaze3d.vertex.PoseStack.Pose)}는
+ * 26.2에서 {@code PoseStack}이 아니라 {@code PoseStack.Pose}를 받고,
+ * {@code translate(-0.5, -0.5, -0.5)} 가운데 맞춤을 스스로 한다는 점에 주의한다 — 호출하는 쪽에서 따로 더할 필요가 없다.</p>
  */
 public final class BlockTransformParser {
     private static final Vector3f DEFAULT_ROTATION = new Vector3f();
@@ -54,8 +54,8 @@ public final class BlockTransformParser {
     }
 
     /**
-     * @param json 枪包中的 {@code transforms} 对象，可为 null
-     * @return 解析结果；json 为 null 时返回 {@link ItemTransforms#NO_TRANSFORMS}
+     * @param json 총기 팩의 {@code transforms} 객체. null이어도 된다
+     * @return 해석 결과. json이 null이면 {@link ItemTransforms#NO_TRANSFORMS}를 돌려준다
      */
     public static ItemTransforms parse(@Nullable JsonObject json) {
         if (json == null) {
@@ -70,8 +70,8 @@ public final class BlockTransformParser {
                 get(json, "gui"),
                 get(json, "ground"),
                 get(json, "fixed"),
-                // 26.2 新增的 fixedFromBottom：枪包 JSON 里不存在该键，沿用 fixed 的值，
-                // 与 vanilla 模型解析对缺失键回退到 NO_TRANSFORM 的行为保持一致。
+                // 26.2에서 새로 생긴 fixedFromBottom: 총기 팩 JSON에는 이 키가 없으므로 fixed 값을 그대로 쓴다.
+                // 바닐라 모델 해석이 빠진 키를 NO_TRANSFORM으로 되돌리는 동작과 맞춘다.
                 get(json, "fixed")
         );
     }
@@ -121,7 +121,7 @@ public final class BlockTransformParser {
         );
     }
 
-    /** 便于调用方判断上下文是否为左手（{@code ItemTransform#apply} 的第一个参数）。 */
+    /** 호출하는 쪽이 문맥이 왼손인지 판단하기 쉽게 한다({@code ItemTransform#apply}의 첫 번째 인자). */
     public static boolean isLeftHand(ItemDisplayContext context) {
         return context == ItemDisplayContext.THIRD_PERSON_LEFT_HAND
                 || context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND;

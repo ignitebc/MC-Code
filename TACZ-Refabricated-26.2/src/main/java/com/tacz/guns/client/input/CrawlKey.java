@@ -35,7 +35,7 @@ public class CrawlKey {
                 return;
             }
             if (player.getMainHandItem().getItem() instanceof IGun iGun) {
-                // 如果不允许下蹲，则禁止进行下蹲
+                // 웅크릴 수 없으면 웅크리기를 막는다
                 if (!iGun.isCanCrawl(player.getMainHandItem())) {
                     IClientPlayerGunOperator.fromLocalPlayer(player).crawl(false);
                     return;

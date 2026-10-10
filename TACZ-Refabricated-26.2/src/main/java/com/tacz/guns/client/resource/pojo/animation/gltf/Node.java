@@ -7,67 +7,66 @@ public class Node {
     private String name;
     private List<Integer> children;
     /**
-     * A floating-point 4x4 transformation matrix stored in column-major
-     * order. (optional)<br>
-     * Default:
+     * 열 우선 순서로 저장한 부동소수점 4x4 변환
+     * 행렬. (선택)<br>
+     * 기본값:
      * [1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0]<br>
-     * Number of items: 16<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * 항목 수: 16<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      */
     private float[] matrix;
     /**
-     * The node's unit quaternion rotation in the order (x, y, z, w), where w
-     * is the scalar. (optional)<br>
-     * Default: [0.0,0.0,0.0,1.0]<br>
-     * Number of items: 4<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)<br>
-     * &nbsp;&nbsp;Minimum: -1.0 (inclusive)<br>
-     * &nbsp;&nbsp;Maximum: 1.0 (inclusive)
+     * (x, y, z, w) 순서의 노드 단위 사원수 회전. w는
+     * 스칼라다. (선택)<br>
+     * 기본값: [0.0,0.0,0.0,1.0]<br>
+     * 항목 수: 4<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)<br>
+     * &nbsp;&nbsp;최솟값: -1.0 (포함)<br>
+     * &nbsp;&nbsp;최댓값: 1.0 (포함)
      */
     private float[] rotation;
     /**
-     * The node's non-uniform scale, given as the scaling factors along the
-     * x, y, and z axes. (optional)<br>
-     * Default: [1.0,1.0,1.0]<br>
-     * Number of items: 3<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * x, y, z 축을 따른 크기 배율로 나타낸 노드의
+     * 비균일 크기. (선택)<br>
+     * 기본값: [1.0,1.0,1.0]<br>
+     * 항목 수: 3<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      */
     private float[] scale;
     /**
-     * The node's translation along the x, y, and z axes. (optional)<br>
-     * Default: [0.0,0.0,0.0]<br>
-     * Number of items: 3<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * x, y, z 축을 따른 노드의 이동량. (선택)<br>
+     * 기본값: [0.0,0.0,0.0]<br>
+     * 항목 수: 3<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      */
     private float[] translation;
 
     /**
-     * The indices of this node's children. (optional)<br>
-     * Minimum number of items: 1<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)<br>
-     * &nbsp;&nbsp;Minimum: 0 (inclusive)
+     * 이 노드 자식들의 인덱스. (선택)<br>
+     * 최소 항목 수: 1<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)<br>
+     * &nbsp;&nbsp;최솟값: 0 (포함)
      *
-     * @return The children
+     * @return children
      */
     public List<Integer> getChildren() {
         return this.children;
     }
 
     /**
-     * The indices of this node's children. (optional)<br>
-     * Minimum number of items: 1<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)<br>
-     * &nbsp;&nbsp;Minimum: 0 (inclusive)
+     * 이 노드 자식들의 인덱스. (선택)<br>
+     * 최소 항목 수: 1<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)<br>
+     * &nbsp;&nbsp;최솟값: 0 (포함)
      *
-     * @param children The children to set
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param children 설정할 children
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setChildren(List<Integer> children) {
         if (children == null) {
@@ -86,12 +85,12 @@ public class Node {
     }
 
     /**
-     * Add the given children. The children of this instance will be replaced
-     * with a list that contains all previous elements, and additionally the
-     * new element.
+     * 주어진 children을 추가한다. 이 인스턴스의 children은 이전 요소 전체에
+     * 새 요소를 더한 목록으로
+     * 바뀐다.
      *
-     * @param element The element
-     * @throws NullPointerException If the given element is <code>null</code>
+     * @param element 요소
+     * @throws NullPointerException 주어진 요소가 <code>null</code>일 때
      */
     public void addChildren(Integer element) {
         if (element == null) {
@@ -107,14 +106,14 @@ public class Node {
     }
 
     /**
-     * Remove the given children. The children of this instance will be
-     * replaced with a list that contains all previous elements, except for
-     * the removed one.<br>
-     * If this new list would be empty, then it will be set to
-     * <code>null</code>.
+     * 주어진 children을 제거한다. 이 인스턴스의 children은 제거한 요소를 뺀
+     * 이전 요소 전체를 담은 목록으로
+     * 바뀐다.<br>
+     * 새 목록이 비게 되면
+     * <code>null</code>로 설정된다.
      *
-     * @param element The element
-     * @throws NullPointerException If the given element is <code>null</code>
+     * @param element 요소
+     * @throws NullPointerException 주어진 요소가 <code>null</code>일 때
      */
     public void removeChildren(Integer element) {
         if (element == null) {
@@ -134,15 +133,15 @@ public class Node {
     }
 
     /**
-     * A floating-point 4x4 transformation matrix stored in column-major
-     * order. (optional)<br>
-     * Default:
+     * 열 우선 순서로 저장한 부동소수점 4x4 변환
+     * 행렬. (선택)<br>
+     * 기본값:
      * [1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0]<br>
-     * Number of items: 16<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * 항목 수: 16<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      *
-     * @return The matrix
+     * @return matrix
      */
     public float[] getMatrix() {
         return this.matrix;
@@ -163,34 +162,33 @@ public class Node {
     }
 
     /**
-     * The node's unit quaternion rotation in the order (x, y, z, w), where w
-     * is the scalar. (optional)<br>
-     * Default: [0.0,0.0,0.0,1.0]<br>
-     * Number of items: 4<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)<br>
-     * &nbsp;&nbsp;Minimum: -1.0 (inclusive)<br>
-     * &nbsp;&nbsp;Maximum: 1.0 (inclusive)
+     * (x, y, z, w) 순서의 노드 단위 사원수 회전. w는
+     * 스칼라다. (선택)<br>
+     * 기본값: [0.0,0.0,0.0,1.0]<br>
+     * 항목 수: 4<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)<br>
+     * &nbsp;&nbsp;최솟값: -1.0 (포함)<br>
+     * &nbsp;&nbsp;최댓값: 1.0 (포함)
      *
-     * @return The rotation
+     * @return rotation
      */
     public float[] getRotation() {
         return this.rotation;
     }
 
     /**
-     * The node's unit quaternion rotation in the order (x, y, z, w), where w
-     * is the scalar. (optional)<br>
-     * Default: [0.0,0.0,0.0,1.0]<br>
-     * Number of items: 4<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)<br>
-     * &nbsp;&nbsp;Minimum: -1.0 (inclusive)<br>
-     * &nbsp;&nbsp;Maximum: 1.0 (inclusive)
+     * (x, y, z, w) 순서의 노드 단위 사원수 회전. w는
+     * 스칼라다. (선택)<br>
+     * 기본값: [0.0,0.0,0.0,1.0]<br>
+     * 항목 수: 4<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)<br>
+     * &nbsp;&nbsp;최솟값: -1.0 (포함)<br>
+     * &nbsp;&nbsp;최댓값: 1.0 (포함)
      *
-     * @param rotation The rotation to set
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param rotation 설정할 rotation
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setRotation(float[] rotation) {
         if (rotation == null) {
@@ -215,30 +213,29 @@ public class Node {
     }
 
     /**
-     * The node's non-uniform scale, given as the scaling factors along the
-     * x, y, and z axes. (optional)<br>
-     * Default: [1.0,1.0,1.0]<br>
-     * Number of items: 3<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * x, y, z 축을 따른 크기 배율로 나타낸 노드의
+     * 비균일 크기. (선택)<br>
+     * 기본값: [1.0,1.0,1.0]<br>
+     * 항목 수: 3<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      *
-     * @return The scale
+     * @return scale
      */
     public float[] getScale() {
         return this.scale;
     }
 
     /**
-     * The node's non-uniform scale, given as the scaling factors along the
-     * x, y, and z axes. (optional)<br>
-     * Default: [1.0,1.0,1.0]<br>
-     * Number of items: 3<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * x, y, z 축을 따른 크기 배율로 나타낸 노드의
+     * 비균일 크기. (선택)<br>
+     * 기본값: [1.0,1.0,1.0]<br>
+     * 항목 수: 3<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      *
-     * @param scale The scale to set
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param scale 설정할 scale
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setScale(float[] scale) {
         if (scale == null) {
@@ -255,28 +252,27 @@ public class Node {
     }
 
     /**
-     * The node's translation along the x, y, and z axes. (optional)<br>
-     * Default: [0.0,0.0,0.0]<br>
-     * Number of items: 3<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * x, y, z 축을 따른 노드의 이동량. (선택)<br>
+     * 기본값: [0.0,0.0,0.0]<br>
+     * 항목 수: 3<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      *
-     * @return The translation
+     * @return translation
      */
     public float[] getTranslation() {
         return this.translation;
     }
 
     /**
-     * The node's translation along the x, y, and z axes. (optional)<br>
-     * Default: [0.0,0.0,0.0]<br>
-     * Number of items: 3<br>
-     * Array elements:<br>
-     * &nbsp;&nbsp;The elements of this array (optional)
+     * x, y, z 축을 따른 노드의 이동량. (선택)<br>
+     * 기본값: [0.0,0.0,0.0]<br>
+     * 항목 수: 3<br>
+     * 배열 요소:<br>
+     * &nbsp;&nbsp;이 배열의 요소 (선택)
      *
-     * @param translation The translation to set
-     * @throws IllegalArgumentException If the given value does not meet
-     *                                  the given constraints
+     * @param translation 설정할 translation
+     * @throws IllegalArgumentException 주어진 값이 제약 조건을 만족하지 않을 때
      */
     public void setTranslation(float[] translation) {
         if (translation == null) {

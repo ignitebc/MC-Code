@@ -10,111 +10,111 @@ import java.util.function.Supplier;
 
 public interface IGunOperator {
     /**
-     * LivingEntity 通过 Mixin 的方式实现了这个接口
+     * LivingEntity가 Mixin으로 이 인터페이스를 구현한다
      */
     static IGunOperator fromLivingEntity(LivingEntity entity) {
         return (IGunOperator) entity;
     }
 
     /**
-     * 获取从服务端同步的射击的冷却
+     * 서버에서 동기화한 사격 대기 시간을 얻는다
      */
     long getSynShootCoolDown();
 
     /**
-     * 获取从服务端同步的近战的冷却（主要是刺刀）
+     * 서버에서 동기화한 근접 공격(주로 총검) 대기 시간을 얻는다
      */
     long getSynMeleeCoolDown();
 
     /**
-     * 获取从服务端同步的切枪的冷却
+     * 서버에서 동기화한 총기 교체 대기 시간을 얻는다
      */
     long getSynDrawCoolDown();
 
     /**
-     * 获取从服务端同步的手动换弹的冷却
+     * 서버에서 동기화한 수동 재장전 대기 시간을 얻는다
      */
     boolean getSynIsBolting();
 
     /**
-     * 获取从服务端同步的换弹状态
+     * 서버에서 동기화한 재장전 상태를 얻는다
      */
     ReloadState getSynReloadState();
 
     /**
-     * 获取从服务端同步的瞄准进度
+     * 서버에서 동기화한 조준 진행도를 얻는다
      */
     float getSynAimingProgress();
 
     /**
-     * 获取该实体是否正在瞄准。
-     * 注意，这个方法并不等价于 getSynAimingProgress() > 0。
-     * 如果玩家正在瞄准，瞄准进度会增加，否则瞄准进度会减少。
+     * 이 엔티티가 조준 중인지 얻는다.
+     * getSynAimingProgress() > 0과 같지 않다는 점에 주의한다.
+     * 플레이어가 조준 중이면 조준 진행도가 늘고, 아니면 줄어든다.
      */
     boolean getSynIsAiming();
 
     /**
-     * 获取玩家持枪奔跑的时长。
-     * 最大不会大于枪械数据中设置的 sprintTime，最小不会小于 0。
+     * 플레이어가 총을 들고 달린 시간을 얻는다.
+     * 총기 데이터의 sprintTime보다 크지 않고 0보다 작지 않다.
      */
     float getSynSprintTime();
 
     /**
-     * 初始化枪械操作的各个数据，如换弹冷却、开火冷却等。
+     * 재장전 대기, 발사 대기 등 총기 조작 데이터를 초기화한다.
      */
     void initialData();
 
     /**
-     * 服务端切枪逻辑
+     * 서버 총기 교체 로직
      */
     void draw(Supplier<ItemStack> itemStackSupplier);
 
     /**
-     * 服务端拉栓逻辑
+     * 서버 노리쇠 당기기 로직
      */
     void bolt();
 
     /**
-     * 服务端换弹逻辑
+     * 서버 재장전 로직
      */
     void reload();
 
     /**
-     * 服务端取消换弹逻辑
+     * 서버 재장전 취소 로직
      */
     void cancelReload();
 
     /**
-     * 服务端切换开火模式的逻辑
+     * 서버 발사 모드 전환 로직
      */
     void fireSelect();
 
     /**
-     * 服务端调整倍镜的逻辑
+     * 서버 조준경 배율 조정 로직
      */
     void zoom();
 
     /**
-     * 服务端近战的逻辑（刺刀）
+     * 서버 근접 공격(총검) 로직
      */
     void melee();
 
     /**
-     * 从实体的位置，向指定的方向开枪
+     * 엔티티 위치에서 지정한 방향으로 쏜다
      *
-     * @param pitch 开火方向的俯仰角(即 xRot )
-     * @param yaw   开火方向的偏航角(即 yRot )
-     * @return 本次射击的结果
+     * @param pitch 발사 방향의 피치 각(xRot)
+     * @param yaw   발사 방향의 요 각(yRot)
+     * @return 이번 사격 결과
      */
     ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw);
 
     /**
-     * 从实体的位置，向指定的方向开枪。计算冷却的时候使用指定的 timestamp
+     * 엔티티 위치에서 지정한 방향으로 쏜다. 대기 시간 계산에는 지정한 timestamp를 쓴다
      *
-     * @param pitch     开火方向的俯仰角(即 xRot )
-     * @param yaw       开火方向的偏航角(即 yRot )
-     * @param timestamp 指定的时间戳，为偏移时间戳（相对于 base timestamp 的时间戳）
-     * @return 本次射击的结果
+     * @param pitch     발사 방향의 피치 각(xRot)
+     * @param yaw       발사 방향의 요 각(yRot)
+     * @param timestamp 지정한 시각. base timestamp 기준의 상대 시각이다
+     * @return 이번 사격 결과
      */
     ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp);
 
@@ -123,53 +123,53 @@ public interface IGunOperator {
     }
 
     /**
-     * 服务端，该操作者是否受弹药数影响
+     * 서버: 이 조작자가 탄약 수의 영향을 받는지
      *
-     * @return 如果为 false，那么开火时不会检查弹药，无论是玩家背包内还是枪械内的
+     * @return false면 발사할 때 플레이어 인벤토리와 총기 안의 탄약을 모두 확인하지 않는다
      */
     boolean needCheckAmmo();
 
     /**
-     * 服务端，开火是否消耗弹药
+     * 서버: 발사할 때 탄약을 소모하는지
      *
-     * @return 如果为 false，那么开火不会消耗枪械弹药
+     * @return false면 발사해도 총기 탄약을 소모하지 않는다
      */
     boolean consumesAmmoOrNot();
 
     /**
-     * 根据情况返回玩家应当处于的冲刺状态，在玩家切换冲刺状态的时候调用。
-     * 这里的逻辑应该严格与客户端端对应，如果不对应，会出现客户端表现和服务端不符的情况。
-     * （例如客户端的视觉效果是玩家在冲刺，而服务端玩家实际上没有冲刺）
+     * 상황에 따라 플레이어가 있어야 할 질주 상태를 돌려준다. 플레이어가 질주 상태를 바꿀 때 호출된다.
+     * 이 로직은 클라이언트와 정확히 대응해야 하며, 다르면 클라이언트 표시와 서버 상태가 어긋난다.
+     * (예: 클라이언트에서는 질주하는 것처럼 보이지만 서버에서는 실제로 질주하지 않음)
      *
      * @see com.tacz.guns.client.gameplay.LocalPlayerSprint#getProcessedSprintStatus
      */
     boolean getProcessedSprintStatus(boolean sprint);
 
     /**
-     * 服务端，应用瞄准的逻辑
+     * 서버: 조준 로직을 적용한다
      *
-     * @param isAim 是否瞄准
+     * @param isAim 조준 여부
      */
     void aim(boolean isAim);
 
     /**
-     * 服务端应用趴下逻辑
+     * 서버: 엎드리기 로직을 적용한다
      */
     void crawl(boolean isCrawl);
 
     /**
-     * 更新枪械的配件属性修改值
+     * 총기의 부착물 속성 보정값을 갱신한다
      * <p>
-     * 通过将配件修改的属性值缓存在实体上，避免频繁的计算，提升性能
+     * 부착물이 바꾼 속성 값을 엔티티에 캐시해 잦은 계산을 피하고 성능을 높인다
      *
-     * @param cacheProperty 更新完的配件属性修改值
+     * @param cacheProperty 갱신한 부착물 속성 보정값
      */
     void updateCacheProperty(AttachmentCacheProperty cacheProperty);
 
     /**
-     * 获取配件属性修改值缓存
+     * 부착물 속성 보정값 캐시를 얻는다
      *
-     * @return 绝大部分情况下，这个数值都不可能为 null
+     * @return 대부분의 경우 null일 수 없다
      */
     @Nullable
     AttachmentCacheProperty getCacheProperty();
@@ -177,10 +177,10 @@ public interface IGunOperator {
     ShooterDataHolder getDataHolder();
 
     /**
-     * 曳光弹计数器自增 1，并根据传入的曳光弹间隔计算当前子弹是否为曳光弹。
+     * 예광탄 카운터를 1 늘리고, 넘겨받은 예광탄 간격으로 현재 탄이 예광탄인지 계산한다.
      *
-     * @param tracerCountInterval 曳光弹间隔
-     * @return 是否为曳光弹
+     * @param tracerCountInterval 예광탄 간격
+     * @return 예광탄인지
      */
     boolean nextBulletIsTracer(int tracerCountInterval);
 }

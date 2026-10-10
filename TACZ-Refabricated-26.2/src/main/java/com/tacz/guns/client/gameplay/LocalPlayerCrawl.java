@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class LocalPlayerCrawl {
     /**
-     * 冷却时间为 10 tick
+     * 대기 시간은 10틱
      */
     private static final int COOLDOWN_TICKS = 10;
     private final LocalPlayer player;
@@ -24,16 +24,16 @@ public class LocalPlayerCrawl {
     }
 
     public void crawl(boolean isCrawl) {
-        // 持枪才能按键趴下
+        // 총을 들고 있어야 엎드리기 키가 동작한다
         ItemStack mainHandItem = player.getMainHandItem();
         if (!(mainHandItem.getItem() instanceof IGun iGun)) {
             return;
         }
-        // 不允许趴下的武器
+        // 엎드릴 수 없는 무기
         if (!iGun.isCanCrawl(mainHandItem)) {
             return;
         }
-        // 冷却时间没到，不执行
+        // 대기 시간이 지나지 않았으면 실행하지 않는다
         if (crawCooldownTicks > 0) {
             return;
         }
@@ -52,27 +52,27 @@ public class LocalPlayerCrawl {
         if (crawCooldownTicks > 0) {
             crawCooldownTicks--;
         }
-        // 持枪才能按键趴下
+        // 총을 들고 있어야 엎드리기 키가 동작한다
         ItemStack mainHandItem = player.getMainHandItem();
         if (!(mainHandItem.getItem() instanceof IGun iGun)) {
             isCrawling = false;
             this.setCrawlPose();
             return;
         }
-        // 不允许趴下的武器，则取消趴下状态
+        // 엎드릴 수 없는 무기면 엎드린 상태를 푼다
         if (!iGun.isCanCrawl(mainHandItem)) {
             isCrawling = false;
             this.setCrawlPose();
             return;
         }
-        // 如果获取不到 gunIndex，则取消趴下状态
+        // gunIndex를 얻지 못하면 엎드린 상태를 푼다
         Identifier gunId = iGun.getGunId(mainHandItem);
         if (TimelessAPI.getCommonGunIndex(gunId).isEmpty()) {
             isCrawling = false;
             this.setCrawlPose();
             return;
         }
-        // 如果玩家是观察者模型、骑乘、跳跃、在游泳、不在地上，取消
+        // 플레이어가 관전자 모드이거나 탈것에 타고 있거나 점프·수영 중이거나 땅에 없으면 취소한다
         if (player.isSpectator() || player.isPassenger() || player.jumping || player.isSwimming() || !player.onGround()) {
             isCrawling = false;
             this.setCrawlPose();

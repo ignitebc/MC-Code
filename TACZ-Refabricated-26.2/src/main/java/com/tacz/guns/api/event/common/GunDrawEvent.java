@@ -8,7 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * 生物开始更换枪械弹药时触发的事件。
+ * 생물이 총기 탄약 교체를 시작할 때 발생하는 이벤트.
  */
 public class GunDrawEvent extends BaseEvent {
     private final LivingEntity entity;

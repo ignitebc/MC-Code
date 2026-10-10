@@ -72,7 +72,7 @@ public class DelegatingPackResources extends AbstractPackResources {
     @Nullable
     @Override
     public IoSupplier<InputStream> getRootResource(String... paths) {
-        // Root resources do not make sense here
+        // 루트 리소스는 여기서 의미가 없다
         return null;
     }
 

@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * 双方块的枪械工作台，2x1x1
+ * 두 칸짜리 총기 작업대, 2x1x1
  */
 public class GunSmithTableBlockB extends AbstractGunSmithTableBlock {
     public static final MapCodec<GunSmithTableBlockB> CODEC = simpleCodec(GunSmithTableBlockB::new);
@@ -71,7 +71,7 @@ public class GunSmithTableBlockB extends AbstractGunSmithTableBlock {
 
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState blockState, Player player) {
-        // 用于抑制创造模式下摧毁head方块时foot的掉落
+        // 크리에이티브에서 head 블록을 부술 때 foot 블록이 아이템으로 떨어지지 않게 한다
         if (!level.isClientSide() && player.isCreative()) {
             BedPart bedPart = blockState.getValue(PART);
             if (bedPart == BedPart.FOOT) {

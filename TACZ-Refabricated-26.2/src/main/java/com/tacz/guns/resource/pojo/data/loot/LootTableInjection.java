@@ -18,9 +18,9 @@ import java.util.Map;
 public record LootTableInjection(List<Identifier> lootTables, LootTable lootTable, Identifier id) {
 
     public static LootTableInjection fromJson(Identifier fileId, JsonElement element) {
-        // 26.2 兼容层：minecraft:set_nbt 已被移除。set_custom_data 与 set_nbt 完全等价
-        // （同样接收 tag 字段），且写入 minecraft:custom_data 组件——而 TACZ 的 GunId/AmmoId
-        // 本就存在该组件的 NBT 中（ItemNbtUtils），因此旧枪包的 set_nbt 迁移后枪/弹药变体可正确生成。
+        // 26.2 호환 층: minecraft:set_nbt가 제거되었다. set_custom_data는 set_nbt와 완전히 같고
+        // (똑같이 tag 필드를 받음) minecraft:custom_data 컴포넌트에 쓴다 — TACZ의 GunId/AmmoId는
+        // 원래 그 컴포넌트의 NBT에 있으므로(ItemNbtUtils) 예전 총기 팩의 set_nbt를 옮기면 총/탄약 변형이 올바르게 생성된다.
         JsonElement migrated = LegacyLootCompat.migrateSetNbt(element);
         JsonObject object = GsonHelper.convertToJsonObject(migrated, "loot injection");
         List<Identifier> lootTables = readLootTables(fileId, object);
@@ -54,9 +54,9 @@ public record LootTableInjection(List<Identifier> lootTables, LootTable lootTabl
     }
 
     /**
-     * 兼容层：递归遍历 loot JSON，把 {function:"minecraft:set_nbt", tag:"<SNBT>"}
-     * 改名成 {function:"minecraft:set_custom_data", tag:"<SNBT>"}。
-     * 26.2 的 set_custom_data 与旧 set_nbt 行为等价（写入 custom_data 组件）。
+     * 호환 층: loot JSON을 재귀로 훑어 {function:"minecraft:set_nbt", tag:"<SNBT>"}를
+     * {function:"minecraft:set_custom_data", tag:"<SNBT>"}로 이름을 바꾼다.
+     * 26.2의 set_custom_data는 예전 set_nbt와 동작이 같다(custom_data 컴포넌트에 씀).
      */
     static final class LegacyLootCompat {
         static JsonElement migrateSetNbt(JsonElement element) {

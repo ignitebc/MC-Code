@@ -10,9 +10,9 @@ import net.minecraft.world.item.ItemStack;
 import java.util.UUID;
 
 /**
- * Framework provided serializers used for creating a {@link SyncedDataKey}. This covers all
- * primitive types and common objects. You can create your custom serializer by implementing
- * {@link IDataSerializer}.
+ * {@link SyncedDataKey}를 만들 때 쓰는, Framework가 제공하는 직렬화기. 모든
+ * 기본 타입과 흔한 객체를 다룬다. {@link IDataSerializer}를 구현해
+ * 사용자 정의 직렬화기를 만들 수 있다.
  * <p>
  * Author: MrCrayfish
  * Open source at <a href="https://github.com/MrCrayfish/Framework">Github</a> under LGPL License.
@@ -287,16 +287,16 @@ public class Serializers {
     };
 
     public static final IDataSerializer<ItemStack> ITEM_STACK = new IDataSerializer<>() {
-        // 用 OPTIONAL_STREAM_CODEC：这是通用的实体数据同步序列化器，
-        // 调用方完全可能传入空栈（例如「当前手持物品」在清空后同步）。
-        // 非 OPTIONAL 版遇到 ItemStack.EMPTY 会抛
-        // EncoderException("Empty ItemStack not allowed") 并直接踢掉连接，
-        // 与 ServerMessageGunDraw 那个致命联机崩溃是同一个坑。
+        // OPTIONAL_STREAM_CODEC을 쓴다: 이것은 범용 엔티티 데이터 동기화 직렬화기라,
+        // 호출하는 쪽이 빈 스택을 넘길 수 있다(예: "현재 손에 든 아이템"을 비운 뒤 동기화).
+        // OPTIONAL이 아닌 판은 ItemStack.EMPTY를 만나면
+        // EncoderException("Empty ItemStack not allowed")을 던지고 연결을 바로 끊는다.
+        // ServerMessageGunDraw의 치명적인 멀티플레이 충돌과 같은 함정이다.
         //
-        // 上游 1.21.1 此处用的是 buf.writeJsonWithCodec(ItemStack.CODEC, ...)，
-        // 该 API 在 26.2 已移除，故改用流式 codec；但要保持「允许空栈」这一语义，
-        // 必须选 OPTIONAL 版本 —— 注意 ItemStack.CODEC 对 EMPTY 同样会抛异常
-        // （count 取值范围 [1,99]），所以下面的 NBT 分支用的是 OPTIONAL_CODEC。
+        // 원본 1.21.1은 여기서 buf.writeJsonWithCodec(ItemStack.CODEC, ...)을 썼는데,
+        // 이 API는 26.2에서 제거되어 스트림 codec으로 바꿨다. 다만 "빈 스택 허용"이라는 의미를 지키려면
+        // 반드시 OPTIONAL 판을 골라야 한다 — ItemStack.CODEC도 EMPTY에 예외를 던진다는 점에 주의한다
+        // (count 범위가 [1,99]). 그래서 아래 NBT 분기는 OPTIONAL_CODEC을 쓴다.
         @Override
         public void write(FriendlyByteBuf buf, ItemStack value) {
             ItemStack.OPTIONAL_STREAM_CODEC.encode((RegistryFriendlyByteBuf) buf, value);
@@ -307,8 +307,8 @@ public class Serializers {
             return ItemStack.OPTIONAL_STREAM_CODEC.decode((RegistryFriendlyByteBuf) buf);
         }
 
-        // 同理用 OPTIONAL_CODEC：ItemStack.CODEC 的 count 取值范围是 [1,99]，
-        // 对 ItemStack.EMPTY 会 getOrThrow 抛异常，而这里保存的可能就是空栈。
+        // 같은 이유로 OPTIONAL_CODEC을 쓴다: ItemStack.CODEC의 count 범위는 [1,99]라
+        // ItemStack.EMPTY에 getOrThrow가 예외를 던지는데, 여기서 저장하는 것이 빈 스택일 수 있다.
         @Override
         public Tag write(ItemStack value) {
             return ItemStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, value).getOrThrow();

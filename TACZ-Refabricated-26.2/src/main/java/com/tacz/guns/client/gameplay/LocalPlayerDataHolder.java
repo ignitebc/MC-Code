@@ -13,32 +13,32 @@ import java.util.function.Predicate;
 
 public class LocalPlayerDataHolder {
     /**
-     * 枪械操作的定时任务池（拔枪音效延时、连发节拍）。
+     * 총기 조작용 예약 작업 풀(총 꺼내기 효과음 지연, 연발 박자).
      *
-     * <p><b>必须是 daemon 池</b>：这里面跑的是 {@code scheduleAtFixedRate} 的连发任务，
-     * 而且全仓没有任何 {@code shutdown()} 调用。原先用的是无参重载，
-     * 也就是 {@code Executors.defaultThreadFactory()} —— 它<b>无条件</b>
-     * {@code setDaemon(false)}，于是这两个线程会一直卡住 JVM 退出，
-     * 15 秒后 {@code ClientShutdownWatchdog} 发一份崩溃报告。
-     * 详见 {@link com.tacz.guns.util.TaczThreads}。
+     * <p><b>반드시 데몬 풀이어야 한다</b>: 여기서 {@code scheduleAtFixedRate} 연발 작업이 돌고,
+     * 저장소 어디에도 {@code shutdown()} 호출이 없다. 예전에는 인자 없는 오버로드,
+     * 곧 {@code Executors.defaultThreadFactory()}를 썼는데 — 이것은 <b>무조건</b>
+     * {@code setDaemon(false)}라서 두 스레드가 JVM 종료를 계속 막았고,
+     * 15초 뒤 {@code ClientShutdownWatchdog}가 크래시 보고서를 냈다.
+     * 자세한 내용은 {@link com.tacz.guns.util.TaczThreads} 참고.
      */
     public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE =
             Executors.newScheduledThreadPool(2, TaczThreads.daemonFactory("tacz-gun-scheduler"));
     public long clientBaseTimestamp = -1L;
     /**
-     * 上一个 tick 的瞄准进度，用于插值，范围 0 ~ 1
+     * 직전 틱의 조준 진행도. 보간에 쓰며 범위는 0~1
      */
     public static float oldAimingProgress = 0;
     /**
-     * 点击按钮的时间戳，防止客户端点击按钮后误触开火
+     * 버튼을 누른 시각. 클라이언트에서 버튼을 누른 뒤 실수로 발사되는 것을 막는다
      */
     public static long clientClickButtonTimestamp = -1L;
     /**
-     * 玩家对象
+     * 플레이어 객체
      */
     private final LocalPlayer player;
     /**
-     * 与射击有关的几个变量
+     * 사격 관련 변수들
      */
     public volatile long clientShootTimestamp = -1L;
     public volatile long clientLastShootTimestamp = -1L;
@@ -46,40 +46,40 @@ public class LocalPlayerDataHolder {
     public float chargeProgress = 0f;
     public boolean isCharging = false;
     /**
-     * 这个状态锁表示：任意时刻，正在进行的枪械操作只能为一个。
-     * 主要用于防止客户端操作表现效果重复执行。
+     * 이 상태 잠금은 어느 시점이든 진행 중인 총기 조작이 하나뿐임을 나타낸다.
+     * 주로 클라이언트 조작 표시가 중복 실행되는 것을 막는다.
      */
     public volatile boolean clientStateLock = false;
     /**
-     * 用于标记 bolt 是否已经执行完成，防止因为客户端、服务端异步产生的数据不同步而造成的重复 bolt
+     * bolt가 끝났는지 표시한다. 클라이언트·서버 비동기로 데이터가 어긋나 bolt가 반복되는 것을 막는다
      */
     public boolean isBolting = false;
     /**
-     * 瞄准的进度，范围 0 ~ 1
+     * 조준 진행도. 범위는 0~1
      */
     public float clientAimingProgress = 0;
     /**
-     * 瞄准时间戳，单位 ms
+     * 조준 시각(ms)
      */
     public long clientAimingTimestamp = -1L;
     public boolean clientIsAiming = false;
     /**
-     * 切枪时间戳，在切枪开始时更新，单位 ms。
-     * 在客户端仅用于计算收枪动画的时长和过渡时长。
+     * 총기 교체 시각. 교체를 시작할 때 갱신하며 단위는 ms.
+     * 클라이언트에서는 집어넣기 애니메이션 시간과 전환 시간 계산에만 쓴다.
      */
     public long clientDrawTimestamp = -1L;
     /**
-     * 异步切枪
+     * 비동기 총기 교체
      */
     @Nullable
     public ScheduledFuture<?> drawFuture = null;
     /**
-     * 用于等待上锁的服务端响应
+     * 잠금에 대한 서버 응답을 기다리는 데 쓴다
      */
     @Nullable
     public Predicate<IGunOperator> lockedCondition = null;
     /**
-     * 计算上锁响应时间，不允许超过最大响应时间，避免死锁
+     * 잠금 응답 시간을 계산한다. 교착을 막기 위해 최대 응답 시간을 넘지 않게 한다
      */
     public long lockTimestamp = -1;
 
@@ -88,7 +88,7 @@ public class LocalPlayerDataHolder {
     }
 
     /**
-     * 锁上状态锁
+     * 상태 잠금을 건다
      */
     public void lockState(@Nullable Predicate<IGunOperator> lockedCondition) {
         clientStateLock = true;
@@ -97,13 +97,13 @@ public class LocalPlayerDataHolder {
     }
 
     /**
-     * 此方法每 tick 执行一次，判断是否应当释放状态锁。
+     * 틱마다 실행되며 상태 잠금을 풀어야 하는지 판단한다.
      */
     public void tickStateLock() {
         IGunOperator gunOperator = IGunOperator.fromLivingEntity(player);
         ReloadState reloadState = gunOperator.getSynReloadState();
-        // 如果还没完成上锁，则不能释放状态锁
-        // 上锁允许的最大响应时间，毫秒
+        // 아직 잠금이 끝나지 않았으면 상태 잠금을 풀 수 없다
+        // 잠금에 허용하는 최대 응답 시간(밀리초)
         long maxLockTime = 250;
         long lockTime = System.currentTimeMillis() - lockTimestamp;
         if (lockTime < maxLockTime && lockedCondition != null && !lockedCondition.test(gunOperator)) {
@@ -126,26 +126,26 @@ public class LocalPlayerDataHolder {
         if (gunOperator.getSynMeleeCoolDown() > 0) {
             return;
         }
-        // 释放状态锁
+        // 상태 잠금을 푼다
         clientStateLock = false;
     }
 
     /**
-     * 重生后各种参数的重置
+     * 부활 뒤 여러 매개변수를 초기화한다
      */
     public void reset() {
-        // 重置客户端的 shoot 时间戳
+        // 클라이언트 shoot 시각 초기화
         isShootRecorded = true;
         clientShootTimestamp = -1;
         chargeProgress = 0f;
         isCharging = false;
-        // 重置客户端瞄准状态
+        // 클라이언트 조준 상태 초기화
         clientIsAiming = false;
         clientAimingProgress = 0;
         oldAimingProgress = 0;
-        // 重置拉栓状态
+        // 노리쇠 당기기 상태 초기화
         isBolting = false;
-        // 打开状态锁
+        // 상태 잠금을 연다
         clientStateLock = false;
     }
 }

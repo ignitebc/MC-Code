@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 /**
- * Stub for simplebedrockmodel RenderTickEvent (library not yet available for 26.2)
+ * simplebedrockmodel RenderTickEvent의 대체 구현(26.2용 라이브러리가 아직 없음)
  */
 public class RenderTickEvent {
     public final Phase phase;

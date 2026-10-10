@@ -5,42 +5,41 @@ import java.util.function.Consumer;
 
 public class BufferViewModel {
     /**
-     * The optional target
+     * 선택적 대상
      */
     private final Integer target;
     /**
-     * The {@link BufferModel} for this model
+     * 이 모델의 {@link BufferModel}
      */
     private BufferModel bufferModel;
     /**
-     * The byte offset
+     * 바이트 오프셋
      */
     private int byteOffset;
     /**
-     * The byte length
+     * 바이트 길이
      */
     private int byteLength;
     /**
-     * The byte stride
+     * 바이트 간격
      */
     private Integer byteStride;
     /**
-     * An optional callback that will be used to perform the
-     * substitution of sparse accessor data in the
-     * {@link #getBufferViewData() buffer view data}
-     * when it is obtained for the first time.
+     * {@link #getBufferViewData() 버퍼 뷰 데이터}를 처음 얻을 때
+     * 희소 접근자 데이터 치환을 수행하는
+     * 선택적 콜백.
      */
     private Consumer<? super ByteBuffer> sparseSubstitutionCallback;
 
     /**
-     * Whether the sparse substitution was already applied
+     * 희소 치환을 이미 적용했는지
      */
     private boolean sparseSubstitutionApplied;
 
     /**
-     * Creates a new instance
+     * 새 인스턴스를 만든다
      *
-     * @param target The optional target
+     * @param target 선택적 대상
      */
     public BufferViewModel(Integer target) {
         this.byteOffset = 0;
@@ -49,11 +48,10 @@ public class BufferViewModel {
     }
 
     /**
-     * Set the callback that will perform the substitution of sparse accessor
-     * data in the {@link #getBufferViewData() buffer view data} when it is
-     * obtained for the first time.
+     * {@link #getBufferViewData() 버퍼 뷰 데이터}를 처음 얻을 때
+     * 희소 접근자 데이터 치환을 수행할 콜백을 설정한다.
      *
-     * @param sparseSubstitutionCallback The callback
+     * @param sparseSubstitutionCallback 콜백
      */
     public void setSparseSubstitutionCallback(
             Consumer<? super ByteBuffer> sparseSubstitutionCallback) {
@@ -76,9 +74,9 @@ public class BufferViewModel {
     }
 
     /**
-     * Set the {@link BufferModel} for this model
+     * 이 모델의 {@link BufferModel}을 설정한다
      *
-     * @param bufferModel The {@link BufferModel}
+     * @param bufferModel {@link BufferModel}
      */
     public void setBufferModel(BufferModel bufferModel) {
         this.bufferModel = bufferModel;
@@ -89,9 +87,9 @@ public class BufferViewModel {
     }
 
     /**
-     * Set the byte offset of this view referring to its {@link BufferModel}
+     * 이 뷰가 참조하는 {@link BufferModel} 기준 바이트 오프셋을 설정한다
      *
-     * @param byteOffset The byte offset
+     * @param byteOffset 바이트 오프셋
      */
     public void setByteOffset(int byteOffset) {
         this.byteOffset = byteOffset;
@@ -102,9 +100,9 @@ public class BufferViewModel {
     }
 
     /**
-     * Set the byte length of this buffer view
+     * 이 버퍼 뷰의 바이트 길이를 설정한다
      *
-     * @param byteLength The byte length
+     * @param byteLength 바이트 길이
      */
     public void setByteLength(int byteLength) {
         this.byteLength = byteLength;
@@ -115,11 +113,11 @@ public class BufferViewModel {
     }
 
     /**
-     * Set the optional byte stride. This byte stride must be
-     * non-<code>null</code> if more than one accessor refers
-     * to this buffer view.
+     * 선택적 바이트 간격을 설정한다. 이 버퍼 뷰를 참조하는 접근자가
+     * 둘 이상이면 이 값은 <code>null</code>이면
+     * 안 된다.
      *
-     * @param byteStride The byte stride
+     * @param byteStride 바이트 간격
      */
     public void setByteStride(Integer byteStride) {
         this.byteStride = byteStride;

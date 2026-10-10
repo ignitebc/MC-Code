@@ -55,24 +55,6 @@ public class GunSmithTableItem extends BlockItem implements BlockItemDataAccesso
         return super.getName(stack);
     }
 
-//    @Override
-//    @Environment(EnvType.CLIENT)
-//    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> components, TooltipFlag isAdvanced) {
-//        Identifier blockId = this.getBlockId(stack);
-//        TimelessAPI.getClientBlockIndex(blockId).ifPresent(index -> {
-//            String tooltipKey = index.getTooltipKey();
-//            if (tooltipKey != null) {
-//                components.add(Component.translatable(tooltipKey).withStyle(style -> style.withColor(0xAAAAAA)));
-//            }
-//        });
-//
-//        PackInfo packInfoObject = ClientAssetsManager.INSTANCE.getPackInfo(blockId);
-//        if (packInfoObject != null) {
-//            MutableComponent component = Component.translatable(packInfoObject.getName()).withStyle(style -> style.withColor(0x5555FF)).withStyle(style -> style.withItalic(true));
-//            components.add(component);
-//        }
-//    }
-
     @Override
     @NotNull
     public Optional<TooltipComponent> getTooltipImage(ItemStack pStack) {

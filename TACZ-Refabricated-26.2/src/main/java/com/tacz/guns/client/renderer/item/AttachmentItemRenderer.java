@@ -41,14 +41,14 @@ public class AttachmentItemRenderer implements BuiltinItemRendererRegistry.Dynam
             Identifier attachmentId = iAttachment.getAttachmentId(stack);
             poseStack.pushPose();
             TimelessAPI.getClientAttachmentIndex(attachmentId).ifPresentOrElse(attachmentIndex -> {
-                // GUI 特殊渲染
+                // GUI 특수 렌더링
                 if (transformType == ItemDisplayContext.GUI) {
                     poseStack.translate(0.5, 1.5, 0.5);
                     poseStack.mulPose(Axis.ZN.rotationDegrees(180));
                     collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(attachmentIndex.getSlotTexture()), (pose, buffer) -> {
-                        // 26.2: 必须使用回调参数 pose（= 提交那一刻 poseStack.last().copy() 的快照），
-                        // 而不是外层 poseStack —— 回调执行时它早已被 popPose/复用，
-                        // 结果就是图标被画到错误位置（物品栏一片空白）。
+                        // 26.2: 바깥 poseStack이 아니라 콜백 인자 pose(= 제출하는 순간 poseStack.last().copy()의 스냅숏)를 써야 한다.
+                        // 콜백이 실행될 때 바깥 poseStack은 이미 popPose되었거나 다시 쓰이고 있어,
+                        // 그러면 아이콘이 엉뚱한 위치에 그려진다(인벤토리가 텅 빔).
                         PoseStack tacz$snapshotPose = new PoseStack();
                         tacz$snapshotPose.last().pose().set(pose.pose());
                         tacz$snapshotPose.last().normal().set(pose.normal());
@@ -57,20 +57,20 @@ public class AttachmentItemRenderer implements BuiltinItemRendererRegistry.Dynam
                     return;
                 }
                 poseStack.translate(0.5, 2, 0.5);
-                // 反转模型
+                // 모델 뒤집기
                 poseStack.scale(-1, -1, 1);
                 if (transformType == ItemDisplayContext.FIXED) {
                     poseStack.mulPose(Axis.YN.rotationDegrees(90f));
                 }
                 this.renderDefaultAttachment(transformType, poseStack, collector, pPackedLight, pPackedOverlay, attachmentIndex);
             }, () -> {
-                // 没有这个 attachmentId，渲染黑紫材质以提醒
+                // 이 attachmentId가 없으면 검정·보라 텍스처를 그려 알린다
                 poseStack.translate(0.5, 1.5, 0.5);
                 poseStack.mulPose(Axis.ZN.rotationDegrees(180));
                 collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(MissingTextureAtlasSprite.getLocation()), (pose, buffer) -> {
-                    // 26.2: 必须使用回调参数 pose（= 提交那一刻 poseStack.last().copy() 的快照），
-                    // 而不是外层 poseStack —— 回调执行时它早已被 popPose/复用，
-                    // 结果就是图标被画到错误位置（物品栏一片空白）。
+                    // 26.2: 바깥 poseStack이 아니라 콜백 인자 pose(= 제출하는 순간 poseStack.last().copy()의 스냅숏)를 써야 한다.
+                    // 콜백이 실행될 때 바깥 poseStack은 이미 popPose되었거나 다시 쓰이고 있어,
+                    // 그러면 아이콘이 엉뚱한 위치에 그려진다(인벤토리가 텅 빔).
                     PoseStack tacz$snapshotPose = new PoseStack();
                     tacz$snapshotPose.last().pose().set(pose.pose());
                     tacz$snapshotPose.last().normal().set(pose.normal());
@@ -84,11 +84,11 @@ public class AttachmentItemRenderer implements BuiltinItemRendererRegistry.Dynam
     private void renderDefaultAttachment(@NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack, @NotNull SubmitNodeCollector collector, int pPackedLight, int pPackedOverlay, ClientAttachmentIndex attachmentIndex) {
         BedrockAttachmentModel model = attachmentIndex.getAttachmentModel();
         Identifier texture = attachmentIndex.getModelTexture();
-        // 有模型？正常渲染
+        // 모델이 있으면 정상 렌더링
         if (model != null && texture != null) {
-            // 调用低模
+            // 저해상도 모델 호출
             Pair<BedrockAttachmentModel, Identifier> lodModel = attachmentIndex.getLodModel();
-            // 有低模、在高模渲染范围外、不是第一人称
+            // 저해상도 모델이 있고, 고해상도 모델 렌더링 범위 밖이며, 1인칭이 아님
             if (lodModel != null && !RenderDistance.inRenderHighPolyModelDistance(poseStack) && !transformType.firstPerson()) {
                 model = lodModel.getLeft();
                 texture = lodModel.getRight();
@@ -96,17 +96,17 @@ public class AttachmentItemRenderer implements BuiltinItemRendererRegistry.Dynam
             RenderType renderType = RenderTypes.entityCutout(texture);
             model.submit(null, ItemStack.EMPTY, poseStack, transformType, collector, renderType, pPackedLight, pPackedOverlay);
         }
-        // 否则，以 GUI 形式渲染
+        // 아니면 GUI 형태로 그린다
         else {
             poseStack.translate(0, 0.5, 0);
-            // 展示框里显示正常
+            // 아이템 액자 안에서는 정상 표시
             if (transformType == ItemDisplayContext.FIXED) {
                 poseStack.mulPose(Axis.YP.rotationDegrees(90));
             }
             collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(attachmentIndex.getSlotTexture()), (pose, buffer) -> {
-                // 26.2: 必须使用回调参数 pose（= 提交那一刻 poseStack.last().copy() 的快照），
-                // 而不是外层 poseStack —— 回调执行时它早已被 popPose/复用，
-                // 结果就是图标被画到错误位置（物品栏一片空白）。
+                // 26.2: 바깥 poseStack이 아니라 콜백 인자 pose(= 제출하는 순간 poseStack.last().copy()의 스냅숏)를 써야 한다.
+                // 콜백이 실행될 때 바깥 poseStack은 이미 popPose되었거나 다시 쓰이고 있어,
+                // 그러면 아이콘이 엉뚱한 위치에 그려진다(인벤토리가 텅 빔).
                 PoseStack tacz$snapshotPose = new PoseStack();
                 tacz$snapshotPose.last().pose().set(pose.pose());
                 tacz$snapshotPose.last().normal().set(pose.normal());

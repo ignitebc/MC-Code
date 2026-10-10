@@ -32,39 +32,39 @@ import org.joml.Vector4f;
 import java.util.Optional;
 
 /**
- * 【Step 2 正式版】把当帧所有目镜几何画进离屏掩码。
+ * [Step 2 정식판] 이번 프레임의 모든 접안렌즈 형상을 화면 밖 마스크에 그린다.
  *
- * <h2>这一步要证明什么</h2>
- * 预览块里应出现一个<b>随枪移动的白色形状</b>。
- * 它一次性验证整个方案最核心的假设：
- * <b>裁剪区域 = 目镜几何的屏幕投影</b>。
+ * <h2>이 단계가 증명하려는 것</h2>
+ * 미리 보기 칸에 <b>총을 따라 움직이는 흰 모양</b>이 나타나야 한다.
+ * 이것으로 전체 방안의 가장 핵심 가정을 한 번에 검증한다:
+ * <b>잘라내기 영역 = 접안렌즈 형상의 화면 투영</b>.
  *
- * <p>这正是上游 stencil 的真实语义（{@code SCOPE_UPSTREAM_TRUTH} §1）：
+ * <p>이것이 바로 원본 stencil의 실제 의미다({@code SCOPE_UPSTREAM_TRUTH} §1):
  * <pre>
  * renderOcularStencil: colorMask(false×4) + stencilOp(KEEP,KEEP,REPLACE)
- *     → 模板非 0 区 = 目镜的【屏幕投影形状】
- * scope_body: stencilFunc(EQUAL, 0)   // 只在目镜没盖到处画镜身
+ *     → 스텐실이 0이 아닌 영역 = 접안렌즈의 [화면 투영 모양]
+ * scope_body: stencilFunc(EQUAL, 0)   // 접안렌즈가 덮지 않은 곳에만 몸체를 그림
  * </pre>
- * 形状对 = 后续「镜身采样掩码并 discard」必然成立；
- * 形状不对（不跟枪动 / 位置错） = 还有更深的误解，此时止损远比继续写划算。
+ * 모양이 맞으면 = 뒤의 "몸체가 마스크를 샘플링해 discard"가 반드시 성립한다.
+ * 모양이 틀리면(총을 따라가지 않음 / 위치가 틀림) = 더 깊은 오해가 있으니 여기서 멈추는 편이 계속 쓰는 것보다 낫다.
  *
- * <h2>为什么不用 collector / RenderType</h2>
- * r51 就是那么干的 —— 给目镜配一个 {@code outputTarget} 不同的 RenderType，
- * 照常走 collector。结果引擎按 RenderType 分批执行时，把
- * 「主 target → 掩码 target → 主 target」的切换<b>零散穿插</b>进 solid 阶段内部，
- * 触发 {@code VK_ERROR_DEVICE_LOST}。
+ * <h2>collector / RenderType을 쓰지 않는 이유</h2>
+ * r51이 그렇게 했다 — 접안렌즈에 {@code outputTarget}이 다른 RenderType을 주고
+ * 평소처럼 collector를 탔다. 그러자 엔진이 RenderType별로 묶어 실행하면서
+ * "주 target → 마스크 target → 주 target" 전환을 solid 단계 안에 <b>여기저기 끼워 넣어</b>
+ * {@code VK_ERROR_DEVICE_LOST}를 일으켰다.
  *
- * <p>所以这里<b>完全绕开 collector</b>，自建顶点缓冲，在阶段边界一次性画完。
- * 该时机的安全性已由上一轮的空 pass 探针实测证实（预览块变绿）。
+ * <p>그래서 여기서는 <b>collector를 완전히 피해</b> 정점 버퍼를 직접 만들고 단계 경계에서 한 번에 그린다.
+ * 이 시점이 안전하다는 것은 앞선 빈 pass 시험으로 실측 확인했다(미리 보기 칸이 초록색으로 바뀜).
  *
- * <h2>绘制配方（逐项对照 {@code PreparedRenderType#drawFromBuffer} 反汇编）</h2>
+ * <h2>그리기 구성({@code PreparedRenderType#drawFromBuffer} 역어셈블과 항목별 대조)</h2>
  * <pre>
- * createRenderPass(名字, 颜色附件, 清空色)
+ * createRenderPass(이름, 색 첨부, 비우기 색)
  * setPipeline(pipeline)
- * RenderSystem.bindDefaultUniforms(pass)               // ← 少这句会缺 Projection/Fog
- * setUniform("DynamicTransforms", 写入 ModelView)      // ← 少这句 shader 拿不到 ModelViewMat
+ * RenderSystem.bindDefaultUniforms(pass)               // ← 빠지면 Projection/Fog가 없다
+ * setUniform("DynamicTransforms", ModelView 쓰기)      // ← 빠지면 shader가 ModelViewMat을 얻지 못한다
  * setVertexBuffer(0, vertexBuffer.slice())
- * setIndexBuffer(共享四边形索引, 类型)
+ * setIndexBuffer(공유 사각형 인덱스, 종류)
  * drawIndexed(0, 0, indexCount, 1)
  * </pre>
  */
@@ -72,93 +72,93 @@ import java.util.Optional;
 public final class ScopeMaskRenderer {
 
     /**
-     * 掩码管线。
+     * 마스크 파이프라인.
      *
-     * <h3>为什么用 {@code POSITION} 而不是 {@code ENTITY} 格式</h3>
-     * 掩码只关心「这个像素有没有被目镜盖到」，<b>不需要</b>贴图、光照、法线。
-     * 用最简格式有三个好处：
+     * <h3>{@code ENTITY}가 아니라 {@code POSITION} 형식을 쓰는 이유</h3>
+     * 마스크는 "이 픽셀이 접안렌즈에 덮였는지"만 알면 되고 텍스처·조명·법선은 <b>필요 없다</b>.
+     * 가장 단순한 형식을 쓰면 장점이 세 가지 있다:
      * <ul>
-     *   <li>顶点数据最小（每顶点 12 字节）；</li>
-     *   <li>{@code core/position} 这套 shader <b>不声明任何 sampler</b> ——
-     *       彻底避开 r52 那次 {@code Missing sampler Sampler0} 的坑；</li>
-     *   <li>不需要自己写 shader，用 vanilla 现成的，也就没有
-     *       r46 那种「shader 声明的 uniform 与管线不匹配」的风险。</li>
+     *   <li>정점 데이터가 가장 작다(정점당 12바이트).</li>
+     *   <li>{@code core/position} 셰이더는 <b>sampler를 하나도 선언하지 않는다</b> —
+     *       r52의 {@code Missing sampler Sampler0} 함정을 완전히 피한다.</li>
+     *   <li>셰이더를 직접 쓸 필요 없이 바닐라 것을 쓰므로
+     *       r46 같은 "셰이더가 선언한 uniform과 파이프라인이 맞지 않는" 위험도 없다.</li>
      * </ul>
      *
-     * <h3>关于颜色</h3>
-     * {@code position.fsh} 输出 {@code apply_fog(ColorModulator, ...)}。
-     * {@code ColorModulator} 由 DynamicTransforms 提供，我们写入纯白，
-     * 于是目镜覆盖处 = 白，其余 = 清空色（黑）。正好是一张二值掩码。
+     * <h3>색에 대해</h3>
+     * {@code position.fsh}는 {@code apply_fog(ColorModulator, ...)}를 출력한다.
+     * {@code ColorModulator}는 DynamicTransforms가 제공하며 우리는 순백을 쓴다.
+     * 그래서 접안렌즈가 덮은 곳 = 흰색, 나머지 = 비우기 색(검정). 딱 이진 마스크다.
      *
-     * <p>雾在近距离（手持物就在眼前）几乎不衰减，不影响判读；
-     * 何况本步骤只看<b>形状</b>，不看颜色精度。
+     * <p>안개는 가까운 거리(손에 든 물건은 바로 눈앞)에서 거의 줄지 않아 판독에 영향이 없다.
+     * 게다가 이 단계는 <b>모양</b>만 보고 색 정밀도는 보지 않는다.
      *
-     * <h3>深度与剔除</h3>
-     * 深度状态传 {@code Optional.empty()}：掩码 target 是 {@code useDepth=false}
-     * 建的，没有深度附件，管线必须声明自己不需要深度。
+     * <h3>깊이와 컬링</h3>
+     * 깊이 상태는 {@code Optional.empty()}를 넘긴다: 마스크 target은 {@code useDepth=false}로
+     * 만들어 깊이 첨부가 없으므로, 파이프라인도 깊이가 필요 없다고 선언해야 한다.
      *
-     * <p>{@code withCull(false)}：目镜是<b>单层薄片</b>（实测 30/33 个瞄具的
-     * 目镜 z 厚度 &lt; 0.15），背面剔除可能把它整个剔掉，取决于建模朝向。
-     * 掩码只要「投影形状」，正反面都算数。
+     * <p>{@code withCull(false)}: 접안렌즈는 <b>한 겹 얇은 판</b>이라(실측 조준경 33개 중 30개의
+     * 접안렌즈 z 두께 &lt; 0.15) 모델링 방향에 따라 뒷면 컬링이 통째로 지울 수 있다.
+     * 마스크는 "투영 모양"만 필요하므로 앞뒷면 모두 센다.
      */
     private static final RenderPipeline MASK_PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_FOG_SNIPPET)
-            // 用 MATRICES_FOG_SNIPPET 而不是自己拼 GLOBALS + MATRICES_PROJECTION。
+            // GLOBALS + MATRICES_PROJECTION을 직접 조합하지 않고 MATRICES_FOG_SNIPPET을 쓴다.
             //
-            // 上一版实测报错：
+            // 이전 판은 실제로 다음 오류가 났다:
             //     Couldn't compile pipeline tacz:pipeline/scope_mask:
             //         Unable to find shader defined uniform (Fog)
-            // 原因是 core/position.fsh 里 apply_fog(...) 引用了 Fog uniform 块，
-            // 而 BindGroupLayouts.MATRICES_PROJECTION 只声明了
-            // DynamicTransforms + Projection 两个 uniform（字节码确认），
-            // Fog / Globals 是【各自独立】的 layout。少一个就编译不过。
+            // 원인은 core/position.fsh의 apply_fog(...)가 Fog uniform 블록을 참조하는데,
+            // BindGroupLayouts.MATRICES_PROJECTION은
+            // DynamicTransforms + Projection 두 uniform만 선언하기 때문이다(바이트코드 확인).
+            // Fog / Globals는 [각각 독립된] layout이라 하나라도 빠지면 컴파일되지 않는다.
             //
-            // vanilla 早就把这个组合封装好了（RenderPipelines <clinit> 偏移 30-57）：
+            // 바닐라가 이 조합을 이미 감싸 두었다(RenderPipelines <clinit> 오프셋 30-57):
             //     MATRICES_FOG_SNIPPET = builder(GLOBALS_SNIPPET)
             //                              .withBindGroupLayout(MATRICES_PROJECTION)
             //                              .withBindGroupLayout(FOG)
-            // 即 Globals + DynamicTransforms + Projection + Fog，
-            // 正是 core/position 这套 shader 需要的全套。直接复用，不再手拼。
+            // 곧 Globals + DynamicTransforms + Projection + Fog이며,
+            // core/position 셰이더에 필요한 전부다. 직접 조합하지 않고 그대로 다시 쓴다.
             .withLocation(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "pipeline/scope_mask"))
             .withVertexShader("core/position")
             .withFragmentShader("core/position")
-            // 不混合、不写深度：掩码就是「盖到=白，没盖到=清空色」的二值图，
-            // 直接覆写即可。Optional.empty() 表示【不启用 blend】
-            // （对照 ColorTargetState 的两个构造：单参版是「带 blend」，
-            //  三参版第一个是 Optional<BlendFunction>，empty = 关闭混合）。
+            // 섞지 않고 깊이도 쓰지 않는다: 마스크는 "덮임=흰색, 안 덮임=비우기 색"인 이진 그림이라
+            // 그대로 덮어쓰면 된다. Optional.empty()는 [blend를 켜지 않음]을 뜻한다
+            // (ColorTargetState의 두 생성자 대조: 인자 하나짜리는 "blend 있음",
+            //  인자 세 개짜리의 첫 인자는 Optional<BlendFunction>이며 empty = 혼합 끔).
             .withColorTargetState(new ColorTargetState(
                     Optional.empty(), GpuFormat.RGBA8_UNORM, ColorTargetState.WRITE_ALL))
-            // 掩码 target 是 useDepth=false 建的 —— 它【没有深度附件】。
+            // 마스크 target은 useDepth=false로 만들었다 — [깊이 첨부가 없다].
             //
-            // 这里必须传 Optional.empty() 而不是一个 DepthStencilState 实例。
-            // 上一版传的是 new DepthStencilState(ALWAYS_PASS, false)，本意是「不测试不写入」，
-            // 但 RenderPipeline#wantsDepthTexture() 的判据是
+            // 그래서 DepthStencilState 인스턴스가 아니라 Optional.empty()를 넘겨야 한다.
+            // 이전 판은 new DepthStencilState(ALWAYS_PASS, false)를 넘겨 "검사도 쓰기도 안 함"을 노렸지만,
+            // RenderPipeline#wantsDepthTexture()의 기준은
             //     return this.depthStencilState != null;
-            // 也就是说【只要设了这个字段，管线就声明自己需要深度附件】，
-            // 与它内部是不是 ALWAYS_PASS 无关。而我们的 render pass 压根没给深度附件，
-            // 声明与实际不符，绘制被丢弃 —— 表现为「日志说画了 36 indices，画面却全黑」。
+            // 이다. 즉 [이 필드를 설정하기만 하면 파이프라인이 깊이 첨부가 필요하다고 선언하며],
+            // 안이 ALWAYS_PASS인지와 무관하다. 그런데 우리 render pass에는 깊이 첨부가 아예 없어
+            // 선언과 실제가 어긋나 그리기가 버려졌다 — "로그에는 인덱스 36개를 그렸다는데 화면은 온통 검은" 현상이었다.
             //
-            // vanilla 对「无深度附件」一律用 Optional.empty()（<clinit> 里 4 处，
-            // 全是 TEXT_SEE_THROUGH / GUI_TEXT 这类不需要深度的管线）。照抄该惯例。
+            // 바닐라는 "깊이 첨부 없음"에 항상 Optional.empty()를 쓴다(<clinit>에 4곳,
+            // 모두 TEXT_SEE_THROUGH / GUI_TEXT처럼 깊이가 필요 없는 파이프라인). 그 관례를 따른다.
             .withDepthStencilState(Optional.empty())
-            // 目镜是【单层薄片】（实测 30/33 个瞄具的目镜 z 厚度 < 0.15），
-            // 背面剔除可能因建模朝向把它整个剔掉。掩码只要投影形状，正反面都算。
+            // 접안렌즈는 [한 겹 얇은 판]이라(실측 조준경 33개 중 30개의 접안렌즈 z 두께 < 0.15)
+            // 모델링 방향에 따라 뒷면 컬링이 통째로 지울 수 있다. 마스크는 투영 모양만 필요하므로 앞뒷면 모두 센다.
             .withCull(false)
             .withVertexBinding(0, DefaultVertexFormat.POSITION)
             .withPrimitiveTopology(PrimitiveTopology.QUADS)
             .build();
 
-    /** 顶点暂存区。复用同一个，避免每帧分配。 */
+    /** 정점 임시 버퍼. 매 프레임 할당하지 않도록 같은 것을 다시 쓴다. */
     private static final ByteBufferBuilder SCRATCH = new ByteBufferBuilder(4096);
 
     private static boolean failed = false;
 
     /**
-     * 当前是否正在渲染手持物（第一人称枪械）。
+     * 지금 손에 든 물건(1인칭 총기)을 렌더링하는 중인지.
      *
-     * <p>{@code renderAllFeatures} 每帧被调用多次（世界一次、手持一次），
-     * 而瞄具只出现在手持那次。掩码必须<b>只在手持那次</b>绘制：
-     * 若在世界那次也跑，会先把 target 清空一遍，把手持那次的结果冲掉。
-     * 由 {@code GameRendererMixin} 的 {@code renderItemInHand} HEAD/RETURN 维护。</p>
+     * <p>{@code renderAllFeatures}는 매 프레임 여러 번 호출되는데(월드 한 번, 손 한 번),
+     * 조준경은 손 렌더링 때만 나온다. 마스크는 <b>손 렌더링 때만</b> 그려야 한다:
+     * 월드 렌더링 때도 돌면 target을 한 번 비워 손 렌더링 결과를 지워 버린다.
+     * {@code GameRendererMixin}의 {@code renderItemInHand} HEAD/RETURN이 관리한다.</p>
      */
     private static boolean inHandPass = false;
 
@@ -182,21 +182,21 @@ public final class ScopeMaskRenderer {
     /**
      * 단계 경계에서 이번 프레임에 등록된 접안렌즈 형상을 마스크 target에 그린다.
      *
-     * <p>无论成败，末尾都会清空当帧清单 —— 见 {@code finally}。
+     * <p>성공하든 실패하든 마지막에 이번 프레임 목록을 비운다 — {@code finally} 참고.
      */
     public static void renderAtPhaseBoundary() {
         if (!isHandPass()) {
-            // 世界渲染那次直接跳过，且【不清空】清单 ——
-            // 目镜是在手持渲染的 submit 阶段登记的，而手持渲染发生在世界之后，
-            // 所以此刻清单本就是空的；真要清反而会误伤（万一顺序变了）。
+            // 월드 렌더링 때는 바로 건너뛰며 목록을 [비우지 않는다] —
+            // 접안렌즈는 손 렌더링의 submit 단계에서 등록되고 손 렌더링은 월드 뒤에 일어나므로,
+            // 그래서 이 시점에 목록은 원래 비어 있다. 굳이 비우면 오히려 해가 될 수 있다(혹시 순서가 바뀌면).
             //
-            // 那会不会漏清？不会：登记只发生在第一人称手持路径，
-            // 而该路径必然紧跟着一次 inHandPass=true 的 renderAllFeatures，
-            // 那次的 finally 会兜底清空。
+            // 비우기를 놓치지 않을까? 아니다: 등록은 1인칭 손 경로에서만 일어나고,
+            // 그 경로 뒤에는 반드시 inHandPass=true인 renderAllFeatures가 한 번 따라오며,
+            // 그때의 finally가 마지막에 비운다.
             return;
         }
         if (!RenderConfig.SCOPE_MASK_ENABLE.get()) {
-            // 功能没开也要清，否则清单会无限增长。
+            // 기능이 꺼져 있어도 비워야 한다. 아니면 목록이 끝없이 커진다.
             ScopeMaskGeometry.clear();
             return;
         }
@@ -213,8 +213,8 @@ public final class ScopeMaskRenderer {
             failed = true;
             GunMod.LOGGER.error("[TACZ Scope] Failed to render ocular mask; mask disabled.", e);
         } finally {
-            // 关键：无条件清空。哪怕上面 return 了，也不能把几何留到下一帧 ——
-            // 否则收起瞄具后掩码会「粘住」不消失。
+            // 핵심: 무조건 비운다. 위에서 return했더라도 형상을 다음 프레임까지 남기면 안 된다 —
+            // 아니면 조준경을 집어넣은 뒤 마스크가 "달라붙어" 사라지지 않는다.
             ScopeMaskGeometry.clear();
         }
     }
@@ -222,8 +222,8 @@ public final class ScopeMaskRenderer {
     private static void drawMask(TextureTarget target) {
         MeshData mesh = buildMesh();
         if (mesh == null) {
-            // 没有可画的几何：仍然开一次 pass 把掩码清空。
-            // 否则上一帧的白色形状会残留在纹理里（target 不会自己变黑）。
+            // 그릴 형상이 없음: 그래도 pass를 한 번 열어 마스크를 비운다.
+            // 아니면 직전 프레임의 흰 모양이 텍스처에 남는다(target은 스스로 검게 되지 않는다).
             clearOnly(target);
             return;
         }
@@ -236,8 +236,8 @@ public final class ScopeMaskRenderer {
                         GpuBuffer.USAGE_VERTEX,
                         mesh.vertexBuffer());
 
-                // 共享的四边形索引缓冲：把 QUADS 展开成三角形。
-                // 用 vanilla 现成的，不必自己生成索引。
+                // 공유 사각형 인덱스 버퍼: QUADS를 삼각형으로 펼친다.
+                // 바닐라에 있는 것을 쓰므로 인덱스를 직접 만들 필요가 없다.
                 RenderSystem.AutoStorageIndexBuffer indices =
                         RenderSystem.getSequentialBuffer(draw.primitiveTopology());
                 GpuBuffer indexBuffer = indices.getBuffer(draw.indexCount());
@@ -246,46 +246,46 @@ public final class ScopeMaskRenderer {
                 try (RenderPass pass = encoder.createRenderPass(
                         () -> "tacz_scope_mask",
                         target.getColorTextureView(),
-                        // 每帧从全黑重来。掩码是「当帧目镜盖到哪」，没有历史含义。
+                        // 매 프레임 완전 검정에서 다시 시작한다. 마스크는 "이번 프레임에 접안렌즈가 덮은 곳"이라 과거 의미가 없다.
                         Optional.of(new Vector4f(0.0f, 0.0f, 0.0f, 1.0f)))) {
                     pass.setPipeline(MASK_PIPELINE);
-                    // 这两句缺一不可，是照 PreparedRenderType#drawFromBuffer 抄的：
-                    //   bindDefaultUniforms 提供 Projection / Fog 等全局 uniform；
-                    //   DynamicTransforms 提供 ModelViewMat 与 ColorModulator。
-                    // 少任何一句，shader 都会因为 uniform 缺失而画不出正确结果
-                    // （症状类似 r46 的 "Unable to find shader defined uniform"）。
+                    // 이 두 줄은 하나도 빠지면 안 되며 PreparedRenderType#drawFromBuffer를 따라 썼다:
+                    //   bindDefaultUniforms는 Projection / Fog 등 전역 uniform을 제공한다.
+                    //   DynamicTransforms는 ModelViewMat과 ColorModulator를 제공한다.
+                    // 하나라도 빠지면 uniform이 없어 shader가 올바른 결과를 그리지 못한다
+                    // (증상은 r46의 "Unable to find shader defined uniform"과 비슷하다).
                     RenderSystem.bindDefaultUniforms(pass);
                     pass.setUniform("DynamicTransforms",
                             RenderSystem.getDynamicUniforms().writeTransform(
-                                    // 与 RenderType#prepare 取同一个矩阵源：
-                                    // 顶点在登记时已乘过完整模型矩阵，这里再乘相机 ModelView，
-                                    // 与主渲染路径完全一致，掩码才会与画面严丝合缝。
+                                    // RenderType#prepare와 같은 행렬 출처를 쓴다:
+                                    // 정점은 등록할 때 전체 모델 행렬을 이미 곱했으므로, 여기서 카메라 ModelView를 다시 곱하면
+                                    // 주 렌더링 경로와 완전히 같아 마스크가 화면과 딱 맞는다.
                                     RenderSystem.getModelViewMatrixCopy(),
-                                    // R = 1：被目镜盖到的像素，红通道恒为 1（掩码本体）。
-                                    // G = 开镜进度：镜身/准星 shader 用它做屏幕空间的渐进收缩。
+                                    // R = 1: 접안렌즈에 덮인 픽셀은 빨간 채널이 항상 1(마스크 본체).
+                                    // G = 조준 진행도: 몸체/조준선 shader가 화면 공간에서 점점 줄이는 데 쓴다.
                                     //
-                                    // 为什么把进度塞进颜色通道而不是新加一个 uniform：
-                                    // 掩码管线本就要写 ColorModulator，绿通道是现成的空闲载体；
-                                    // 新增 uniform 意味着再改一次 bind group layout，
-                                    // 而那正是 r46/r52 两次崩溃的来源。能不动就不动。
+                                    // uniform을 새로 더하지 않고 진행도를 색 채널에 넣은 이유:
+                                    // 마스크 파이프라인은 원래 ColorModulator를 써야 하므로 초록 채널이 이미 비어 있는 운반 수단이다.
+                                    // uniform을 새로 더하면 bind group layout을 또 바꿔야 하고,
+                                    // 그것이 바로 r46/r52 두 번의 크래시 원인이었다. 건드리지 않을 수 있으면 건드리지 않는다.
                                     new Vector4f(1.0f, currentAimingProgress(), 1.0f, 1.0f)));
                     pass.setVertexBuffer(0, vertexBuffer.slice());
                     pass.setIndexBuffer(indexBuffer, indices.type());
-                    // 【参数顺序照字节码抄】RenderPass#drawIndexed 是 5 个 int。
-                    // vanilla PreparedRenderType#drawFromBuffer 偏移 227-237 的实参依次是：
-                    //     aload  indexCount(局部槽6)
+                    // [인자 순서는 바이트코드를 따름] RenderPass#drawIndexed는 int 5개다.
+                    // 바닐라 PreparedRenderType#drawFromBuffer 오프셋 227-237의 실제 인자는 차례로:
+                    //     aload  indexCount(로컬 슬롯 6)
                     //     iconst_1
-                    //     iload  firstIndex(槽5)
-                    //     iload  baseVertex(槽4)
+                    //     iload  firstIndex(슬롯 5)
+                    //     iload  baseVertex(슬롯 4)
                     //     iconst_0
-                    // 即 drawIndexed(indexCount, 1, firstIndex, baseVertex, 0)。
-                    // 我们的顶点/索引都是从头开始的单批，所以 firstIndex 与 baseVertex 都是 0。
+                    // 즉 drawIndexed(indexCount, 1, firstIndex, baseVertex, 0)이다.
+                    // 우리 정점/인덱스는 처음부터 시작하는 한 묶음이므로 firstIndex와 baseVertex는 모두 0이다.
                     pass.drawIndexed(draw.indexCount(), 1, 0, 0, 0);
                 }
             } finally {
                 if (vertexBuffer != null) {
-                    // 每帧新建、每帧释放。这里不做缓冲池 —— 目镜几何量极小
-                    // （单个瞄具几个 cube），过早优化只会增加生命周期出错的机会。
+                    // 매 프레임 새로 만들고 매 프레임 풀어 준다. 버퍼 풀은 두지 않는다 — 접안렌즈 형상은 아주 적어서
+                    // (조준경 하나에 cube 몇 개) 섣부른 최적화는 수명 주기 실수만 늘린다.
                     vertexBuffer.close();
                 }
             }
@@ -293,11 +293,11 @@ public final class ScopeMaskRenderer {
     }
 
     /**
-     * 当前开镜进度（0 = 完全没开镜，1 = 完全开镜）。
+     * 현재 조준 진행도(0 = 전혀 조준하지 않음, 1 = 완전히 조준함).
      *
-     * <p>写进掩码的绿通道，供镜身/准星 shader 做屏幕空间渐进。
-     * 与 {@code BedrockAttachmentModel#currentAimingProgress} 同源，
-     * 都取自 {@code IClientPlayerGunOperator}。
+     * <p>마스크의 초록 채널에 써서 몸체/조준선 shader가 화면 공간에서 점점 바뀌게 한다.
+     * {@code BedrockAttachmentModel#currentAimingProgress}와 출처가 같고,
+     * 둘 다 {@code IClientPlayerGunOperator}에서 얻는다.
      */
     private static float currentAimingProgress() {
         LocalPlayer player = Minecraft.getInstance().player;
@@ -309,7 +309,7 @@ public final class ScopeMaskRenderer {
                         .getGameTimeDeltaPartialTick(false)), 0.0f, 1.0f);
     }
 
-    /** 没有几何时也要把 target 刷黑，否则会残留上一帧的形状。 */
+    /** 형상이 없어도 target을 검게 칠해야 한다. 아니면 직전 프레임 모양이 남는다. */
     private static void clearOnly(TextureTarget target) {
         CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
         try (RenderPass pass = encoder.createRenderPass(
@@ -322,34 +322,34 @@ public final class ScopeMaskRenderer {
     }
 
     /**
-     * 把当帧登记的所有目镜 cube 写成一份顶点数据。
+     * 이번 프레임에 등록된 모든 접안렌즈 cube를 정점 데이터 하나로 만든다.
      *
-     * @return 顶点网格；没有任何可画几何时返回 {@code null}
+     * @return 정점 메시. 그릴 형상이 하나도 없으면 {@code null}
      */
     private static MeshData buildMesh() {
         BufferBuilder builder = new BufferBuilder(SCRATCH, PrimitiveTopology.QUADS, DefaultVertexFormat.POSITION);
         for (ScopeMaskGeometry.Entry entry : ScopeMaskGeometry.entries()) {
             Matrix4f pose = entry.pose();
             for (BedrockCube cube : entry.cubes()) {
-                // 通过接口取面，【不做 instanceof 判断】。
+                // 인터페이스로 면을 얻으며 [instanceof 판단은 하지 않는다].
                 //
-                // 第一版写的是 `if (cube instanceof BedrockCubeBox box)`，实测掩码全黑：
-                // 默认枪包 161 个目镜立方体【无一例外】都是 BedrockCubePerFace
-                // （它们都带 face_uv），被那个 instanceof 百分之百滤掉了。
-                // 两个实现的 polygons 结构完全同构，能力应当由接口表达。
+                // 첫 판은 `if (cube instanceof BedrockCubeBox box)`였는데 실측하니 마스크가 온통 검었다:
+                // 기본 총기 팩의 접안렌즈 육면체 161개가 [하나도 빠짐없이] BedrockCubePerFace였고
+                // (모두 face_uv를 가짐), 그 instanceof가 100% 걸러 냈다.
+                // 두 구현의 polygons 구조는 완전히 같으므로 능력은 인터페이스로 표현해야 한다.
                 writeCube(builder, pose, cube);
             }
         }
-        // 一个顶点都没写时 build() 返回 null，调用方据此走「只清空」分支。
+        // 정점을 하나도 쓰지 않으면 build()가 null을 돌려주며, 호출하는 쪽은 이를 보고 "비우기만" 분기로 간다.
         return builder.build();
     }
 
     /**
-     * 写一个立方体的 6 个面。
+     * 육면체 하나의 6면을 쓴다.
      *
-     * <p>顶点变换与 {@link BedrockCubeBox#compile} <b>逐行一致</b>：
-     * {@code pos / 16 → mul(matrix)}。两条路径必须用同一套算法，
-     * 否则掩码会与画面错位 —— 那种偏差极难排查。
+     * <p>정점 변환은 {@link BedrockCubeBox#compile}과 <b>줄마다 같다</b>:
+     * {@code pos / 16 → mul(matrix)}. 두 경로는 같은 계산법을 써야 하며,
+     * 아니면 마스크가 화면과 어긋난다 — 그런 차이는 찾기가 아주 어렵다.
      */
     private static void writeCube(BufferBuilder builder, Matrix4f pose, BedrockCube cube) {
         for (var polygon : cube.getPolygons()) {

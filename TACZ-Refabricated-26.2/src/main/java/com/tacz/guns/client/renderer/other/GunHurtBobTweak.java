@@ -10,9 +10,9 @@ public class GunHurtBobTweak {
     private static float lastTweakMultiplier = 0.05f;
 
     public static boolean onHurtBobTweak(LocalPlayer player, PoseStack matrixStack, float partialTicks) {
-        // 原版受伤的时长是 500 ms，所以如果大于 500 ms，那么说明不是子弹造成的伤害了
+        // 바닐라 피격 지속 시간은 500ms이므로, 그보다 크면 탄환 때문에 생긴 피해가 아니다
         if (System.currentTimeMillis() - hurtByGunTimeStamp > 500) {
-            // 返回 false，让程序调用原版受伤晃动
+            // false를 돌려줘 바닐라 피격 흔들림을 호출하게 한다
             return false;
         }
         float zRot = (float) player.hurtTime - partialTicks;

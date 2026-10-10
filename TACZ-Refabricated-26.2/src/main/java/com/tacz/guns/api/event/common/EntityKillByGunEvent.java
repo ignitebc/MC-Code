@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
- * 生物被枪械子弹击杀时触发的事件
+ * 생물이 총기 탄환에 죽을 때 발생하는 이벤트
  */
 public class EntityKillByGunEvent extends BaseEvent {
     private final Entity bullet;
@@ -56,7 +56,7 @@ public class EntityKillByGunEvent extends BaseEvent {
     }
 
     /**
-     * 在逻辑客户端不保证能用
+     * 논리 클라이언트에서는 쓸 수 있다고 보장하지 않는다
      */
     public Entity getBullet() {
         return bullet;

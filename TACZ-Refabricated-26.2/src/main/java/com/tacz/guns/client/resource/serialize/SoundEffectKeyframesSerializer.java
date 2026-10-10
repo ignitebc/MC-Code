@@ -14,7 +14,7 @@ public class SoundEffectKeyframesSerializer implements JsonDeserializer<SoundEff
     @Override
     public SoundEffectKeyframes deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
         Double2ObjectRBTreeMap<Identifier> keyframes = new Double2ObjectRBTreeMap<>();
-        // 如果是对象
+        // 객체이면
         if (json.isJsonObject()) {
             JsonObject jsonObject = json.getAsJsonObject();
             for (Map.Entry<String, JsonElement> entrySet : jsonObject.entrySet()) {
