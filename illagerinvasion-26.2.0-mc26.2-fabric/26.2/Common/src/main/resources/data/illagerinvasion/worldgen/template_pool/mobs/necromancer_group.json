@@ -3,17 +3,6 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "illagerinvasion:mobs/necromancer_1",
-        "processors": {
-          "processors": []
-        },
-        "projection": "rigid"
-      },
-      "weight": 1
-    },
-    {
-      "element": {
-        "element_type": "minecraft:single_pool_element",
         "location": "illagerinvasion:mobs/necromancer_2",
         "processors": {
           "processors": []
