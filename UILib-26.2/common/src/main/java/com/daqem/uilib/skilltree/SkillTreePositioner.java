@@ -40,14 +40,8 @@ public class SkillTreePositioner {
     }
 
     private SkillTreePositioner addChild(ISkillTreeItem child, @Nullable SkillTreePositioner previousSibling) {
-//        if (child.advancement().display().isPresent()) {
             previousSibling = new SkillTreePositioner(child, this, previousSibling, this.children.size() + 1, this.x + 1);
             this.children.add(previousSibling);
-//        } else {
-//            for (ISkillTreeItem advancementNode : child.children()) {
-//                previousSibling = this.addChild(advancementNode, previousSibling);
-//            }
-//        }
 
         return previousSibling;
     }

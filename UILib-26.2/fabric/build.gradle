@@ -13,7 +13,7 @@ loom {
 
 configurations {
     common
-    shadowCommon // Don't use shadow from the shadow plugin since it *excludes* files.
+    shadowCommon // shadow 플러그인의 shadow는 파일을 *제외*하므로 쓰지 않는다.
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentFabric.extendsFrom common
@@ -22,7 +22,7 @@ configurations {
 dependencies {
     implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     api "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
-    // Remove the next line if you don't want to depend on the API
+    // API에 의존하지 않으려면 다음 줄을 지운다
     api "dev.architectury:architectury-fabric:${rootProject.architectury_version}"
 
     common(project(path: ":common", configuration: "runtimeElements")) { transitive false }
@@ -45,8 +45,6 @@ processResources {
             "minecraft_version": project.minecraft_version,
             "java_version": project.java_version,
             "architectury_version": project.architectury_version,
-//                "config_library_version": project.config_library_version,
-//                "ui_library_version": project.ui_library_version
     ]
     inputs.properties replaceProperties
 
@@ -86,56 +84,10 @@ publishing {
         }
     }
 
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    // 배포 설정 방법은 https://docs.gradle.org/current/userguide/publishing_maven.html 참고.
     repositories {
-        // Add repositories to publish to here.
+        // 배포할 저장소는 여기에 넣는다.
     }
 }
 
-// curseforge {
-//     apiKey = System.getenv("CURSEFORGE_API_KEY")
-//     project {
-//         id = project.curse_forge_project_id
-//         releaseType = project.release_type
-//         changelogType = "markdown"
-//         changelog = rootProject.file('changelog.md')
 
-//         project.supported_minecraft_versions.split(',').each { version ->
-//             addGameVersion version
-//         }
-
-//         addGameVersion "Java 21"
-//         addGameVersion "Fabric"
-
-//         relations {
-//             project.curseforge_dependencies.split(',').each { dep ->
-//                 requiredDependency dep.trim()
-//             }
-//         }
-
-//         mainArtifact(remapJar) {
-//             displayName = "$project.mod_name Fabric $project.minecraft_version - $project.mod_version"
-//         }
-
-//         addArtifact(remapSourcesJar) {
-//         }
-//     }
-// }
-
-// modrinth {
-//     token = System.getenv("MODRINTH_API_KEY")
-//     projectId = project.modrinth_project_id
-//     versionName = "$project.mod_name Fabric $project.minecraft_version - $project.mod_version"
-//     versionNumber = "$project.mod_version"
-//     versionType = "$project.release_type"
-//     uploadFile = remapJar
-//     additionalFiles = [remapSourcesJar]
-//     gameVersions = project.supported_minecraft_versions.split(',').toList()
-//     loaders = ["fabric"]
-//     changelog = rootProject.file('changelog.md').text
-//     dependencies {
-//         project.modrinth_dependencies.split(',').each { dep ->
-//             required.project dep
-//         }
-//     }
-// }

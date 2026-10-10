@@ -7,10 +7,10 @@ loom {
 }
 
 dependencies {
-    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
-    // Do NOT use other classes from fabric loader
+    // Fabric @Environment 어노테이션과 Mixin 의존성을 쓰기 위해 여기서 Fabric 로더에 의존한다
+    // Fabric 로더의 다른 클래스는 쓰지 않는다
     implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    // Remove the next line if you don't want to depend on the API
+    // API에 의존하지 않으려면 다음 줄을 지운다
     api "dev.architectury:architectury:${rootProject.architectury_version}"
 
 }
@@ -23,8 +23,8 @@ publishing {
         }
     }
 
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    // 배포 설정 방법은 https://docs.gradle.org/current/userguide/publishing_maven.html 참고.
     repositories {
-        // Add repositories to publish to here.
+        // 배포할 저장소는 여기에 넣는다.
     }
 }

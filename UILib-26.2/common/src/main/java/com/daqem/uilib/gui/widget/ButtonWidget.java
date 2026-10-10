@@ -22,7 +22,7 @@ public class ButtonWidget extends Button implements IWidget {
 
     public ButtonWidget(int x, int y, int width, int height, Component message) {
         this(x, y, width, height, message, button -> {
-            // Default action does nothing
+            // 기본 동작은 아무것도 하지 않는다
         });
     }
 

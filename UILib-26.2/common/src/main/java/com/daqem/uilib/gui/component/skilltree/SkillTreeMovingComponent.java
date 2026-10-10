@@ -33,14 +33,14 @@ public class SkillTreeMovingComponent extends EmptyComponent {
     }
 
     public void setXOffset(int xOffset) {
-        // Apply offset to all item widgets
+        // 모든 아이템 위젯에 오프셋 적용
         for (ISkillTreeItemWidget itemWidget : itemWidgets) {
             itemWidget.setX(itemWidget.getX() + xOffset);
         }
     }
 
     public void setYOffset(int yOffset) {
-        // Apply offset to all item widgets
+        // 모든 아이템 위젯에 오프셋 적용
         for (ISkillTreeItemWidget itemWidget : itemWidgets) {
             itemWidget.setY(itemWidget.getY() + yOffset);
         }

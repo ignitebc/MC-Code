@@ -234,7 +234,7 @@ public class ScrollContainer2DWidget extends AbstractContainerWidget implements 
 
     @Override
     protected void extractScrollbar(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-        // Vertical scrollbar
+        // 세로 스크롤바
         if (this.scrollable()) {
             int adjH = this.height - (this.horizontalScrollbarVisible() ? 6 : 0);
             int scrollBarX = this.scrollBarX();
@@ -247,7 +247,7 @@ public class ScrollContainer2DWidget extends AbstractContainerWidget implements 
             }
         }
 
-        // Horizontal scrollbar
+        // 가로 스크롤바
         if (this.horizontalScrollbarVisible()) {
             int adjW = this.width - (this.scrollable() ? 6 : 0);
             int bottom = this.getBottom();

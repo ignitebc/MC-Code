@@ -24,10 +24,10 @@ import java.util.Optional;
 
 public class SkillTreeWidget extends ScrollContainer2DWidget implements IWidget, IParent, ISkillTreeWidget {
 
-    private boolean hasDragged; // Tracks if a drag occurred
-    private double clickStartX; // X-coordinate where mouse was pressed
-    private double clickStartY; // Y-coordinate where mouse was pressed
-    private static final double DRAG_THRESHOLD = 2.0; // Pixels to consider a drag
+    private boolean hasDragged; // 끌기가 일어났는지 추적한다
+    private double clickStartX; // 마우스를 누른 X 좌표
+    private double clickStartY; // 마우스를 누른 Y 좌표
+    private static final double DRAG_THRESHOLD = 2.0; // 끌기로 볼 픽셀 수
 
     public SkillTreeWidget(int width, int height) {
         super(width, height);
@@ -95,7 +95,7 @@ public class SkillTreeWidget extends ScrollContainer2DWidget implements IWidget,
 
     @Override
     protected void extractScrollbar(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-        // No scrollbars
+        // 스크롤바 없음
     }
 
     @Override
@@ -114,10 +114,10 @@ public class SkillTreeWidget extends ScrollContainer2DWidget implements IWidget,
             return false;
         }
         if (this.isValidClickButton(event.buttonInfo())) {
-            this.hasDragged = false; // Reset drag state
-            this.clickStartX = event.x(); // Store click start position
+            this.hasDragged = false; // 끌기 상태 초기화
+            this.clickStartX = event.x(); // 클릭 시작 위치 저장
             this.clickStartY = event.y();
-            this.setDragging(true); // Enable dragging
+            this.setDragging(true); // 끌기 켜기
             return true;
         }
         return false;
@@ -126,7 +126,7 @@ public class SkillTreeWidget extends ScrollContainer2DWidget implements IWidget,
     @Override
     public boolean mouseDragged(@NotNull MouseButtonEvent event, double dragX, double dragY) {
         if (this.isValidClickButton(event.buttonInfo()) && this.isDragging()) {
-            // Check if movement exceeds drag threshold
+            // 움직임이 끌기 문턱값을 넘는지 확인한다
             double deltaX = Math.abs(event.x() - this.clickStartX);
             double deltaY = Math.abs(event.y() - this.clickStartY);
             if (deltaX > DRAG_THRESHOLD || deltaY > DRAG_THRESHOLD) {
@@ -147,7 +147,7 @@ public class SkillTreeWidget extends ScrollContainer2DWidget implements IWidget,
         if (this.isValidClickButton(event.buttonInfo())) {
             this.setDragging(false);
             if (!this.hasDragged) {
-                // Only process click if no drag occurred
+                // 끌기가 없었을 때만 클릭을 처리한다
                 Optional<GuiEventListener> optional = this.getChildAt(event.x(), event.y());
                 if (optional.isPresent()) {
                     GuiEventListener guiEventListener = optional.get();
@@ -169,7 +169,7 @@ public class SkillTreeWidget extends ScrollContainer2DWidget implements IWidget,
 
     @Override
     protected void updateWidgetNarration(@NotNull NarrationElementOutput narrationElementOutput) {
-        // No narration for skill tree widget
+        // 스킬 트리 위젯은 내레이션이 없다
     }
 
     @Override

@@ -37,7 +37,7 @@ public class EditBoxWidget extends EditBox implements IWidget, IInputValidatable
 
     @Override
     public void extractWidgetRenderState(@NotNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        // Had to add this because the text position wasn't updating correctly when set with an initial value
+        // 초기값을 넣었을 때 글자 위치가 제대로 갱신되지 않아 이것을 넣어야 했다
         if (this instanceof IEditBoxWidget editBoxWidget) {
             editBoxWidget.uilib$updateTextPosition();
         }
