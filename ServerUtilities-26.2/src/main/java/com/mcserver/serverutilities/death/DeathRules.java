@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
@@ -23,7 +24,7 @@ public final class DeathRules {
     // Advanced Netherite의 배낭 삭제 연동이 이 메서드 안의 removeItemNoUpdate 호출을 Redirect로 잡는다.
     // 손실 루프는 이 메서드에 두고, 상자 담기는 별도 클래스에서 처리해 Redirect가 겹치지 않게 한다.
     // 반환한 문구는 바닐라 사망 문구 뒤에 붙여 한 번만 전송한다.
-    public static Component beforeDrops(ServerPlayer player) {
+    public static Component beforeDrops(ServerPlayer player, DamageSource source) {
         if (player.isCreative() || player.isSpectator()) return null;
         DeathProtectedPlayer protectedPlayer = (DeathProtectedPlayer) player;
         // 이미 성립한 보호는 설정 변경·재접속과 무관하게 리스폰까지 유지한다.
@@ -35,6 +36,11 @@ public final class DeathRules {
             broadcast(player, Component.empty().append(playerName(player))
                     .append("님의 사망 시 아이템 보존권이 사용되어 모든 소지품이 보호되었습니다."));
             return null;
+        }
+        // 보존권이 없으면 엔드 공허 사망은 무작위 손실 대신 소지품을 모두 잃는다.
+        if (config.deathEndVoid() && EndVoidDeath.isEndVoidDeath(player, source)) {
+            EndVoidDeath.discardAll(player);
+            return EndVoidDeath.LOST_MESSAGE;
         }
         if (config.deathPenalty()) {
             List<Integer> filledSlots = new ArrayList<>();
@@ -67,10 +73,13 @@ public final class DeathRules {
     }
 
     /** 손실 처리가 끝난 인벤토리를 바닐라 사망 드롭 직전에 유품 상자로 옮긴다. */
-    public static void storeRemainingItems(ServerPlayer player) {
+    public static void storeRemainingItems(ServerPlayer player, DamageSource source) {
         if (player.isCreative() || player.isSpectator()) return;
         DeathProtectedPlayer protectedPlayer = (DeathProtectedPlayer) player;
         if (protectedPlayer.serverutilities$isDeathProtected()) return;
+        // 엔드 공허 사망은 소지품을 이미 모두 잃었다. 섬 아래 허공에 빈 상자를 놓지 않는다.
+        boolean endVoidDeath = ServerUtilities.config().deathEndVoid() && EndVoidDeath.isEndVoidDeath(player, source);
+        if (endVoidDeath) return;
         // 손실이 끝난 뒤 남은 소지품을 사망 지점의 유품 상자에 담는다.
         DeathChests.store(player);
     }

@@ -60,7 +60,7 @@ public abstract class ServerPlayerDeathMixin implements DeathProtectedPlayer {
     private void serverutilities$prepareDeathMessage(DamageSource source, CallbackInfo ci) {
         if (!serverutilities$deathHandled) {
             serverutilities$deathHandled = true;
-            serverutilities$lostItemMessage = DeathRules.beforeDrops((ServerPlayer) (Object) this);
+            serverutilities$lostItemMessage = DeathRules.beforeDrops((ServerPlayer) (Object) this, source);
         }
     }
 
@@ -70,7 +70,7 @@ public abstract class ServerPlayerDeathMixin implements DeathProtectedPlayer {
     private void serverutilities$beforeDeathDrops(DamageSource source, CallbackInfo ci) {
         if (!serverutilities$deathChestHandled) {
             serverutilities$deathChestHandled = true;
-            DeathRules.storeRemainingItems((ServerPlayer) (Object) this);
+            DeathRules.storeRemainingItems((ServerPlayer) (Object) this, source);
         }
     }
 
