@@ -1,4 +1,4 @@
-// This exists to get NeoGradle working...
+// NeoGradle을 동작시키기 위해 둔다...
 plugins {
     id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.7"
 }
@@ -7,8 +7,6 @@ subprojects {
     apply plugin: 'java'
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(25)
-    //java.withSourcesJar()
-    //java.withJavadocJar()
 
     jar {
         manifest {
@@ -24,7 +22,7 @@ subprojects {
                     'Built-On-Minecraft'      : minecraft_version
             ])
         }
-        // exclude datagen cache from the jar file
+        // 데이터 생성 캐시는 jar 파일에서 뺀다
         build {
             exclude '**/.cache/**'
         }
@@ -43,9 +41,9 @@ subprojects {
         it.options.release = 25
     }
 
-    // Disables Gradle's custom module metadata from being published to maven. The
-    // metadata includes mapped dependencies which are not reasonably consumable by
-    // other mod developers.
+    // maven에 Gradle 전용 모듈 메타데이터를 올리지 않는다.
+    // 그 메타데이터에는 매핑된 의존성이 들어 있어 다른 모드 개발자가
+    // 제대로 가져다 쓸 수 없다.
     tasks.withType(GenerateModuleMetadata) {
         enabled = false
     }

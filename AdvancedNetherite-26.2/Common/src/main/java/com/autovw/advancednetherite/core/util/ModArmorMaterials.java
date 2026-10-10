@@ -54,11 +54,11 @@ public final class ModArmorMaterials
     }), 35, 5.0F, 0.09F, ModTags.REPAIRS_FROST_ARMOR, ModEquipmentAssets.FROST);
 
     /**
-     * @param typeProtections       The amount of protection per slot
-     * @param enchantability        The higher the number, the more likely better enchantments will be applied when using the enchanting table
-     * @param toughness             Toughness for netherite armor
-     * @param knockbackResistance   The knockback resistance for armor
-     * @return Registered armor material
+     * @param typeProtections       부위별 방어력
+     * @param enchantability        숫자가 클수록 마법 부여대에서 좋은 마법이 붙을 확률이 높다
+     * @param toughness             네더라이트 갑옷의 방어 강도
+     * @param knockbackResistance   갑옷의 밀치기 저항
+     * @return 등록된 갑옷 재질
      */
     private static ArmorMaterial register(int durability, EnumMap<ArmorType, Integer> typeProtections, int enchantability, float toughness, float knockbackResistance, TagKey<Item> repairIngredient, ResourceKey<EquipmentAsset> equipmentAsset)
     {

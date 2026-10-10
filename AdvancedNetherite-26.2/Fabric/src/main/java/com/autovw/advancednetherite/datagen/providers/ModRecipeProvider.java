@@ -39,79 +39,79 @@ public class ModRecipeProvider extends FabricRecipeProvider
             public void buildRecipes()
             {
                 HolderLookup.RegistryLookup<Item> registryLookup = provider.lookupOrThrow(Registries.ITEM);
-                /* Blocks */
+                /* 블록 */
                 baseBlockRecipe(registryLookup, output, ModItems.ASH_INGOT, ModBlocks.ASH_BLOCK);
                 baseBlockRecipe(registryLookup, output, ModItems.SUNLIGHT_INGOT, ModBlocks.SUNLIGHT_BLOCK);
                 baseBlockRecipe(registryLookup, output, ModItems.SOUL_INGOT, ModBlocks.SOUL_BLOCK);
                 baseBlockRecipe(registryLookup, output, ModItems.FROST_INGOT, ModBlocks.FROST_BLOCK);
 
-                /* Ingots */
+                /* 주괴 */
                 baseIngotRecipe(registryLookup, output, ModTags.INGOTS_UPGRADE_TO_ASH, Items.IRON_INGOT, ModItems.ASH_INGOT);
                 baseIngotRecipe(registryLookup, output, ModTags.INGOTS_UPGRADE_TO_SUNLIGHT, Items.GOLD_INGOT, ModItems.SUNLIGHT_INGOT);
                 baseIngotRecipe(registryLookup, output, ModTags.INGOTS_UPGRADE_TO_SOUL, Items.EMERALD, ModItems.SOUL_INGOT);
                 baseIngotRecipe(registryLookup, output, ModTags.INGOTS_UPGRADE_TO_FROST, Items.DIAMOND, ModItems.FROST_INGOT);
 
-                /* Axes */
+                /* 도끼 */
                 baseSmithingRecipe(registryLookup, output, ModTags.AXE_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_AXE);
                 baseSmithingRecipe(registryLookup, output, ModTags.AXE_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_AXE);
                 baseSmithingRecipe(registryLookup, output, ModTags.AXE_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_AXE);
                 baseSmithingRecipe(registryLookup, output, ModTags.AXE_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_AXE);
 
-                /* Boots */
+                /* 부츠 */
                 baseSmithingRecipe(registryLookup, output, ModTags.BOOTS_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_BOOTS);
                 baseSmithingRecipe(registryLookup, output, ModTags.BOOTS_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_BOOTS);
                 baseSmithingRecipe(registryLookup, output, ModTags.BOOTS_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_BOOTS);
                 baseSmithingRecipe(registryLookup, output, ModTags.BOOTS_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_BOOTS);
 
-                /* Chestplates */
+                /* 흉갑 */
                 baseSmithingRecipe(registryLookup, output, ModTags.CHESTPLATE_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_CHESTPLATE);
                 baseSmithingRecipe(registryLookup, output, ModTags.CHESTPLATE_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_CHESTPLATE);
                 baseSmithingRecipe(registryLookup, output, ModTags.CHESTPLATE_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_CHESTPLATE);
                 baseSmithingRecipe(registryLookup, output, ModTags.CHESTPLATE_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_CHESTPLATE);
 
-                /* Helmets */
+                /* 투구 */
                 baseSmithingRecipe(registryLookup, output, ModTags.HELMET_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_HELMET);
                 baseSmithingRecipe(registryLookup, output, ModTags.HELMET_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_HELMET);
                 baseSmithingRecipe(registryLookup, output, ModTags.HELMET_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_HELMET);
                 baseSmithingRecipe(registryLookup, output, ModTags.HELMET_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_HELMET);
 
-                /* Hoes */
+                /* 괭이 */
                 baseSmithingRecipe(registryLookup, output, ModTags.HOE_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_HOE);
                 baseSmithingRecipe(registryLookup, output, ModTags.HOE_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_HOE);
                 baseSmithingRecipe(registryLookup, output, ModTags.HOE_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_HOE);
                 baseSmithingRecipe(registryLookup, output, ModTags.HOE_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_HOE);
 
-                /* Leggings */
+                /* 레깅스 */
                 baseSmithingRecipe(registryLookup, output, ModTags.LEGGINGS_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_LEGGINGS);
                 baseSmithingRecipe(registryLookup, output, ModTags.LEGGINGS_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_LEGGINGS);
                 baseSmithingRecipe(registryLookup, output, ModTags.LEGGINGS_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_LEGGINGS);
                 baseSmithingRecipe(registryLookup, output, ModTags.LEGGINGS_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_LEGGINGS);
 
-                /* Pickaxes */
+                /* 곡괭이 */
                 baseSmithingRecipe(registryLookup, output, ModTags.PICKAXE_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_PICKAXE);
                 baseSmithingRecipe(registryLookup, output, ModTags.PICKAXE_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_PICKAXE);
                 baseSmithingRecipe(registryLookup, output, ModTags.PICKAXE_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_PICKAXE);
                 baseSmithingRecipe(registryLookup, output, ModTags.PICKAXE_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_PICKAXE);
 
-                /* Shovels */
+                /* 삽 */
                 baseSmithingRecipe(registryLookup, output, ModTags.SHOVEL_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_SHOVEL);
                 baseSmithingRecipe(registryLookup, output, ModTags.SHOVEL_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_SHOVEL);
                 baseSmithingRecipe(registryLookup, output, ModTags.SHOVEL_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_SHOVEL);
                 baseSmithingRecipe(registryLookup, output, ModTags.SHOVEL_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_SHOVEL);
 
-                /* Swords */
+                /* 검 */
                 baseSmithingRecipe(registryLookup, output, ModTags.SWORD_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_SWORD);
                 baseSmithingRecipe(registryLookup, output, ModTags.SWORD_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_SWORD);
                 baseSmithingRecipe(registryLookup, output, ModTags.SWORD_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_SWORD);
                 baseSmithingRecipe(registryLookup, output, ModTags.SWORD_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_SWORD);
 
-                /* Spears */
+                /* 창 */
                 baseSmithingRecipe(registryLookup, output, ModTags.SPEAR_UPGRADE_TO_ASH, ModTags.UPGRADE_TO_ASH, ModItems.ASH_SPEAR);
                 baseSmithingRecipe(registryLookup, output, ModTags.SPEAR_UPGRADE_TO_SUNLIGHT, ModTags.UPGRADE_TO_SUNLIGHT, ModItems.SUNLIGHT_SPEAR);
                 baseSmithingRecipe(registryLookup, output, ModTags.SPEAR_UPGRADE_TO_SOUL, ModTags.UPGRADE_TO_SOUL, ModItems.SOUL_SPEAR);
                 baseSmithingRecipe(registryLookup, output, ModTags.SPEAR_UPGRADE_TO_FROST, ModTags.UPGRADE_TO_FROST, ModItems.FROST_SPEAR);
 
-                /* Misc */
+                /* 기타 */
                 backpackRecipes(registryLookup, output);
                 lodestoneRecipe(registryLookup, output);
             }
@@ -138,7 +138,7 @@ public class ModRecipeProvider extends FabricRecipeProvider
                 Identifier resultId = AdvancedNetherite.getRegistryHelper().getBlockById(result);
                 Identifier ingredientId = AdvancedNetherite.getRegistryHelper().getItemById((Item) ingredient);
 
-                // Items to Block
+                // 아이템을 블록으로
                 ShapedRecipeBuilder.shaped(registryLookup, RecipeCategory.BUILDING_BLOCKS, result)
                         .define('#', ingredient)
                         .pattern("###")
@@ -147,7 +147,7 @@ public class ModRecipeProvider extends FabricRecipeProvider
                         .unlockedBy("has_" + ingredientId.getPath(), has(ingredient))
                         .save(output);
 
-                // Block to Items
+                // 블록을 아이템으로
                 ShapelessRecipeBuilder.shapeless(registryLookup, RecipeCategory.MISC, ingredient, 9)
                         .requires(result)
                         .unlockedBy("has_" + resultId.getPath(), has(result))

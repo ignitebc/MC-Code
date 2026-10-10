@@ -24,7 +24,7 @@ public class ModItemTagsProvider extends FabricTagsProvider.ItemTagsProvider
     @Override
     protected void addTags(HolderLookup.Provider arg)
     {
-        // Mod item tags
+        // 모드 아이템 태그
         tag(ModTags.NETHERITE_BLOCKITEMS)
                 .add(ModItems.ASH_BLOCK.builtInRegistryHolder().key())
                 .add(ModItems.SUNLIGHT_BLOCK.builtInRegistryHolder().key())
@@ -150,7 +150,7 @@ public class ModItemTagsProvider extends FabricTagsProvider.ItemTagsProvider
         tag(ModTags.BOOTS_UPGRADE_TO_SOUL).addTag(ModTags.BOOTS_SUNLIGHT);
         tag(ModTags.BOOTS_UPGRADE_TO_FROST).addTag(ModTags.BOOTS_SOUL);
 
-        // tiers
+        // 등급
         tag(ModTags.TIER_ARMOR)
                 .addTag(ModTags.TIER_ARMOR_ASH)
                 .addTag(ModTags.TIER_ARMOR_SUNLIGHT)
@@ -206,7 +206,7 @@ public class ModItemTagsProvider extends FabricTagsProvider.ItemTagsProvider
                 .add(ModItems.FROST_SHOVEL.builtInRegistryHolder().key())
                 .add(ModItems.FROST_SWORD.builtInRegistryHolder().key());
 
-        // Repair tags
+        // 수리 재료 태그
         tag(ModTags.REPAIRS_ASH_ARMOR)
                 .add(ModItems.ASH_INGOT.builtInRegistryHolder().key());
         tag(ModTags.REPAIRS_SUNLIGHT_ARMOR)
@@ -225,7 +225,7 @@ public class ModItemTagsProvider extends FabricTagsProvider.ItemTagsProvider
         tag(ModTags.REPAIRS_FROST_TOOLS)
                 .add(ModItems.FROST_INGOT.builtInRegistryHolder().key());
 
-        // Pacify armor tags
+        // 몹 진정 갑옷 태그
         tag(ModTags.PACIFY_PHANTOMS_ARMOR)
                 .addTag(ModTags.TIER_ARMOR_ASH)
                 .addTag(ModTags.TIER_ARMOR_FROST);
@@ -236,7 +236,7 @@ public class ModItemTagsProvider extends FabricTagsProvider.ItemTagsProvider
                 .addTag(ModTags.TIER_ARMOR_SOUL)
                 .addTag(ModTags.TIER_ARMOR_FROST);
 
-        // additional drop tags
+        // 추가 드롭 태그
         tag(ModTags.DROPS_ADDITIONAL_CROPS)
                 .add(ModItems.ASH_HOE.builtInRegistryHolder().key())
                 .add(ModItems.SUNLIGHT_HOE.builtInRegistryHolder().key())
@@ -266,7 +266,7 @@ public class ModItemTagsProvider extends FabricTagsProvider.ItemTagsProvider
                 .add(ModItems.FROST_SWORD.builtInRegistryHolder().key());
 
 
-        // Vanilla item tags
+        // 바닐라 아이템 태그
         tag(ItemTags.BEACON_PAYMENT_ITEMS)
                 .addTag(ModTags.NETHERITE_INGOTS);
         tag(ItemTags.PIGLIN_LOVED)
@@ -361,7 +361,7 @@ public class ModItemTagsProvider extends FabricTagsProvider.ItemTagsProvider
                 .add(ModItems.FROST_SPEAR.builtInRegistryHolder().key());
 
 
-        // Tooltip Rareness item tags
+        // 툴팁 희귀도 아이템 태그
         tag(FabricModTags.TOOLTIP_RARENESS_EPIC_ITEM)
                 .addTag(ModTags.NETHERITE_BLOCKITEMS)
                 .addTag(ModTags.NETHERITE_INGOTS)

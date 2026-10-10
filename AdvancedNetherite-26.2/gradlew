@@ -18,14 +18,14 @@
 
 ##############################################################################
 ##
-##  Gradle start up script for UN*X
+##  UN*X용 Gradle 시작 스크립트
 ##
 ##############################################################################
 
-# Attempt to set APP_HOME
-# Resolve links: $0 may be a link
+# APP_HOME 설정 시도
+# 링크 해석: $0이 링크일 수 있다
 PRG="$0"
-# Need this for relative symlinks.
+# 상대 경로 심볼릭 링크에 필요하다.
 while [ -h "$PRG" ] ; do
     ls=`ls -ld "$PRG"`
     link=`expr "$ls" : '.*-> \(.*\)$'`
@@ -43,10 +43,10 @@ cd "$SAVED" >/dev/null
 APP_NAME="Gradle"
 APP_BASE_NAME=`basename "$0"`
 
-# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+# 기본 JVM 옵션은 여기에 추가한다. JAVA_OPTS와 GRADLE_OPTS로도 이 스크립트에 JVM 옵션을 넘길 수 있다.
 DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
 
-# Use the maximum available, or set MAX_FD != -1 to use that value.
+# 가능한 최댓값을 쓰거나, MAX_FD != -1 로 지정한 값을 쓴다.
 MAX_FD="maximum"
 
 warn () {
@@ -60,7 +60,7 @@ die () {
     exit 1
 }
 
-# OS specific support (must be 'true' or 'false').
+# 운영체제별 처리('true' 또는 'false'만 가능).
 cygwin=false
 msys=false
 darwin=false
@@ -83,10 +83,10 @@ esac
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
 
-# Determine the Java command to use to start the JVM.
+# JVM을 시작할 자바 명령을 정한다.
 if [ -n "$JAVA_HOME" ] ; then
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
-        # IBM's JDK on AIX uses strange locations for the executables
+        # AIX의 IBM JDK는 실행 파일 위치가 특이하다
         JAVACMD="$JAVA_HOME/jre/sh/java"
     else
         JAVACMD="$JAVA_HOME/bin/java"
@@ -105,7 +105,7 @@ Please set the JAVA_HOME variable in your environment to match the
 location of your Java installation."
 fi
 
-# Increase the maximum file descriptors if we can.
+# 가능하면 최대 파일 디스크립터 수를 늘린다.
 if [ "$cygwin" = "false" -a "$darwin" = "false" -a "$nonstop" = "false" ] ; then
     MAX_FD_LIMIT=`ulimit -H -n`
     if [ $? -eq 0 ] ; then
@@ -121,19 +121,19 @@ if [ "$cygwin" = "false" -a "$darwin" = "false" -a "$nonstop" = "false" ] ; then
     fi
 fi
 
-# For Darwin, add options to specify how the application appears in the dock
+# Darwin에서는 Dock에 보일 앱 모양을 정하는 옵션을 추가한다
 if $darwin; then
     GRADLE_OPTS="$GRADLE_OPTS \"-Xdock:name=$APP_NAME\" \"-Xdock:icon=$APP_HOME/media/gradle.icns\""
 fi
 
-# For Cygwin or MSYS, switch paths to Windows format before running java
+# Cygwin이나 MSYS에서는 java 실행 전에 경로를 Windows 형식으로 바꾼다
 if [ "$cygwin" = "true" -o "$msys" = "true" ] ; then
     APP_HOME=`cygpath --path --mixed "$APP_HOME"`
     CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
 
     JAVACMD=`cygpath --unix "$JAVACMD"`
 
-    # We build the pattern for arguments to be converted via cygpath
+    # cygpath로 변환할 인자 패턴을 만든다
     ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null`
     SEP=""
     for dir in $ROOTDIRSRAW ; do
@@ -141,17 +141,17 @@ if [ "$cygwin" = "true" -o "$msys" = "true" ] ; then
         SEP="|"
     done
     OURCYGPATTERN="(^($ROOTDIRS))"
-    # Add a user-defined pattern to the cygpath arguments
+    # 사용자가 지정한 패턴을 cygpath 인자에 추가한다
     if [ "$GRADLE_CYGPATTERN" != "" ] ; then
         OURCYGPATTERN="$OURCYGPATTERN|($GRADLE_CYGPATTERN)"
     fi
-    # Now convert the arguments - kludge to limit ourselves to /bin/sh
+    # 이제 인자를 변환한다 - /bin/sh 범위 안에서 처리하기 위한 임시방편
     i=0
     for arg in "$@" ; do
         CHECK=`echo "$arg"|egrep -c "$OURCYGPATTERN" -`
-        CHECK2=`echo "$arg"|egrep -c "^-"`                                 ### Determine if an option
+        CHECK2=`echo "$arg"|egrep -c "^-"`                                 ### 옵션인지 판단
 
-        if [ $CHECK -ne 0 ] && [ $CHECK2 -eq 0 ] ; then                    ### Added a condition
+        if [ $CHECK -ne 0 ] && [ $CHECK2 -eq 0 ] ; then                    ### 조건 추가
             eval `echo args$i`=`cygpath --path --ignore --mixed "$arg"`
         else
             eval `echo args$i`="\"$arg\""
@@ -172,14 +172,14 @@ if [ "$cygwin" = "true" -o "$msys" = "true" ] ; then
     esac
 fi
 
-# Escape application args
+# 애플리케이션 인자 이스케이프
 save () {
     for i do printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/" ; done
     echo " "
 }
 APP_ARGS=`save "$@"`
 
-# Collect all arguments for the java command, following the shell quoting and substitution rules
+# 셸 따옴표·치환 규칙에 따라 java 명령에 넘길 인자를 모두 모은다
 eval set -- $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS "\"-Dorg.gradle.appname=$APP_BASE_NAME\"" -classpath "\"$CLASSPATH\"" org.gradle.wrapper.GradleWrapperMain "$APP_ARGS"
 
 exec "$JAVACMD" "$@"

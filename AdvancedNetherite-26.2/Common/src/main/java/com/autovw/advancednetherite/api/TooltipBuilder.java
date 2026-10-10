@@ -10,8 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
- * A flexible builder for translatable tooltips.
- * Replacement of the Tooltips API, which was removed in MC 1.19, allowing for more control over the created tooltip.
+ * 번역 가능한 툴팁을 유연하게 만드는 빌더.
+ * MC 1.19에서 제거된 Tooltips API를 대신하며, 만들어지는 툴팁을 더 세밀하게 다룰 수 있다.
  *
  * @since 1.12.0
  * @author Autovw
@@ -25,14 +25,14 @@ public class TooltipBuilder
     }
 
     /**
-     * Used to create a translatable tooltip.
-     * Not setting the mod id will result in the tooltip being registered under the default <i>minecraft</i> namespace.
-     * If the tooltip name is empty, {@link #build(Identifier, Object...)} will throw a {@link IllegalStateException}.
+     * 번역 가능한 툴팁을 만든다.
+     * 모드 ID를 지정하지 않으면 툴팁이 기본 <i>minecraft</i> 네임스페이스로 등록된다.
+     * 툴팁 이름이 비어 있으면 {@link #build(Identifier, Object...)}가 {@link IllegalStateException}을 던진다.
      *
-     * Use {@link #create(Identifier, Object...)} if the tooltip should contain other sub-elements.
+     * 툴팁에 다른 하위 요소를 넣어야 하면 {@link #create(Identifier, Object...)}를 쓴다.
      *
-     * @param key name of the tooltip
-     * @return a MutableComponent
+     * @param key 툴팁 이름
+     * @return MutableComponent
      */
     public static MutableComponent create(Identifier key)
     {
@@ -40,13 +40,13 @@ public class TooltipBuilder
     }
 
     /**
-     * Used to create a translatable tooltip.
-     * Not setting the mod id will result in the tooltip being registered under the default <i>minecraft</i> namespace.
-     * If the tooltip name is empty, {@link #build(Identifier, Object...)} will throw a {@link IllegalStateException}.
+     * 번역 가능한 툴팁을 만든다.
+     * 모드 ID를 지정하지 않으면 툴팁이 기본 <i>minecraft</i> 네임스페이스로 등록된다.
+     * 툴팁 이름이 비어 있으면 {@link #build(Identifier, Object...)}가 {@link IllegalStateException}을 던진다.
      *
-     * @param key name of the tooltip
-     * @param args sub-elements
-     * @return a MutableComponent
+     * @param key 툴팁 이름
+     * @param args 하위 요소
+     * @return MutableComponent
      */
     public static MutableComponent create(Identifier key, Object... args)
     {
@@ -54,7 +54,7 @@ public class TooltipBuilder
     }
 
     /**
-     * Builder used for internal purposes only.
+     * 내부 용도로만 쓰는 빌더.
      */
     @Internal
     private static MutableComponent build(Identifier key, @Nullable Object... args)
@@ -82,9 +82,9 @@ public class TooltipBuilder
     @Internal
     private static boolean makeArgs(Object... args)
     {
-        // Varargs always contain at least one entry
-        // Therefore, we can't do (args != null) as it will always return true
-        // So we attempt to loop through the varargs to check for the actual values
+        // 가변 인자에는 항상 최소 한 개의 항목이 들어 있다
+        // 그래서 (args != null)은 항상 true가 되어 검사로 쓸 수 없다
+        // 가변 인자를 돌면서 실제 값이 있는지 확인한다
         for (Object arg : args)
         {
             if (arg != null)

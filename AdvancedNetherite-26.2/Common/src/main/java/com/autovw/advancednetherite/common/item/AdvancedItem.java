@@ -23,12 +23,12 @@ public class AdvancedItem extends Item implements IDurabilityBarColorModifier
     }
 
     /**
-     * {@link Override} this method if you want to add your own custom tooltips.
+     * 툴팁을 직접 추가하려면 이 메서드를 {@link Override}한다.
      *
-     * @param stack     The item stack
-     * @param context   The tooltip context
-     * @param tooltips  List of tooltips
-     * @param flag      Used to determine if a tooltip is only visible when debug mode (F3 + H) is enabled
+     * @param stack     아이템 스택
+     * @param context   툴팁 문맥
+     * @param tooltips  툴팁 목록
+     * @param flag      디버그 모드(F3 + H)에서만 보이는 툴팁인지 판단할 때 쓴다
      */
     public void addTooltips(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltips, TooltipFlag flag)
     {
@@ -40,10 +40,10 @@ public class AdvancedItem extends Item implements IDurabilityBarColorModifier
         return AdvancedUtil.getDurabilityBarColor(originalColor, stack);
     }
 
-    /* ================ INTERNAL, use alternatives linked in javadoc ================ */
+    /* ================ 내부용. javadoc에 연결된 대체 메서드를 사용 ================ */
 
     /**
-     * Don't override this method, use: {@link AdvancedItem#addTooltips(ItemStack, TooltipContext, TooltipDisplay, Consumer, TooltipFlag)} if you want to add your own custom tooltips.
+     * 이 메서드를 재정의하지 말고, 툴팁을 추가하려면 {@link AdvancedItem#addTooltips(ItemStack, TooltipContext, TooltipDisplay, Consumer, TooltipFlag)}를 쓴다.
      */
     @Internal
     @Override
@@ -51,12 +51,12 @@ public class AdvancedItem extends Item implements IDurabilityBarColorModifier
     {
         if (ConfigHelper.get().getClient().showTooltips())
         {
-            addTooltips(stack, context, display, tooltip, flag); // Add tooltips from add-ons
+            addTooltips(stack, context, display, tooltip, flag); // 애드온 툴팁 추가
         }
     }
 
     /**
-     * Don't override this method, use {@link AdvancedItem#durabilityBarColorModifier(int, ItemStack)} to change the custom durability bar color.
+     * 이 메서드를 재정의하지 말고, 내구도 막대 색을 바꾸려면 {@link AdvancedItem#durabilityBarColorModifier(int, ItemStack)}를 쓴다.
      */
     @Internal
     @Override

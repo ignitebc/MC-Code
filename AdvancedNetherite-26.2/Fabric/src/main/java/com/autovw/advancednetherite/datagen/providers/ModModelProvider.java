@@ -68,13 +68,13 @@ public class ModModelProvider extends FabricModelProvider
         itemModel(generator, ModBackpackItems.LEVEL_2);
         itemModel(generator, ModBackpackItems.LEVEL_3);
         
-        // randomBox 1~4
+        // 랜덤 상자 1~4
         itemModel(generator, ModItems.RANDOM_BOX_I);
         itemModel(generator, ModItems.RANDOM_BOX_II);
         itemModel(generator, ModItems.RANDOM_BOX_III);
         itemModel(generator, ModItems.RANDOM_BOX_IV);
         
-        // rewardKey 1~4
+        // 보상 열쇠 1~4
         itemModel(generator, ModItems.REWARD_KEY_I);
         itemModel(generator, ModItems.REWARD_KEY_II);
         itemModel(generator, ModItems.REWARD_KEY_III);
@@ -94,7 +94,7 @@ public class ModModelProvider extends FabricModelProvider
         itemModel(generator, ModItems.ENHANCE_SUCCESS_SCROLL_7);
         itemModel(generator, ModItems.ENHANCE_SUCCESS_SCROLL_10);
 
-        // petbox
+        // 펫 상자
         itemModel(generator, ModItems.NOMAL_PETBOX);
         itemModel(generator, ModItems.RARE_PETBOX);
         itemModel(generator, ModItems.LEGEND_PETBOX);

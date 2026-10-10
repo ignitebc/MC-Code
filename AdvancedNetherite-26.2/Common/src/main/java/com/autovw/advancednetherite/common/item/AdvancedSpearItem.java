@@ -4,7 +4,7 @@ import com.autovw.advancednetherite.api.impl.IToolMaterial;
 import net.minecraft.world.item.ToolMaterial;
 
 /**
- * This class was added for easy compatibility with Advanced Netherite features.
+ * Advanced Netherite 기능과 쉽게 호환되도록 추가한 클래스.
  * @since Minecraft 26.2 - Advanced Netherite 2.4.2
  * @author Autovw
  */

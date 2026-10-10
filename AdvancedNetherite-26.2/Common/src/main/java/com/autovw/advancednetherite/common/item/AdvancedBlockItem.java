@@ -22,21 +22,21 @@ public class AdvancedBlockItem extends BlockItem
     }
 
     /**
-     * {@link Override} this method if you want to add your own custom tooltips.
+     * 툴팁을 직접 추가하려면 이 메서드를 {@link Override}한다.
      *
-     * @param stack The item stack
-     * @param context The tooltip context
-     * @param tooltip Collection of tooltips
-     * @param flag Tooltip flag. Used to determine if a tooltip is only visible when debug mode (F3 + H) is enabled.
+     * @param stack 아이템 스택
+     * @param context 툴팁 문맥
+     * @param tooltip 툴팁 모음
+     * @param flag 툴팁 플래그. 디버그 모드(F3 + H)에서만 보이는 툴팁인지 판단할 때 쓴다.
      */
     public void addTooltips(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag)
     {
     }
 
-    /* ================ INTERNAL, use alternatives linked in javadoc ================ */
+    /* ================ 내부용. javadoc에 연결된 대체 메서드를 사용 ================ */
 
     /**
-     * Don't override this method, use: {@link AdvancedBlockItem#addTooltips(ItemStack, TooltipContext, TooltipDisplay, Consumer, TooltipFlag)} if you want to add your own custom tooltips.
+     * 이 메서드를 재정의하지 말고, 툴팁을 추가하려면 {@link AdvancedBlockItem#addTooltips(ItemStack, TooltipContext, TooltipDisplay, Consumer, TooltipFlag)}를 쓴다.
      */
     @Internal
     @Override

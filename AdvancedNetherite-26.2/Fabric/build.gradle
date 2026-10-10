@@ -11,7 +11,7 @@ base {
     archivesName = "advancednetherite-fabric"
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' } // src directory for data generator output
+sourceSets.main.resources { srcDir 'src/generated/resources' } // 데이터 생성 출력용 src 디렉터리
 
 loom.runs {
     client {
@@ -44,10 +44,6 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
-    //modImplementation "curse.maven:detailab-506898:${detailab_fabric_version}"
-    //modRuntimeOnly "curse.maven:catalogue-667377:${catalogue_fabric_version}"
-    //modRuntimeOnly "curse.maven:configured-457570:${configured_fabric_version}"
-    //modRuntimeOnly "curse.maven:jei-238222:${jei_fabric_version}"
 }
 
 processResources {

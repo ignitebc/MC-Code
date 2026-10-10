@@ -61,7 +61,7 @@ public final class ModLootTableModifiers
         {
             Identifier id = key.identifier();
             HolderLookup.RegistryLookup<Item> registryLookup = provider.lookupOrThrow(Registries.ITEM);
-            // ADDITIONAL CROP DROPS START //
+            // 작물 추가 드롭 시작 //
             if (source.isBuiltin() && id.equals(WHEAT))
             {
                 LootPool.Builder pool = cropDropPool(registryLookup, Blocks.WHEAT, BlockStateProperties.AGE_7, (float) ConfigHelper.get().getServer().getAdditionalDropProperties().getAdditionalWheatDropChance(), Items.WHEAT, 0, 2);
@@ -85,9 +85,9 @@ public final class ModLootTableModifiers
                 LootPool.Builder pool = cropDropPool(registryLookup, Blocks.BEETROOTS, BlockStateProperties.AGE_3, (float) ConfigHelper.get().getServer().getAdditionalDropProperties().getAdditionalBeetrootsDropChance(), Items.BEETROOT, 1, 2);
                 tableBuilder.withPool(pool);
             }
-            // ADDITIONAL CROP DROPS END //
+            // 작물 추가 드롭 끝 //
 
-            // ADDITIONAL MOB DROPS START //
+            // 몹 추가 드롭 시작 //
             if (source.isBuiltin() && id.equals(PHANTOM))
             {
                 LootPool.Builder pool = mobDropPool(registryLookup, (float) ConfigHelper.get().getServer().getAdditionalDropProperties().getAdditionalPhantomDropChance(), Items.PHANTOM_MEMBRANE, 0, 2, ModTags.DROPS_ADDITIONAL_PHANTOM_LOOT);
@@ -111,9 +111,9 @@ public final class ModLootTableModifiers
                 LootPool.Builder pool = mobDropPool(registryLookup, (float) ConfigHelper.get().getServer().getAdditionalDropProperties().getAdditionalEndermanDropChance(), Items.ENDER_PEARL, 0, 1, ModTags.DROPS_ADDITIONAL_ENDERMAN_LOOT);
                 tableBuilder.withPool(pool);
             }
-            // ADDITIONAL MOB DROPS END //
+            // 몹 추가 드롭 끝 //
 
-            // ADDITIONAL ORE DROPS START //
+            // 광석 추가 드롭 시작 //
             if (source.isBuiltin() && (id.equals(IRON_ORE) || id.equals(DEEPSLATE_IRON_ORE)))
             {
                 LootPool.Builder pool = oreDropPool(provider, (float) ConfigHelper.get().getServer().getAdditionalDropProperties().getAdditionalRawIronDropChance(), Items.RAW_IRON, 1, 2, ModTags.DROPS_ADDITIONAL_IRON);
@@ -143,7 +143,7 @@ public final class ModLootTableModifiers
                 LootPool.Builder pool = oreDropPool(provider, (float) ConfigHelper.get().getServer().getAdditionalDropProperties().getAdditionalGoldNuggetDropChance(), Items.GOLD_NUGGET, 1, 3, ModTags.DROPS_ADDITIONAL_GOLD);
                 tableBuilder.withPool(pool);
             }
-            // ADDITIONAL ORE DROPS END //
+            // 광석 추가 드롭 끝 //
         }));
     }
 

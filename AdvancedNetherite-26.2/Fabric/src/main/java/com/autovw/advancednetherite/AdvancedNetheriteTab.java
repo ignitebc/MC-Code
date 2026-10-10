@@ -19,7 +19,7 @@ import net.minecraft.world.item.CreativeModeTab;
 public final class AdvancedNetheriteTab
 {
     /**
-     * Creative tab for Advanced Netherite
+     * Advanced Netherite 크리에이티브 탭
      */
     @Internal
     public static void registerTab()
@@ -30,13 +30,13 @@ public final class AdvancedNetheriteTab
                 .title(Component.translatable("itemGroup." + AdvancedNetherite.MOD_ID + ".tab"))
                 .displayItems((context, entries) ->
                 {
-                    // Ingots
+                    // 주괴
                     entries.accept(ModItems.ASH_INGOT);
                     entries.accept(ModItems.SUNLIGHT_INGOT);
                     entries.accept(ModItems.SOUL_INGOT);
                     entries.accept(ModItems.FROST_INGOT);
 
-                    // Armor
+                    // 갑옷
                     entries.accept(ModItems.ASH_HELMET);
                     entries.accept(ModItems.ASH_CHESTPLATE);
                     entries.accept(ModItems.ASH_LEGGINGS);
@@ -57,52 +57,52 @@ public final class AdvancedNetheriteTab
                     entries.accept(ModItems.FROST_LEGGINGS);
                     entries.accept(ModItems.FROST_BOOTS);
 
-                    // Axes
+                    // 도끼
                     entries.accept(ModItems.ASH_AXE);
                     entries.accept(ModItems.SUNLIGHT_AXE);
                     entries.accept(ModItems.SOUL_AXE);
                     entries.accept(ModItems.FROST_AXE);
 
-                    // Hoes
+                    // 괭이
                     entries.accept(ModItems.ASH_HOE);
                     entries.accept(ModItems.SUNLIGHT_HOE);
                     entries.accept(ModItems.SOUL_HOE);
                     entries.accept(ModItems.FROST_HOE);
 
-                    // Pickaxes
+                    // 곡괭이
                     entries.accept(ModItems.ASH_PICKAXE);
                     entries.accept(ModItems.SUNLIGHT_PICKAXE);
                     entries.accept(ModItems.SOUL_PICKAXE);
                     entries.accept(ModItems.FROST_PICKAXE);
 
-                    // Shovels
+                    // 삽
                     entries.accept(ModItems.ASH_SHOVEL);
                     entries.accept(ModItems.SUNLIGHT_SHOVEL);
                     entries.accept(ModItems.SOUL_SHOVEL);
                     entries.accept(ModItems.FROST_SHOVEL);
 
-                    // Swords
+                    // 검
                     entries.accept(ModItems.ASH_SWORD);
                     entries.accept(ModItems.SUNLIGHT_SWORD);
                     entries.accept(ModItems.SOUL_SWORD);
                     entries.accept(ModItems.FROST_SWORD);
 
-                    // Spears
+                    // 창
                     entries.accept(ModItems.ASH_SPEAR);
                     entries.accept(ModItems.SUNLIGHT_SPEAR);
                     entries.accept(ModItems.SOUL_SPEAR);
                     entries.accept(ModItems.FROST_SPEAR);
 
-                    // Blocks
+                    // 블록
                     entries.accept(ModItems.ASH_BLOCK);
                     entries.accept(ModItems.SUNLIGHT_BLOCK);
                     entries.accept(ModItems.SOUL_BLOCK);
                     entries.accept(ModItems.FROST_BLOCK);
 
-                    // BitCoin
+                    // 비트코인
                     entries.accept(ModItems.BITCOIN);
 
-                    // Reward coupons
+                    // 보상 쿠폰
                     entries.accept(ModRewardCouponItems.EXPERIENCE_DOUBLE_COUPON);
                     entries.accept(ModRewardCouponItems.EXPERIENCE_TRIPLE_COUPON);
                     entries.accept(ModRewardCouponItems.BITCOIN_DOUBLE_COUPON);
@@ -112,13 +112,13 @@ public final class AdvancedNetheriteTab
                     entries.accept(ModBackpackItems.LEVEL_2);
                     entries.accept(ModBackpackItems.LEVEL_3);
 
-                    // randomBox 1~4
+                    // 랜덤 상자 1~4
                     entries.accept(ModItems.RANDOM_BOX_I);
                     entries.accept(ModItems.RANDOM_BOX_II);
                     entries.accept(ModItems.RANDOM_BOX_III);
                     entries.accept(ModItems.RANDOM_BOX_IV);
 
-                    // rewardKey 1~4
+                    // 보상 열쇠 1~4
                     entries.accept(ModItems.REWARD_KEY_I);
                     entries.accept(ModItems.REWARD_KEY_II);
                     entries.accept(ModItems.REWARD_KEY_III);
@@ -138,7 +138,7 @@ public final class AdvancedNetheriteTab
                     entries.accept(ModItems.ENHANCE_SUCCESS_SCROLL_7);
                     entries.accept(ModItems.ENHANCE_SUCCESS_SCROLL_10);
                     
-                    // pet box
+                    // 펫 상자
                     entries.accept(ModItems.NOMAL_PETBOX);
                     entries.accept(ModItems.RARE_PETBOX);
                     entries.accept(ModItems.LEGEND_PETBOX);

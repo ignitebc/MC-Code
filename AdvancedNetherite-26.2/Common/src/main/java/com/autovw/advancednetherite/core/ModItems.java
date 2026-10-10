@@ -17,7 +17,7 @@ import net.minecraft.world.item.equipment.ArmorType;
  */
 public final class ModItems
 {
-    // Ingots
+    // 주괴
     public static final AdvancedItem ASH_INGOT = new AdvancedItem(new Item.Properties().setId(key("ash_ingot")));
     public static final AdvancedItem SUNLIGHT_INGOT = new AdvancedItem(new Item.Properties().setId(key("sunlight_ingot")));
     public static final AdvancedItem SOUL_INGOT = new AdvancedItem(new Item.Properties().setId(key("soul_ingot")));
@@ -52,75 +52,75 @@ public final class ModItems
     public static final AdvancedItem ENHANCE_SUCCESS_SCROLL_7 = new AdvancedItem(new Item.Properties().setId(key("enhance_success_scroll_7")));
     public static final AdvancedItem ENHANCE_SUCCESS_SCROLL_10 = new AdvancedItem(new Item.Properties().setId(key("enhance_success_scroll_10")));
 
-    // petbox
+    // 펫 상자
     // 어떤 펫이 어느 상자에서 나오는지와 공격력은 PetRarity가 한 곳에서 정한다. 펫 도감도 같은 표를 읽는다.
     public static final PetBoxItem NOMAL_PETBOX = new PetBoxItem(PetRarity.NORMAL.petTypes(), new Item.Properties().setId(key("nomal_petbox")));
     public static final PetBoxItem RARE_PETBOX = new PetBoxItem(PetRarity.RARE.petTypes(), new Item.Properties().setId(key("rare_petbox")));
     public static final PetBoxItem LEGEND_PETBOX = new PetBoxItem(PetRarity.LEGEND.petTypes(), new Item.Properties().setId(key("legend_petbox")));
 
-    // ARMOR SETS
-    // Netherite-Iron
+    // 갑옷 세트
+    // 네더라이트-철
     public static final AdvancedArmorItem ASH_HELMET = new AdvancedArmorItem(ModArmorMaterials.ASH, ArmorType.HELMET, new Item.Properties().setId(key("ash_helmet")));
     public static final AdvancedArmorItem ASH_CHESTPLATE = new AdvancedArmorItem(ModArmorMaterials.ASH, ArmorType.CHESTPLATE, new Item.Properties().setId(key("ash_chestplate")));
     public static final AdvancedArmorItem ASH_LEGGINGS = new AdvancedArmorItem(ModArmorMaterials.ASH, ArmorType.LEGGINGS, new Item.Properties().setId(key("ash_leggings")));
     public static final AdvancedArmorItem ASH_BOOTS = new AdvancedArmorItem(ModArmorMaterials.ASH, ArmorType.BOOTS, new Item.Properties().setId(key("ash_boots")));
 
-    // Netherite-Gold
+    // 네더라이트-금
     public static final AdvancedArmorItem SUNLIGHT_HELMET = new AdvancedArmorItem(ModArmorMaterials.SUNLIGHT, ArmorType.HELMET, new Item.Properties().setId(key("sunlight_helmet")));
     public static final AdvancedArmorItem SUNLIGHT_CHESTPLATE = new AdvancedArmorItem(ModArmorMaterials.SUNLIGHT, ArmorType.CHESTPLATE, new Item.Properties().setId(key("sunlight_chestplate")));
     public static final AdvancedArmorItem SUNLIGHT_LEGGINGS = new AdvancedArmorItem(ModArmorMaterials.SUNLIGHT, ArmorType.LEGGINGS, new Item.Properties().setId(key("sunlight_leggings")));
     public static final AdvancedArmorItem SUNLIGHT_BOOTS = new AdvancedArmorItem(ModArmorMaterials.SUNLIGHT, ArmorType.BOOTS, new Item.Properties().setId(key("sunlight_boots")));
 
-    // Netherite-Emerald
+    // 네더라이트-에메랄드
     public static final AdvancedArmorItem SOUL_HELMET = new AdvancedArmorItem(ModArmorMaterials.SOUL, ArmorType.HELMET, new Item.Properties().setId(key("soul_helmet")));
     public static final AdvancedArmorItem SOUL_CHESTPLATE = new AdvancedArmorItem(ModArmorMaterials.SOUL, ArmorType.CHESTPLATE, new Item.Properties().setId(key("soul_chestplate")));
     public static final AdvancedArmorItem SOUL_LEGGINGS = new AdvancedArmorItem(ModArmorMaterials.SOUL, ArmorType.LEGGINGS, new Item.Properties().setId(key("soul_leggings")));
     public static final AdvancedArmorItem SOUL_BOOTS = new AdvancedArmorItem(ModArmorMaterials.SOUL, ArmorType.BOOTS, new Item.Properties().setId(key("soul_boots")));
 
-    // Netherite-Diamond
+    // 네더라이트-다이아몬드
     public static final AdvancedArmorItem FROST_HELMET = new AdvancedArmorItem(ModArmorMaterials.FROST, ArmorType.HELMET, new Item.Properties().setId(key("frost_helmet")));
     public static final AdvancedArmorItem FROST_CHESTPLATE = new AdvancedArmorItem(ModArmorMaterials.FROST, ArmorType.CHESTPLATE, new Item.Properties().setId(key("frost_chestplate")));
     public static final AdvancedArmorItem FROST_LEGGINGS = new AdvancedArmorItem(ModArmorMaterials.FROST, ArmorType.LEGGINGS, new Item.Properties().setId(key("frost_leggings")));
     public static final AdvancedArmorItem FROST_BOOTS = new AdvancedArmorItem(ModArmorMaterials.FROST, ArmorType.BOOTS, new Item.Properties().setId(key("frost_boots")));
 
-    // TOOLS
-    // Axes
+    // 도구
+    // 도끼
     public static final AdvancedAxeItem ASH_AXE = new AdvancedAxeItem(ModToolMaterials.ASH, 5, -3.0f, new Item.Properties().setId(key("ash_axe")));
     public static final AdvancedAxeItem SUNLIGHT_AXE = new AdvancedAxeItem(ModToolMaterials.SUNLIGHT, 6, -3.0f, new Item.Properties().setId(key("sunlight_axe")));
     public static final AdvancedAxeItem SOUL_AXE = new AdvancedAxeItem(ModToolMaterials.SOUL, 7, -3.0f, new Item.Properties().setId(key("soul_axe")));
     public static final AdvancedAxeItem FROST_AXE = new AdvancedAxeItem(ModToolMaterials.FROST, 8, -3.0f, new Item.Properties().setId(key("frost_axe")));
 
-    // Hoes
+    // 괭이
     public static final AdvancedHoeItem ASH_HOE = new AdvancedHoeItem(ModToolMaterials.ASH, -5, 0.0F, new Item.Properties().setId(key("ash_hoe")));
     public static final AdvancedHoeItem SUNLIGHT_HOE = new AdvancedHoeItem(ModToolMaterials.SUNLIGHT, -5, 0.0F, new Item.Properties().setId(key("sunlight_hoe")));
     public static final AdvancedHoeItem SOUL_HOE = new AdvancedHoeItem(ModToolMaterials.SOUL, -5, 0.0F, new Item.Properties().setId(key("soul_hoe")));
     public static final AdvancedHoeItem FROST_HOE = new AdvancedHoeItem(ModToolMaterials.FROST, -5, 0.0F, new Item.Properties().setId(key("frost_hoe")));
 
-    // Pickaxes
+    // 곡괭이
     public static final AdvancedPickaxeItem ASH_PICKAXE = new AdvancedPickaxeItem(ModToolMaterials.ASH, 0, -2.8F, new Item.Properties().setId(key("ash_pickaxe")));
     public static final AdvancedPickaxeItem SUNLIGHT_PICKAXE = new AdvancedPickaxeItem(ModToolMaterials.SUNLIGHT, 0, -2.8F, new Item.Properties().setId(key("sunlight_pickaxe")));
     public static final AdvancedPickaxeItem SOUL_PICKAXE = new AdvancedPickaxeItem(ModToolMaterials.SOUL, 0, -2.8F, new Item.Properties().setId(key("soul_pickaxe")));
     public static final AdvancedPickaxeItem FROST_PICKAXE = new AdvancedPickaxeItem(ModToolMaterials.FROST, 0, -2.8F, new Item.Properties().setId(key("frost_pickaxe")));
 
-    // Shovels
+    // 삽
     public static final AdvancedShovelItem ASH_SHOVEL = new AdvancedShovelItem(ModToolMaterials.ASH, 0, -3.0F, new Item.Properties().setId(key("ash_shovel")));
     public static final AdvancedShovelItem SUNLIGHT_SHOVEL = new AdvancedShovelItem(ModToolMaterials.SUNLIGHT, 0, -3.0F, new Item.Properties().setId(key("sunlight_shovel")));
     public static final AdvancedShovelItem SOUL_SHOVEL = new AdvancedShovelItem(ModToolMaterials.SOUL, 0, -3.0F, new Item.Properties().setId(key("soul_shovel")));
     public static final AdvancedShovelItem FROST_SHOVEL = new AdvancedShovelItem(ModToolMaterials.FROST, 0, -3.0F, new Item.Properties().setId(key("frost_shovel")));
 
-    // Swords
+    // 검
     public static final AdvancedSwordItem ASH_SWORD = new AdvancedSwordItem(ModToolMaterials.ASH, 2, -2.3F, new Item.Properties().setId(key("ash_sword")));
     public static final AdvancedSwordItem SUNLIGHT_SWORD = new AdvancedSwordItem(ModToolMaterials.SUNLIGHT, 2, -2.2F, new Item.Properties().setId(key("sunlight_sword")));
     public static final AdvancedSwordItem SOUL_SWORD = new AdvancedSwordItem(ModToolMaterials.SOUL, 2, -2.1F, new Item.Properties().setId(key("soul_sword")));
     public static final AdvancedSwordItem FROST_SWORD = new AdvancedSwordItem(ModToolMaterials.FROST, 2, -2.0F, new Item.Properties().setId(key("frost_sword")));
 
-    // Spears
+    // 창
     public static final Item ASH_SPEAR = new AdvancedSpearItem(ModToolMaterials.ASH, 1.2F, 1.25F, 0.4F, 2.5F, 7.0F, 5.5F, 5.1F, 8.75F, 4.6F, new Item.Properties().setId(key("ash_spear")));
     public static final Item SUNLIGHT_SPEAR = new AdvancedSpearItem(ModToolMaterials.SUNLIGHT, 1.25F, 1.3F, 0.4F, 2.5F, 7.0F, 5.5F, 5.1F, 8.75F, 4.6F, new Item.Properties().setId(key("sunlight_spear")));
     public static final Item SOUL_SPEAR = new AdvancedSpearItem(ModToolMaterials.SOUL, 1.3F, 1.35F, 0.4F, 2.5F, 7.0F, 5.5F, 5.1F, 8.75F, 4.6F, new Item.Properties().setId(key("soul_spear")));
     public static final Item FROST_SPEAR = new AdvancedSpearItem(ModToolMaterials.FROST, 1.35F, 1.4F, 0.4F, 2.5F, 7.0F, 5.5F, 5.1F, 8.75F, 4.6F, new Item.Properties().setId(key("frost_spear")));
 
-    // Blocks
+    // 블록
     public static final AdvancedBlockItem ASH_BLOCK = new AdvancedBlockItem(ModBlocks.ASH_BLOCK, new Item.Properties().useBlockDescriptionPrefix().setId(key("ash_block")));
     public static final AdvancedBlockItem SUNLIGHT_BLOCK = new AdvancedBlockItem(ModBlocks.SUNLIGHT_BLOCK, new Item.Properties().useBlockDescriptionPrefix().setId(key("sunlight_block")));
     public static final AdvancedBlockItem SOUL_BLOCK = new AdvancedBlockItem(ModBlocks.SOUL_BLOCK, new Item.Properties().useBlockDescriptionPrefix().setId(key("soul_block")));

@@ -25,9 +25,9 @@ import java.util.Objects;
 public class AdvancedUtil
 {
     /**
-     * Helper method for getting the durability multiplier of an armor material
-     * @param material The material to get the multiplier for
-     * @return Durability multiplier for the appropriate armor material
+     * 갑옷 재질의 내구도 배율을 구하는 도우미 메서드
+     * @param material 배율을 구할 재질
+     * @return 해당 갑옷 재질의 내구도 배율
      */
     public static int getArmorDurabilityMultiplier(ArmorMaterial material)
     {
@@ -43,10 +43,10 @@ public class AdvancedUtil
     }
 
     /**
-     * Helper method for getting the appropriate durability bar color on tools
-     * @param originalColor The original durability bar color
-     * @param stack Tool stack
-     * @return The appropriate bar color, based on tier and config settings
+     * 도구에 맞는 내구도 막대 색을 구하는 도우미 메서드
+     * @param originalColor 원래 내구도 막대 색
+     * @param stack 도구 스택
+     * @return 등급과 설정에 따른 막대 색
      */
     public static int getDurabilityBarColor(int originalColor, ItemStack stack)
     {
@@ -54,7 +54,7 @@ public class AdvancedUtil
 
         if (ConfigHelper.get().getClient().matchingDurabilityBars())
         {
-            // Tools
+            // 도구
             if (stack.getItem() instanceof IToolMaterial material)
             {
                 if (material.isMaterial(ModToolMaterials.ASH))
@@ -67,7 +67,7 @@ public class AdvancedUtil
                     newColor = getColor(ChatFormatting.AQUA);
             }
 
-            // Armor
+            // 갑옷
             if (stack.getItem() instanceof IArmorMaterial material)
             {
                 if (material.isMaterial(ModArmorMaterials.ASH))
@@ -91,11 +91,11 @@ public class AdvancedUtil
     }
 
     /**
-     * Helper method for applying the appropriate block destroy speed to tools
-     * @param originalSpeed The original destroy speed
-     * @param stack Tool stack
-     * @param state State of block being broken
-     * @return New destroy speed
+     * 도구에 맞는 블록 파괴 속도를 적용하는 도우미 메서드
+     * @param originalSpeed 원래 파괴 속도
+     * @param stack 도구 스택
+     * @param state 부수는 블록의 상태
+     * @return 새 파괴 속도
      */
     public static float getDestroySpeed(float originalSpeed, ItemStack stack, BlockState state)
     {
@@ -120,9 +120,9 @@ public class AdvancedUtil
     }
 
     /**
-     * Determines if an enderman should behave passively towards the player, unless aggravated.
-     * @param player Player wearing the armor
-     * @return True if enderman should behave passively
+     * 엔더맨이 자극받기 전까지 플레이어에게 우호적으로 행동할지 정한다.
+     * @param player 갑옷을 착용한 플레이어
+     * @return 엔더맨이 우호적으로 행동해야 하면 true
      */
     public static boolean isWearingEndermanPassiveArmor(Player player)
     {
@@ -139,9 +139,9 @@ public class AdvancedUtil
     }
 
     /**
-     * Determines if a phantom should behave passively towards the player, unless aggravated.
-     * @param player Player wearing the armor
-     * @return True if phantom should behave passively
+     * 팬텀이 자극받기 전까지 플레이어에게 우호적으로 행동할지 정한다.
+     * @param player 갑옷을 착용한 플레이어
+     * @return 팬텀이 우호적으로 행동해야 하면 true
      */
     public static boolean isWearingPhantomPassiveArmor(Player player)
     {

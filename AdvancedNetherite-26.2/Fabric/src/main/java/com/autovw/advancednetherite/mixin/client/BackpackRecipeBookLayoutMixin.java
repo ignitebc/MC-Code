@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * 레시피 책을 가방 패널 폭의 절반만큼 왼쪽으로 옮긴다.
  *
- * <p>인벤토리 화면은 가방 패널 때문에 imageWidth가 176이 아니라 260이다. 바닐라는 imageWidth를
+ * <p>가방 패널을 단 화면(E키 화면, 작업대, 화로 계열)은 imageWidth가 176이 아니라 246이다. 바닐라는 imageWidth를
  * 빼서 화면을 가운데 맞추므로 인벤토리가 그만큼 왼쪽에서 시작한다. 그런데 레시피 책의 자리는
  * 화면 폭만 보고 정해져서 따라 움직이지 않는다. 그대로 두면 책이 인벤토리 왼쪽 두 칸을 덮는다.
  *

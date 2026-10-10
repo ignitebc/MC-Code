@@ -15,13 +15,13 @@ public interface IToolMaterial
     }
 
     /**
-     * @return The type of tool {@link IToolMaterial.Type}
+     * @return 도구 종류 {@link IToolMaterial.Type}
      * @since MC 1.21.5
      */
     Type getToolType();
 
     /**
-     * @return If the tool is digger item. Replacement of <code>instanceof DiggerItem</code> check.
+     * @return 채굴 도구인지 여부. <code>instanceof DiggerItem</code> 검사를 대신한다.
      * @since MC 1.21.5
      */
     default boolean isDiggerItem()
@@ -30,7 +30,7 @@ public interface IToolMaterial
     }
 
     /**
-     * Advanced Netherite's version of keeping track of tool types in Java without relying on item tags.
+     * 아이템 태그에 기대지 않고 자바 코드에서 도구 종류를 구분하는 Advanced Netherite의 방식.
      * @since Minecraft 1.21.5
      */
     enum Type

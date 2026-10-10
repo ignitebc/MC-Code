@@ -7,17 +7,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 /**
- * Collection of Fabric only tags
+ * Fabric 전용 태그 모음
  * @author Autovw
  */
 public final class FabricModTags
 {
-    // "config" tags
+    // 설정 태그
     public static final TagKey<Item> CONFIG_PACIFY_PHANTOMS = ModTags.itemTag(Identifier.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "config/pacify_phantoms"));
     public static final TagKey<Item> CONFIG_PACIFY_PIGLINS = ModTags.itemTag(Identifier.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "config/pacify_piglins"));
     public static final TagKey<Item> CONFIG_PACIFY_ENDERMEN = ModTags.itemTag(Identifier.fromNamespaceAndPath(AdvancedNetherite.MOD_ID, "config/pacify_endermen"));
 
-    // "c" (common) tags
+    // "c"(공통) 태그
     public static final TagKey<Item> COMMON_HELMETS = commonItemTag("helmets");
     public static final TagKey<Item> COMMON_CHESTPLATES = commonItemTag("chestplates");
     public static final TagKey<Item> COMMON_LEGGINGS = commonItemTag("leggings");
@@ -25,7 +25,7 @@ public final class FabricModTags
     public static final TagKey<Item> COMMON_NETHERITE_INGOTS = commonItemTag("netherite_ingots");
     public static final TagKey<Block> COMMON_NETHERITE_BLOCKS = commonBlockTag("netherite_blocks");
 
-    // "tooltiprareness" tags
+    // 툴팁 희귀도 태그
     public static final TagKey<Item> TOOLTIP_RARENESS_EPIC_ITEM = ModTags.itemTag(Identifier.fromNamespaceAndPath("tooltiprareness", "epic_item"));
     public static final TagKey<Item> TOOLTIP_RARENESS_LEGENDARY_ITEM = ModTags.itemTag(Identifier.fromNamespaceAndPath("tooltiprareness", "legendary_item"));
 

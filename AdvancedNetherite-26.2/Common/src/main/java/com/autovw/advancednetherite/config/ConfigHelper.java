@@ -5,7 +5,7 @@ import com.autovw.advancednetherite.api.annotation.Internal;
 import java.util.function.Supplier;
 
 /**
- * Helper class for accessing config values everywhere
+ * 어디서든 설정값에 접근하기 위한 도우미 클래스
  * @since 2.0.0
  * @author Autovw
  */

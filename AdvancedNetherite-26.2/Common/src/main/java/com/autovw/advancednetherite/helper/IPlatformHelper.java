@@ -7,19 +7,19 @@ package com.autovw.advancednetherite.helper;
 public interface IPlatformHelper
 {
     /**
-     * @return Current platform mod is loaded on
+     * @return 모드가 실행 중인 플랫폼
      */
     Platform getPlatform();
 
     /**
-     * Checks if mod is loaded
-     * @param modId Mod id to check for
-     * @return If mod is loaded or not
+     * 모드가 로드되었는지 확인한다
+     * @param modId 확인할 모드 ID
+     * @return 모드 로드 여부
      */
     boolean isModLoaded(String modId);
 
     /**
-     * @return If mod is currently in production environment or not
+     * @return 현재 배포 환경에서 실행 중인지 여부
      */
     boolean isProduction();
 

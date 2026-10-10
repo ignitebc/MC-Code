@@ -11,11 +11,11 @@ import net.minecraft.world.item.ItemStack;
 public interface IDurabilityBarColorModifier
 {
     /**
-     * Called in {@link net.minecraft.world.item.Item#getBarColor(ItemStack)} when {@link com.autovw.advancednetherite.config.IClientConfig#matchingDurabilityBars()} is enabled in the client configuration.
-     * {@link Override} this method to apply your own custom durability bar color.
-     * @param originalColor The integer value of the color before modification
-     * @param stack The ItemStack of the durability item
-     * @return The color displayed on the durability bar when <code>matchingDurabilityBars</code> is enabled in the client config of Advanced Netherite
+     * 클라이언트 설정에서 {@link com.autovw.advancednetherite.config.IClientConfig#matchingDurabilityBars()}가 켜져 있을 때 {@link net.minecraft.world.item.Item#getBarColor(ItemStack)}에서 호출된다.
+     * 내구도 막대 색을 직접 정하려면 이 메서드를 {@link Override}한다.
+     * @param originalColor 바꾸기 전 색의 정수값
+     * @param stack 내구도가 있는 아이템의 ItemStack
+     * @return Advanced Netherite 클라이언트 설정의 <code>matchingDurabilityBars</code>가 켜져 있을 때 내구도 막대에 표시할 색
      */
     default int durabilityBarColorModifier(int originalColor, ItemStack stack)
     {

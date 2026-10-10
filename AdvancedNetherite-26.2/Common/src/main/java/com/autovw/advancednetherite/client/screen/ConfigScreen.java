@@ -13,7 +13,7 @@ import java.net.URI;
 import java.util.List;
 
 /**
- * A config screen class which is displayed when Configured mod is not present
+ * Configured 모드가 없을 때 표시하는 설정 화면 클래스
  * @author Autovw
  */
 public class ConfigScreen extends Screen
@@ -23,8 +23,8 @@ public class ConfigScreen extends Screen
     private final MutableComponent configured = Component.literal("Configured").withStyle(ChatFormatting.YELLOW);
 
     /**
-     * @param title Title of the mod adding the screen
-     * @param parent Parent screen
+     * @param title 화면을 추가하는 모드의 제목
+     * @param parent 부모 화면
      */
     public ConfigScreen(Component title, Screen parent)
     {
@@ -36,12 +36,12 @@ public class ConfigScreen extends Screen
     @Override
     protected void init()
     {
-        // Configured button
+        // Configured 버튼
         addRenderableWidget(Button.builder(Component.translatable("config.advancednetherite.screen.button.install_configured", this.configured), onPress -> {
             Util.getPlatform().openUri(URI.create("https://www.curseforge.com/minecraft/mc-mods/configured"));
         }).pos(width / 2 - 155, height / 2 + 12).size(150, 20).build());
 
-        // Instructions button
+        // 안내 버튼
         Button instructionsButton = Button.builder(Component.translatable("config.advancednetherite.screen.button.instructions"), onPress -> {
             if (getInstructionsUrl() != null)
             {
@@ -54,7 +54,7 @@ public class ConfigScreen extends Screen
 
         addRenderableWidget(instructionsButton);
 
-        // Back button
+        // 뒤로 버튼
         addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, onPress -> {
             this.minecraft.gui.setScreen(this.parent);
         }).pos(width / 2 - 75, height - 29).size(150, 20).build());
@@ -71,13 +71,13 @@ public class ConfigScreen extends Screen
     }
 
     /**
-     * Allows for drawing text using {@link Font#split(FormattedText, int)} as an alternative to <code>drawCenteredString</code> without having to worry about text not appearing on screen.
-     * @param graphics Graphics utility
-     * @param font Font used
-     * @param charSequenceList The list provided by {@link Font#split(FormattedText, int)}
-     * @param x X-axis the text will appear on
-     * @param y Y-axis the text will appear on
-     * @param color Color of the text
+     * <code>drawCenteredString</code> 대신 {@link Font#split(FormattedText, int)}로 나눈 글자를 그려, 글자가 화면 밖으로 사라질 걱정을 없앤다.
+     * @param graphics 그리기 도구
+     * @param font 사용할 글꼴
+     * @param charSequenceList {@link Font#split(FormattedText, int)}가 돌려준 목록
+     * @param x 글자를 그릴 X 좌표
+     * @param y 글자를 그릴 Y 좌표
+     * @param color 글자 색
      */
     public static void drawCenteredSplitString(GuiGraphicsExtractor graphics, Font font, List<FormattedCharSequence> charSequenceList, int x, int y, int color)
     {
@@ -89,8 +89,8 @@ public class ConfigScreen extends Screen
     }
 
     /**
-     * The top description component. {@link Override} to change.
-     * @return Top description component
+     * 위쪽 설명 컴포넌트. 바꾸려면 {@link Override}한다.
+     * @return 위쪽 설명 컴포넌트
      */
     public Component getDescriptionTop()
     {
@@ -98,8 +98,8 @@ public class ConfigScreen extends Screen
     }
 
     /**
-     * The bottom description component. {@link Override} to change.
-     * @return Bottom description component
+     * 아래쪽 설명 컴포넌트. 바꾸려면 {@link Override}한다.
+     * @return 아래쪽 설명 컴포넌트
      */
     public Component getDescriptionBottom()
     {
@@ -107,8 +107,8 @@ public class ConfigScreen extends Screen
     }
 
     /**
-     * The URL behind the instructions button. Return null to disable this button.
-     * @return Instructions url
+     * 안내 버튼이 여는 URL. null을 돌려주면 버튼을 끈다.
+     * @return 안내 URL
      */
     public URI getInstructionsUrl()
     {

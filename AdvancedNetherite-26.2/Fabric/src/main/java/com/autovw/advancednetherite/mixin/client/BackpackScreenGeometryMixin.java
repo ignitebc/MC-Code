@@ -20,6 +20,7 @@ public abstract class BackpackScreenGeometryMixin
 {
     @Shadow @Final @Mutable protected int imageWidth;
 
+    /** 가방 패널이 붙은 메뉴(E키 화면, 상자·작업대 등)는 화면 폭을 패널만큼 늘려 가운데 정렬에 포함한다. */
     @Inject(method = "<init>(Lnet/minecraft/world/inventory/AbstractContainerMenu;Lnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/network/chat/Component;II)V", at = @At("TAIL"))
     private void advancednetherite$width(AbstractContainerMenu menu, Inventory inventory, Component title,
                                        int width, int height, CallbackInfo ci)

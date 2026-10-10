@@ -23,7 +23,7 @@ public class ModBlockTagsProvider extends FabricTagsProvider.BlockTagsProvider
     @Override
     protected void addTags(HolderLookup.Provider arg)
     {
-        // Mod block tags
+        // 모드 블록 태그
         tag(ModTags.NETHERITE_BLOCKS)
                 .add(ModBlocks.ASH_BLOCK.properties().blockId())
                 .add(ModBlocks.SUNLIGHT_BLOCK.properties().blockId())
@@ -31,20 +31,16 @@ public class ModBlockTagsProvider extends FabricTagsProvider.BlockTagsProvider
                 .add(ModBlocks.FROST_BLOCK.properties().blockId());
 
         tag(ModTags.INCORRECT_FOR_ASH_TOOL)
-                //.addTag(BlockTags.INCORRECT_FOR_NETHERITE_TOOL)
         ;
         tag(ModTags.INCORRECT_FOR_SUNLIGHT_TOOL)
-                //.addTag(BlockTags.INCORRECT_FOR_NETHERITE_TOOL)
         ;
         tag(ModTags.INCORRECT_FOR_SOUL_TOOL)
-                //.addTag(BlockTags.INCORRECT_FOR_NETHERITE_TOOL)
         ;
         tag(ModTags.INCORRECT_FOR_FROST_TOOL)
-                //.addTag(BlockTags.INCORRECT_FOR_NETHERITE_TOOL)
         ;
 
 
-        // Vanilla block tags
+        // 바닐라 블록 태그
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .addTag(ModTags.NETHERITE_BLOCKS);
         tag(BlockTags.BEACON_BASE_BLOCKS)
@@ -55,7 +51,7 @@ public class ModBlockTagsProvider extends FabricTagsProvider.BlockTagsProvider
                 .addTag(ModTags.NETHERITE_BLOCKS);
 
 
-        // Common block tags
+        // 공통 블록 태그
         tag(FabricModTags.COMMON_NETHERITE_BLOCKS)
                 .addTag(ModTags.NETHERITE_BLOCKS);
     }

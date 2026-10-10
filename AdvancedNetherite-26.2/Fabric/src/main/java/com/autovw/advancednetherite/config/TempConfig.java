@@ -5,7 +5,7 @@ import com.autovw.advancednetherite.config.server.IAdditionalDropPropertiesConfi
 import com.autovw.advancednetherite.config.server.IToolPropertiesConfig;
 
 /**
- * Temporary config used until a proper config system has been implemented
+ * 정식 설정 시스템을 만들기 전까지 쓰는 임시 설정
  * @author Autovw
  */
 @Deprecated

@@ -27,13 +27,13 @@ public abstract class PhantomMixin extends Mob implements Enemy
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void advancednetherite_Phantom_tick(CallbackInfo ci)
     {
-        Phantom phantom = (Phantom) (Object) this; // phantom (attacker)
-        LivingEntity target = phantom.getTarget(); // phantom target (player)
+        Phantom phantom = (Phantom) (Object) this; // 팬텀(공격하는 쪽)
+        LivingEntity target = phantom.getTarget(); // 팬텀이 노리는 대상(플레이어)
 
         if (!(target instanceof Player player))
             return;
 
-        // return early if the attacker was angered by the target (player)
+        // 대상(플레이어)에게 자극받아 화가 난 팬텀이면 바로 돌아간다
         if (phantom.getLastHurtByMob() == target)
             return;
 

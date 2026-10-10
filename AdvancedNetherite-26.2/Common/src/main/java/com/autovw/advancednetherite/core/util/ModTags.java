@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.Block;
  */
 public final class ModTags
 {
-    // BLOCK TAGS
+    // 블록 태그
     public static final TagKey<Block> NETHERITE_BLOCKS = modBlockTag("netherite_blocks");
 
     public static final TagKey<Block> INCORRECT_FOR_ASH_TOOL = modBlockTag("incorrect_for_ash_tool");
@@ -22,7 +22,7 @@ public final class ModTags
     public static final TagKey<Block> INCORRECT_FOR_SOUL_TOOL = modBlockTag("incorrect_for_soul_tool");
     public static final TagKey<Block> INCORRECT_FOR_FROST_TOOL = modBlockTag("incorrect_for_frost_tool");
 
-    // ITEM TAGS
+    // 아이템 태그
     public static final TagKey<Item> NETHERITE_BLOCKITEMS = modItemTag("netherite_blocks");
 
     public static final TagKey<Item> NETHERITE_INGOTS = modItemTag("netherite_ingots");
@@ -141,7 +141,7 @@ public final class ModTags
     public static final TagKey<Item> SWORD_UPGRADE_TO_SUNLIGHT = modItemTag("sword/upgrade_to_sunlight");
     public static final TagKey<Item> SWORD_UPGRADE_TO_ASH = modItemTag("sword/upgrade_to_ash");
 
-    // "tiers" tags
+    // 등급 태그
     public static final TagKey<Item> TIER_ARMOR = modItemTag("tier/armor");
     public static final TagKey<Item> TIER_TOOLS = modItemTag("tier/tools");
 
@@ -155,7 +155,7 @@ public final class ModTags
     public static final TagKey<Item> TIER_TOOL_SUNLIGHT = modItemTag("tier/tool/sunlight");
     public static final TagKey<Item> TIER_TOOL_ASH = modItemTag("tier/tool/ash");
 
-    // REPAIR TAGS
+    // 수리 재료 태그
     public static final TagKey<Item> REPAIRS_ASH_ARMOR = modItemTag("repairs_ash_armor");
     public static final TagKey<Item> REPAIRS_SUNLIGHT_ARMOR = modItemTag("repairs_sunlight_armor");
     public static final TagKey<Item> REPAIRS_SOUL_ARMOR = modItemTag("repairs_soul_armor");
@@ -166,12 +166,12 @@ public final class ModTags
     public static final TagKey<Item> REPAIRS_SOUL_TOOLS = modItemTag("repairs_soul_tools");
     public static final TagKey<Item> REPAIRS_FROST_TOOLS = modItemTag("repairs_frost_tools");
 
-    // "pacify armor" tags
+    // 몹 진정 갑옷 태그
     public static final TagKey<Item> PACIFY_PHANTOMS_ARMOR = modItemTag("pacify_phantoms_armor");
     public static final TagKey<Item> PACIFY_PIGLINS_ARMOR = modItemTag("pacify_piglins_armor");
     public static final TagKey<Item> PACIFY_ENDERMEN_ARMOR = modItemTag("pacify_endermen_armor");
 
-    // additional drop tags
+    // 추가 드롭 태그
     public static final TagKey<Item> DROPS_ADDITIONAL_CROPS = modItemTag("drops_additional_crops");
 
     public static final TagKey<Item> DROPS_ADDITIONAL_IRON = modItemTag("drops_additional_iron");
@@ -184,12 +184,12 @@ public final class ModTags
     public static final TagKey<Item> DROPS_ADDITIONAL_PIGLIN_LOOT = modItemTag("drops_additional_piglin_loot");
     public static final TagKey<Item> DROPS_ADDITIONAL_ENDERMAN_LOOT = modItemTag("drops_additional_enderman_loot");
 
-    // ENCHANTMENT TAGS
+    // 마법 부여 태그
     public static final TagKey<Enchantment> PREVENTS_ADDITIONAL_ORE_DROPS = modEnchantmentTag("prevents_additional_ore_drops");
 
     /**
-     * @param tagLoc Resource location of the tag
-     * @return Block tag
+     * @param tagLoc 태그의 리소스 위치
+     * @return 블록 태그
      */
     public static TagKey<Block> blockTag(Identifier tagLoc)
     {
@@ -197,8 +197,8 @@ public final class ModTags
     }
 
     /**
-     * @param tagLoc Resource location of the tag
-     * @return Item tag
+     * @param tagLoc 태그의 리소스 위치
+     * @return 아이템 태그
      */
     public static TagKey<Item> itemTag(Identifier tagLoc)
     {
@@ -206,8 +206,8 @@ public final class ModTags
     }
 
     /**
-     * @param tagLoc Resource location of the tag
-     * @return Enchantment tag
+     * @param tagLoc 태그의 리소스 위치
+     * @return 마법 부여 태그
      */
     public static TagKey<Enchantment> enchantmentTag(Identifier tagLoc)
     {

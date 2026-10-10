@@ -29,7 +29,7 @@ public final class RandomBoxConfigManager {
         RandomBoxConfig cached = CACHE.get(configId);
         if (cached != null) return cached;
 
-        // data/<ns>/random_box/<path>.json
+        // 파일 위치: data/<ns>/random_box/<path>.json
         Identifier resLoc = Identifier.fromNamespaceAndPath(
             configId.getNamespace(),
             "random_box/" + configId.getPath() + ".json"
@@ -71,13 +71,13 @@ public final class RandomBoxConfigManager {
         // optional (현재 RandomBoxItem에서는 사용 안 함)
         cfg.item = readResLoc(obj, "item");
 
-        // required
+        // 필수
         cfg.required_key = readResLoc(obj, "required_key");
         if (cfg.required_key == null) {
             LOGGER.error("RandomBox config {}: required_key is missing or invalid", source);
         }
 
-        // consume (optional)
+        // consume (선택)
         if (obj.has("consume") && obj.get("consume").isJsonObject()) {
             JsonObject c = obj.getAsJsonObject("consume");
             RandomBoxConfig.Consume consume = new RandomBoxConfig.Consume();
@@ -89,7 +89,7 @@ public final class RandomBoxConfigManager {
         // roll_mode (optional, 생략 시 SINGLE)
         cfg.roll_mode = readRollMode(source, obj, "roll_mode", RandomBoxConfig.RollMode.SINGLE);
 
-        // rewards
+        // 보상 목록
         if (!obj.has("rewards") || !obj.get("rewards").isJsonArray()) {
             LOGGER.error("RandomBox config {}: rewards array is missing", source);
             cfg.rewards = null;

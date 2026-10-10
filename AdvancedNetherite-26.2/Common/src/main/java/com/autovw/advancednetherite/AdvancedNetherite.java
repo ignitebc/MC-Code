@@ -37,7 +37,7 @@ public class AdvancedNetherite
     }
 
     /**
-     * @return Instance of platform helper, based on used mod loader
+     * @return 사용 중인 모드 로더에 맞는 플랫폼 도우미 인스턴스
      */
     public static IPlatformHelper getPlatformHelper()
     {
@@ -45,7 +45,7 @@ public class AdvancedNetherite
     }
 
     /**
-     * @return Instance of the mod loader independent registry helper
+     * @return 모드 로더와 무관한 등록 도우미 인스턴스
      */
     public static IRegistryHelper getRegistryHelper()
     {
