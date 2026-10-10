@@ -1,4 +1,4 @@
-# IDE / Editor
+# IDE / 편집기
 .vs/
 .vscode/
 .idea/
@@ -6,7 +6,7 @@
 *.ipr
 *.iws
 
-# Eclipse
+# 이클립스
 .settings/
 .classpath
 .project
@@ -14,12 +14,12 @@
 *.launch
 eclipse/
 
-# Python
+# 파이썬
 __pycache__/
 *.pyc
 .venv/
 
-# Java / Gradle
+# 자바 / Gradle
 .gradle/
 build/
 bin/
@@ -59,11 +59,11 @@ mc수정한파일/
 *.csv
 ~$*
 
-# OS
+# 운영체제
 Thumbs.db
 desktop.ini
 .DS_Store
 
-# Misc
+# 기타
 *.log
 *.tmp
