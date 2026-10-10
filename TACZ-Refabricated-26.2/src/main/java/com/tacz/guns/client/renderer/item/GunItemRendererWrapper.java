@@ -2,6 +2,7 @@ package com.tacz.guns.client.renderer.item;
 
 import cn.sh1rocu.simplebedrockmodel.api.event.ViewportEvent;
 import com.google.common.base.Suppliers;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.tacz.guns.api.TimelessAPI;
@@ -241,7 +242,11 @@ public class GunItemRendererWrapper extends AnimateGeoItemRenderer<BedrockGunMod
             for (BedrockPart bedrockPart : gunModel.getMuzzleFlashPosPath()) {
                 bedrockPart.translateAndRotateAndScale(poseStack);
             }
-            Matrix4f pose = poseStack.last().pose();
+            // 26.2의 바닐라 손 렌더링은 PoseStack을 시점 회전의 역행렬로 시작하고 시점 회전을 모델뷰 행렬에 둔다.
+            // 그래서 포즈만 읽으면 이미 월드 축 좌표라, 예광탄 쪽에서 카메라 회전을 한 번 더 곱하면 바라보는 방향에 따라
+            // 출발점이 좌우로 돌아간다. Iris 손 렌더링은 단위 행렬로 시작하고 흔들림만 모델뷰에 둔다.
+            // 두 경우 모두 "모델뷰 x 포즈"가 카메라 기준 시점 공간이므로 그 값으로 총구 위치를 구한다.
+            Matrix4f pose = new Matrix4f(RenderSystem.getModelViewStack()).mul(poseStack.last().pose());
             double itemRenderFov = CameraSetupEvent.ITEM_MODEL_FOV_DYNAMICS.get();
             double levelRenderFov = CameraSetupEvent.WORLD_FOV_DYNAMICS.get();
             poseStack.popPose();
