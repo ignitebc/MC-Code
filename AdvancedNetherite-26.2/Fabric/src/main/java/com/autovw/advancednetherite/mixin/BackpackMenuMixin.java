@@ -1,6 +1,7 @@
 package com.autovw.advancednetherite.mixin;
 
 import com.autovw.advancednetherite.common.backpack.BackpackInventory;
+import com.autovw.advancednetherite.common.backpack.BackpackPanel;
 import com.autovw.advancednetherite.common.backpack.BackpackSlot;
 import com.autovw.advancednetherite.common.item.BackpackItem;
 import net.minecraft.world.entity.player.Inventory;
@@ -27,13 +28,9 @@ public abstract class BackpackMenuMixin extends AbstractContainerMenu
     @Inject(method = "<init>", at = @At("TAIL"))
     private void advancednetherite$slots(Inventory inventory, boolean active, Player owner, CallbackInfo ci)
     {
-        addSlot(new BackpackSlot(inventory, BackpackInventory.EQUIPMENT_SLOT,
-                BackpackInventory.EQUIPMENT_X, BackpackInventory.EQUIPMENT_Y));
-        for (int i = 0; i < BackpackInventory.MAX_CAPACITY; i++)
+        for (Slot slot : BackpackPanel.createSlots(inventory, 0))
         {
-            addSlot(new BackpackSlot(inventory, BackpackInventory.STORAGE_START + i,
-                    BackpackInventory.STORAGE_X + (i % BackpackInventory.STORAGE_COLUMNS) * BackpackInventory.SLOT_SIZE,
-                    BackpackInventory.STORAGE_Y + (i / BackpackInventory.STORAGE_COLUMNS) * BackpackInventory.SLOT_SIZE));
+            addSlot(slot);
         }
     }
 

@@ -1,8 +1,8 @@
 package com.autovw.advancednetherite.mixin.client;
 
 import com.autovw.advancednetherite.common.backpack.BackpackInventory;
+import com.autovw.advancednetherite.common.backpack.BackpackPanel;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.RecipeBookMenu;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -49,8 +49,8 @@ public abstract class BackpackRecipeBookLayoutMixin
 
     private int advancednetherite$shift()
     {
-        // 플레이어 인벤토리의 2x2 제작대만 가방 패널을 달고 있다. 제작대 화면의 책은 그대로 둔다.
-        if (this.widthTooNarrow || !(this.menu instanceof InventoryMenu))
+        // E키 화면, 작업대, 화로 계열처럼 가방 패널을 단 화면의 책만 옮긴다.
+        if (this.widthTooNarrow || !BackpackPanel.hasPanel(this.menu))
         {
             return 0;
         }

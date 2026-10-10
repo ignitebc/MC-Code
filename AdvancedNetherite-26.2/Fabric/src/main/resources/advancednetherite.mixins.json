@@ -8,6 +8,7 @@
     "PhantomMixin",
     "BackpackInventoryMixin",
     "BackpackMenuMixin",
+    "BackpackPanelMenuMixin",
     "BackpackTransferMixin",
     "BackpackSyncMixin",
     "BackpackDeathPenaltyMixin",
@@ -17,8 +18,10 @@
     "PetPiercingWeaponPassThroughMixin"
   ],
   "client": [
+    "client.BackpackScreenAccessor",
     "client.BackpackScreenGeometryMixin",
     "client.BackpackScreenMixin",
+    "client.BackpackContainerScreenMixin",
     "client.BackpackCreativeScreenMixin",
     "client.BackpackRecipeBookMixin",
     "client.BackpackRecipeBookLayoutMixin",
