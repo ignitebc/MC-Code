@@ -17,26 +17,26 @@
 @if "%DEBUG%"=="" @echo off
 @rem ##########################################################################
 @rem
-@rem  Gradle startup script for Windows
+@rem  Windows용 Gradle 시작 스크립트
 @rem
 @rem ##########################################################################
 
-@rem Set local scope for the variables with windows NT shell
+@rem Windows NT 셸에서 변수 범위를 지역으로 설정
 if "%OS%"=="Windows_NT" setlocal
 
 set DIRNAME=%~dp0
 if "%DIRNAME%"=="" set DIRNAME=.
-@rem This is normally unused
+@rem 보통은 쓰지 않는다
 set APP_BASE_NAME=%~n0
 set APP_HOME=%DIRNAME%
 
-@rem Resolve any "." and ".." in APP_HOME to make it shorter.
+@rem APP_HOME의 "."과 ".."을 풀어 경로를 짧게 만든다.
 for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
 
-@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+@rem 기본 JVM 옵션은 여기에 추가한다. JAVA_OPTS와 GRADLE_OPTS로도 이 스크립트에 JVM 옵션을 넘길 수 있다.
 set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
 
-@rem Find java.exe
+@rem java.exe 찾기
 if defined JAVA_HOME goto findJavaFromJavaHome
 
 set JAVA_EXE=java.exe
@@ -66,21 +66,21 @@ echo location of your Java installation.
 goto fail
 
 :execute
-@rem Setup the command line
+@rem 명령줄 구성
 
 set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
 
 
-@rem Execute Gradle
+@rem Gradle 실행
 "%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
 
 :end
-@rem End local scope for the variables with windows NT shell
+@rem Windows NT 셸의 지역 변수 범위 종료
 if %ERRORLEVEL% equ 0 goto mainEnd
 
 :fail
-rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
-rem the _cmd.exe /c_ return code!
+rem _cmd.exe /c_ 반환 코드 대신 스크립트 자체의 반환 코드가 필요하면
+rem GRADLE_EXIT_CONSOLE 변수를 설정한다!
 set EXIT_CODE=%ERRORLEVEL%
 if %EXIT_CODE% equ 0 set EXIT_CODE=1
 if not ""=="%GRADLE_EXIT_CONSOLE%" exit %EXIT_CODE%

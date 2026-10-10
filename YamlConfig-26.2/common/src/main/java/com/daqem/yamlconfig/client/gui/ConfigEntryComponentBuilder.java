@@ -137,7 +137,7 @@ public class ConfigEntryComponentBuilder {
         appendSubCategories(categoryComponents);
 
         return categoryComponents.entrySet().stream()
-                .filter(entry -> !entry.getKey().contains(".")) // Only return top level categories
+                .filter(entry -> !entry.getKey().contains(".")) // 최상위 분류만 돌려준다
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
     }

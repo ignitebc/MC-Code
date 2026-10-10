@@ -42,10 +42,10 @@ public abstract class BaseMapConfigEntryComponent<C extends IMapConfigEntry<?>> 
 
     private static int calculateInitialHeight(IMapConfigEntry<?> configEntry) {
         int entryCount = configEntry.get().size();
-        return DEFAULT_HEIGHT // Title
-                + GAP_WIDTH // Gap between title and first entry or add button
-                + DEFAULT_HEIGHT // Add an entry button
-                + (entryCount * (DEFAULT_HEIGHT + GAP_WIDTH)); // Entries with gaps
+        return DEFAULT_HEIGHT // 제목
+                + GAP_WIDTH // 제목과 첫 항목 또는 추가 버튼 사이 간격
+                + DEFAULT_HEIGHT // 항목 추가 버튼
+                + (entryCount * (DEFAULT_HEIGHT + GAP_WIDTH)); // 간격을 둔 항목들
     }
 
     private ButtonWidget createAddEntryButton() {
@@ -187,7 +187,7 @@ public abstract class BaseMapConfigEntryComponent<C extends IMapConfigEntry<?>> 
         this.setHeight(this.getHeight() - DEFAULT_HEIGHT - GAP_WIDTH);
         this.addEntryButton.setY(this.getHeight() - DEFAULT_HEIGHT);
 
-        // Update positions of remaining components
+        // 남은 구성 요소의 위치 갱신
         updateComponentPositions();
     }
 

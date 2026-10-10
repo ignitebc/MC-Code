@@ -53,7 +53,7 @@ public class ServerboundSaveConfigPacket implements CustomPacketPayload {
             existingConfig.save();
 
             if (existingConfig.getType() == ConfigType.COMMON) {
-                //Sync the config to the players on the server
+                // 서버의 플레이어들에게 설정을 동기화한다
                 Objects.requireNonNull(packetContext.getPlayer().level().getServer()).getPlayerList().getPlayers().forEach(player -> {
                     NetworkManager.sendToPlayer(player, new ClientboundSyncConfigPacket(existingConfig));
                 });

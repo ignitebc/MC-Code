@@ -9,8 +9,8 @@ loom {
 }
 
 dependencies {
-    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
-    // Do NOT use other classes from fabric loader
+    // Fabric @Environment 어노테이션과 Mixin 의존성을 쓰기 위해 여기서 Fabric 로더에 의존한다
+    // Fabric 로더의 다른 클래스는 쓰지 않는다
     implementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
     implementation "dev.architectury:architectury:${project.architectury_version}"
 

@@ -6,7 +6,7 @@ import java.nio.file.Path;
 
 public class YamlConfigExpectPlatformImpl {
     /**
-     * This is our actual method to {@link com.daqem.yamlconfig.YamlConfigExpectPlatform#getConfigDirectory()}.
+     * {@link com.daqem.yamlconfig.YamlConfigExpectPlatform#getConfigDirectory()}의 실제 구현 메서드.
      */
     public static Path getConfigDirectory() {
         return FabricLoader.getInstance().getConfigDir();
