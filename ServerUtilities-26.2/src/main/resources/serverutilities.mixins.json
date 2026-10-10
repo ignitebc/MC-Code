@@ -18,6 +18,7 @@
     "EquipmentTierTridentDamageMixin",
     "HealthAttributeLimitMixin",
     "HungerExhaustionMixin",
+    "InventoryTotemMixin",
     "LodestonePlacementMixin",
     "LodestonePistonMixin",
     "MerchantTradeLimitMixin",
