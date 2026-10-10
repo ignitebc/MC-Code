@@ -26,12 +26,10 @@
     "client.GameRendererMixin",
     "client.ItemInHandLayerMixin",
     "client.ItemInHandRendererMixin",
-    "client.LanguageMixin",
     "client.LocalPlayerMixin",
     "client.MouseHandlerMixin",
     "client.PlayerModelMixin",
-    "client.SoundManagerPreparationsMixin",
-    "client.StairBlockAccessor"
+    "client.SoundManagerPreparationsMixin"
   ],
   "_comment": "26.2: ItemInHandRendererMixin and ItemInHandLayerMixin restored against SubmitNodeCollector signatures; PlayerModelMixin applies TACZ/PAL third-person poses from AvatarRenderState.",
   "injectors": {
