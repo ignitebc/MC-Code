@@ -10,8 +10,8 @@
   },
   "pattern": [
     "PIP",
-    "P P",
-    "PPP"
+    "PIP",
+    "PIP"
   ],
   "key": {
     "I": "#c:ingots/gold",

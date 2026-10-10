@@ -8,7 +8,6 @@ import com.tacz.guns.api.item.IAmmo;
 import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
 import com.tacz.guns.api.item.nbt.AmmoBoxItemDataAccessor;
-import com.tacz.guns.config.sync.SyncConfig;
 import com.tacz.guns.init.ModItems;
 import com.tacz.guns.inventory.tooltip.AmmoBoxTooltip;
 import net.fabricmc.api.EnvType;
@@ -30,9 +29,14 @@ import java.util.function.Consumer;
 
 public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem {
 
+    // 저장 값(Level)이라 이름은 그대로 둔다. 화면에는 일반·희귀·고급 탄약상자로 표시한다.
     public static final int IRON_LEVEL = 0;
     public static final int GOLD_LEVEL = 1;
     public static final int DIAMOND_LEVEL = 2;
+    /** 상자 단계마다 늘어나는 최대 탄 수. 탄종과 관계없이 일반 200, 희귀 400, 고급 600발이다. */
+    private static final int CAPACITY_PER_LEVEL = 200;
+    private static final int RARE_NAME_COLOR = 0x55FFFF;
+    private static final int ADVANCED_NAME_COLOR = 0xFFFF55;
 
     public AmmoBoxItem(Properties properties) {
         super(properties.stacksTo(1));
@@ -94,14 +98,14 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
                 } else if (!slotAmmoId.equals(boxAmmoId)) {
                     return false;
                 }
-                TimelessAPI.getCommonAmmoIndex(slotAmmoId).ifPresent(index -> {
+                // 총기 팩에 정의되지 않은 탄종은 넣지 않는다
+                boolean knownAmmo = TimelessAPI.getCommonAmmoIndex(slotAmmoId).isPresent();
+                if (knownAmmo) {
                     int boxAmmoCount = this.getAmmoCount(ammoBox);
-                    int boxLevelMultiplier = this.getAmmoLevel(ammoBox) + 1;
-                    int maxSize = index.getStackSize() * SyncConfig.AMMO_BOX_STACK_SIZE.get() * boxLevelMultiplier;
-                    int needCount = maxSize - boxAmmoCount;
+                    int needCount = getMaxAmmoCount(ammoBox) - boxAmmoCount;
                     ItemStack takeItem = slot.safeTake(slotItem.getCount(), needCount, player);
                     this.setAmmoCount(ammoBox, boxAmmoCount + takeItem.getCount());
-                });
+                }
                 // 꺼내는 소리 재생
                 this.playInsertSound(player);
                 return true;
@@ -125,25 +129,30 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        Identifier ammoId = this.getAmmoId(stack);
         int ammoCount = this.getAmmoCount(stack);
-        int boxLevelMultiplier = this.getAmmoLevel(stack) + 1;
-        double widthPercent = TimelessAPI.getCommonAmmoIndex(ammoId).map(index -> {
-            double totalCount = index.getStackSize() * SyncConfig.AMMO_BOX_STACK_SIZE.get() * boxLevelMultiplier;
-            return ammoCount / totalCount;
-        }).orElse(0d);
+        double widthPercent = (double) ammoCount / getMaxAmmoCount(stack);
         return (int) Math.min(1 + 12 * widthPercent, 13);
+    }
+
+    /** 상자 단계에 따른 최대 탄 수. 알 수 없는 단계 값은 가장 가까운 단계로 본다. */
+    public static int getMaxAmmoCount(ItemStack ammoBox) {
+        if (!(ammoBox.getItem() instanceof IAmmoBox iAmmoBox)) {
+            return 0;
+        }
+        int level = Math.clamp(iAmmoBox.getAmmoLevel(ammoBox), IRON_LEVEL, DIAMOND_LEVEL);
+        return CAPACITY_PER_LEVEL * (level + 1);
     }
 
     @Override
     public Component getName(ItemStack stack) {
         int ammoLevel = getAmmoLevel(stack);
+        // 등급 색: 희귀는 하늘, 고급은 노랑(서버 등급 색과 같은 순서)
         switch (ammoLevel) {
             case GOLD_LEVEL -> {
-                return Component.translatable("item.tacz.ammo_box.gold").withStyle(style -> style.withColor(0xFFFF55));
+                return Component.translatable("item.tacz.ammo_box.gold").withStyle(style -> style.withColor(RARE_NAME_COLOR));
             }
             case DIAMOND_LEVEL -> {
-                return Component.translatable("item.tacz.ammo_box.diamond").withStyle(style -> style.withColor(0x55FFFF));
+                return Component.translatable("item.tacz.ammo_box.diamond").withStyle(style -> style.withColor(ADVANCED_NAME_COLOR));
             }
             default -> {
                 return Component.translatable("item.tacz.ammo_box.iron");
@@ -180,7 +189,7 @@ public class AmmoBoxItem extends Item implements AmmoBoxItemDataAccessor, IItem 
             return Optional.empty();
         }
         ItemStack ammoStack = AmmoItemBuilder.create().setId(ammoId).build();
-        return Optional.of(new AmmoBoxTooltip(stack, ammoStack, ammoCount));
+        return Optional.of(new AmmoBoxTooltip(stack, ammoStack, ammoCount, getMaxAmmoCount(stack)));
     }
 
     /**

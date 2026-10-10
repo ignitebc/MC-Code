@@ -18,8 +18,6 @@ public class SyncConfig {
 
     // 클라이언트에서 충돌 상자를 디버그 표시하기 쉽도록 클라이언트로 동기화해야 한다
     public static ForgeConfigSpec.ConfigValue<List<String>> HEAD_SHOT_AABB;
-    // 탄약 상자 저장 한도는 클라이언트 표시 지원이 필요하다
-    public static ForgeConfigSpec.IntValue AMMO_BOX_STACK_SIZE;
     // 클라이언트가 내려받아야 하는 총기 팩
     public static ForgeConfigSpec.ConfigValue<List<List<String>>> CLIENT_GUN_PACK_DOWNLOAD_URLS;
     // 엎드리기 전술 동작 비활성화
@@ -55,8 +53,7 @@ public class SyncConfig {
         builder.comment("Format: touhou_little_maid:maid [-0.5, 1.0, -0.5, 0.5, 1.5, 0.5]");
         HEAD_SHOT_AABB = builder.define("HeadShotAABB", Lists.newArrayList());
 
-        builder.comment("The maximum stack size of ammo that the ammo box can hold");
-        AMMO_BOX_STACK_SIZE = builder.defineInRange("AmmoBoxStackSize", 3, 1, Integer.MAX_VALUE);
+        // 탄약상자 용량은 AmmoBoxItem에 단계별 고정값(200/400/600발)으로 정한다. 예전 AmmoBoxStackSize 항목은 쓰지 않는다.
 
         builder.comment("Deprecated. Use vanilla server resource pack");
         CLIENT_GUN_PACK_DOWNLOAD_URLS = builder.define("ClientGunPackDownloadUrls", Lists.newArrayList());

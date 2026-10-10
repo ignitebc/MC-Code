@@ -14,7 +14,7 @@ public class ClientAmmoBoxTooltip implements ClientTooltipComponent {
 
     public ClientAmmoBoxTooltip(AmmoBoxTooltip tooltip) {
         this.ammo = tooltip.getAmmo();
-        this.count = Component.translatable("tooltip.tacz.ammo_box.count", tooltip.getCount());
+        this.count = Component.translatable("tooltip.tacz.ammo_box.count", tooltip.getCount(), tooltip.getCapacity());
         this.ammoName = this.ammo.getHoverName();
     }
 
