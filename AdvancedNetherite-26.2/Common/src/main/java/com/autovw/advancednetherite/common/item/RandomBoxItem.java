@@ -2,6 +2,7 @@ package com.autovw.advancednetherite.common.item;
 
 import com.autovw.advancednetherite.common.randombox.RandomBoxConfig;
 import com.autovw.advancednetherite.common.randombox.RandomBoxConfigManager;
+import com.autovw.advancednetherite.common.randombox.RandomBoxRewardFilters;
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
@@ -105,7 +106,9 @@ public class RandomBoxItem extends AdvancedItem {
             return InteractionResult.FAIL;
         }
 
-        List<RandomBoxConfig.Reward> selectedRewards = selectRewards(config, rewards, player.getRandom());
+        // 이 플레이어가 쓸 수 없는 보상(예: 최대 직업 수에 닿은 뒤의 직업선택권)은 후보에서 빼고 뽑는다.
+        List<RandomBoxConfig.Reward> availableRewards = filterAvailableRewards(rewards, player);
+        List<RandomBoxConfig.Reward> selectedRewards = selectRewards(config, availableRewards, player.getRandom());
         if (selectedRewards.isEmpty()) {
             player.sendOverlayMessage(Component.literal("지급할 수 있는 상자 보상이 없습니다: " + configId));
             return InteractionResult.FAIL;
@@ -199,6 +202,17 @@ public class RandomBoxItem extends AdvancedItem {
             if (roll <= acc) return r;
         }
         return candidates.get(candidates.size() - 1);
+    }
+
+    private static List<RandomBoxConfig.Reward> filterAvailableRewards(
+            List<RandomBoxConfig.Reward> rewards, Player player) {
+        List<RandomBoxConfig.Reward> available = new ArrayList<>();
+        for (RandomBoxConfig.Reward reward : rewards) {
+            if (!RandomBoxRewardFilters.isExcluded(player, reward.item)) {
+                available.add(reward);
+            }
+        }
+        return available;
     }
 
     private static List<RandomBoxConfig.Reward> selectRewards(
