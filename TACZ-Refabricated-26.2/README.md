@@ -175,7 +175,7 @@ Forge Config API Port는 TaCZ 설정 구현에 필요한 Fabric 라이브러리�
 ## PUBG 총기 명칭 및 SLR
 
 - M416, P18C, 소드오프, MP5K, Micro UZI의 표시 이름과 내부 ID·번역 키·파일명·리소스 참조를 통일했습니다. 기존 외형·발사 설정은 유지하며, 이전 ID로 저장된 총기는 호환 매핑으로 읽습니다.
-- 기본 총기팩에 `tacz:slr`을 추가했습니다. 전용 모델·LOD·텍스처·아이콘, 반자동 10/20발 탄창, 제작대 레시피를 포함합니다.
+- 기본 총기팩에 `tacz:slr`을 추가했습니다. 전용 모델·LOD·텍스처·아이콘, 반자동 10발 탄창(확장 1/2/3단계 20/23/26발), 제작대 레시피를 포함합니다.
 - PUBG 계열 신규 총기 22종(Groza, Beryl M762, ACE32, FAMAS, K2, Mk47 Mutant, Mini14, Mk12, VSS, Dragunov, Tommy Gun, MP9, JS9, Win94, M24, S12K, DBS, O12, MG3, RPD, Skorpion, R1895)을 기본 총기팩에 추가했습니다. 수치와 제작 구조는 [22종 설계 문서](docs/PUBG_GUN_EXPANSION_22.md)에 있고, 외형은 `tools/pubg_guns/build.py`로 다시 만들 수 있습니다.
 - 이름 변경·SLR·22종 반영 내역은 [PUBG 총기 제작 체크리스트](docs/PUBG_GUN_CHECKLIST.md)에 정리했습니다.
 - 리소스 연결·뼈대·변경 범위는 정적으로 확인했습니다.
