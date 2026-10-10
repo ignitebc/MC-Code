@@ -77,6 +77,8 @@
   "gui.tacz.gun_smith_table.ingredient.unknown": "Unknown ingredient",
   "gui.tacz.gun_smith_table.craft": "Craft",
   "gui.tacz.gun_smith_table.count": "Count: %d",
+  "gui.tacz.gun_smith_table.tooltip.ammo_count": "Crafts %d rounds",
+  "gui.tacz.gun_smith_table.tooltip.output_count": "Crafts %d items",
   "gui.tacz.gun_smith_table.group.gun": "Guns",
   "gui.tacz.gun_smith_table.group.attachment": "Attachments",
   "gui.tacz.gun_smith_table.group.ammo": "Ammo",

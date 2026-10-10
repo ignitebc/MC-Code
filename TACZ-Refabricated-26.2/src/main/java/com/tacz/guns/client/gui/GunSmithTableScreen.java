@@ -25,6 +25,7 @@ import com.tacz.guns.resource.pojo.data.recipe.TableRecipe;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
@@ -33,9 +34,11 @@ import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -631,9 +634,37 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
 
         for (var widget : ((ScreenAccessor) this).tacz$getRenderables()) {
             if (widget instanceof SmithRowButton row && !row.tooltipStack().isEmpty()) {
-                gui.setTooltipForNextFrame(font, row.tooltipStack(), mouseX, mouseY);
+                drawOutputTooltip(gui, row.tooltipStack(), mouseX, mouseY);
             }
         }
+    }
+
+    /**
+     * 제작 결과물의 아이템 툴팁 끝에 한 번 제작할 때 나오는 수량을 덧붙인다.
+     * 바닐라 아이템 툴팁은 수량을 보여 주지 않으므로, 같은 툴팁 그림·스타일을 유지한 채 줄만 더한다.
+     */
+    private void drawOutputTooltip(GuiGraphicsExtractor gui, ItemStack output, int mouseX, int mouseY) {
+        List<Component> lines = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), output));
+        Component countLine = outputCountLine(output);
+        if (countLine != null) {
+            lines.add(countLine);
+        }
+        gui.setTooltipForNextFrame(font, lines, output.getTooltipImage(), mouseX, mouseY,
+                output.get(DataComponents.TOOLTIP_STYLE));
+    }
+
+    /** 탄약은 몇 발, 그 밖의 아이템은 2개 이상일 때만 몇 개가 나오는지. 표시할 것이 없으면 null */
+    private static @Nullable Component outputCountLine(ItemStack output) {
+        int count = output.getCount();
+        if (IAmmo.getIAmmoOrNull(output) != null) {
+            return Component.translatable("gui.tacz.gun_smith_table.tooltip.ammo_count", count)
+                    .withStyle(ChatFormatting.GOLD);
+        }
+        if (count > 1) {
+            return Component.translatable("gui.tacz.gun_smith_table.tooltip.output_count", count)
+                    .withStyle(ChatFormatting.GOLD);
+        }
+        return null;
     }
 
     /** 목록이 화면보다 길 때만 오른쪽 가장자리에 가는 스크롤 막대를 그린다. */
