@@ -7,12 +7,12 @@ loom {
 }
 
 dependencies {
-    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
-    // Do NOT use other classes from fabric loader
+    // Fabric @Environment 어노테이션과 Mixin 의존성을 쓰기 위해 여기서 Fabric 로더에 의존한다
+    // Fabric 로더의 다른 클래스는 쓰지 않는다
     implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    // Remove the next line if you don't want to depend on the API
+    // API에 의존하지 않으려면 다음 줄을 지운다
     api "dev.architectury:architectury:${rootProject.architectury_version}"
-    //source: https://github.com/Fuzss/forgeconfigapiport-fabric
+    //출처: https://github.com/Fuzss/forgeconfigapiport-fabric
 
     implementation files(rootProject.file("../YamlConfig-26.2/fabric/build/libs/yamlconfig-1.3.2-26.2-fabric.jar"))
     implementation files(rootProject.file("../ArcLib-26.2/fabric/build/libs/arc-1.9.7-26.2-fabric.jar"))
