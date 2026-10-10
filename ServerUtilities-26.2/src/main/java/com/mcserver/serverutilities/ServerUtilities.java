@@ -5,6 +5,7 @@ import com.mcserver.serverutilities.boss.BossHealthRules;
 import com.mcserver.serverutilities.boss.WardenBossBars;
 import com.mcserver.serverutilities.monster.BossMinionRules;
 import com.mcserver.serverutilities.monster.DragonEndermanRules;
+import com.mcserver.serverutilities.monster.IllagerHealthRules;
 import com.mcserver.serverutilities.monster.CreeperGunpowderDrops;
 import com.mcserver.serverutilities.monster.MonsterEquipmentAccess;
 import com.mcserver.serverutilities.monster.MonsterEquipmentRules;
@@ -61,6 +62,7 @@ public final class ServerUtilities implements ModInitializer {
         MonsterLevelSync.register();
         CreeperGunpowderDrops.register();
         BossHealthRules.register();
+        IllagerHealthRules.register();
         WardenBossBars.register();
         rejectLegacyModule("jobsplus", "com/daqem/jobsplus/event/player/EventDeleteRandomItemOnDeath.class");
         rejectLegacyModule("advancednetherite", "com/autovw/advancednetherite/mixin/HungerExhaustionMixin.class");
@@ -108,6 +110,7 @@ public final class ServerUtilities implements ModInitializer {
                                     + ", 전투 범위=" + settings.combatRange()
                                     + ", 크리퍼 레벨 배율=" + settings.creeperLevels()
                                     + ", 벡스 벽 통과 금지=" + settings.vexCollision()
+                                    + ", 일리저 체력 상향=" + settings.illagerHealth()
                                     + ", 피로도=" + settings.hunger() + " ×" + settings.hungerMultiplier()
                                     + ", 방어도 곡선=" + settings.armorCurve()
                                     + ", 장비 등급=" + settings.equipmentTiers()

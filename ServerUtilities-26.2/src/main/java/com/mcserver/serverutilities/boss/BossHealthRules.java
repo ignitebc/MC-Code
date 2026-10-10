@@ -38,7 +38,7 @@ public final class BossHealthRules {
         boss.setHealth(applyHealth(maxHealth, boss.getHealth(), targetHealth, dyingDragon));
     }
 
-    static float applyHealth(AttributeInstance maxHealth, float health, double targetHealth, boolean dyingDragon) {
+    public static float applyHealth(AttributeInstance maxHealth, float health, double targetHealth, boolean dyingDragon) {
         // 배율을 누적하지 않고 저장되는 기본값을 고정한다. 재로드 시에는 현재 체력도 유지된다.
         if (maxHealth.getBaseValue() == targetHealth) return health;
         double oldMaximum = maxHealth.getValue();

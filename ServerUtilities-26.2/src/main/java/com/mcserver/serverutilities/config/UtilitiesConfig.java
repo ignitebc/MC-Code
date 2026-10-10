@@ -7,6 +7,7 @@ import java.util.Properties;
 
 public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, boolean combatGolems,
                               double combatRange, boolean creeperLevels, boolean vexCollision,
+                              boolean illagerHealth,
                               boolean hunger, float hungerMultiplier, boolean armorCurve,
                               boolean equipmentTiers, boolean deathPenalty, boolean deathProtection,
                               boolean deathChest, int deathChestExpireSeconds, int deathChestEmptySeconds,
@@ -14,7 +15,7 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
                               boolean spawnScatter, int spawnScatterRadius, boolean starterKit,
                               boolean recipeUnlockAll) {
     public static final UtilitiesConfig DEFAULT = new UtilitiesConfig(
-            true, true, true, 80.0, true, true, true, 1.5F, true, true, true, true, true, 300, 3,
+            true, true, true, 80.0, true, true, true, true, 1.5F, true, true, true, true, true, 300, 3,
             true,
             true, 5000, true, true);
 
@@ -36,6 +37,7 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
                 bool(merged, "sleep.enabled"), bool(merged, "combat.elytra.enabled"),
                 bool(merged, "combat.golems.enabled"), number(merged, "combat.range", 1, 128),
                 bool(merged, "balance.creeper.enabled"), bool(merged, "balance.vex_collision.enabled"),
+                bool(merged, "balance.illager_health.enabled"),
                 bool(merged, "balance.hunger.enabled"), (float) number(merged, "balance.hunger.multiplier", 0, 100),
                 bool(merged, "balance.armor.enabled"), bool(merged, "balance.tier.enabled"),
                 bool(merged, "death.penalty.enabled"), bool(merged, "death.protection.enabled"),
@@ -54,6 +56,7 @@ public record UtilitiesConfig(boolean singlePlayerSleep, boolean combatElytra, b
         values.setProperty("combat.range", Double.toString(combatRange));
         values.setProperty("balance.creeper.enabled", Boolean.toString(creeperLevels));
         values.setProperty("balance.vex_collision.enabled", Boolean.toString(vexCollision));
+        values.setProperty("balance.illager_health.enabled", Boolean.toString(illagerHealth));
         values.setProperty("balance.hunger.enabled", Boolean.toString(hunger));
         values.setProperty("balance.hunger.multiplier", Float.toString(hungerMultiplier));
         values.setProperty("balance.armor.enabled", Boolean.toString(armorCurve));
