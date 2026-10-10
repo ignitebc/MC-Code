@@ -245,7 +245,7 @@ public final class CoverFinder {
     }
 
     /** 대상의 눈에서 날아온 탄이 목표 지점 전에 블록에 막히는지. 깨지는 유리에 막히면 막지 못한 것으로 본다. */
-    private static boolean blocksBullet(Level level, Vec3 from, Vec3 to) {
+    static boolean blocksBullet(Level level, Vec3 from, Vec3 to) {
         BlockHitResult hit = BlockRayTrace.rayTraceBlocks(level,
                 new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
         if (hit.getType() == HitResult.Type.MISS) {
@@ -304,7 +304,7 @@ public final class CoverFinder {
 
     /** 기둥에서 몬스터가 설 수 있는 칸을 찾는다. 발 높이에 가까운 칸부터 살핀다. */
     @Nullable
-    private static BlockPos findStandable(PathfinderMob mob, BlockPos column, int verticalRange) {
+    static BlockPos findStandable(PathfinderMob mob, BlockPos column, int verticalRange) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int i = 0; i <= verticalRange * 2; i++) {
             // 0, +1, -1, +2, -2 ... 순서
@@ -318,7 +318,7 @@ public final class CoverFinder {
     }
 
     /** 발밑이 단단하고 위험하지 않으며, 머리 위 칸까지 비어 있는지 */
-    private static boolean isStandable(PathfinderMob mob, BlockPos pos) {
+    static boolean isStandable(PathfinderMob mob, BlockPos pos) {
         if (WalkNodeEvaluator.getPathTypeStatic(mob, pos) != PathType.WALKABLE) {
             return false;
         }

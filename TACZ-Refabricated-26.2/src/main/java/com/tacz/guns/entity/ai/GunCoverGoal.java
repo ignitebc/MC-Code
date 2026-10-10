@@ -215,6 +215,10 @@ public class GunCoverGoal extends Goal {
         if (heldGunData() == null || !MonsterGunAmmo.hasAmmo(this.mob.getMainHandItem())) {
             return false;
         }
+        // 저격 계열은 멀리서는 SniperGoal이 맡고, 가까이 오면 숨지 않고 근접 추격으로 달려가며 쏜다.
+        if (SniperGuns.isSniperClass(this.mob.getMainHandItem())) {
+            return false;
+        }
         if (this.mob.distanceToSqr(target) <= MELEE_SWITCH_DISTANCE * MELEE_SWITCH_DISTANCE) {
             return false;
         }

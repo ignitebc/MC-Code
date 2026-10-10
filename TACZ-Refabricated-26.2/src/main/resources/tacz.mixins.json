@@ -12,6 +12,7 @@
     "common.MonsterEquipmentGunMixin",
     "common.PiglinAiInvoker",
     "common.PiglinSensorTruceMixin",
+    "common.PiglinSniperMixin",
     "common.ServerGamePacketListenerImplMixin",
     "common.ServerPlayerMixin",
     "common.ServerPlayNetHandlerMixin",

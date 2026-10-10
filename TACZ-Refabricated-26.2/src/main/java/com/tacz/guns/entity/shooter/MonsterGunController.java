@@ -8,6 +8,8 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.config.common.AmmoConfig;
 import com.tacz.guns.entity.ai.CoverCombatant;
 import com.tacz.guns.entity.ai.FriendlyFireLanes;
+import com.tacz.guns.entity.ai.SniperGuns;
+import com.tacz.guns.init.ModParticles;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import com.tacz.guns.resource.pojo.data.gun.BulletData;
 import com.tacz.guns.resource.pojo.data.gun.ChargeType;
@@ -28,7 +30,9 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.LinkedList;
 
@@ -60,6 +64,10 @@ public final class MonsterGunController {
     private static final float UNLIMITED_DISTANCE = Float.MAX_VALUE;
     private static final Identifier FOLLOW_RANGE_MODIFIER_ID =
             Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "monster_gun_follow_range");
+    /** 저격 계열이 조준하는 동안 스코프 반짝임을 보내는 간격(틱). 반짝임 한 번(6틱)보다 짧아 끊기지 않는다. */
+    private static final int SCOPE_GLINT_INTERVAL_TICKS = 4;
+    /** 반짝임을 눈 위치에서 시선 방향으로 내미는 거리(칸). 얼굴 앞, 조준경 렌즈 자리다. */
+    private static final double SCOPE_GLINT_FORWARD = 0.45;
 
     private final Mob mob;
     /** 반응 시간, 조준 오차, 점사 간격. 몬스터가 기계처럼 정확하게 쏘지 않게 한다. */
@@ -68,6 +76,10 @@ public final class MonsterGunController {
     private Identifier drawnId;
     private float chargeProgress;
     private double effectiveRange = FALLBACK_RANGE;
+    /** 저격총·지정사수소총을 들었는지. 총을 바꿀 때만 다시 판정한다. */
+    private boolean sniperClass;
+    /** 지난 틱에 볼트를 당기던 중이었는지. 볼트가 끝난 틱을 찾는 데 쓴다. */
+    private boolean wasBolting;
 
     public MonsterGunController(Mob mob) { this.mob = mob; }
 
@@ -88,6 +100,8 @@ public final class MonsterGunController {
             this.drawnId = null;
             this.chargeProgress = 0;
             this.effectiveRange = FALLBACK_RANGE;
+            this.sniperClass = false;
+            this.wasBolting = false;
             return;
         }
         Identifier id = gun.getGunId(stack);
@@ -109,7 +123,12 @@ public final class MonsterGunController {
             // 총기를 바꿀 때만 다시 읽는다. 매 틱 계산할 값이 아니다.
             this.effectiveRange = getEffectiveRange(data);
             applyFollowRange(this.effectiveRange);
+            SniperGuns.Kind sniperKind = SniperGuns.kindOf(stack);
+            this.sniperClass = sniperKind != SniperGuns.Kind.NONE;
+            this.aimModel.setProfile(aimProfileOf(sniperKind));
         }
+        long gameTime = this.mob.level().getGameTime();
+        trackBoltFinish(operator, gameTime);
         if (!MonsterGunAmmo.hasAmmo(stack)) {
             operator.aim(false);
             this.chargeProgress = 0;
@@ -133,12 +152,14 @@ public final class MonsterGunController {
         // 발사하는 틱에만 고개를 돌리면 몸이 따라오기 전에 탄이 먼저 나간다.
         // 쏠 수 있는 동안에는 재장전·쿨타임 중에도 계속 대상을 겨누게 한다.
         this.mob.getLookControl().setLookAt(target, AIM_TURN_SPEED, AIM_TURN_SPEED);
-        long gameTime = this.mob.level().getGameTime();
         this.aimModel.observe(target, gameTime, this.mob.getRandom());
         // 몬스터는 탄약 아이템 없이 장전하지만, 장전 시간은 플레이어와 똑같이 기다린다.
         if (operator.getDataHolder().reloadStateType.isReloading()) {
             this.chargeProgress = 0;
             return;
+        }
+        if (this.sniperClass) {
+            emitScopeGlint(gameTime);
         }
         var charge = data.getChargeData(gun.getFireMode(stack));
         if (charge != null) {
@@ -178,6 +199,38 @@ public final class MonsterGunController {
             this.chargeProgress = charge.getChargeType() == ChargeType.DELAY ? 0
                     : Math.max(0, this.chargeProgress - charge.getDecreaseOnFire());
         }
+    }
+
+    private static MonsterAimModel.Profile aimProfileOf(SniperGuns.Kind kind) {
+        return switch (kind) {
+            case SNIPER -> MonsterAimModel.Profile.SNIPER;
+            case MARKSMAN -> MonsterAimModel.Profile.MARKSMAN;
+            case NONE -> MonsterAimModel.Profile.STANDARD;
+        };
+    }
+
+    /** 볼트를 다 당긴 틱을 조준 모델에 알린다. 쏘지 못하는 틱에도 볼트는 끝날 수 있어 매 틱 본다. */
+    private void trackBoltFinish(IGunOperator operator, long gameTime) {
+        boolean bolting = operator.getSynIsBolting();
+        if (this.wasBolting && !bolting) {
+            this.aimModel.onBoltFinished(gameTime, this.mob.getRandom());
+        }
+        this.wasBolting = bolting;
+    }
+
+    /**
+     * 조준경 렌즈 자리에 반짝임을 보낸다. 저격 계열은 한 발이 아파서, 조준당하는 플레이어가 피할 수 있도록 미리 알린다.
+     * <p>
+     * 기본 전송 거리(32칸)로는 사거리 끝의 저격수 반짝임이 닿지 않고, 파티클을 줄인 설정에서는 안 보일 수 있어 둘 다 풀어 보낸다.
+     */
+    private void emitScopeGlint(long gameTime) {
+        // 몬스터마다 보내는 틱을 흩어 여러 저격수가 같은 틱에 몰려 보내지 않게 한다.
+        boolean glintTick = (gameTime + this.mob.getId()) % SCOPE_GLINT_INTERVAL_TICKS == 0;
+        if (!glintTick || !(this.mob.level() instanceof ServerLevel level)) {
+            return;
+        }
+        Vec3 lens = this.mob.getEyePosition().add(this.mob.getViewVector(1.0F).scale(SCOPE_GLINT_FORWARD));
+        level.sendParticles(ModParticles.SCOPE_GLINT, true, true, lens.x, lens.y, lens.z, 1, 0.0, 0.0, 0.0, 0.0);
     }
 
     /**
@@ -284,11 +337,22 @@ public final class MonsterGunController {
         }
     }
 
-    private LivingEntity findTarget(double range) {
-        LivingEntity target = this.mob.getTarget();
-        if (target == null && this.mob.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
-            target = this.mob.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
+    /**
+     * 몬스터의 공격 대상. Goal 방식 몬스터는 대상 필드를, 피글린처럼 Brain 방식 몬스터는 공격 대상 기억을 쓴다.
+     *
+     * @return 대상이 없으면 null
+     */
+    @Nullable
+    public static LivingEntity currentTarget(Mob mob) {
+        LivingEntity target = mob.getTarget();
+        if (target == null && mob.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
+            target = mob.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
         }
+        return target;
+    }
+
+    private LivingEntity findTarget(double range) {
+        LivingEntity target = currentTarget(this.mob);
         // 드래곤은 일반 Mob의 target 필드 대신 전투 페이즈에서 플레이어를 선택한다.
         if (target == null && this.mob instanceof EnderDragon && this.mob.level() instanceof ServerLevel level) {
             target = level.players().stream().filter(player -> player.isAlive() && !player.isCreative() && !player.isSpectator())

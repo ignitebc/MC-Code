@@ -1,6 +1,7 @@
 package com.tacz.guns.mixin.common;
 
 import com.tacz.guns.entity.ai.GunCoverGoal;
+import com.tacz.guns.entity.ai.SniperGoal;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.zombie.Zombie;
@@ -24,7 +25,8 @@ public abstract class ZombieCoverMixin extends Monster {
 
     @Inject(method = "addBehaviourGoals", at = @At("TAIL"))
     private void tacz$addGunCoverGoal(CallbackInfo ci) {
-        // 근접 추격(우선순위 3)보다 먼저 이동을 잡는다.
+        // 근접 추격(우선순위 3)보다 먼저 이동을 잡는다. 두 Goal은 든 총 종류로 갈려 동시에 쓰이지 않는다.
         this.goalSelector.addGoal(2, new GunCoverGoal(this));
+        this.goalSelector.addGoal(2, new SniperGoal(this));
     }
 }

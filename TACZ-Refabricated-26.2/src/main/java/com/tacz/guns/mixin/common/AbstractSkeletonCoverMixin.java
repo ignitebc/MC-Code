@@ -2,6 +2,7 @@ package com.tacz.guns.mixin.common;
 
 import com.tacz.guns.entity.ai.CoverBowAttackGoal;
 import com.tacz.guns.entity.ai.GunCoverGoal;
+import com.tacz.guns.entity.ai.SniperGoal;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
 import net.minecraft.world.entity.monster.Monster;
@@ -37,8 +38,9 @@ public abstract class AbstractSkeletonCoverMixin extends Monster {
 
     @Inject(method = "registerGoals", at = @At("TAIL"))
     private void tacz$addGunCoverGoal(CallbackInfo ci) {
-        // 총을 든 스켈레톤은 근접 공격(우선순위 4)을 쓰므로 그보다 먼저 이동을 잡는다.
+        // 총을 든 스켈레톤은 근접 공격(우선순위 4)을 쓰므로 그보다 먼저 이동을 잡는다. 두 Goal은 든 총 종류로 갈린다.
         this.goalSelector.addGoal(3, new GunCoverGoal(this));
+        this.goalSelector.addGoal(3, new SniperGoal(this));
     }
 
     /** 바닐라가 활 공격을 붙였으면 같은 우선순위에 엄폐형 활 공격으로 바꿔 끼운다. 활 공격 간격 설정은 바닐라 Goal에 남는다. */

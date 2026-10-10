@@ -15,16 +15,51 @@ import javax.annotation.Nullable;
  * 대상을 발견하면 잠깐 반응한 뒤 쏘기 시작하고, 조준 오차는 처음에 크다가 계속 겨눌수록 줄어든다.
  * 대상이 움직이거나 자신이 움직이거나 제압당하면 오차가 커진다. 연발 총은 몇 발씩 끊어 쏘고 단발 총은 사람 손가락 속도로 쏜다.
  * 엄폐 칸에서 다시 몸을 내밀었을 때 대상이 아까 그 자리에 있으면, 미리 겨눠 둔 셈이라 반응과 오차를 줄인다.
+ * 저격총과 지정사수소총은 {@link Profile}로 반응과 다음 발까지의 간격을 조금씩 늘려 한 발씩 끊어 쏜다.
  */
 public final class MonsterAimModel {
+    /**
+     * 총 종류별 사격 박자(틱). 조준 오차는 종류와 관계없이 같다.
+     * <p>
+     * 저격 계열은 연발 모드여도 한 발씩 끊어 쏜다. 저격총은 볼트를 당긴 뒤 다시 겨누는 시간도 기다린다.
+     */
+    public enum Profile {
+        /** 일반 총. 처음 발견 0.3~0.6초, 미리 겨눈 자리 0.1~0.2초, 단발 간격 0.2~0.35초 */
+        STANDARD(6, 12, 2, 4, 4, 7, 0, 0),
+        /** 지정사수소총. 일반 총보다 반응 +2틱, 단발 간격 +2틱 */
+        MARKSMAN(8, 14, 2, 4, 6, 9, 0, 0),
+        /** 저격총. 일반 총보다 반응 +3틱, 단발 간격 +4틱, 볼트 뒤 다시 겨누기 3~6틱 */
+        SNIPER(9, 15, 3, 5, 8, 11, 3, 6);
+
+        private final int minReactionTicks;
+        private final int maxReactionTicks;
+        private final int minPreaimedReactionTicks;
+        private final int maxPreaimedReactionTicks;
+        private final int minSemiIntervalTicks;
+        private final int maxSemiIntervalTicks;
+        private final int minPostBoltTicks;
+        private final int maxPostBoltTicks;
+
+        Profile(int minReactionTicks, int maxReactionTicks, int minPreaimedReactionTicks, int maxPreaimedReactionTicks,
+                int minSemiIntervalTicks, int maxSemiIntervalTicks, int minPostBoltTicks, int maxPostBoltTicks) {
+            this.minReactionTicks = minReactionTicks;
+            this.maxReactionTicks = maxReactionTicks;
+            this.minPreaimedReactionTicks = minPreaimedReactionTicks;
+            this.maxPreaimedReactionTicks = maxPreaimedReactionTicks;
+            this.minSemiIntervalTicks = minSemiIntervalTicks;
+            this.maxSemiIntervalTicks = maxSemiIntervalTicks;
+            this.minPostBoltTicks = minPostBoltTicks;
+            this.maxPostBoltTicks = maxPostBoltTicks;
+        }
+
+        /** 연발 모드여도 한 발씩 끊어 쏘는지 */
+        boolean firesSingleShots() {
+            return this != STANDARD;
+        }
+    }
+
     /** 대상을 이 시간(틱) 넘게 보지 못하다 다시 보면 새로 발견한 것으로 본다. */
     private static final int REACQUIRE_TICKS = 30;
-    /** 처음 발견했을 때 첫 발까지의 반응 시간(틱). 0.3~0.6초 */
-    private static final int MIN_REACTION_TICKS = 6;
-    private static final int MAX_REACTION_TICKS = 12;
-    /** 아까 본 자리에서 다시 발견했을 때의 반응 시간(틱). 미리 겨눠 둔 상태다. */
-    private static final int MIN_PREAIMED_REACTION_TICKS = 2;
-    private static final int MAX_PREAIMED_REACTION_TICKS = 4;
     /** 다시 발견한 대상이 마지막으로 본 자리에서 이 거리(칸) 안이면 미리 겨눠 둔 것으로 본다. */
     private static final double PREAIMED_DISTANCE = 2.0;
     /** 계속 겨눌 때도 남는 손떨림 오차(도, 표준편차) */
@@ -52,12 +87,11 @@ public final class MonsterAimModel {
     /** 연발 총 점사 사이의 멈춤(틱). 0.3~0.6초 */
     private static final int MIN_BURST_PAUSE_TICKS = 6;
     private static final int MAX_BURST_PAUSE_TICKS = 12;
-    /** 단발 총을 다시 당기기까지의 간격(틱). 사람이 초당 3~5번 당기는 속도다. 총 자체의 연사 간격이 더 길면 그쪽을 따른다. */
-    private static final int MIN_SEMI_INTERVAL_TICKS = 4;
-    private static final int MAX_SEMI_INTERVAL_TICKS = 7;
     /** 대상 속도를 매 틱 섞는 비율. 한 틱 이동량은 들쭉날쭉해 부드럽게 평균 낸다. */
     private static final double SPEED_SMOOTHING = 0.3;
 
+    /** 지금 든 총의 사격 박자. 총 자체의 연사 간격이나 볼트 시간이 더 길면 그쪽을 따른다. */
+    private Profile profile = Profile.STANDARD;
     private int targetId = -1;
     private long lastSeenTick = Long.MIN_VALUE;
     private long acquiredTick;
@@ -86,15 +120,24 @@ public final class MonsterAimModel {
         this.lastSeenTick = gameTime;
     }
 
+    /** 든 총이 바뀌었을 때 부른다. 다음 반응과 사격 간격부터 새 박자를 쓴다. */
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    public Profile profile() {
+        return this.profile;
+    }
+
     private void startAcquire(LivingEntity target, long gameTime, boolean sameSpot, RandomSource random) {
         this.targetId = target.getId();
         this.acquiredTick = gameTime;
         this.preaimed = sameSpot;
-        int minReaction = MIN_REACTION_TICKS;
-        int maxReaction = MAX_REACTION_TICKS;
+        int minReaction = this.profile.minReactionTicks;
+        int maxReaction = this.profile.maxReactionTicks;
         if (sameSpot) {
-            minReaction = MIN_PREAIMED_REACTION_TICKS;
-            maxReaction = MAX_PREAIMED_REACTION_TICKS;
+            minReaction = this.profile.minPreaimedReactionTicks;
+            maxReaction = this.profile.maxPreaimedReactionTicks;
         }
         this.readyTick = Math.max(this.readyTick, gameTime + minReaction + random.nextInt(maxReaction - minReaction + 1));
         this.burstShotsLeft = 0;
@@ -126,11 +169,12 @@ public final class MonsterAimModel {
         return Math.min(MAX_ERROR_DEGREES, error);
     }
 
-    /** 쏜 뒤 부른다. 연발 총은 점사 발수를 세고, 단발 총은 다음 방아쇠까지 간격을 둔다. */
+    /** 쏜 뒤 부른다. 연발 총은 점사 발수를 세고, 단발 총과 저격 계열은 다음 방아쇠까지 간격을 둔다. */
     public void onShot(FireMode fireMode, long gameTime, RandomSource random) {
-        if (fireMode != FireMode.AUTO) {
-            this.readyTick = gameTime + MIN_SEMI_INTERVAL_TICKS
-                    + random.nextInt(MAX_SEMI_INTERVAL_TICKS - MIN_SEMI_INTERVAL_TICKS + 1);
+        boolean singleShot = fireMode != FireMode.AUTO || this.profile.firesSingleShots();
+        if (singleShot) {
+            this.readyTick = gameTime + randomBetween(random,
+                    this.profile.minSemiIntervalTicks, this.profile.maxSemiIntervalTicks);
             return;
         }
         if (this.burstShotsLeft <= 0) {
@@ -141,5 +185,22 @@ public final class MonsterAimModel {
             this.readyTick = gameTime + MIN_BURST_PAUSE_TICKS
                     + random.nextInt(MAX_BURST_PAUSE_TICKS - MIN_BURST_PAUSE_TICKS + 1);
         }
+    }
+
+    /**
+     * 볼트를 다 당긴 틱에 부른다. 저격총은 볼트를 당기느라 흐트러진 조준을 다시 맞추는 시간을 기다린다.
+     * <p>
+     * 단발 간격은 쏜 틱부터 세므로 볼트 동작 안에 묻힌다. 볼트가 끝난 뒤를 따로 세야 연사가 실제로 늦춰진다.
+     */
+    public void onBoltFinished(long gameTime, RandomSource random) {
+        if (this.profile.maxPostBoltTicks <= 0) {
+            return;
+        }
+        int reaimTicks = randomBetween(random, this.profile.minPostBoltTicks, this.profile.maxPostBoltTicks);
+        this.readyTick = Math.max(this.readyTick, gameTime + reaimTicks);
+    }
+
+    private static int randomBetween(RandomSource random, int min, int max) {
+        return min + random.nextInt(max - min + 1);
     }
 }
