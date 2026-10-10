@@ -18,8 +18,10 @@ public class PowerupDetailsComponent extends EmptyComponent {
     /** 스킬 트리 칸과 같은 칸·아이템 크기 */
     private static final int ICON_SIZE = 24;
     private static final int ICON_Y = 27;
+    /** 필요 레벨과 가격 줄. 제목과 한 줄에 두면 패널이 좁을 때 서로 겹친다. */
+    private static final int REQUIREMENT_Y = ICON_Y + ICON_SIZE + 4;
     /** 설명이 시작하는 줄 */
-    private static final int DESCRIPTION_Y = ICON_Y + ICON_SIZE + 5;
+    private static final int DESCRIPTION_Y = REQUIREMENT_Y + 13;
     /** 단추 한 줄과 아래 여백이 쓰는 높이 */
     private static final int BUTTON_ROW_HEIGHT = 26;
 
@@ -60,11 +62,9 @@ public class PowerupDetailsComponent extends EmptyComponent {
         }
         var instance = powerup.getPowerupInstance();
 
-        // 필요 레벨과 가격은 제목과 같은 줄 오른쪽 끝에 붙인다.
-        JobsTheme.textRight(graphics,
-                Component.literal("필요레벨 " + instance.getRequiredLevel()
-                        + "  /  직업코인 " + instance.getPrice()),
-                x + getWidth() - 8, y + 7, getWidth() - 62, JobsTheme.MUTED);
+        Component requirement = Component.literal("필요레벨 " + instance.getRequiredLevel()
+                + "  /  직업코인 " + instance.getPrice());
+        JobsTheme.text(graphics, requirement, x + 8, y + REQUIREMENT_Y, getWidth() - 16, JobsTheme.MUTED);
 
         if (displayedPowerup != powerup) {
             if (description != null) {
