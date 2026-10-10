@@ -20,7 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-/** Formats loaded pack values without evaluating scripts or changing weapon properties. */
+/** 불러온 팩 값을 화면용 문장으로 만든다. 스크립트를 실행하거나 무기 속성을 바꾸지 않는다. */
 final class TaczStats {
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Identifier.class,
             (JsonSerializer<Identifier>) (value, type, context) -> new JsonPrimitive(value.toString())).create();

@@ -2,7 +2,7 @@ package com.daqem.jobsplus.client.gui.theme;
 
 import com.daqem.jobsplus.client.gui.jobs.tab.RightTab;
 
-/** GUI-space bounds shared by drawing and widget construction. */
+/** 그리기와 위젯 생성이 함께 쓰는 GUI 좌표 범위. */
 public record JobsLayout(int width, int height) {
     public static JobsLayout forScreen(int screenWidth, int screenHeight) {
         return new JobsLayout(Math.max(1, Math.min(560, screenWidth - 16)),

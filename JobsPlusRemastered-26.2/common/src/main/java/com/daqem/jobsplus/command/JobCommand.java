@@ -200,20 +200,7 @@ public class JobCommand
                                         .record();
                                 source.sendSuccess(() -> JobsPlus.translatable("command.set.level.success", jobInstance.getName(), level, jobsServerPlayer.jobsplus$getPlayer().getDisplayName()), false);
 
-                                // 원본수정
-                                // } else {
-                                // job = jobsServerPlayer.jobsplus$addNewJob(jobInstance);
-                                // if (job != null) {
-                                // job.setLevel(level);
-                                // source.sendSuccess(() -> JobsPlus.translatable(
-                                // "command.set.level.success_new_job", jobInstance.getName(), level,
-                                // jobsServerPlayer.jobsplus$getPlayer().getDisplayName()), false);
-                                // } else {
-                                // source.sendFailure(JobsPlus.translatable(
-                                // "command.set.level.cannot_add_job"));
-                                // }
-                                // }
-
+                                // 원본의 새 직업 추가 분기는 아래 else의 직업 수 제한으로 바꿨다
                         }
 
                         // 25.11.30 jjh 직업2개만 선택하도록 예외처리 (기존 주석 유지)

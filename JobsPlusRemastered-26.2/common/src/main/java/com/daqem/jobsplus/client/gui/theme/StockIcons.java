@@ -9,13 +9,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/** Bundled icons only: opening the market never downloads remote images. */
+/** 모드에 포함된 아이콘만 쓴다. 시장을 열어도 외부 이미지를 내려받지 않는다. */
 public final class StockIcons {
     private static final Map<String, Identifier> ICONS = StockCatalog.getStocks().stream().collect(
             Collectors.toUnmodifiableMap(StockCatalog.StockDefinition::id,
                     stock -> JobsPlus.getId("stocks/" + stock.id().toLowerCase(Locale.ROOT))));
 
-    // The uploaded company marks are rectangular; preserve their proportions in square UI slots.
+    // 받은 회사 로고는 직사각형이므로 정사각형 UI 칸에서도 비율을 유지한다.
     private static final Map<String, Float> ICON_HEIGHT_RATIOS = Map.of(
             "009150", 347.0F / 576.0F,
             "006400", 407.0F / 513.0F);

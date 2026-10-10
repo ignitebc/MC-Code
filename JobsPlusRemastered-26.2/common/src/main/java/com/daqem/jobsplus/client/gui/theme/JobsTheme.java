@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
-/** PNG-backed JobsPlus skin; sprite metadata preserves borders at different GUI sizes. */
+/** PNG 기반 JobsPlus 스킨. 스프라이트 메타데이터가 GUI 크기가 달라도 테두리를 유지한다. */
 public final class JobsTheme {
     public static final int BACKGROUND = 0xF208191F;
     public static final int PANEL = 0xF510272F;
@@ -62,7 +62,7 @@ public final class JobsTheme {
             skin = fill == BACKGROUND ? Skin.TOOLTIP : Skin.SECONDARY_HOVER;
         }
         if (border == ERROR) {
-            // Tint a neutral PNG so the close/error state also uses an image frame.
+            // 무채색 PNG에 색을 입혀 닫기·오류 상태도 이미지 테두리를 쓰게 한다.
             if (width > 0 && height > 0) {
                 g.blitSprite(RenderPipelines.GUI_TEXTURED, Skin.DISABLED.id, x, y, width, height,
                         fill == 0xFF823B49 ? 0xFFFF8E9B : 0xFFDB6575);
@@ -100,7 +100,7 @@ public final class JobsTheme {
         if (width < 2 || height < 2) {
             return;
         }
-        // Crop only the PNG border; leave native text, selection and caret unobscured.
+        // PNG 테두리만 잘라 쓰고, 기본 글자·선택 영역·커서는 가리지 않는다.
         Identifier id = Skin.INSET.id;
         g.blitSprite(RenderPipelines.GUI_TEXTURED, id, width, height, 0, 0, x, y, width, 1, color);
         g.blitSprite(RenderPipelines.GUI_TEXTURED, id, width, height, 0, height - 1,

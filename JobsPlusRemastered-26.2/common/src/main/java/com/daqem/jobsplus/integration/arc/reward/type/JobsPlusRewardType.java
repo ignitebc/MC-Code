@@ -24,10 +24,10 @@ public interface JobsPlusRewardType<T extends IReward> extends RewardType<T>
 
     IRewardType<JobCoinReward> JOB_COIN = RewardType.register(JobsPlus.getId("job_coin"), new JobCoinReward.Serializer());
 
-    // bitcoin reward
+    // 비트코인 보상
     IRewardType<JobBitcoinReward> BITCOIN_REWARD = RewardType.register(JobsPlus.getId("bitcoin_reward"), new JobBitcoinReward.Serializer());
 
-    // entity drop multiplier
+    // 엔티티 드롭 배수
     IRewardType<EntityDropMultiplierReward> ENTITY_DROP_MULTIPLIER = RewardType.register(JobsPlus.getId("entity_drop_multiplier"), new EntityDropMultiplierReward.Serializer());
 
     IRewardType<RangeHarvestReward> RANGE_HARVEST = RewardType.register(JobsPlus.getId("range_harvest"), new RangeHarvestReward.Serializer());

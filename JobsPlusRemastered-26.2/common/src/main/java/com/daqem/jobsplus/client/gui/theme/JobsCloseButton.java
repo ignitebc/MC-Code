@@ -10,7 +10,7 @@ public class JobsCloseButton extends CustomButtonWidget {
         super(x, y, JobsTheme.BUTTON_HEIGHT, JobsTheme.BUTTON_HEIGHT, Component.literal("닫기"), null,
                 button -> {
                     if (Minecraft.getInstance().gui.screen() != null) {
-                        // Use the screen's normal close path, including stock-view cleanup.
+                        // 주식 보기 정리를 포함한 화면의 일반 닫기 경로를 쓴다.
                         Minecraft.getInstance().gui.screen().onClose();
                     }
                 });

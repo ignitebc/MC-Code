@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
-/** Browse only: selecting a card never crafts, equips or sends a packet. */
+/** 둘러보기 전용: 카드를 골라도 제작·장착하거나 패킷을 보내지 않는다. */
 public class GunGuideComponent extends EmptyComponent {
     private final TaczCatalog.Snapshot catalog;
     private final Map<String, Entry> entries;

@@ -86,7 +86,7 @@ public class SelectedJobComponent extends EmptyComponent {
                 JobsTheme.label(graphics, JobsPlus.translatable("gui.jobs.max_jobs", state.getMaxJobs()),
                         x + 6, infoY, getWidth() - 12, 9, JobsTheme.ERROR);
             }
-            // Keep the original eligibility and ticket-slot rules; only the presentation changes.
+            // 기존 자격 조건과 티켓 칸 규칙은 그대로 두고 표시 방식만 바꾼다.
             if (jobInstance.getPrice() > state.getCoins() && !canStartFreeJob()) {
                 this.removeWidget(this.startJobButtonWidget);
             } else if (!this.getWidgets().contains(this.startJobButtonWidget) && canStartNewJob()) {

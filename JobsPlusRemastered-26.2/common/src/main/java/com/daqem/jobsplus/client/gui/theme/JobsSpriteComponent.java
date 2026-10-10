@@ -4,7 +4,7 @@ import com.daqem.uilib.gui.component.sprite.SpriteComponent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 
-/** Keeps UILib positioning and children while drawing the JobsPlus skin. */
+/** UILib의 배치와 자식 구성은 그대로 두고 JobsPlus 스킨만 그린다. */
 public class JobsSpriteComponent extends SpriteComponent {
     private final Identifier sprite;
 

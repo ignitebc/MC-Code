@@ -12,7 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-/** Presentation only; the existing sell button and server validation handle exchanges. */
+/** 표시 전용. 교환은 기존 판매 버튼과 서버 검증이 처리한다. */
 public class ShopDetailsComponent extends EmptyComponent {
     private final JobsScreenState state;
 

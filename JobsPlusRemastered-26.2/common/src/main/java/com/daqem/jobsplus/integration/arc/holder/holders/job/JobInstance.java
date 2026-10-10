@@ -84,8 +84,8 @@ public class JobInstance extends AbstractActionHolder
     }
 
     /**
-     * @return a map of item restrictions and their corresponding required levels
-     *         for this job instance
+     * @return 이 직업 인스턴스의 아이템 제한과 각각에 필요한 레벨을
+     *         담은 맵
      */
     public Map<ItemRestriction, Integer> getItemRestrictions()
     {

@@ -80,7 +80,7 @@ public class PowerupItemWidget extends CustomButtonWidget implements ISkillTreeI
         this.blitSlot(guiGraphics);
     }
 
-    /** Reuse the exact node action, including its existing eligibility checks. */
+    /** 기존 자격 검사를 포함해 스킬 칸 동작을 그대로 다시 쓴다. */
     public void activateFromDetails() {
         if (this.powerup != null && isActive()) {
             this.onPress.onPress(this);

@@ -13,7 +13,7 @@ import com.daqem.uilib.gui.widget.CustomButtonWidget;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
-/** Client-only inspection panel. All actions delegate to the existing skill node. */
+/** 클라이언트 전용 일반스킬 상세 패널. 모든 동작은 선택된 스킬 칸에 그대로 넘긴다. */
 public class PowerupDetailsComponent extends EmptyComponent {
     /** 스킬 트리 칸과 같은 칸·아이템 크기 */
     private static final int ICON_SIZE = 24;

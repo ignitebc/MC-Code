@@ -17,7 +17,7 @@ public class ShopScrollContentComponent extends EmptyComponent
 
     public ShopScrollContentComponent(JobsScreenState state, int width)
     {
-        // The parent reserves a separate strip for the scrollbar.
+        // 부모가 스크롤바용 띠를 따로 잡아 둔다.
         super(0, 0, width, 0);
 
         List<ShopOffer> offers = ShopComponent.getOffers();

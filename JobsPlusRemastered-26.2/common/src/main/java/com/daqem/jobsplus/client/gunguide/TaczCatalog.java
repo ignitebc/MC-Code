@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-/** Read-only optional integration: JobsPlus still loads when TACZ is absent. */
+/** 읽기 전용 선택 연동. TACZ가 없어도 JobsPlus는 정상 로드된다. */
 public final class TaczCatalog {
     private static final List<String> CATEGORIES = List.of("권총", "기관단총", "돌격소총", "지정사수소총", "산탄총", "저격소총",
             "기관총", "발사기", "기타 총기", "탄약", "조준경", "소음기", "총구", "손잡이", "개머리판",

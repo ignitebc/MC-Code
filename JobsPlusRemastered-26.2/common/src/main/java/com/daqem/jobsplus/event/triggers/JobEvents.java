@@ -101,21 +101,21 @@ public class JobEvents
     public static void triggerLevelUpEffects(ServerPlayer player)
     {
 
-        // Play first sound after 250 ms (5 ticks)
+        // 250ms(5틱) 뒤 첫 소리 재생
         schedule(player, () ->
         {
             playLevelUpSound(player, 0.5F, 2F);
             playEXPOrbPickupSound(player);
         }, 250);
 
-        // Play second sound after 450 ms (9 ticks)
+        // 450ms(9틱) 뒤 두 번째 소리 재생
         schedule(player, () ->
         {
             playLevelUpSound(player, 1F, 2F);
             playEXPOrbPickupSound(player);
         }, 450);
 
-        // Play final sound after 550 ms (11 ticks)
+        // 550ms(11틱) 뒤 마지막 소리 재생
         schedule(player, () ->
         {
             playLevelUpSound(player, 0.5F, 1.5F);
