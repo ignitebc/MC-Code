@@ -151,9 +151,6 @@ public final class ScopeMaskRenderer {
     private static final ByteBufferBuilder SCRATCH = new ByteBufferBuilder(4096);
 
     private static boolean failed = false;
-    private static boolean loggedSuccess = false;
-    /** 「开着调试却没有任何目镜几何」只警告一次，避免刷屏。 */
-    private static boolean loggedEmpty = false;
 
     /**
      * 当前是否正在渲染手持物（第一人称枪械）。
@@ -188,15 +185,6 @@ public final class ScopeMaskRenderer {
      * <p>无论成败，末尾都会清空当帧清单 —— 见 {@code finally}。
      */
     public static void renderAtPhaseBoundary() {
-        // 【诊断】上一版实测「预览全黑 + 日志一行都没有」，原因是几何一个都没登记，
-        // isEmpty() 直接 return，于是连个说法都没有。静默失败最难查，
-        // 所以这里补一条：开着调试却收不到任何目镜几何时，明确说出来（只说一次）。
-        if (inHandPass && RenderConfig.SCOPE_MASK_ENABLE.get()
-                && ScopeMaskGeometry.isEmpty() && !loggedEmpty) {
-            loggedEmpty = true;
-            GunMod.LOGGER.warn("[TACZ Scope] Mask enabled but no ocular geometry was registered this frame. "
-                    + "Either no scope is equipped/aimed, or ocular collection is broken.");
-        }
         if (!isHandPass()) {
             // 世界渲染那次直接跳过，且【不清空】清单 ——
             // 目镜是在手持渲染的 submit 阶段登记的，而手持渲染发生在世界之后，
@@ -293,11 +281,6 @@ public final class ScopeMaskRenderer {
                     // 即 drawIndexed(indexCount, 1, firstIndex, baseVertex, 0)。
                     // 我们的顶点/索引都是从头开始的单批，所以 firstIndex 与 baseVertex 都是 0。
                     pass.drawIndexed(draw.indexCount(), 1, 0, 0, 0);
-                }
-                if (!loggedSuccess) {
-                    loggedSuccess = true;
-                    GunMod.LOGGER.info("[TACZ Scope] Ocular mask drawn: {} indices from {} batches.",
-                            draw.indexCount(), ScopeMaskGeometry.entries().size());
                 }
             } finally {
                 if (vertexBuffer != null) {

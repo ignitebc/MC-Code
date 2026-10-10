@@ -11,8 +11,6 @@ import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.api.item.nbt.GunItemDataAccessor;
-import com.tacz.guns.command.sub.DebugCommand;
-import com.tacz.guns.debug.GunMeleeDebug;
 import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.entity.shooter.ShooterDataHolder;
 import com.tacz.guns.resource.index.CommonGunIndex;
@@ -519,11 +517,6 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
         // 玩家扣饱食度
         if (user instanceof Player player) {
             player.causeFoodExhaustion(0.1F);
-        }
-
-        // Debug 模式
-        if (DebugCommand.DEBUG) {
-            GunMeleeDebug.showRange(user, (int) Math.round(distance), centrePos, eyeVec, rangeAngle);
         }
     }
 

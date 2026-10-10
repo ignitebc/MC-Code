@@ -208,8 +208,6 @@
   "config.tacz.client.render.bullet_hole_particle_fade_threshold.desc": "The threshold for fading out when rendering bullet hole particles",
   "config.tacz.client.render.hit_market_start_position": "Hit Marker Start Position",
   "config.tacz.client.render.hit_market_start_position.desc": "The starting position of the hit marker when kill",
-  "config.tacz.client.render.head_shot_debug_hitbox": "Head Shot Debug Hitbox",
-  "config.tacz.client.render.head_shot_debug_hitbox.desc": "Whether or not to display the head shot's hitbox",
   "config.tacz.client.render.scope_mask_enable": "See-through Scope",
   "config.tacz.client.render.scope_mask_enable.desc": "Clip the scope body and reticle to the ocular while aiming, making the scope see-through.",
   "config.tacz.client.render.gun_hud_enable": "Gun HUD Enable",

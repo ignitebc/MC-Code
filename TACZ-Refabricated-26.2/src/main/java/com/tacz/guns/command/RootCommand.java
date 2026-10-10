@@ -14,7 +14,6 @@ public class RootCommand {
         LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal(ROOT_NAME)
                 .requires((source -> source.permissions().hasPermission(Permissions.COMMANDS_MODERATOR)));
         root.then(AttachmentLockCommand.get());
-        root.then(DebugCommand.get());
         root.then(DummyAmmoCommand.get());
         root.then(OverwriteCommand.get());
         root.then(ReloadCommand.get());

@@ -208,8 +208,6 @@
   "config.tacz.client.render.bullet_hole_particle_fade_threshold.desc": "착탄흔 파티클이 페이드 아웃되는 임계값입니다",
   "config.tacz.client.render.hit_market_start_position": "히트 마커 시작 위치",
   "config.tacz.client.render.hit_market_start_position.desc": "처치 시 히트 마커의 시작 위치입니다",
-  "config.tacz.client.render.head_shot_debug_hitbox": "헤드샷 히트박스 디버그",
-  "config.tacz.client.render.head_shot_debug_hitbox.desc": "헤드샷 히트박스를 표시할지 결정합니다",
   "config.tacz.client.render.scope_mask_enable": "조준경 투시",
   "config.tacz.client.render.scope_mask_enable.desc": "조준하는 동안 조준경 몸체와 조준선을 접안렌즈 범위로 잘라 내어 조준경 너머가 보이게 합니다.",
   "config.tacz.client.render.gun_hud_enable": "총기 HUD 활성화",
