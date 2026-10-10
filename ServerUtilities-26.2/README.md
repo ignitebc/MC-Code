@@ -284,6 +284,7 @@ S+~F 등급과 +1~+10 강화에 더해, 도구 한 개마다 별도의 누적 EX
 | `combat.golems.enabled` | `true` | `true` / `false` | 같은 전투 조건에서 주변 철골렘 제거 |
 | `combat.range` | `80.0` | 1~128 | 위더 탐색·철골렘 제거 범위. 플레이어 경계 상자를 각 축으로 확장하는 AABB |
 | `balance.creeper.enabled` | `true` | `true` / `false` | 크리퍼 레벨 배율을 폭발 피해·블록 파괴 범위와 화약 드롭에 적용. 끄면 모두 바닐라 |
+| `balance.vex_collision.enabled` | `true` | `true` / `false` | 벡스·항복한 자가 블록을 통과하지 않고 비행 길찾기로 뚫린 길만 따라 쫓아옴. 끄면 바닐라처럼 벽을 통과 |
 | `balance.hunger.enabled` | `true` | `true` / `false` | 행동으로 발생하는 피로도 보정 |
 | `balance.hunger.multiplier` | `1.5` | 0~100, 유한수 | 행동 피로도 배율. 자연 회복이 직접 추가하는 피로도에는 미적용 |
 | `balance.armor.enabled` | `true` | `true` / `false` | 방어도 소수점 사용과 유효 방어도 20 초과 구간의 피해 감소 곡선 |
@@ -498,6 +499,19 @@ S+~F 등급과 +1~+10 강화에 더해, 도구 한 개마다 별도의 누적 EX
 - 64블록 안의 생존·모험 모드 플레이어 중 가장 가까운 플레이어를 고릅니다. 등 뒤 3·4·2블록 순서로, 높이를 0·1·2블록 올려 가며 위더 몸이 들어가는 빈자리를 찾습니다. 빈자리가 없으면 다음 검사 때 다시 시도합니다.
 - 자유롭게 싸우는 위더는 대상 가까이 다가가 맴돌므로 이 조건에 걸리지 않습니다.
 
+## 벡스·항복한 자 비행
+
+바닐라 벡스는 매 틱 충돌을 꺼 벽·나뭇잎·땅을 통과하고, 대상이 보이는지 따지지 않고 대상 눈 쪽으로 일직선 돌진합니다. 그래서 보이지 않는 곳에서 갑자기 나타나 때립니다. 벡스와 이를 그대로 물려받은 illagerinvasion의 항복한 자(`illagerinvasion:surrendered`, 찬란한 기원자가 소환)는 블록을 통과하지 않고 뚫린 공중으로만 날게 합니다.
+
+- 충돌을 유지해 벽·나뭇잎·유리·땅·닫힌 문을 통과하지 않습니다. 중력은 바닐라대로 꺼져 있어 계속 공중을 납니다.
+- 벌·알레이와 같은 바닐라 비행 길찾기(`FlyingPathNavigation`)를 붙입니다. 문은 열지 못하고 열린 문·창문·구멍처럼 뚫린 길로만 지나갑니다.
+- 대상이 보이고 몸 중심에서 대상 눈까지 블록이 없으면 바닐라와 같은 속도로 일직선 돌진합니다. 보이지 않으면 0.5초마다 경로를 다시 계산해 뚫린 길로 다가가고, 시야가 트이면 돌진합니다. 몸이 닿으면 때리며 연속 타격 사이는 1초입니다.
+- 갈 길이 없는 막힌 공간의 대상에게는 다가가지 않고 소환자 4블록 곁으로 돌아가 기다립니다. 소환자가 없으면 그 자리에서 기다립니다.
+- 대상이 없으면 바닐라와 같은 범위(소환된 자리에서 가로 ±7, 세로 ±5)와 속도로 떠돌되, 길찾기로 닿을 수 있는 빈 칸만 골라 벽에 박지 않습니다.
+- 매 틱 벽 속에 있는지 보고, 들어가 있으면 질식 피해를 받기 전에 반경 3블록 안의 가장 가까운 빈 공간으로 옮깁니다. 소환 직후 벽 속에 생긴 경우도 첫 틱에 처리합니다. 빈 공간이 없으면 소환자 머리 위로 옮기고, 그곳도 막혀 있으면 그 개체를 없앱니다.
+- 체력·공격력·수명·소환 주기와 마릿수, 항복한 자의 구속 효과는 바꾸지 않습니다. 바닐라 돌진·무작위 이동 Goal은 규칙이 켜져 있으면 쉽니다.
+- 구현: `VexFlightMixin`(충돌·길찾기·Goal 연결·끼임 처리), `VexVanillaMoveGoalMixin`(바닐라 이동 Goal 쉬기), `VexPathChaseGoal`, `VexPathWanderGoal`, `VexFlightRules`. 설정 `balance.vex_collision.enabled`로 끌 수 있습니다.
+
 ## 미궁 찬란한 기원자
 
 새로 생성되는 illagerinvasion 미궁(`illagerinvasion:labyrinth`)마다 찬란한 기원자(`illagerinvasion:invoker`)를 1~5마리 놓습니다. 마릿수마다 20%로 같은 확률이며 평균 3마리입니다.
@@ -593,6 +607,7 @@ Java 25 환경에서 모듈 폴더 안에서 실행합니다.
 | 토템 인벤토리 발동 | `InventoryTotemMixin`, `InventoryTotems` |
 | 드래곤 지역 엔더맨 습격 | `DragonEndermanRules`, 서버 틱·종료 연결, `BossMinionRules.findSpawnPosition` 공개 범위 |
 | 미궁 기원자 | `LabyrinthInvokers`, `LabyrinthInvokerMixin`. 함께 되돌릴 illagerinvasion `mobs/invoker_group` 풀 |
+| 벡스·항복한 자 비행 | `VexFlightMixin`, `VexVanillaMoveGoalMixin`, `VexPathChaseGoal`, `VexPathWanderGoal`, `VexFlightRules`, 설정 1개 |
 | 거래 횟수 제한 해제 | `MerchantOffer` 거래 횟수 Mixin과 Mixin 등록, 이 문서의 해당 절 |
 | 몬스터 레벨 표시 | `monster`의 레벨 계산·동기화, 클라이언트 렌더러 Mixin 2개와 등록, TACZ의 총기 등급표·등급 연결 Mixin, 이 문서의 해당 절 |
 | 네더 몬스터 장비 | `MonsterEquipmentRules`의 네더 추첨·레벨·드롭 규칙, `MonsterEquipmentMixin`의 지급 칸 교체 방지, TACZ의 네더 총기 추첨 Mixin, Jobs+ 사용자 가이드의 무장 몬스터 안내, 이 문서의 해당 절 |
